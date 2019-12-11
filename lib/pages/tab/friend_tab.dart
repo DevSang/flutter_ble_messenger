@@ -142,7 +142,7 @@ class _FriendTabState extends State<FriendTab> {
     return MaterialApp(
         home: Scaffold(
           appBar: AppBar(
-            title: const Text('Plugin example app'),
+            title: const Text('HWA Friends'),
           ),
           body: AlphabetListScrollView(
             strList: strList,
