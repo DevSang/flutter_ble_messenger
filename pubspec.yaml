@@ -15,6 +15,9 @@ dependencies:
   json_annotation:
   cached_network_image:
   rxdart:
+  alphabet_list_scroll_view:
+  faker:
+  flutter_slidable:
 #  flutter_kakao_login:
 #  flutter_facebook_login:
 #  google_sign_in:
