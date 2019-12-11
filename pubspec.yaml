@@ -15,9 +15,9 @@ dependencies:
   json_annotation:
   cached_network_image:
   rxdart:
-  flutter_kakao_login:
-  flutter_facebook_login:
-  google_sign_in:
+#  flutter_kakao_login:
+#  flutter_facebook_login:
+#  google_sign_in:
 
 
 
