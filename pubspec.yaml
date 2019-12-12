@@ -22,8 +22,6 @@ dependencies:
 #  flutter_facebook_login:
 #  google_sign_in:
 
-
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -31,9 +29,13 @@ dev_dependencies:
 
 
 flutter_native_splash:
-  image: assets/images/splashscreen.png
+  image: images/splashscreen.png
   color: "42a5f5"
 
 flutter:
   uses-material-design: true
+
+
+assets:
+  - images/test.png
 
