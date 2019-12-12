@@ -33,9 +33,8 @@ flutter_native_splash:
   color: "42a5f5"
 
 flutter:
+  assets:
+    - images/logo.png
   uses-material-design: true
 
-
-assets:
-  - images/test.png
 

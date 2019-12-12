@@ -5,9 +5,6 @@ import 'package:Hwa/pages/signin_page.dart';
 import 'data/local/SharedprefsHelper.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
 
-//void main() => runApp(MyApp());
-
-
 Future main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   await SharedPrefsHelper().initialize();
@@ -22,6 +19,7 @@ class MyApp extends StatelessWidget {
       title: 'HWA',
       theme: ThemeData.light(),
       home: BottomNavigation(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }

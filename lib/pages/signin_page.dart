@@ -10,15 +10,20 @@ class SigninPage extends StatefulWidget {
 
 class _SigninPageState extends State<SigninPage>{
   @override
-  Widget build(BuildContext context){
-    return MaterialApp(
-        home: Scaffold(
-        body: Center(
-          child: Image.asset('assets/images/logo.png'),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: Container(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+
+            Image.asset('images/logo.png'),
+
+          ],
         ),
-    ),
+      ),
     );
   }
-  }
-
-
+}

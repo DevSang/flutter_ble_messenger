@@ -13,20 +13,18 @@ class _HwaTabState extends State<HwaTab> {
        appBar: AppBar(
          title: const Text("단화 목록"),
        ),
-           body: Container(
-             padding: EdgeInsets.all(16.0),
-             child: Column(
-               crossAxisAlignment: CrossAxisAlignment.center,
+           body: Center (child: Column(
                mainAxisAlignment: MainAxisAlignment.center,
                children: <Widget>[
-                 Text('Load image from assets',
-                   style: TextStyle(fontSize: 18.0),
-                 ),
-               Image.asset('images/test.png'),
+               Image.asset('images/logo.png'),
 
                ],
            ),
      ),
      );
   }
+
+
 }
+
+
