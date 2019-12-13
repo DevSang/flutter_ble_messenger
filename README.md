@@ -2,8 +2,11 @@
 android/ios flutter project
 
 ## FINISHED
+* 로그인 화면 UI 
+* 회원가입 화면 UI
 
 ## TODOS
+* 많음 
 
 ## Installation
 ```
