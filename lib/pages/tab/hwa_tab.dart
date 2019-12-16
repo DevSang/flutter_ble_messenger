@@ -11,7 +11,18 @@ class _HwaTabState extends State<HwaTab> {
      return Scaffold(
        backgroundColor: Colors.white,
        appBar: AppBar(
-         title: const Text("단화 목록"),
+         backgroundColor: Colors.white,
+         title: Text("단화방", style: TextStyle(color: Colors.black),),
+         actions: <Widget>[
+           IconButton(
+             icon: Image.asset('assets/images/icon/navIconHot.png'),
+             onPressed: null,
+           ),
+           IconButton(
+             icon: Image.asset('assets/images/icon/navIconNew.png'),
+             onPressed: null,
+           )
+         ],
        ),
            body: Center (child: Column(
                mainAxisAlignment: MainAxisAlignment.center,
