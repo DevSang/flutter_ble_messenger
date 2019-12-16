@@ -16,7 +16,7 @@ class _HwaTabState extends State<HwaTab> {
            body: Center (child: Column(
                mainAxisAlignment: MainAxisAlignment.center,
                children: <Widget>[
-               Image.asset('images/logo.png'),
+               Image.asset('assets/images/logo.png'),
 
                ],
            ),
