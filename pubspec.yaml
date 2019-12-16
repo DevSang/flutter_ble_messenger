@@ -43,6 +43,20 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/images/icon/iconAttachCamera.png
+    - assets/images/icon/iconAttachMore.png
+    - assets/images/icon/iconBell.png
+    - assets/images/icon/iconBounds.png
+    - assets/images/icon/iconFold.png
+    - assets/images/icon/iconLikeCount.png
+    - assets/images/icon/iconPin.png
+    - assets/images/icon/iconVideoPlay.png
+    - assets/images/icon/iconViewCount.png
+    - assets/images/icon/navIconHot.png
+    - assets/images/icon/navIconNew.png
+    - assets/images/icon/navIconPrev.png
+    - assets/images/icon/navIconSearch.png
+
   uses-material-design: true
 
 
