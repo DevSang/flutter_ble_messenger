@@ -13,6 +13,7 @@ class _ChatTabState extends State<ChatTab> {
         appBar: AppBar(
           title: const Text("Chat List"),
           centerTitle: true,
+
         )
 
     );
