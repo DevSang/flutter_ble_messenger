@@ -3,6 +3,8 @@ import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 
+//바텀 네비게이션 바
+
 class BottomNavigation extends StatefulWidget {
   @override
   _BottomNavigationState createState() => new _BottomNavigationState();
@@ -33,16 +35,16 @@ class _BottomNavigationState extends State<BottomNavigation> {
           type: BottomNavigationBarType.fixed,
           items: [
             BottomNavigationBarItem(
-                icon: Icon(Icons.home,color: Colors.black,),
-                title: Text ('HWA', style: TextStyle (color: Colors. black))
+                icon: Image.asset('assets/images/icon/tabIconHwa.png'),
+                title: Text ('HWA', style: TextStyle (color: Colors. black45))
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.contacts,color: Colors.black,),
-                title: Text ('Friend', style: TextStyle (color: Colors. black))
+                icon: Image.asset('assets/images/icon/tabIconFriend.png'),
+                title: Text ('Friend', style: TextStyle (color: Colors. black45))
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.find_in_page,color: Colors.black,),
-                title: Text ('Chat', style: TextStyle (color: Colors. black))
+                icon: Image.asset('assets/images/icon/tabIconChat.png'),
+                title: Text ('Chat', style: TextStyle (color: Colors. black45))
             ),
           ]
       ),
