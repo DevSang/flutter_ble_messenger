@@ -11,7 +11,7 @@ class _ChatTabState extends State<ChatTab> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("Chat List"),
+          title: Text("Chat List"),
           centerTitle: true,
 
         )
