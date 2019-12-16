@@ -56,6 +56,11 @@ flutter:
     - assets/images/icon/navIconNew.png
     - assets/images/icon/navIconPrev.png
     - assets/images/icon/navIconSearch.png
+    - assets/images/icon/tabIconChat.png
+    - assets/images/icon/tabIconChatActive.png
+    - assets/images/icon/tabIconFriend.png
+    - assets/images/icon/tabIconHwa.png
+    - assets/images/icon/tabIconHwaActive.png
 
   uses-material-design: true
 
