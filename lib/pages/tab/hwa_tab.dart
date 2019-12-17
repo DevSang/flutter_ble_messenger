@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:Hwa/pages/trend_page.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter/services.dart';
+
 
 class HwaTab extends StatefulWidget {
   @override
@@ -7,6 +10,11 @@ class HwaTab extends StatefulWidget {
 }
 
 class _HwaTabState extends State<HwaTab> {
+  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+
+  Position _currentPosition;
+  String _currentAddress;
+
   @override
   Widget build(BuildContext context) {
      return Scaffold(
@@ -30,33 +38,64 @@ class _HwaTabState extends State<HwaTab> {
          ],
        ),
            body: Center (child: Row(
-//               mainAxisAlignment: MainAxisAlignment.center,
+               mainAxisAlignment: MainAxisAlignment.center,
                children: <Widget>[
-
                  SizedBox(
                    width: 25.0,
                    height: 25.0,
                    child: FloatingActionButton(
                         child : Image.asset('assets/images/icon/iconPin.png'),
-                   onPressed: () {}
+                   onPressed: () {
+                     _getCurrentLocation();
+                   }
                    ),
                  ),
+//                 if (_currentPosition != null)
                  InkWell(
                    child: Text('현재 위치', style: TextStyle(fontSize: 13, color: Colors.black54),  ),
                  ),
-
                  InkWell(
-                   child: Text('서초대로 78 180', style: TextStyle(fontSize: 15, color: Colors.black),  ),
+                   child:
+                   Text("$_currentAddress", style: TextStyle(fontSize: 15, color: Colors.black), ),
                  ),
-
-
                ],
            ),
      ),
      );
   }
 
+  _getCurrentLocation() {
+    geolocator
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+        .then((Position position) {
+      setState(() {
+        _currentPosition = position;
+      });
+
+      _getAddressFromLatLng();
+    }).catchError((e) {
+      print(e);
+    });
+  }
+
+  _getAddressFromLatLng() async {
+    try {
+      List<Placemark> p = await geolocator.placemarkFromCoordinates(
+          _currentPosition.latitude, _currentPosition.longitude);
+
+      Placemark place = p[0];
+
+      setState(() {
+        _currentAddress =
+        "${place.locality}, ${place.postalCode}";
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
 
 }
+
+
 
 

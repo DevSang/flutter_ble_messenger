@@ -3,7 +3,7 @@ description: Hwa Messenger Prototype Application
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.2.2 <3.0.0"
 
 dependencies:
   flutter:
@@ -18,6 +18,8 @@ dependencies:
   alphabet_list_scroll_view:
   faker:
   flutter_slidable:
+  stomp:
+  geolocator:
 #  flutter_kakao_login:
 #  flutter_facebook_login:
 #  google_sign_in:
@@ -36,10 +38,18 @@ flutter:
   fonts:
     - family: NotoSans
       fonts:
+        - asset: assets/fonts/NotoSansKR-Bold.otf
         - asset: assets/fonts/NotoSansKR-Regular.otf
+        - asset: assets/fonts/NotoSansKR-Black.otf
+        - asset: assets/fonts/NotoSansKR-Light.otf
+        - asset: assets/fonts/NotoSansKR-Medium.otf
+        - asset: assets/fonts/NotoSansKR-Thin.otf
     - family: NanumSquare
       fonts:
         - asset: assets/fonts/NanumSquare_acR.ttf
+        - asset: assets/fonts/NanumSquare_acB.ttf
+        - asset: assets/fonts/NanumSquare_acL.ttf
+        - asset: assets/fonts/NanumSquare_acEB.ttf
 
   assets:
     - assets/images/logo.png
