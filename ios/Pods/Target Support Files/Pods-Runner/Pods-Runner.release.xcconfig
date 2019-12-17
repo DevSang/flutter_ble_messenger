@@ -1,8 +1,10 @@
-FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/FMDB" "${PODS_CONFIGURATION_BUILD_DIR}/path_provider" "${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences" "${PODS_CONFIGURATION_BUILD_DIR}/sqflite" "${PODS_ROOT}/../.symlinks/flutter/ios"
+ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/FMDB" "${PODS_CONFIGURATION_BUILD_DIR}/geolocator" "${PODS_CONFIGURATION_BUILD_DIR}/google_api_availability" "${PODS_CONFIGURATION_BUILD_DIR}/location_permissions" "${PODS_CONFIGURATION_BUILD_DIR}/path_provider" "${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences" "${PODS_CONFIGURATION_BUILD_DIR}/sqflite" "${PODS_CONFIGURATION_BUILD_DIR}/vibration" "${PODS_ROOT}/../.symlinks/flutter/ios-release"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/FMDB/FMDB.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/path_provider/path_provider.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences/shared_preferences.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/sqflite/sqflite.framework/Headers"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/FMDB/FMDB.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/geolocator/geolocator.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/google_api_availability/google_api_availability.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/location_permissions/location_permissions.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/path_provider/path_provider.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/shared_preferences/shared_preferences.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/sqflite/sqflite.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/vibration/vibration.framework/Headers"
 LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
-OTHER_LDFLAGS = $(inherited) -l"sqlite3" -framework "FMDB" -framework "Flutter" -framework "path_provider" -framework "shared_preferences" -framework "sqflite"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"sqlite3" -framework "FMDB" -framework "Flutter" -framework "geolocator" -framework "google_api_availability" -framework "location_permissions" -framework "path_provider" -framework "shared_preferences" -framework "sqflite" -framework "vibration"
+OTHER_SWIFT_FLAGS = $(inherited) -D COCOAPODS
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
