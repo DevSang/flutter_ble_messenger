@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:Hwa/pages/trend_page.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:Hwa/pages/profile_page.dart';
 import 'package:flutter/services.dart';
 
 
@@ -23,6 +24,15 @@ class _HwaTabState extends State<HwaTab> {
          backgroundColor: Colors.white,
          title: Text("단화방", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
          ),
+         leading: SizedBox (
+           width: 25.0,
+           height: 25.0,
+           child: FloatingActionButton (
+           backgroundColor: Colors.black54,
+           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage())),
+         ),
+         ),
+
          actions: <Widget>[
            IconButton(
              icon: Image.asset('assets/images/icon/navIconHot.png'),
@@ -46,6 +56,9 @@ class _HwaTabState extends State<HwaTab> {
                    child: FloatingActionButton(
                         child : Image.asset('assets/images/icon/iconPin.png'),
                    onPressed: () {
+                          if (_currentPosition != null) {
+                            print(null);
+                          }
                      _getCurrentLocation();
                    }
                    ),
@@ -54,15 +67,44 @@ class _HwaTabState extends State<HwaTab> {
                  InkWell(
                    child: Text('현재 위치', style: TextStyle(fontSize: 13, color: Colors.black54),  ),
                  ),
+
+
                  InkWell(
-                   child:
-                   Text("$_currentAddress", style: TextStyle(fontSize: 15, color: Colors.black), ),
+                   child: Text("$_currentAddress", style: TextStyle(fontSize: 15, color: Colors.black),
+                   ),
                  ),
+//                 talkList()
                ],
            ),
      ),
      );
   }
+
+
+
+//  Widget talkList()
+//  {
+//    return ListView(
+//      padding: const EdgeInsets.all(8),
+//        children: <Widget>[
+//          Container(
+//            height: 50,
+//            color: Colors.amber[600],
+//            child: const Center(child: Text('Entry A')),
+//          ),
+//          Container(
+//            height: 50,
+//            color: Colors.amber[500],
+//            child: const Center(child: Text('Entry B')),
+//          ),
+//          Container(
+//            height: 50,
+//            color: Colors.amber[100],
+//            child: const Center(child: Text('Entry C')),
+//          ),
+//        ],
+//    );
+//  }
 
   _getCurrentLocation() {
     geolocator

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 ApiConfig apiConfig = new ApiConfig();
 
