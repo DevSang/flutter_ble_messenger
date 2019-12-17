@@ -4,7 +4,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:Hwa/pages/profile_page.dart';
 import 'package:flutter/services.dart';
 
-
 class HwaTab extends StatefulWidget {
   @override
   _HwaTabState createState() => _HwaTabState();
@@ -18,21 +17,19 @@ class _HwaTabState extends State<HwaTab> {
 
   @override
   Widget build(BuildContext context) {
-     return Stack(
-       children: <Widget>[
-         Container(
-           decoration: BoxDecoration(
-             image: DecorationImage(
-               image: AssetImage("assets/images/background/bgMap.png"),
-               fit: BoxFit.cover,
-             ),
-           ),
-         ),
-       Scaffold(
-       appBar: AppBar(
-         backgroundColor: Colors.white,
+     return Scaffold(
+//       decoration: BoxDecoration(
+//         image: DecorationImage(
+//           image: AssetImage("assets/images/background/bgMap.png"),
+//           fit: BoxFit.cover,
+//         ),
+//       ),
+         appBar: AppBar(
+           backgroundColor: Colors.white,
          title: Text("단화방", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
          ),
+
+
 //         leading: SizedBox (
 //           width: 25.0,
 //           height: 25.0,
@@ -41,6 +38,7 @@ class _HwaTabState extends State<HwaTab> {
 //           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage())),
 //         ),
 //         ),
+
 
          actions: <Widget>[
            IconButton(
@@ -84,13 +82,9 @@ class _HwaTabState extends State<HwaTab> {
                    child: Text("$_currentAddress", style: TextStyle(fontSize: 15, color: Colors.black),
                    ),
                  ),
-//                 talkList()
                ],
            ),
-
            ),
-     ),
-       ],
      );
   }
   _getCurrentLocation() {

@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 
 //로그인 page
-
-class SigninPage extends StatefulWidget {
+class SignInPage extends StatefulWidget {
   @override
-  _SigninPageState createState() => _SigninPageState();
-
+  _SignInPageState createState() => _SignInPageState();
 }
 
-class _SigninPageState extends State<SigninPage>{
+class _SignInPageState extends State<SignInPage>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,8 +16,6 @@ class _SigninPageState extends State<SigninPage>{
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-
-            Image.asset('images/logo.png'),
 
           ],
         ),
