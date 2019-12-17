@@ -71,6 +71,7 @@ flutter:
     - assets/images/icon/tabIconFriend.png
     - assets/images/icon/tabIconHwa.png
     - assets/images/icon/tabIconHwaActive.png
+    - assets/images/background/bgMap.png
 
   uses-material-design: true
 

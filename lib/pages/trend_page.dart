@@ -29,6 +29,40 @@ class _TrendPageState extends State<TrendPage> {
     )
     ]
       ),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Container(
+          height: 70,
+          padding: EdgeInsets.only(top: 10, left: 10, right: 50, bottom: 10),
+          child: Column(
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50),
+                      color: Colors.grey[200]
+                  ),
+                  child: TextField (
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.search, color: Colors.grey,),
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(color: Colors.grey),
+                      hintText: "단화방 검색",
+                    ),
+                  ),
+                ),
+              )
+
+
+            ],
+          ),
+        )
+      ],
+    )
+
+
+
     );
   }
 }

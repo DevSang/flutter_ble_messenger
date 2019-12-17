@@ -18,20 +18,29 @@ class _HwaTabState extends State<HwaTab> {
 
   @override
   Widget build(BuildContext context) {
-     return Scaffold(
-       backgroundColor: Colors.white,
+     return Stack(
+       children: <Widget>[
+         Container(
+           decoration: BoxDecoration(
+             image: DecorationImage(
+               image: AssetImage("assets/images/background/bgMap.png"),
+               fit: BoxFit.cover,
+             ),
+           ),
+         ),
+       Scaffold(
        appBar: AppBar(
          backgroundColor: Colors.white,
          title: Text("단화방", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
          ),
-         leading: SizedBox (
-           width: 25.0,
-           height: 25.0,
-           child: FloatingActionButton (
-           backgroundColor: Colors.black54,
-           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage())),
-         ),
-         ),
+//         leading: SizedBox (
+//           width: 25.0,
+//           height: 25.0,
+//           child: FloatingActionButton (
+//           backgroundColor: Colors.black54,
+//           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage())),
+//         ),
+//         ),
 
          actions: <Widget>[
            IconButton(
@@ -47,8 +56,10 @@ class _HwaTabState extends State<HwaTab> {
            )
          ],
        ),
+
            body: Center (child: Row(
                mainAxisAlignment: MainAxisAlignment.center,
+
                children: <Widget>[
                  SizedBox(
                    width: 25.0,
@@ -76,36 +87,12 @@ class _HwaTabState extends State<HwaTab> {
 //                 talkList()
                ],
            ),
+
+           ),
      ),
+       ],
      );
   }
-
-
-
-//  Widget talkList()
-//  {
-//    return ListView(
-//      padding: const EdgeInsets.all(8),
-//        children: <Widget>[
-//          Container(
-//            height: 50,
-//            color: Colors.amber[600],
-//            child: const Center(child: Text('Entry A')),
-//          ),
-//          Container(
-//            height: 50,
-//            color: Colors.amber[500],
-//            child: const Center(child: Text('Entry B')),
-//          ),
-//          Container(
-//            height: 50,
-//            color: Colors.amber[100],
-//            child: const Center(child: Text('Entry C')),
-//          ),
-//        ],
-//    );
-//  }
-
   _getCurrentLocation() {
     geolocator
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
