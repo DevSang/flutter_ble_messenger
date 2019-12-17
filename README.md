@@ -16,7 +16,6 @@ flutter pub get
 ## Use Library 
 * shared_preferences: https://pub.dev/packages/shared_preferences 간단한 값 저장
 * http: https://pub.dev/packages/http http 통신
-* flutter_native_splash: https://pub.dev/packages/flutter_native_splash 스플래시 플러그인
 * json_annotation: https://pub.dev/packages/json_annotation json_serializable에서 JSON 직렬화 및 역직렬화를위한 코드를 작성하는데 사용
 * cached_network_image: https://pub.dev/packages/cached_network_image url 이미를 보여주고 캐시에 저장 
 * distinct_value_connectable_observable: https://pub.dev/packages/distinct_value_connectable_observable
