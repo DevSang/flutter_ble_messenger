@@ -1,3 +1,4 @@
+import 'package:Hwa/pages/chatroom_page_bak.dart';
 import 'package:Hwa/pages/profile_page.dart';
 import 'package:Hwa/pages/signup_name.dart';
 import 'package:Hwa/pages/signup_page.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:Hwa/app.dart';
 import 'package:Hwa/pages/signin_page.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
+import 'package:Hwa/pages/chatroom_page.dart';
 
 Future main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -30,6 +32,7 @@ class MyApp extends StatelessWidget {
         '/main': (context) => BottomNavigation(), // main
         '/profile': (context) => ProfilePage(), // profile
         '/trend': (context) => TrendPage(), // trend
+        '/chatroom': (context) => ChatroomPage(),
     }
     );
   }

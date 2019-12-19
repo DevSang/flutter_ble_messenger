@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
+import 'package:Hwa/pages/chatroom_page.dart';
 
 //바텀 네비게이션 바
 
@@ -18,7 +19,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
     list
       ..add(HwaTab())
       ..add(FriendTab())
-      ..add(ChatTab());
+      ..add(ChatTab())
+      ..add(ChatScreen());
     super.initState();
 }
   @override
@@ -46,6 +48,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 icon: Image.asset('assets/images/icon/tabIconChat.png'),
                 title: Text ('Chat', style: TextStyle (color: Colors. black45))
             ),
+            BottomNavigationBarItem(
+                icon: Image.asset('assets/images/icon/tabIconChat.png'),
+                title: Text ('Chatroom', style: TextStyle (color: Colors. black45))
+            )
           ]
       ),
     );
