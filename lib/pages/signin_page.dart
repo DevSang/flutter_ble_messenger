@@ -137,9 +137,9 @@ class _SignInPageState extends State<SignInPage>{
           RaisedButton(
             child: Text("가입하기"),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignUpPage()),
+              onPressed: (){ Navigator.pushNamed(context, '/register');
+              },
           )
-          ),
         ],
       ),
     );

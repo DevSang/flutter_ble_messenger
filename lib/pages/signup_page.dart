@@ -5,8 +5,6 @@ import 'package:Hwa/pages/signup_name.dart';
 //회원가입 page
 class SignUpPage extends StatefulWidget {
 
-  static const routeName = '/register';
-
   @override
   _SignUpPageState createState() => _SignUpPageState();
   }
@@ -16,6 +14,12 @@ class _SignUpPageState extends State<SignUpPage>{
   Widget build(BuildContext context){
     return Scaffold(
       body: Container(
+               decoration: BoxDecoration(
+         image: DecorationImage(
+           image: AssetImage("assets/images/background/bgMap.png"),
+           fit: BoxFit.cover,
+         ),
+       ),
         child: ListView(
             children: <Widget>[
               headerSection(),
@@ -61,7 +65,9 @@ Container regButton(){
     padding: EdgeInsets.symmetric(horizontal: 15.0),
     margin: EdgeInsets.only(top: 15.0),
     child: RaisedButton(
-      onPressed: (){},
+      onPressed: (){
+
+      },
       color: Colors.blue,
       child: Text("인증번호 받기", style: TextStyle(color: Colors.white)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
@@ -111,6 +117,7 @@ Container headerSection() {
             fontSize: 40.0,
             fontWeight: FontWeight.bold)),
   );
-
 }
+
+
 

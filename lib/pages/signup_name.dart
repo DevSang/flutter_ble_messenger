@@ -5,7 +5,6 @@ final TextEditingController regNameController = new TextEditingController();
 
 class SignUpNamePage extends StatefulWidget{
 
-  static const routeName = '/register2';
 
   @override
   _SignUpNamePageState createState() => _SignUpNamePageState();
@@ -18,7 +17,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         child: ListView(
           children: <Widget>[
             setRegName(),
-          startMain()
+          startMain(context)
           ]
         ),
       ),
@@ -40,14 +39,16 @@ Container setRegName(){
   );
 }
 
-Container startMain(){
+Container startMain(BuildContext context){
   return Container(
     padding: EdgeInsets.only(left: 50, right: 50),
     child: Column(
       children: <Widget>[
         RaisedButton(
           child: Text("시작하기"),
-          onPressed: () {}
+          onPressed: () {
+            Navigator.pushNamed(context, '/main');
+          }
         ),
       ],
     ),

@@ -18,26 +18,37 @@ class _HwaTabState extends State<HwaTab> {
   @override
   Widget build(BuildContext context) {
      return Scaffold(
-//       decoration: BoxDecoration(
-//         image: DecorationImage(
-//           image: AssetImage("assets/images/background/bgMap.png"),
-//           fit: BoxFit.cover,
-//         ),
-//       ),
+       body: Container(
+                decoration: BoxDecoration(
+         image: DecorationImage(
+           image: AssetImage("assets/images/background/bgMap.png"),
+           fit: BoxFit.cover,
+         ),
+       ),
+         child: ListView(
+           children: <Widget>[
+             getLocation()
+           ],
+         ),
+       ),
+
+
+
          appBar: AppBar(
            backgroundColor: Colors.white,
          title: Text("단화방", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
          ),
 
 
-//         leading: SizedBox (
-//           width: 25.0,
-//           height: 25.0,
-//           child: FloatingActionButton (
-//           backgroundColor: Colors.black54,
-//           onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage())),
-//         ),
-//         ),
+         leading: SizedBox (
+           width: 25.0,
+           height: 25.0,
+           child: FloatingActionButton (
+             heroTag: "profile",
+             backgroundColor: Colors.black54,
+           onPressed: () => Navigator.pushNamed(context, '/profile'),
+         ),
+         ),
 
 
          actions: <Widget>[
@@ -54,38 +65,42 @@ class _HwaTabState extends State<HwaTab> {
            )
          ],
        ),
-
-           body: Center (child: Row(
-               mainAxisAlignment: MainAxisAlignment.center,
-
-               children: <Widget>[
-                 SizedBox(
-                   width: 25.0,
-                   height: 25.0,
-                   child: FloatingActionButton(
-                        child : Image.asset('assets/images/icon/iconPin.png'),
-                   onPressed: () {
-                          if (_currentPosition != null) {
-                            print(null);
-                          }
-                     _getCurrentLocation();
-                   }
-                   ),
-                 ),
-//                 if (_currentPosition != null)
-                 InkWell(
-                   child: Text('현재 위치', style: TextStyle(fontSize: 13, color: Colors.black54),  ),
-                 ),
-
-
-                 InkWell(
-                   child: Text("$_currentAddress", style: TextStyle(fontSize: 15, color: Colors.black),
-                   ),
-                 ),
-               ],
-           ),
-           ),
      );
+  }
+
+
+  Container getLocation() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SizedBox(
+            width: 25.0,
+            height: 25.0,
+            child: FloatingActionButton(
+                child : Image.asset('assets/images/icon/iconPin.png'),
+                onPressed: () {
+                  if (_currentPosition != null) {
+                    print(_currentPosition);
+                  }
+                  _getCurrentLocation();
+                }
+            ),
+          ),
+          InkWell(
+            child: Text('현재 위치', style: TextStyle(fontSize: 13, color: Colors.black54),  ),
+          ),
+
+
+          InkWell(
+            child: Text("$_currentAddress", style: TextStyle(fontSize: 15, color: Colors.black),
+            ),
+          ),
+
+        ],
+      ),
+
+    );
   }
   _getCurrentLocation() {
     geolocator
