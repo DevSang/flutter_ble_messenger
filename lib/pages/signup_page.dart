@@ -14,12 +14,6 @@ class _SignUpPageState extends State<SignUpPage>{
   Widget build(BuildContext context){
     return Scaffold(
       body: Container(
-               decoration: BoxDecoration(
-         image: DecorationImage(
-           image: AssetImage("assets/images/background/bgMap.png"),
-           fit: BoxFit.cover,
-         ),
-       ),
         child: ListView(
             children: <Widget>[
               headerSection(),
