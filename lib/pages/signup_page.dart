@@ -34,6 +34,13 @@ final TextEditingController phoneRegAuthController = new TextEditingController()
 Container regPhoneText() {
   return Container(
       child:  TextFormField(
+        maxLength: 11,
+        onChanged: (regPhoneNum) {
+          print(regPhoneNum);
+        },
+        onFieldSubmitted: (regPhoneNum) {
+          print('회원가입 전화번호  :$regPhoneNum');
+        },
   keyboardType: TextInputType.number,
   inputFormatters: <TextInputFormatter>[
   WhitelistingTextInputFormatter.digitsOnly
@@ -63,6 +70,7 @@ Container regButton(){
 
       },
       color: Colors.blue,
+
       child: Text("인증번호 받기", style: TextStyle(color: Colors.white)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
     ),
@@ -72,6 +80,13 @@ Container regButton(){
 Container regAuthText() {
   return Container(
     child:  TextFormField(
+      maxLength: 6,
+      onChanged: (regAuthCode) {
+        print(regAuthCode);
+      },
+      onFieldSubmitted: (regAuthCode) {
+        print('회원가입 인증코드 입력 :$regAuthCode');
+      },
       keyboardType: TextInputType.number,
       inputFormatters: <TextInputFormatter>[
         WhitelistingTextInputFormatter.digitsOnly
