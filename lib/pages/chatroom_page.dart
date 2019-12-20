@@ -18,7 +18,7 @@ import 'package:Hwa/pages/parts/chat_side_menu.dart';
 
 class ChatroomPage extends StatefulWidget {
     final String peerId;
-    final String peerAvatar;
+    final String peerAvatar; 
 
     ChatroomPage({Key key, @required this.peerId, @required this.peerAvatar}) : super(key: key);
 
