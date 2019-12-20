@@ -21,9 +21,6 @@ class _SignInPageState extends State<SignInPage>{
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent));
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          color: Colors.grey
-        ),
         child: _isLoading ? Center(child: CircularProgressIndicator()) : ListView(
           children: <Widget>[
             headerSection(),
@@ -33,6 +30,15 @@ class _SignInPageState extends State<SignInPage>{
           ],
         ),
       ),
+    appBar: AppBar(
+      centerTitle: true,
+      backgroundColor: Colors.white,
+    title: Text("로그인",
+      style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
+
+
+    ),
+    ),
     );
   }
 
@@ -77,8 +83,7 @@ class _SignInPageState extends State<SignInPage>{
           signIn(phoneController.text, authCodeController.text);
         },
         elevation: 0.0,
-        color: Colors.purple,
-        child: Text("로그인", style: TextStyle(color: Colors.white70)),
+        child: Text("Sign In", style: TextStyle(color: Colors.white)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
       ),
     );
@@ -94,18 +99,22 @@ class _SignInPageState extends State<SignInPage>{
       child: Column(
         children: <Widget>[
           TextFormField(
+
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
               WhitelistingTextInputFormatter.digitsOnly
             ],
             controller: phoneController,
             cursorColor: Colors.white,
-            style: TextStyle(color: Colors.white70),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
-              hintText: "전화번호",
-
+              focusedBorder:OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black38, width: 2.0),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              hintText: "휴대폰 번호 (-없이 숫자만 입력)",
               border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-              hintStyle: TextStyle(color: Colors.white70),
+              hintStyle: TextStyle(color: Colors.black38),
             ),
           ),
           SizedBox(height: 30.0),
@@ -119,9 +128,13 @@ class _SignInPageState extends State<SignInPage>{
             obscureText: true,
             style: TextStyle(color: Colors.white70),
             decoration: InputDecoration(
+              focusedBorder:OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.black38, width: 2.0),
+                borderRadius: BorderRadius.circular(10.0),
+              ),
               hintText: "인증번호",
               border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-              hintStyle: TextStyle(color: Colors.white70),
+              hintStyle: TextStyle(color: Colors.black38),
             ),
           ),
         ],
@@ -134,10 +147,9 @@ class _SignInPageState extends State<SignInPage>{
       padding: EdgeInsets.only(left: 50, right: 50),
       child: Column(
         children: <Widget>[
-          RaisedButton(
-            child: Text("가입하기"),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-              onPressed: (){ Navigator.pushNamed(context, '/register');
+          InkWell(
+            child: Text("Sign Up", style: TextStyle(color: Colors.black, fontSize: 15)),
+              onTap: (){ Navigator.pushNamed(context, '/register');
               },
           )
         ],
