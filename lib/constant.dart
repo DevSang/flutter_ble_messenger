@@ -1,6 +1,6 @@
 
 
-final String CHAT_SERVER_WS = "wss://mgs.hwaya.net/danhwa";
+final String CHAT_SERVER_WS = "wss://msg.hwaya.net/danhwa";
 final String CHAT_SERVER_HTTP = "https://msg.hwaya.net";
 
 // 단화방 생성
