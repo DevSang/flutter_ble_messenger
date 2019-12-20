@@ -7,7 +7,7 @@ import 'dart:convert' show utf8;
 
 
 
-//???? page
+//register page
 class SignUpPage extends StatefulWidget {
 
   @override
