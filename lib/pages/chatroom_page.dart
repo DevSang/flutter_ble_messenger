@@ -1,10 +1,11 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' as io;
 import 'dart:convert';
 
 //import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:Hwa/package/fullPhoto.dart';
+import 'package:Hwa/package/custom_expansion_title.dart' as custom;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -38,9 +39,9 @@ class ChatScreenState extends State<ChatScreen> {
     String groupChatId;
     SharedPreferences prefs;
 
-    File imageFile;
+//    File imageFile;
     bool isLoading;
-    bool isShowSticker;
+    bool isShowMenu;
     String imageUrl;
 
     // 채팅방 메세지 리스트
@@ -51,13 +52,15 @@ class ChatScreenState extends State<ChatScreen> {
     final FocusNode focusNode = new FocusNode();
 
     // 현재 채팅 Advertising condition
-    BoxDecoration AdCondition;
+    BoxDecoration adCondition;
     // 현재 채팅 Advertising condition
     bool openedNf;
     // ChatTextField Focused
     bool isFocused;
     // ChatTextField Line View
     double _inputHeight = 72;
+    // 현재 채팅 좋아요 TODO: 추후 맵핑
+    BoxDecoration likeCondition;
 
     // Stomp 관련
     JStomp stomp;
@@ -71,11 +74,11 @@ class ChatScreenState extends State<ChatScreen> {
     String userIdx = "100";
 
     @override
-    BoxDecoration stopAd(BuildContext context) {
+    BoxDecoration startAd(BuildContext context) {
         return BoxDecoration(
-            color: Color.fromRGBO(153, 153, 153, 1),
+            color: Color.fromRGBO(77, 96, 191, 1),
             image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconLock.png")
+                image:AssetImage("assets/images/icon/iconUnlock.png")
             ),
             shape: BoxShape.circle
         );
@@ -83,11 +86,11 @@ class ChatScreenState extends State<ChatScreen> {
     }
 
     @override
-    BoxDecoration startAd(BuildContext context) {
+    BoxDecoration unlikeChat(BuildContext context) {
         return BoxDecoration(
-            color: Color.fromRGBO(77, 96, 191, 1),
+            color: Color.fromRGBO(153, 153, 153, 1),
             image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconUnlock.png")
+                image:AssetImage("assets/images/icon/iconLock.png")
             ),
             shape: BoxShape.circle
         );
@@ -104,17 +107,42 @@ class ChatScreenState extends State<ChatScreen> {
         groupChatId = '';
 
         isLoading = false;
-        isShowSticker = false;
+        isShowMenu = false;
         imageUrl = '';
 
-        AdCondition = startAd(context);
+        adCondition = startAd(context);
 
         isFocused = false;
         openedNf = true;
+        likeCondition = unlikeChat(context);
         readLocal();
 
         /// Stomp 초기화
         _initStomp();
+    }
+
+    @override
+    BoxDecoration stopAd(BuildContext context) {
+        return BoxDecoration(
+            color: Color.fromRGBO(153, 153, 153, 1),
+            image: DecorationImage(
+                image:AssetImage("assets/images/icon/iconLock.png")
+            ),
+            shape: BoxShape.circle
+        );
+
+    }
+
+    @override
+    BoxDecoration likeChat(BuildContext context) {
+        return BoxDecoration(
+            color: Color.fromRGBO(77, 96, 191, 1),
+            image: DecorationImage(
+                image:AssetImage("assets/images/icon/iconUnlock.png")
+            ),
+            shape: BoxShape.circle
+        );
+
     }
 
     @override
@@ -127,7 +155,7 @@ class ChatScreenState extends State<ChatScreen> {
         if (focusNode.hasFocus) {
             // Hide sticker when keyboard appear
             setState(() {
-                isShowSticker = false;
+                isShowMenu = false;
             });
         }
     }
@@ -145,27 +173,27 @@ class ChatScreenState extends State<ChatScreen> {
     }
 
     Future getImage() async {
-        imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-
-        if (imageFile != null) {
-            setState(() {
-                isLoading = true;
-            });
-            uploadFile();
-        }
+//        imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+//
+//        if (imageFile != null) {
+//            setState(() {
+//                isLoading = true;
+//            });
+//            uploadFile();
+//        }
     }
 
-    void getSticker() {
-        // Hide keyboard when sticker appear
+    void getMenu() {
+        // Hide keyboard when menu appear
         focusNode.unfocus();
         setState(() {
-            isShowSticker = !isShowSticker;
+            isShowMenu = !isShowMenu;
         });
     }
 
     Future uploadFile() async {
         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-        print("upload work! filename ::"+ fileName);
+        // TODO: upload Image
     }
 
     void onSendMessage(String content, int type) {
@@ -416,9 +444,9 @@ class ChatScreenState extends State<ChatScreen> {
     }
 
     Future<bool> onBackPress() {
-        if (isShowSticker) {
+        if (isShowMenu) {
             setState(() {
-                isShowSticker = false;
+                isShowMenu = false;
             });
         } else {
 //            Firestore.instance.collection('users').document(id).updateData({'chattingWith': null});
@@ -457,11 +485,11 @@ class ChatScreenState extends State<ChatScreen> {
                             margin: EdgeInsets.only(right: ScreenUtil().setWidth(10)),
                             width: ScreenUtil().setWidth(54),
                             height: ScreenUtil().setHeight(54),
-                            decoration: AdCondition
+                            decoration: adCondition
                         ),
                         onTap:(){
                             setState(() {
-                                AdCondition == startAd(context) ? AdCondition = stopAd(context) : AdCondition = startAd(context);
+                                adCondition == startAd(context) ? adCondition = stopAd(context) : adCondition = startAd(context);
                             });
                         }
                     ),
@@ -476,38 +504,44 @@ class ChatScreenState extends State<ChatScreen> {
                 elevation: 6.0,
                 backgroundColor: Colors.white,
             ),
-            endDrawer: Drawer(),
-            body: WillPopScope(
-                child: Stack(
-                    children: <Widget>[
-                        Container(
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(210, 217, 250, 1)
-                            ),
-                            child: Column(
-                                children: <Widget>[
-
-                                    // List of messages
-                                    buildListMessage(),
-
-                                    // Input content
-                                    buildInput()
-                                ],
-                            ),
-                        ),
-
-                        // Notification
-                        openedNf ? buildNoticeOpen() : buildNotice(),
-
-                        /// StompTest
-                        stmopTest(),
-
-                        // Loading
-                        buildLoading()
-                    ],
-                ),
-                onWillPop: onBackPress,
+            endDrawer: SafeArea(
+                child: buildSideMenu()
             ),
+            body: GestureDetector(
+                child: WillPopScope(
+                    child: Stack(
+                        children: <Widget>[
+                            Container(
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(210, 217, 250, 1)
+                                ),
+                                child: Column(
+                                    children: <Widget>[
+                                        // List of messages
+                                        buildListMessage(),
+
+                                        // Input content
+                                        buildInput(),
+
+                                        // Menu
+                                            (isShowMenu ? buildMenu() : Container()),
+                                    ],
+                                ),
+                            ),
+
+                            // Notification
+                            openedNf ? buildNoticeOpen() : buildNotice(),
+
+                            // Loading
+                            buildLoading()
+                        ],
+                    ),
+                    onWillPop: onBackPress,
+                ),
+                onTap: () {
+                    FocusScope.of(context).requestFocus(focusNode);
+                },
+            )
         );
     }
 
@@ -606,8 +640,7 @@ class ChatScreenState extends State<ChatScreen> {
                                 color: Colors.white,
                                 image: DecorationImage(
                                     image:AssetImage("assets/images/icon/iconBell.png")
-                                ),
-                                shape: BoxShape.circle
+                                )
                             )
                         ),
                         Container(
@@ -625,24 +658,22 @@ class ChatScreenState extends State<ChatScreen> {
                             )
                         ),
                         Container(
-                            child: GestureDetector(
-                                child: Container(
-                                    width: ScreenUtil().setWidth(40),
-                                    height: ScreenUtil().setHeight(40),
-                                    decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        image: DecorationImage(
-                                            image:AssetImage("assets/images/icon/iconFold.png")
-                                        ),
-                                        shape: BoxShape.circle
-                                    )
-                                ),
-                                onTap:(){
+                            width: ScreenUtil().setWidth(40),
+                            child: FlatButton(
+                                onPressed:(){
                                     setState(() {
                                         openedNf = false;
                                     });
                                 }
-                            )
+                            ),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                image: DecorationImage(
+                                    image:AssetImage("assets/images/icon/iconFold.png")
+
+                            ),
+                            shape: BoxShape.circle
+                            ),
                         )
                     ],
                 )
@@ -772,6 +803,28 @@ class ChatScreenState extends State<ChatScreen> {
         );
     }
 
+    Widget buildMenu() {
+        return Container(
+            width: ScreenUtil().setWidth(750),
+            height: ScreenUtil().setHeight(360),
+            child: Column(
+                children: <Widget>[
+                    FlatButton(
+                        onPressed: () => {},
+                        child: new Image.asset(
+                            '',
+                            width: ScreenUtil().setWidth(80),
+                            height: ScreenUtil().setHeight(140)
+                        )
+                    )
+                ],
+            ),
+            decoration: BoxDecoration(
+                color: Colors.white,
+            ),
+        );
+    }
+
     void _onTapTextField() {
         print("clicked field");
         isFocused
@@ -826,7 +879,7 @@ class ChatScreenState extends State<ChatScreen> {
                                 decoration: setIcon('assets/images/icon/iconAttachMore.png')
                             ),
                             onTap:(){
-
+                                getMenu();
                             }
                         ),
                         color: Colors.white,
@@ -882,6 +935,148 @@ class ChatScreenState extends State<ChatScreen> {
         );
     }
 
+    Widget buildSideMenu() {
+        return new SizedBox(
+            width: ScreenUtil().setWidth(618),
+            child: Drawer(
+                child: ListView(
+                    padding: EdgeInsets.zero,
+                    children: <Widget>[
+                        Container(
+                            height: ScreenUtil().setHeight(206),
+                            padding: EdgeInsets.all(ScreenUtil().setWidth(30)),
+                            child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                    Container(
+                                        width: ScreenUtil().setWidth(468),
+                                        height: ScreenUtil().setHeight(142),
+                                        child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                                Text(
+                                                    "단화방 정보",
+                                                    style: TextStyle(
+                                                        fontSize: ScreenUtil().setSp(30)
+                                                    ),
+                                                ),
+                                                Container(
+                                                    margin: EdgeInsets.only(
+                                                        top: ScreenUtil().setHeight(6),
+                                                        bottom: ScreenUtil().setHeight(14)
+                                                    ),
+                                                    child: Row(
+                                                        children: <Widget>[
+                                                            Text(
+                                                                "뷰",
+                                                                style: TextStyle(
+                                                                    fontSize: ScreenUtil().setSp(24)
+                                                                ),
+                                                            ),
+                                                            Container(
+                                                                height: ScreenUtil().setHeight(24),
+                                                                padding: EdgeInsets.only(
+                                                                    left: ScreenUtil().setWidth(10),
+                                                                    right: ScreenUtil().setWidth(16),
+                                                                ),
+                                                                decoration: BoxDecoration(
+                                                                    border: Border(
+                                                                        right: BorderSide(width: ScreenUtil().setWidth(2), color: Colors.black12)
+                                                                    )
+                                                                ),
+                                                                child: Text(
+                                                                    "3,400",
+                                                                    style: TextStyle(
+                                                                        fontSize: ScreenUtil().setSp(22)
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                            Container(
+                                                                padding: EdgeInsets.only(
+                                                                    left: ScreenUtil().setWidth(16),
+                                                                    right: ScreenUtil().setWidth(10),
+                                                                ),
+                                                                child: Text(
+                                                                    "좋아요",
+                                                                    style: TextStyle(
+                                                                        fontSize: ScreenUtil().setSp(24)
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                            Text(
+                                                                "2,500",
+                                                                style: TextStyle(
+                                                                    fontSize: ScreenUtil().setSp(22)
+                                                                ),
+                                                            )
+                                                        ],
+                                                    ),
+                                                ),
+                                                Text(
+                                                    "스타벅스 강남R점 사람들 얘기나눠요",
+                                                    style: TextStyle(
+                                                        fontSize: ScreenUtil().setSp(24),
+                                                        color: Colors.grey
+                                                    ),
+                                                ),
+                                            ],
+                                        )
+                                    ),
+                                    GestureDetector(
+                                        child: Container(
+                                            width: ScreenUtil().setWidth(90),
+                                            height: ScreenUtil().setHeight(90),
+                                            decoration: likeCondition
+                                        ),
+                                        onTap:(){
+                                            setState(() {
+                                                likeCondition == likeChat(context) ? likeCondition = unlikeChat(context) : likeCondition = likeChat(context);
+                                            });
+                                        }
+                                    )
+                                ],
+                            )
+                        ),
+                        custom.ExpansionTile(
+                            headerBackgroundColor: Colors.grey[200],
+                            title: Container(
+                                height: ScreenUtil().setWidth(50),
+                                decoration: BoxDecoration(
+                                ),
+                                child: Row(
+                                    children: <Widget>[
+                                        Text(
+                                            "내 주변 사람",
+                                            style: TextStyle(
+                                                fontSize: ScreenUtil().setSp(24)
+                                            ),
+                                        ),
+                                        Container(
+                                            height: ScreenUtil().setHeight(24),
+                                            padding: EdgeInsets.only(
+                                                left: ScreenUtil().setWidth(10),
+                                                right: ScreenUtil().setWidth(16),
+                                            ),
+                                            child: Text(
+                                                "4",
+                                                style: TextStyle(
+                                                    fontSize: ScreenUtil().setSp(22)
+                                                ),
+                                            ),
+                                        )
+                                    ],
+                                ),
+                            ),
+                            children: <Widget>[
+
+                            ],
+                        ),
+                    ],
+                )
+            )
+        );
+    }
+
     //메세지 리스트에 추가
     Widget buildListMessage() {
         return Flexible(
@@ -929,6 +1124,10 @@ class ChatScreenState extends State<ChatScreen> {
 //        );
     }
 
+
+    ///
+    /// STOMP 관련 함수
+    ///
     void _initStateChanged(String str) {
         setState(() {
             _initState = str;
