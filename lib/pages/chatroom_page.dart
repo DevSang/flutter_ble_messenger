@@ -16,8 +16,6 @@ import 'package:jstomp/jstomp.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/parts/chat_side_menu.dart';
 
-import 'package:Hwa/service/websocket.dart' show connect;
-
 class ChatroomPage extends StatefulWidget {
     final String peerId;
     final String peerAvatar;
