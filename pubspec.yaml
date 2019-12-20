@@ -27,6 +27,7 @@ dependencies:
   intl: ^0.15.7
   jstomp: ^1.1.3
   web_socket_channel: ^1.0.13
+  configurable_expansion_tile: ^1.0.0
 
 
 #  flutter_kakao_login:
@@ -64,6 +65,7 @@ flutter:
     - assets/images/icon/iconBell.png
     - assets/images/icon/iconBounds.png
     - assets/images/icon/iconFold.png
+    - assets/images/icon/iconExpand.png
     - assets/images/icon/iconLikeCount.png
     - assets/images/icon/iconPin.png
     - assets/images/icon/iconVideoPlay.png
@@ -82,6 +84,8 @@ flutter:
     - assets/images/icon/tabIconHwa.png
     - assets/images/icon/tabIconHwaActive.png
     - assets/images/background/bgMap.png
+    - assets/images/profile_img.png
+    - assets/images/businesscard.png
 
   uses-material-design: true
 

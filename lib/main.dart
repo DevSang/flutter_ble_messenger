@@ -1,4 +1,3 @@
-import 'package:Hwa/pages/chatroom_page_bak.dart';
 import 'package:Hwa/pages/profile_page.dart';
 import 'package:Hwa/pages/signup_name.dart';
 import 'package:Hwa/pages/signup_page.dart';
@@ -19,6 +18,10 @@ Future main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       title: 'HWA',
       theme: ThemeData.light(),
@@ -33,7 +36,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfilePage(), // profile
         '/trend': (context) => TrendPage(), // trend
         '/chatroom': (context) => ChatroomPage(),
-    }
+        }
     );
   }
 }

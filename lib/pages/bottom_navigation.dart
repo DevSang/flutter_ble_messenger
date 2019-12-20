@@ -20,7 +20,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
       ..add(HwaTab())
       ..add(FriendTab())
       ..add(ChatTab())
-      ..add(ChatScreen());
+      ..add(ChatroomPage());
     super.initState();
 }
   @override

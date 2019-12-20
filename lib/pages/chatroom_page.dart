@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'dart:io' as io;
+import 'dart:io';
 import 'dart:convert';
 
 //import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:Hwa/package/fullPhoto.dart';
-import 'package:Hwa/package/custom_expansion_title.dart' as custom;
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -15,20 +14,21 @@ import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:jstomp/jstomp.dart';
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/pages/parts/chat_side_menu.dart';
 
 import 'package:Hwa/service/websocket.dart' show connect;
 
-class ChatScreen extends StatefulWidget {
+class ChatroomPage extends StatefulWidget {
     final String peerId;
     final String peerAvatar;
 
-    ChatScreen({Key key, @required this.peerId, @required this.peerAvatar}) : super(key: key);
+    ChatroomPage({Key key, @required this.peerId, @required this.peerAvatar}) : super(key: key);
 
     @override
     State createState() => new ChatScreenState(peerId: peerId, peerAvatar: peerAvatar);
 }
 
-class ChatScreenState extends State<ChatScreen> {
+class ChatScreenState extends State<ChatroomPage> {
     ChatScreenState({Key key, @required this.peerId, @required this.peerAvatar});
 
     String peerId;
@@ -39,7 +39,7 @@ class ChatScreenState extends State<ChatScreen> {
     String groupChatId;
     SharedPreferences prefs;
 
-//    File imageFile;
+    File imageFile;
     bool isLoading;
     bool isShowMenu;
     String imageUrl;
@@ -60,7 +60,7 @@ class ChatScreenState extends State<ChatScreen> {
     // ChatTextField Line View
     double _inputHeight = 72;
     // 현재 채팅 좋아요 TODO: 추후 맵핑
-    BoxDecoration likeCondition;
+    bool isLike;
 
     // Stomp 관련
     JStomp stomp;
@@ -86,18 +86,6 @@ class ChatScreenState extends State<ChatScreen> {
     }
 
     @override
-    BoxDecoration unlikeChat(BuildContext context) {
-        return BoxDecoration(
-            color: Color.fromRGBO(153, 153, 153, 1),
-            image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconLock.png")
-            ),
-            shape: BoxShape.circle
-        );
-
-    }
-
-    @override
     void initState() {
         super.initState();
         stomp = JStomp.instance;
@@ -114,7 +102,7 @@ class ChatScreenState extends State<ChatScreen> {
 
         isFocused = false;
         openedNf = true;
-        likeCondition = unlikeChat(context);
+        isLike = false;
         readLocal();
 
         /// Stomp 초기화
@@ -127,18 +115,6 @@ class ChatScreenState extends State<ChatScreen> {
             color: Color.fromRGBO(153, 153, 153, 1),
             image: DecorationImage(
                 image:AssetImage("assets/images/icon/iconLock.png")
-            ),
-            shape: BoxShape.circle
-        );
-
-    }
-
-    @override
-    BoxDecoration likeChat(BuildContext context) {
-        return BoxDecoration(
-            color: Color.fromRGBO(77, 96, 191, 1),
-            image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconUnlock.png")
             ),
             shape: BoxShape.circle
         );
@@ -173,14 +149,14 @@ class ChatScreenState extends State<ChatScreen> {
     }
 
     Future getImage() async {
-//        imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-//
-//        if (imageFile != null) {
-//            setState(() {
-//                isLoading = true;
-//            });
-//            uploadFile();
-//        }
+        imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+
+        if (imageFile != null) {
+            setState(() {
+                isLoading = true;
+            });
+            uploadFile();
+        }
     }
 
     void getMenu() {
@@ -505,7 +481,7 @@ class ChatScreenState extends State<ChatScreen> {
                 backgroundColor: Colors.white,
             ),
             endDrawer: SafeArea(
-                child: buildSideMenu()
+                child: new ChatSideMenu(isLike: isLike)
             ),
             body: GestureDetector(
                 child: WillPopScope(
@@ -932,148 +908,6 @@ class ChatScreenState extends State<ChatScreen> {
                 image:AssetImage(iconPath)
             ),
             shape: BoxShape.circle
-        );
-    }
-
-    Widget buildSideMenu() {
-        return new SizedBox(
-            width: ScreenUtil().setWidth(618),
-            child: Drawer(
-                child: ListView(
-                    padding: EdgeInsets.zero,
-                    children: <Widget>[
-                        Container(
-                            height: ScreenUtil().setHeight(206),
-                            padding: EdgeInsets.all(ScreenUtil().setWidth(30)),
-                            child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                    Container(
-                                        width: ScreenUtil().setWidth(468),
-                                        height: ScreenUtil().setHeight(142),
-                                        child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                                Text(
-                                                    "단화방 정보",
-                                                    style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(30)
-                                                    ),
-                                                ),
-                                                Container(
-                                                    margin: EdgeInsets.only(
-                                                        top: ScreenUtil().setHeight(6),
-                                                        bottom: ScreenUtil().setHeight(14)
-                                                    ),
-                                                    child: Row(
-                                                        children: <Widget>[
-                                                            Text(
-                                                                "뷰",
-                                                                style: TextStyle(
-                                                                    fontSize: ScreenUtil().setSp(24)
-                                                                ),
-                                                            ),
-                                                            Container(
-                                                                height: ScreenUtil().setHeight(24),
-                                                                padding: EdgeInsets.only(
-                                                                    left: ScreenUtil().setWidth(10),
-                                                                    right: ScreenUtil().setWidth(16),
-                                                                ),
-                                                                decoration: BoxDecoration(
-                                                                    border: Border(
-                                                                        right: BorderSide(width: ScreenUtil().setWidth(2), color: Colors.black12)
-                                                                    )
-                                                                ),
-                                                                child: Text(
-                                                                    "3,400",
-                                                                    style: TextStyle(
-                                                                        fontSize: ScreenUtil().setSp(22)
-                                                                    ),
-                                                                ),
-                                                            ),
-                                                            Container(
-                                                                padding: EdgeInsets.only(
-                                                                    left: ScreenUtil().setWidth(16),
-                                                                    right: ScreenUtil().setWidth(10),
-                                                                ),
-                                                                child: Text(
-                                                                    "좋아요",
-                                                                    style: TextStyle(
-                                                                        fontSize: ScreenUtil().setSp(24)
-                                                                    ),
-                                                                ),
-                                                            ),
-                                                            Text(
-                                                                "2,500",
-                                                                style: TextStyle(
-                                                                    fontSize: ScreenUtil().setSp(22)
-                                                                ),
-                                                            )
-                                                        ],
-                                                    ),
-                                                ),
-                                                Text(
-                                                    "스타벅스 강남R점 사람들 얘기나눠요",
-                                                    style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(24),
-                                                        color: Colors.grey
-                                                    ),
-                                                ),
-                                            ],
-                                        )
-                                    ),
-                                    GestureDetector(
-                                        child: Container(
-                                            width: ScreenUtil().setWidth(90),
-                                            height: ScreenUtil().setHeight(90),
-                                            decoration: likeCondition
-                                        ),
-                                        onTap:(){
-                                            setState(() {
-                                                likeCondition == likeChat(context) ? likeCondition = unlikeChat(context) : likeCondition = likeChat(context);
-                                            });
-                                        }
-                                    )
-                                ],
-                            )
-                        ),
-                        custom.ExpansionTile(
-                            headerBackgroundColor: Colors.grey[200],
-                            title: Container(
-                                height: ScreenUtil().setWidth(50),
-                                decoration: BoxDecoration(
-                                ),
-                                child: Row(
-                                    children: <Widget>[
-                                        Text(
-                                            "내 주변 사람",
-                                            style: TextStyle(
-                                                fontSize: ScreenUtil().setSp(24)
-                                            ),
-                                        ),
-                                        Container(
-                                            height: ScreenUtil().setHeight(24),
-                                            padding: EdgeInsets.only(
-                                                left: ScreenUtil().setWidth(10),
-                                                right: ScreenUtil().setWidth(16),
-                                            ),
-                                            child: Text(
-                                                "4",
-                                                style: TextStyle(
-                                                    fontSize: ScreenUtil().setSp(22)
-                                                ),
-                                            ),
-                                        )
-                                    ],
-                                ),
-                            ),
-                            children: <Widget>[
-
-                            ],
-                        ),
-                    ],
-                )
-            )
         );
     }
 
