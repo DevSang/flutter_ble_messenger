@@ -12,13 +12,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_message.dart';
-import 'package:jstomp/jstomp.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/parts/chat_side_menu.dart';
 
 class ChatroomPage extends StatefulWidget {
     final String peerId;
-    final String peerAvatar; 
+    final String peerAvatar;
 
     ChatroomPage({Key key, @required this.peerId, @required this.peerAvatar}) : super(key: key);
 
@@ -61,7 +60,6 @@ class ChatScreenState extends State<ChatroomPage> {
     bool isLike;
 
     // Stomp 관련
-    JStomp stomp;
     String _initState = "";
     String _connectionState = "";
     String _subscriberState = "";
@@ -86,7 +84,6 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     void initState() {
         super.initState();
-        stomp = JStomp.instance;
 
         focusNode.addListener(onFocusChange);
 
@@ -104,7 +101,6 @@ class ChatScreenState extends State<ChatroomPage> {
         readLocal();
 
         /// Stomp 초기화
-        _initStomp();
     }
 
     @override
@@ -122,7 +118,6 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     void dispose() {
         super.dispose();
-        _destroyStomp();
     }
 
     void onFocusChange() {
@@ -175,8 +170,6 @@ class ChatScreenState extends State<ChatroomPage> {
         if (content.trim() != '') {
             textEditingController.clear();
 
-            /// 메세지 전송
-            _sendMsg();
 //            var documentReference = Firestore.instance
 //                .collection('messages')
 //                .document(groupChatId)
@@ -954,112 +947,5 @@ class ChatScreenState extends State<ChatroomPage> {
 //                },
 //            ),
 //        );
-    }
-
-
-    ///
-    /// STOMP 관련 함수
-    ///
-    void _initStateChanged(String str) {
-        setState(() {
-            _initState = str;
-        });
-    }
-
-    void _connectionStateChanged(String state) {
-        setState(() {
-            _connectionState = state;
-        });
-    }
-
-    void _messageStateChanged(String msg) {
-        setState(() {
-            _content = msg;
-        });
-    }
-
-    void _sendStateChanged(String send) {
-        setState(() {
-            _sendContent = send;
-        });
-    }
-
-    /// Stomp 접속, 새 메시지 수신 알람 구독
-    Future _initStomp() async {
-        if (stomp == null) {
-            stomp = JStomp.instance;
-        }
-
-        // TODO : 추후 구독 roomIdx 받아오기
-        String roomIdx = "1";
-
-        // Stomp 초기화, 성공시 true 반환
-        bool initState =await stomp.init(url: CHAT_SERVER_WS);
-        _initStateChanged(initState ? "success" : "fail");
-
-        print("initState??? $initState");
-
-        if (initState) {
-           await stomp.connection((opened) async {
-                print("Opened :: $opened");
-                _connectionStateChanged("connected");
-
-                /// 채널 구독
-                final String chatSubUri = CHAT_SERVER_WS + CHAT_SUB_URI + "/1";
-                bool subState = await stomp.subscribP2P([chatSubUri]);
-                if (subState) {
-                    setState(() {
-                        _subscriberState = "opened：" + chatSubUri;
-                    });
-                }
-                print("_initStateChanged :: $_initStateChanged // _connectionStateChanged :: $_connectionStateChanged");
-            }, onError: (error) {
-                print("Error :: $error");
-                _connectionStateChanged("error：$error");
-                print("_initStateChanged :: $_initStateChanged // _connectionStateChanged :: $_connectionStateChanged");
-            }, onClosed: (colsed) {
-                print("Colsed :: $colsed");
-                _connectionStateChanged("closed");
-                print("_initStateChanged :: $_initStateChanged // _connectionStateChanged :: $_connectionStateChanged");
-            });
-        }
-
-        /// 메세지 콜백
-        await stomp.onMessageCallback((message) {
-            print("received Message：" + message.toString());
-            _messageStateChanged("received Message：" + message.toString());
-        }, onBroadCast: (cast) {
-            print("received Message：" + cast.toString());
-            _messageStateChanged("received Message：" + cast.toString());
-        });
-
-        /// 송신 콜백
-        await stomp.onSendCallback((status, sendMsg) {
-            print("send Message：$status :msg=" + sendMsg.toString());
-            _sendStateChanged("send Message：$status :msg=" + sendMsg.toString());
-        });
-    }
-
-    //TODO message mapping
-    /// 메세지 발신
-    Future<String> _sendMsg() async {
-        Map<String, dynamic> msg = {
-            "message": "hi",
-            "type": "TALK",
-            "roomIdx": 1,
-            "senderIdx": 1
-        };
-
-        return await stomp.sendMessage(json.encode(msg));
-    }
-
-    /// 해제
-    Future<bool> _destroyStomp() async {
-        if (stomp == null) {
-            return true;
-        }
-        bool destroyState = await stomp.destroy();
-        stomp = null;
-        return destroyState;
     }
 }
