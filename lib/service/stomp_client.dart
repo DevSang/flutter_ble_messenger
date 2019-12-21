@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
  * @author : hk
  * @date : 2019-12-20
  * @description : WebSocket STOMP 연결 지원 - stomp_client 플러그인 수정
- *                TODO 테스트 진행하며 코드 수정
+ *                TODO 테스트 진행하며 코드 수정, Future 적용할 부분 있는지 검토
  */
 class StompClient {
   IOWebSocketChannel channel;
@@ -26,16 +26,12 @@ class StompClient {
    * @date : 2019-12-20
    * @description : Constructor
    */
-  StompClient({@required urlBackend}) {
+  StompClient({@required urlBackend, onError, onDone}) {
     channel = IOWebSocketChannel.connect(urlBackend, pingInterval: Duration(seconds: 30));
 
     channel.stream.listen((message) {
       _messageReceieved(message);
-    }, onError: (error, StackTrace stackTrace) {
-      print("WebSocketChannel listen onError.");
-    }, onDone: () {
-      print("WebSocketChannel listen onDone.");
-    });
+    }, onError: onError?? onError, onDone: onDone?? onDone);
     general = StreamController();
     _topics = HashMap();
     _streams = HashMap();
@@ -47,7 +43,7 @@ class StompClient {
     * @date : 2019-12-20
     * @description : WebSocket 접속 및 jwt 인증
     */
-  void connectWithToken({@required String token}) {
+  connectWithToken({@required String token}) {
     channel.sink.add("CONNECT" + NEWLINE +
         "Authorization:Bearer " + token + NEWLINE +
         "accept-version:1.1,1.0" + NEWLINE +
