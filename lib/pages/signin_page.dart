@@ -99,7 +99,6 @@ class _SignInPageState extends State<SignInPage>{
       child: Column(
         children: <Widget>[
           TextFormField(
-
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
               WhitelistingTextInputFormatter.digitsOnly
@@ -107,15 +106,17 @@ class _SignInPageState extends State<SignInPage>{
             controller: phoneController,
             cursorColor: Colors.white,
             style: TextStyle(color: Colors.black),
-            decoration: InputDecoration(
-              focusedBorder:OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black38, width: 2.0),
-                borderRadius: BorderRadius.circular(10.0),
+          decoration: InputDecoration(
+            hintText: "휴대폰 번호 (-없이 숫자만 입력)",
+            hintStyle: TextStyle(color: Colors.black38),
+            border:  OutlineInputBorder(
+              borderRadius:  BorderRadius.circular(10.0),
+              borderSide:  BorderSide(
               ),
-              hintText: "휴대폰 번호 (-없이 숫자만 입력)",
-              border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-              hintStyle: TextStyle(color: Colors.black38),
             ),
+            fillColor: Colors.grey[200],
+            filled: true,
+          )
           ),
           SizedBox(height: 30.0),
           TextFormField(
@@ -127,15 +128,18 @@ class _SignInPageState extends State<SignInPage>{
             cursorColor: Colors.white,
             obscureText: true,
             style: TextStyle(color: Colors.white70),
-            decoration: InputDecoration(
-              focusedBorder:OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black38, width: 2.0),
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              hintText: "인증번호",
-              border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-              hintStyle: TextStyle(color: Colors.black38),
-            ),
+
+              decoration: InputDecoration(
+                hintText: "인증번호",
+                hintStyle: TextStyle(color: Colors.black38),
+                border:  OutlineInputBorder(
+                  borderRadius:  BorderRadius.circular(10.0),
+                  borderSide:  BorderSide(
+                  ),
+                ),
+                fillColor: Colors.grey[200],
+                filled: true,
+              )
           ),
         ],
       ),

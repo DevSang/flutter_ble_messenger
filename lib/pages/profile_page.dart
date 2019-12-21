@@ -11,7 +11,7 @@ class _ProfilePageState extends State <ProfilePage>{
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
-          backgroundColor: Colors.black12,
+        backgroundColor: Colors.black12,
           title: Text("Settings",
             style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'NotoSans'),
           ),
