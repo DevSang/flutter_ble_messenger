@@ -14,6 +14,7 @@ import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/parts/chat_side_menu.dart';
+import 'package:Hwa/pages/notice_page.dart';
 
 class ChatroomPage extends StatefulWidget {
     final String peerId;
@@ -597,32 +598,45 @@ class ChatScreenState extends State<ChatroomPage> {
                 ),
                 child: Row(
                     children: <Widget>[
-                        Container(
-                            width: ScreenUtil().setWidth(40),
-                            height: ScreenUtil().setHeight(40),
-                            margin: EdgeInsets.only(
-                                left: ScreenUtil().setHeight(22)
+                        GestureDetector(
+                            child: Row(
+                                children: <Widget> [
+                                    Container(
+                                        width: ScreenUtil().setWidth(40),
+                                        height: ScreenUtil().setHeight(40),
+                                        margin: EdgeInsets.only(
+                                            left: ScreenUtil().setHeight(22)
+                                        ),
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            image: DecorationImage(
+                                                image:AssetImage("assets/images/icon/iconBell.png")
+                                            )
+                                        )
+                                    ),
+                                    Container(
+                                        width: ScreenUtil().setWidth(564),
+                                        margin: EdgeInsets.only(
+                                            left: ScreenUtil().setHeight(17),
+                                            right: ScreenUtil().setHeight(17)
+                                        ),
+                                        child: Text(
+                                            '타인을 향한 비방시 강퇴 조치를 취합니다.',
+                                            style: TextStyle(
+                                                fontSize: ScreenUtil().setSp(26),
+                                                color: Color.fromRGBO(39, 39, 39, 1)
+                                            ),
+                                        )
+                                    ),
+                                ]
                             ),
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                image: DecorationImage(
-                                    image:AssetImage("assets/images/icon/iconBell.png")
-                                )
-                            )
-                        ),
-                        Container(
-                            width: ScreenUtil().setWidth(564),
-                            margin: EdgeInsets.only(
-                                left: ScreenUtil().setHeight(17),
-                                right: ScreenUtil().setHeight(17)
-                            ),
-                            child: Text(
-                                '타인을 향한 비방시 강퇴 조치를 취합니다.',
-                                style: TextStyle(
-                                    fontSize: ScreenUtil().setSp(26),
-                                    color: Color.fromRGBO(39, 39, 39, 1)
-                                ),
-                            )
+                            onTap: () {
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                        return NoticePage();
+                                    })
+                                );
+                            },
                         ),
                         Container(
                             width: ScreenUtil().setWidth(40),
