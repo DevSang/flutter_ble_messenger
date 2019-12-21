@@ -43,7 +43,7 @@ class StompClient {
     * @date : 2019-12-20
     * @description : WebSocket 접속 및 jwt 인증
     */
-  connectWithToken({@required String token}) {
+  void connectWithToken({@required String token}) {
     channel.sink.add("CONNECT" + NEWLINE +
         "Authorization:Bearer " + token + NEWLINE +
         "accept-version:1.1,1.0" + NEWLINE +
