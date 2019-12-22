@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "560232493191",
+    "firebase_url": "https://hereweare-5eb83.firebaseio.com",
+    "project_id": "hereweare-5eb83",
+    "storage_bucket": "hereweare-5eb83.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560232493191:android:28af8a1db6571630f24822",
+        "android_client_info": {
+          "package_name": "com.hsoft.hwa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "560232493191-dfgdmes2l8hgke2spcpiuubnana6t7ph.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbk6u7_r2wg1oRVVTgv2PzoTYSGrT2U6s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "560232493191-dfgdmes2l8hgke2spcpiuubnana6t7ph.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "560232493191-jpriv1u5kplknuqgns4ac81eph29g3ea.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hsoft.hwa"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
