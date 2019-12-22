@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:Hwa/pages/signin_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -10,11 +12,13 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
 
   SharedPreferences sharedPreferences;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
     super.initState();
     checkLoginStatus();
+    firebaseCloudMessaging_Listeners();
   }
 
   checkLoginStatus() async {
@@ -43,4 +47,47 @@ class _MainPageState extends State<MainPage> {
       drawer: Drawer(),
     );
   }
+
+  /*
+   * @author : hk
+   * @date : 2019-12-21
+   * @description : FCM 수신 테스트 코드 삽입, TODO 소스코드 적용, MSG 혹은 API서버 - token 저장 api 연동
+   */
+  void firebaseCloudMessaging_Listeners() {
+    if (Platform.isIOS) iOS_Permission();
+
+    _firebaseMessaging.getToken().then((token){
+      print('# FCM : token:'+token);
+    });
+
+    _firebaseMessaging.configure(
+      onMessage: (Map<String, dynamic> message) async {
+        print('on message $message');
+      },
+      onResume: (Map<String, dynamic> message) async {
+        print('on resume $message');
+      },
+      onLaunch: (Map<String, dynamic> message) async {
+        print('on launch $message');
+      },
+    );
+  }
+
+  /*
+   * @author : hk
+   * @date : 2019-12-21
+   * @description : FCM 수신 테스트 코드 삽입, TODO 소스코드 적용
+   */
+  void iOS_Permission() {
+    _firebaseMessaging.requestNotificationPermissions(
+            IosNotificationSettings(sound: true, badge: true, alert: true)
+    );
+    _firebaseMessaging.onIosSettingsRegistered
+            .listen((IosNotificationSettings settings)
+    {
+      print("Settings registered: $settings");
+    });
+  }
+
+
 }
