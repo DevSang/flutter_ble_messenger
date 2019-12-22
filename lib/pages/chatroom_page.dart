@@ -68,10 +68,12 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     bool openedNf;
     // ChatTextField Focused
     bool isFocused;
-    // ChatTextField Line View
-    double _inputHeight = 72;
     // 현재 채팅 좋아요 TODO: 추후 맵핑
     bool isLike;
+    // 채팅 입력 줄 수
+    int inputLineCount;
+    // 입력칸 높이
+    double _inputHeight;
 
     // Stomp 관련
     StompClient s;
@@ -97,11 +99,16 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         isFocused = false;
         openedNf = true;
         isLike = false;
+        inputLineCount = 1;
+        _inputHeight = 72;
+
         getMessageList();
 
         /// Stomp 초기화
         connectStomp();
         isReceived = false;
+
+        print("### initState");
     }
 
     @override
@@ -148,6 +155,9 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
      * @description : topic 구독
     */
     void connectStomp() {
+
+        print("### connectStomp");
+
         // connect to MsgServer
         s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
         s.connectWithToken(token: "token");
@@ -184,6 +194,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         setState(() {
             messageList.insert(0, cmb);
             isReceived = true;
+            print("-----------------");
         });
 
 
@@ -264,15 +275,19 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     */
     Widget buildMessage(int index, ChatMessage message) {
 
+        print("## idx : " + index.toString());
+
         ChatMessageElements cme = ChatMessageElements(
             chatMessage: message,
             animationController:
                 isReceived && index == 0
                 ? AnimationController(
-                    duration: Duration(milliseconds: 700),
+                    duration: Duration(milliseconds: 500),
                     vsync: this )
                 : null
         );
+
+        if(cme.animationController != null) cme.animationController.forward();
 
         return cme;
     }
@@ -657,14 +672,14 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                                     onTap: _onTapTextField,
                                                     onChanged: (String chat){
                                                         int count = '\n'.allMatches(chat).length + 1;
-                                                        if (count == 0 && _inputHeight == 72.0) {
+                                                        if (inputLineCount == count) {
                                                             return;
-                                                        }
-                                                        if (count <= 5) {  // use a maximum height of 6 rows
+                                                        } else if (count <= 5) {  // use a maximum height of 6 rows
                                                             // height values can be adapted based on the font size
-                                                            var newHeight = count == 0 ? 72.0 : 36.0 + (count * 36.0);
+                                                            var inputHeight = 36.0 + (count * 36.0);
                                                             setState(() {
-                                                                _inputHeight = newHeight;
+                                                                inputLineCount = count;
+                                                                _inputHeight = inputHeight;
                                                             });
                                                         }
                                                     },

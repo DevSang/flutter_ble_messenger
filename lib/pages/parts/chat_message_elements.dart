@@ -27,8 +27,6 @@ class ChatMessageElements extends StatelessWidget {
                                 ? enterNotice(context)
                                 : Container();
 
-        print((animationController != null).toString());
-
         if (animationController != null) {
             // 위젯에 애니메이션을 발생하기 위해 SizeTransition을 추가
             return SizeTransition(
