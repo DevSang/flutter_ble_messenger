@@ -27,11 +27,29 @@ class ChatMessageElements extends StatelessWidget {
                                 ? enterNotice(context)
                                 : Container();
 
-        // 위젯에 애니메이션을 발생하기 위해 SizeTransition을 추가
-        return SizeTransition(
-            sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut),
-            axisAlignment: 0.0,
-            child: Container(
+        print((animationController != null).toString());
+
+        if (animationController != null) {
+            // 위젯에 애니메이션을 발생하기 위해 SizeTransition을 추가
+            return SizeTransition(
+                sizeFactor: CurvedAnimation(parent: animationController, curve: Curves.easeOut),
+                axisAlignment: 0.0,
+                child: Container(
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+
+                            // 유저 썸네일 노출 여부 (상대방 메세지에만 노출)
+                            receivedMsg ? thumbnail : new Container(),
+                            Expanded(
+                                child: chatElement
+                            )
+                        ],
+                    )
+                ),
+            );
+        } else {
+            return Container(
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -43,8 +61,8 @@ class ChatMessageElements extends StatelessWidget {
                         )
                     ],
                 )
-            ),
-        );
+            );
+        }
 
     }
 
@@ -149,6 +167,8 @@ class ChatMessageElements extends StatelessWidget {
                     ),
                 ),
                 Container(
+                    margin: EdgeInsets.only(
+                    ),
                     constraints: BoxConstraints(maxWidth: 230),
                     padding: const EdgeInsets.all(8.0),
                     child: Text(chatMessage.message),

@@ -45,7 +45,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     String peerAvatar;
     String id;
 
-    var listMessage;
     String groupChatId;
     SharedPreferences prefs;
 
@@ -54,8 +53,8 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     bool isShowMenu;
     String imageUrl;
 
-    // 채팅방 메세지 리스트
-    final List<ChatMessageElements> _messages = <ChatMessageElements>[];
+    // 채팅방 메세지 View 리스트
+    final List<ChatMessage> messageList = <ChatMessage>[];
     // 받은 메세지
     ChatMessage message;
 
@@ -76,11 +75,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 
     // Stomp 관련
     StompClient s;
-    String _initState = "";
-    String _connectionState = "";
-    String _subscriberState = "";
-    String _content = "";
-    String _sendContent = "";
+    bool isReceived;
 
     // TODO : 추후 서버에서 jwt 추출로 변경
     String userIdx = "100";
@@ -102,10 +97,11 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         isFocused = false;
         openedNf = true;
         isLike = false;
-        readLocal();
+        getMessageList();
 
         /// Stomp 초기화
         connectStomp();
+        isReceived = false;
     }
 
     @override
@@ -146,15 +142,59 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         }
     }
 
-    readLocal() async {
-        prefs = await SharedPreferences.getInstance();
-        id = prefs.getString('id') ?? '';
-        if (id.hashCode <= peerId.hashCode) {
-            groupChatId = '$id-$peerId';
-        } else {
-            groupChatId = '$peerId-$id';
-        }
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : topic 구독
+    */
+    void connectStomp() {
+        // connect to MsgServer
+        s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
+        s.connectWithToken(token: "token");
 
+        // subscribe topic
+        s.subscribe(topic: "/sub/danhwa/1", roomIdx: "1", userIdx: userIdx).stream.listen((HashMap data) =>
+            messageReceieved(data),
+            onDone: () {
+                print("Listen Done");
+            },
+            onError: (error) {
+                print("Listen Error $error");
+            }
+        );
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : 메세지 수신 후 처리
+    */
+    void messageReceieved(HashMap data) {
+        message = new ChatMessage.fromJSON(json.decode(data['contents']));
+
+        ChatMessage cmb = ChatMessage(
+            chatType: message.chatType,
+            roomIdx: message.roomIdx,
+            senderIdx: message.senderIdx,
+            message: message.message,
+            chatTime: message.chatTime,
+
+        );
+
+        setState(() {
+            messageList.insert(0, cmb);
+            isReceived = true;
+        });
+
+
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : 메세지 리스트 받아오기
+    */
+    getMessageList() async {
         setState(() {});
     }
 
@@ -204,20 +244,37 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         }
     }
 
-    bool isLastMessageLeft(int index) {
-        if ((index > 0 && listMessage != null && listMessage[index - 1]['idFrom'] == id) || index == 0) {
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : 마지막 보낸 메세지
+    */
+    bool isLastSendMessage(int index) {
+        if ((index > 0 && messageList != null && messageList[index - 1].senderIdx != Constant.USER_IDX) || index == 0) {
             return true;
         } else {
             return false;
         }
     }
 
-    bool isLastMessageRight(int index) {
-        if ((index > 0 && listMessage != null && listMessage[index - 1]['idFrom'] != id) || index == 0) {
-            return true;
-        } else {
-            return false;
-        }
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : 메세지 맵핑
+    */
+    Widget buildMessage(int index, ChatMessage message) {
+
+        ChatMessageElements cme = ChatMessageElements(
+            chatMessage: message,
+            animationController:
+                isReceived && index == 0
+                ? AnimationController(
+                    duration: Duration(milliseconds: 700),
+                    vsync: this )
+                : null
+        );
+
+        return cme;
     }
 
     Future<bool> onBackPress() {
@@ -523,57 +580,11 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                 ),
                 reverse: true,
 
-                itemCount: _messages.length,
+                itemCount: messageList.length,
 
-                itemBuilder: (BuildContext context, int index) => _messages[index],
+                itemBuilder: (BuildContext context, int index) => buildMessage(index, messageList[index]),
             )
         );
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-22
-     * @description : topic 구독
-    */
-    void connectStomp() {
-        // connect to MsgServer
-        s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
-        s.connectWithToken(token: "token");
-
-        // subscribe topic
-        s.subscribe(topic: "/sub/danhwa/1", roomIdx: "1", userIdx: userIdx).stream.listen((HashMap data) =>
-            messageReceieved(data),
-            onDone: () {
-                print("Listen Done");
-            },
-            onError: (error) {
-                print("Listen Error $error");
-            }
-        );
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-22
-     * @description : 메세지 수신 후 처리
-    */
-    void messageReceieved(HashMap data) {
-        message = new ChatMessage.fromJSON(json.decode(data['contents']));
-        print("type???" + (message.chatType == "TALK").toString());
-
-        ChatMessageElements cmb = ChatMessageElements(
-            chatMessage: message,
-            animationController: AnimationController(
-                duration: Duration(milliseconds: 700),
-                vsync: this,
-            )
-        );
-
-        setState(() {
-            _messages.insert(0, cmb);
-        });
-
-        cmb.animationController.forward();
     }
 
     Widget buildInput() {
