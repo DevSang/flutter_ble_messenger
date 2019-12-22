@@ -104,13 +104,11 @@ class StompClient {
    * @description : 메시지 전송
    */
   void send({@required String topic, String message}) {
-    if (_topics.containsKey(topic)) {
       channel.sink.add("SEND" + NEWLINE +
           "destination:" + topic + NEWLINE +
           "content-type:application/json" + NEWLINE +
           NEWLINE + message + NEWLINE +
           END_CHAR);
-      }
   }
 
   /*
