@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:collection';
 
 //import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +11,23 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Hwa/data/models/chat_count_user.dart';
-import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/pages/parts/chat_side_menu.dart';
-import 'package:Hwa/pages/notice_page.dart';
+import 'package:Hwa/service/stomp_client.dart';
 
+import 'package:Hwa/data/models/chat_message.dart';
+import 'package:Hwa/data/models/chat_count_user.dart';
+
+import 'package:Hwa/pages/notice_page.dart';
+import 'package:Hwa/pages/parts/chat_side_menu.dart';
+import 'package:Hwa/pages/parts/chat_message_elements.dart';
+
+
+/*
+ * @project : HWA - Mobile
+ * @author : hs
+ * @date : 2019-12-22
+ * @description : 채팅 페이지
+ */
 class ChatroomPage extends StatefulWidget {
     final String peerId;
     final String peerAvatar;
@@ -26,7 +38,7 @@ class ChatroomPage extends StatefulWidget {
     State createState() => new ChatScreenState(peerId: peerId, peerAvatar: peerAvatar);
 }
 
-class ChatScreenState extends State<ChatroomPage> {
+class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin {
     ChatScreenState({Key key, @required this.peerId, @required this.peerAvatar});
 
     String peerId;
@@ -43,7 +55,9 @@ class ChatScreenState extends State<ChatroomPage> {
     String imageUrl;
 
     // 채팅방 메세지 리스트
-    final List<ChatMessage> _message = <ChatMessage>[];
+    final List<ChatMessageElements> _messages = <ChatMessageElements>[];
+    // 받은 메세지
+    ChatMessage message;
 
     final TextEditingController textEditingController = new TextEditingController();
     final ScrollController listScrollController = new ScrollController();
@@ -61,6 +75,7 @@ class ChatScreenState extends State<ChatroomPage> {
     bool isLike;
 
     // Stomp 관련
+    StompClient s;
     String _initState = "";
     String _connectionState = "";
     String _subscriberState = "";
@@ -69,18 +84,6 @@ class ChatScreenState extends State<ChatroomPage> {
 
     // TODO : 추후 서버에서 jwt 추출로 변경
     String userIdx = "100";
-
-    @override
-    BoxDecoration startAd(BuildContext context) {
-        return BoxDecoration(
-            color: Color.fromRGBO(77, 96, 191, 1),
-            image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconUnlock.png")
-            ),
-            shape: BoxShape.circle
-        );
-
-    }
 
     @override
     void initState() {
@@ -102,6 +105,19 @@ class ChatScreenState extends State<ChatroomPage> {
         readLocal();
 
         /// Stomp 초기화
+        connectStomp();
+    }
+
+    @override
+    BoxDecoration startAd(BuildContext context) {
+        return BoxDecoration(
+            color: Color.fromRGBO(77, 96, 191, 1),
+            image: DecorationImage(
+                image:AssetImage("assets/images/icon/iconUnlock.png")
+            ),
+            shape: BoxShape.circle
+        );
+
     }
 
     @override
@@ -170,229 +186,22 @@ class ChatScreenState extends State<ChatroomPage> {
         // type: 0 = text, 1 = image, 2 = sticker
         if (content.trim() != '') {
             textEditingController.clear();
+            final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
 
-//            var documentReference = Firestore.instance
-//                .collection('messages')
-//                .document(groupChatId)
-//                .collection(groupChatId)
-//                .document(DateTime.now().millisecondsSinceEpoch.toString());
-//
-//            Firestore.instance.runTransaction((transaction) async {
-//                await transaction.set(
-//                    documentReference,
-//                    {
-//                        'idFrom': id,
-//                        'idTo': peerId,
-//                        'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
-//                        'content': content,
-//                        'type': type
-//                    },
-//                );
-//            });
+            String message = '{"type":"TALK","roomIdx":1,"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content + '","userCountObj":null,"createTs":' + now.toString() + '}';
 
-//            listScrollController.animateTo(0.0, duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+            print(message);
+
+            print(s);
+
+            s.send(
+                topic: "/pub/danhwa",
+                message: message
+            );
+
         } else {
-            Fluttertoast.showToast(msg: 'Nothing to send');
+            Fluttertoast.showToast(msg: '메세지를 입력해주세요.');
         }
-    }
-
-//    Widget buildItem(int index, DocumentSnapshot document) {
-    Widget buildItem(int index) {
-//        if (document['idFrom'] == id) {
-//            // Right (my message)
-//            return Row(
-//                children: <Widget>[
-//                    document['type'] == 0
-//                    // Text
-//                        ? Container(
-//                        child: Text(
-//                            document['content'],
-//                            style: TextStyle(color: Colors.white),
-//                        ),
-//                        padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-//                        width: 200.0,
-//                        decoration: BoxDecoration(color: Colors.blueGrey, borderRadius: BorderRadius.circular(8.0)),
-//                        margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-//                    )
-//                        : document['type'] == 1
-//                    // Image
-//                        ? Container(
-//                        child: FlatButton(
-//                            child: Material(
-//                                child: CachedNetworkImage(
-//                                    placeholder: (context, url) => Container(
-//                                        child: CircularProgressIndicator(
-//                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-//                                        ),
-//                                        width: 200.0,
-//                                        height: 200.0,
-//                                        padding: EdgeInsets.all(70.0),
-//                                        decoration: BoxDecoration(
-//                                            color: Colors.blueGrey,
-//                                            borderRadius: BorderRadius.all(
-//                                                Radius.circular(8.0),
-//                                            ),
-//                                        ),
-//                                    ),
-//                                    errorWidget: (context, url, error) => Material(
-//                                        child: Image.asset(
-//                                            'images/img_not_available.jpeg',
-//                                            width: 200.0,
-//                                            height: 200.0,
-//                                            fit: BoxFit.cover,
-//                                        ),
-//                                        borderRadius: BorderRadius.all(
-//                                            Radius.circular(8.0),
-//                                        ),
-//                                        clipBehavior: Clip.hardEdge,
-//                                    ),
-//                                    imageUrl: document['content'],
-//                                    width: 200.0,
-//                                    height: 200.0,
-//                                    fit: BoxFit.cover,
-//                                ),
-//                                borderRadius: BorderRadius.all(Radius.circular(8.0)),
-//                                clipBehavior: Clip.hardEdge,
-//                            ),
-//                            onPressed: () {
-//                                Navigator.push(
-//                                    context, MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
-//                            },
-//                            padding: EdgeInsets.all(0),
-//                        ),
-//                        margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-//                    )
-//                    // Sticker
-//                        : Container(
-//                        child: new Image.asset(
-//                            'images/${document['content']}.gif',
-//                            width: 100.0,
-//                            height: 100.0,
-//                            fit: BoxFit.cover,
-//                        ),
-//                        margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-//                    ),
-//                ],
-//                mainAxisAlignment: MainAxisAlignment.end,
-//            );
-//        }
-//        else {
-//            // Left (peer message)
-//            return Container(
-//                child: Column(
-//                    children: <Widget>[
-//                        Row(
-//                            children: <Widget>[
-//                                isLastMessageLeft(index)
-//                                    ? Material(
-//                                    child: CachedNetworkImage(
-//                                        placeholder: (context, url) => Container(
-//                                            child: CircularProgressIndicator(
-//                                                strokeWidth: 1.0,
-//                                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-//                                            ),
-//                                            width: 35.0,
-//                                            height: 35.0,
-//                                            padding: EdgeInsets.all(10.0),
-//                                        ),
-//                                        imageUrl: peerAvatar,
-//                                        width: 35.0,
-//                                        height: 35.0,
-//                                        fit: BoxFit.cover,
-//                                    ),
-//                                    borderRadius: BorderRadius.all(
-//                                        Radius.circular(18.0),
-//                                    ),
-//                                    clipBehavior: Clip.hardEdge,
-//                                )
-//                                    : Container(width: 35.0),
-//                                document['type'] == 0
-//                                    ? Container(
-//                                    child: Text(
-//                                        document['content'],
-//                                        style: TextStyle(color: Colors.white),
-//                                    ),
-//                                    padding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
-//                                    width: 200.0,
-//                                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8.0)),
-//                                    margin: EdgeInsets.only(left: 10.0),
-//                                )
-//                                    : document['type'] == 1
-//                                    ? Container(
-//                                    child: FlatButton(
-//                                        child: Material(
-//                                            child: CachedNetworkImage(
-//                                                placeholder: (context, url) => Container(
-//                                                    child: CircularProgressIndicator(
-//                                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-//                                                    ),
-//                                                    width: 200.0,
-//                                                    height: 200.0,
-//                                                    padding: EdgeInsets.all(70.0),
-//                                                    decoration: BoxDecoration(
-//                                                        color: Colors.blueGrey,
-//                                                        borderRadius: BorderRadius.all(
-//                                                            Radius.circular(8.0),
-//                                                        ),
-//                                                    ),
-//                                                ),
-//                                                errorWidget: (context, url, error) => Material(
-//                                                    child: Image.asset(
-//                                                        'images/img_not_available.jpeg',
-//                                                        width: 200.0,
-//                                                        height: 200.0,
-//                                                        fit: BoxFit.cover,
-//                                                    ),
-//                                                    borderRadius: BorderRadius.all(
-//                                                        Radius.circular(8.0),
-//                                                    ),
-//                                                    clipBehavior: Clip.hardEdge,
-//                                                ),
-//                                                imageUrl: document['content'],
-//                                                width: 200.0,
-//                                                height: 200.0,
-//                                                fit: BoxFit.cover,
-//                                            ),
-//                                            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-//                                            clipBehavior: Clip.hardEdge,
-//                                        ),
-//                                        onPressed: () {
-//                                            Navigator.push(context,
-//                                                MaterialPageRoute(builder: (context) => FullPhoto(url: document['content'])));
-//                                        },
-//                                        padding: EdgeInsets.all(0),
-//                                    ),
-//                                    margin: EdgeInsets.only(left: 10.0),
-//                                )
-//                                    : Container(
-//                                    child: new Image.asset(
-//                                        'images/${document['content']}.gif',
-//                                        width: 100.0,
-//                                        height: 100.0,
-//                                        fit: BoxFit.cover,
-//                                    ),
-//                                    margin: EdgeInsets.only(bottom: isLastMessageRight(index) ? 20.0 : 10.0, right: 10.0),
-//                                ),
-//                            ],
-//                        ),
-//
-//                        // Time
-//                        isLastMessageLeft(index)
-//                            ? Container(
-//                            child: Text(
-//                                DateFormat('dd MMM kk:mm')
-//                                    .format(DateTime.fromMillisecondsSinceEpoch(int.parse(document['timestamp']))),
-//                                style: TextStyle(color: Colors.black12, fontSize: 12.0, fontStyle: FontStyle.italic),
-//                            ),
-//                            margin: EdgeInsets.only(left: 50.0, top: 5.0, bottom: 5.0),
-//                        )
-//                            : Container()
-//                    ],
-//                    crossAxisAlignment: CrossAxisAlignment.start,
-//                ),
-//                margin: EdgeInsets.only(bottom: 10.0),
-//            );
-//        }
     }
 
     bool isLastMessageLeft(int index) {
@@ -424,6 +233,13 @@ class ChatScreenState extends State<ChatroomPage> {
         return Future.value(false);
     }
 
+
+    void _onTapTextField() {
+        print("clicked field");
+        isFocused
+            ? null
+            : setState(() {isFocused = true;});
+    }
 
 
     @override
@@ -509,30 +325,6 @@ class ChatScreenState extends State<ChatroomPage> {
                 onTap: () {
                     FocusScope.of(context).requestFocus(focusNode);
                 },
-            )
-        );
-    }
-
-    Widget stmopTest() {
-        return Positioned(
-            top: ScreenUtil().setHeight(50),
-            right: ScreenUtil().setWidth(20),
-            child: GestureDetector(
-                child: Container(
-                    width: 750,
-                    child: Text(
-                        _initState + " " ?? " " +
-                        _connectionState + " " ?? " " +
-                        _subscriberState  + " " ?? " " +
-                        _content  + " " ?? " " +
-                        _sendContent  + " " ?? " ",
-                    )
-                ),
-                onTap:(){
-                    setState(() {
-                        openedNf = true;
-                    });
-                }
             )
         );
     }
@@ -662,128 +454,6 @@ class ChatScreenState extends State<ChatroomPage> {
         );
     }
 
-    Widget buildInput() {
-        return Container(
-            width: double.infinity,
-            decoration: new BoxDecoration(
-                color: Colors.white
-            ),
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                    isFocused ? chatIconClose() : chatIconOpen(),
-                    // Edit text
-                        Container(
-                            width: isFocused ? ScreenUtil().setWidth(686) :ScreenUtil().setWidth(460),
-                            margin: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(12),
-                                bottom: ScreenUtil().setHeight(12)
-                            ),
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(245, 245, 245, 1),
-                                border: Border.all(
-                                    color: Color.fromRGBO(214, 214, 214, 1),
-                                    width: ScreenUtil().setWidth(2.0)
-                                ),
-                                borderRadius: BorderRadius.all(
-                                    Radius.circular(ScreenUtil().setWidth(36.0))
-                                )
-                            ),
-                            child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: <Widget>[
-                                    Expanded (
-                                        child: Container(
-                                            width: isFocused ? ScreenUtil().setWidth(602) : ScreenUtil().setWidth(376),
-                                            height: ScreenUtil().setHeight(_inputHeight),
-                                            margin: EdgeInsets.only(right: ScreenUtil().setWidth(16)),
-
-                                            child: new ConstrainedBox(
-                                                constraints: BoxConstraints(
-                                                    minHeight: ScreenUtil().setHeight(72),
-                                                    maxHeight: ScreenUtil().setHeight(212)
-                                                ),
-
-
-                                                child: new SingleChildScrollView(
-                                                    scrollDirection: Axis.vertical,
-                                                    reverse: true,
-
-                                                    // here's the actual text box
-                                                    child: new TextField(
-                                                        keyboardType: TextInputType.multiline,
-                                                        controller: textEditingController,
-                                                        minLines: 1,
-                                                        maxLines: null,
-                                                        style: TextStyle(
-                                                            color: Color.fromRGBO(39, 39, 39, 1),
-                                                            fontSize: ScreenUtil().setSp(30.0),
-                                                            letterSpacing: ScreenUtil().setWidth(-1.15),
-                                                        ),
-                                                        decoration: InputDecoration(
-                                                            border: InputBorder.none,
-                                                            contentPadding: EdgeInsets.only(
-                                                                left: ScreenUtil().setWidth(26.0),
-                                                                right: ScreenUtil().setWidth(18.0),
-                                                                bottom: ScreenUtil().setHeight(16)
-                                                            )
-                                                        ),
-                                                        autofocus: false,
-                                                        onTap: _onTapTextField,
-                                                        onChanged: (String chat){
-                                                            int count = '\n'.allMatches(chat).length + 1;
-                                                            if (count == 0 && _inputHeight == 72.0) {
-                                                                return;
-                                                            }
-                                                            if (count <= 5) {  // use a maximum height of 6 rows
-                                                                // height values can be adapted based on the font size
-                                                                var newHeight = count == 0 ? 72.0 : 36.0 + (count * 36.0);
-                                                                setState(() {
-                                                                    _inputHeight = newHeight;
-                                                                });
-                                                            }
-                                                        },
-                                                    ),
-                                                    // ends the actual text box
-
-                                                ),
-
-                                            )
-                                        )
-                                    ),
-                                    // Button send message
-                                    Container(
-                                        margin: EdgeInsets.only(
-                                            right: ScreenUtil().setWidth(8),
-                                            bottom: ScreenUtil().setWidth(8),
-                                            top: ScreenUtil().setWidth(8)
-                                        ),
-                                        child:
-                                        GestureDetector(
-                                            child: Container(
-                                                width: ScreenUtil().setWidth(56),
-                                                height: ScreenUtil().setHeight(56),
-                                                decoration: setIcon('assets/images/icon/iconSendMessage.png')
-                                            ),
-                                            onTap:(){
-                                                onSendMessage(textEditingController.text, 0);
-                                            }
-                                        ),
-                                        decoration: BoxDecoration(
-                                            color: Color.fromRGBO(245, 245, 245, 1),
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(ScreenUtil().setWidth(36.0))
-                                            )
-                                        ),
-                                    ),
-                                ],
-                            )
-                        ),
-                ],
-            ),
-        );
-    }
-
     Widget buildMenu() {
         return Container(
             width: ScreenUtil().setWidth(750),
@@ -804,13 +474,6 @@ class ChatScreenState extends State<ChatroomPage> {
                 color: Colors.white,
             ),
         );
-    }
-
-    void _onTapTextField() {
-        print("clicked field");
-        isFocused
-            ? null
-            : setState(() {isFocused = true;});
     }
 
     Container chatIconClose() {
@@ -836,6 +499,194 @@ class ChatScreenState extends State<ChatroomPage> {
                         isFocused = false;
                     });
                 }
+            ),
+        );
+    }
+
+    BoxDecoration setIcon(String iconPath) {
+        return BoxDecoration(
+            color: Color.fromRGBO(77, 96, 191, 1),
+            image: DecorationImage(
+                image:AssetImage(iconPath)
+            ),
+            shape: BoxShape.circle
+        );
+    }
+
+    //메세지 리스트에 추가
+    Widget buildListMessage() {
+        return Flexible(
+            child: ListView.builder(
+                padding: EdgeInsets.only(
+                    left: ScreenUtil.getInstance().setWidth(16.0),
+                    right: ScreenUtil.getInstance().setWidth(16.0)
+                ),
+                reverse: true,
+
+                itemCount: _messages.length,
+
+                itemBuilder: (BuildContext context, int index) => _messages[index],
+            )
+        );
+    }
+
+    /// connect, subscribe
+    void connectStomp() {
+        // connect to MsgServer
+        s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
+        s.connectWithToken(token: "token");
+
+        // subscribe topic
+        s.subscribe(topic: "/sub/danhwa/1", roomIdx: "1", userIdx: userIdx).stream.listen((HashMap data) =>
+            messageReceieved(data),
+            onDone: () {
+                print("Listen Done");
+            },
+            onError: (error) {
+                print("Listen Error $error");
+            }
+        );
+    }
+
+    void messageReceieved(HashMap data) {
+        message = new ChatMessage.fromJSON(json.decode(data['contents']));
+        print("type???" + (message.chatType == "TALK").toString());
+
+        if(message.chatType == "TALK") {
+            ChatMessageElements cmb = ChatMessageElements(
+                chatMessage: message,
+                animationController: AnimationController(
+                    duration: Duration(milliseconds: 700),
+                    vsync: this,
+                )
+            );
+
+            setState(() {
+                _messages.insert(0, cmb);
+            });
+
+            cmb.animationController.forward();
+        }
+    }
+
+    Widget buildInput() {
+        return Container(
+            width: double.infinity,
+            decoration: new BoxDecoration(
+                color: Colors.white
+            ),
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                    isFocused ? chatIconClose() : chatIconOpen(),
+                    // Edit text
+                    Container(
+                        width: isFocused ? ScreenUtil().setWidth(686) :ScreenUtil().setWidth(460),
+                        margin: EdgeInsets.only(
+                            top: ScreenUtil().setHeight(12),
+                            bottom: ScreenUtil().setHeight(12)
+                        ),
+                        decoration: BoxDecoration(
+                            color: Color.fromRGBO(245, 245, 245, 1),
+                            border: Border.all(
+                                color: Color.fromRGBO(214, 214, 214, 1),
+                                width: ScreenUtil().setWidth(2.0)
+                            ),
+                            borderRadius: BorderRadius.all(
+                                Radius.circular(ScreenUtil().setWidth(36.0))
+                            )
+                        ),
+                        child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                                Expanded (
+                                    child: Container(
+                                        width: isFocused ? ScreenUtil().setWidth(602) : ScreenUtil().setWidth(376),
+                                        height: ScreenUtil().setHeight(_inputHeight),
+                                        margin: EdgeInsets.only(right: ScreenUtil().setWidth(16)),
+
+                                        child: new ConstrainedBox(
+                                            constraints: BoxConstraints(
+                                                minHeight: ScreenUtil().setHeight(72),
+                                                maxHeight: ScreenUtil().setHeight(212)
+                                            ),
+
+
+                                            child: new SingleChildScrollView(
+                                                scrollDirection: Axis.vertical,
+                                                reverse: true,
+
+                                                // here's the actual text box
+                                                child: new TextField(
+                                                    keyboardType: TextInputType.multiline,
+                                                    controller: textEditingController,
+                                                    minLines: 1,
+                                                    maxLines: null,
+                                                    style: TextStyle(
+                                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                                        fontSize: ScreenUtil().setSp(30.0),
+                                                        letterSpacing: ScreenUtil().setWidth(-1.15),
+                                                    ),
+                                                    decoration: InputDecoration(
+                                                        border: InputBorder.none,
+                                                        contentPadding: EdgeInsets.only(
+                                                            left: ScreenUtil().setWidth(26.0),
+                                                            right: ScreenUtil().setWidth(18.0),
+                                                            bottom: ScreenUtil().setHeight(16)
+                                                        )
+                                                    ),
+                                                    autofocus: false,
+                                                    onTap: _onTapTextField,
+                                                    onChanged: (String chat){
+                                                        int count = '\n'.allMatches(chat).length + 1;
+                                                        if (count == 0 && _inputHeight == 72.0) {
+                                                            return;
+                                                        }
+                                                        if (count <= 5) {  // use a maximum height of 6 rows
+                                                            // height values can be adapted based on the font size
+                                                            var newHeight = count == 0 ? 72.0 : 36.0 + (count * 36.0);
+                                                            setState(() {
+                                                                _inputHeight = newHeight;
+                                                            });
+                                                        }
+                                                    },
+                                                ),
+                                                // ends the actual text box
+
+                                            ),
+
+                                        )
+                                    )
+                                ),
+                                // Button send message
+                                Container(
+                                    margin: EdgeInsets.only(
+                                        right: ScreenUtil().setWidth(8),
+                                        bottom: ScreenUtil().setWidth(8),
+                                        top: ScreenUtil().setWidth(8)
+                                    ),
+                                    child:
+                                    GestureDetector(
+                                        child: Container(
+                                            width: ScreenUtil().setWidth(56),
+                                            height: ScreenUtil().setHeight(56),
+                                            decoration: setIcon('assets/images/icon/iconSendMessage.png')
+                                        ),
+                                        onTap:(){
+                                            onSendMessage(textEditingController.text, 0);
+                                        }
+                                    ),
+                                    decoration: BoxDecoration(
+                                        color: Color.fromRGBO(245, 245, 245, 1),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(ScreenUtil().setWidth(36.0))
+                                        )
+                                    ),
+                                ),
+                            ],
+                        )
+                    ),
+                ],
             ),
         );
     }
@@ -904,62 +755,5 @@ class ChatScreenState extends State<ChatroomPage> {
                 ],
             ),
         );
-    }
-
-    BoxDecoration setIcon(String iconPath) {
-        return BoxDecoration(
-            color: Color.fromRGBO(77, 96, 191, 1),
-            image: DecorationImage(
-                image:AssetImage(iconPath)
-            ),
-            shape: BoxShape.circle
-        );
-    }
-
-    //메세지 리스트에 추가
-    Widget buildListMessage() {
-        return Flexible(
-            child: ListView.builder(
-                padding: EdgeInsets.only(
-                    left: ScreenUtil.getInstance().setWidth(16.0),
-                    right: ScreenUtil.getInstance().setWidth(16.0)
-                ),
-                reverse: true,
-                // TODO: message 적용
-                itemCount: 0,
-
-                itemBuilder: (BuildContext context, int index) {
-                    _message[index];
-                },
-            )
-        );
-//        return Flexible(
-//            child: groupChatId == ''
-//                ? Center(child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)))
-//                : StreamBuilder(
-//                stream: Firestore.instance
-//                    .collection('messages')
-//                    .document(groupChatId)
-//                    .collection(groupChatId)
-//                    .orderBy('timestamp', descending: true)
-//                    .limit(20)
-//                    .snapshots(),
-//                builder: (context, snapshot) {
-//                    if (!snapshot.hasData) {
-//                        return Center(
-//                            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)));
-//                    } else {
-//                        listMessage = snapshot.data.documents;
-//                        return ListView.builder(
-//                            padding: EdgeInsets.all(10.0),
-//                            itemBuilder: (context, index) => buildItem(index, snapshot.data.documents[index]),
-//                            itemCount: snapshot.data.documents.length,
-//                            reverse: true,
-//                            controller: listScrollController,
-//                        );
-//                    }
-//                },
-//            ),
-//        );
     }
 }

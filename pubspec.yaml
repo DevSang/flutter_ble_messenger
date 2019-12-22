@@ -26,6 +26,7 @@ dependencies:
   intl: ^0.15.7
   web_socket_channel: ^1.0.13
   configurable_expansion_tile: ^1.0.0
+  timeago: ^2.0.22
 
 
 #  flutter_kakao_login:
