@@ -58,21 +58,28 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/images/icon/iconAddress.png
     - assets/images/icon/iconAttachCamera.png
     - assets/images/icon/iconAttachMore.png
     - assets/images/icon/iconAttachPhoto.png
     - assets/images/icon/iconAttachFold.png
     - assets/images/icon/iconBell.png
     - assets/images/icon/iconBounds.png
+    - assets/images/icon/iconCar.png
     - assets/images/icon/iconFold.png
+    - assets/images/icon/iconLike.png
+    - assets/images/icon/iconExit.png
     - assets/images/icon/iconExpand.png
     - assets/images/icon/iconLikeCount.png
     - assets/images/icon/iconPin.png
     - assets/images/icon/iconVideoPlay.png
+    - assets/images/icon/iconViewCard.png
     - assets/images/icon/iconViewCount.png
+    - assets/images/icon/iconWallet.png
     - assets/images/icon/iconLock.png
     - assets/images/icon/iconUnlock.png
     - assets/images/icon/iconSendMessage.png
+    - assets/images/icon/iconSetting.png
     - assets/images/icon/navIconHot.png
     - assets/images/icon/navIconNew.png
     - assets/images/icon/navIconPrev.png

@@ -188,13 +188,11 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
             senderIdx: message.senderIdx,
             message: message.message,
             chatTime: message.chatTime,
-
         );
 
         setState(() {
             messageList.insert(0, cmb);
             isReceived = true;
-            print("-----------------");
         });
 
 
@@ -274,9 +272,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
      * @description : 메세지 맵핑
     */
     Widget buildMessage(int index, ChatMessage message) {
-
-        print("## idx : " + index.toString());
-
         ChatMessageElements cme = ChatMessageElements(
             chatMessage: message,
             animationController:
@@ -285,6 +280,8 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                     duration: Duration(milliseconds: 500),
                     vsync: this )
                 : null
+            ,
+            isLastSendMessage: isLastSendMessage(index)
         );
 
         if(cme.animationController != null) cme.animationController.forward();
@@ -307,7 +304,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 
 
     void _onTapTextField() {
-        print("clicked field");
         isFocused
             ? null
             : setState(() {isFocused = true;});
@@ -380,7 +376,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                         buildInput(),
 
                                         // Menu
-                                            (isShowMenu ? buildMenu() : Container()),
+                                            (isShowMenu && !isFocused ? buildMenu() : Container()),
                                     ],
                                 ),
                             ),
@@ -529,15 +525,20 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     Widget buildMenu() {
         return Container(
             width: ScreenUtil().setWidth(750),
-            height: ScreenUtil().setHeight(360),
+            height: ScreenUtil().setHeight(432),
+            padding: EdgeInsets.only(
+              top: ScreenUtil().setHeight(43),
+              bottom: ScreenUtil().setHeight(43),
+            ),
             child: Column(
                 children: <Widget>[
-                    FlatButton(
-                        onPressed: () => {},
-                        child: new Image.asset(
-                            '',
-                            width: ScreenUtil().setWidth(80),
-                            height: ScreenUtil().setHeight(140)
+                    Container(
+                        child: Row(
+                            children: <Widget>[
+                                buildMenuItem("assets/images/icon/iconViewCard.png", "명함"),
+                                buildMenuItem("assets/images/icon/iconWallet.png", "거래"),
+                                buildMenuItem("assets/images/icon/iconCar.png", "합승/카풀")
+                            ],
                         )
                     )
                 ],
@@ -548,18 +549,58 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         );
     }
 
+    Widget buildMenuItem(String imgSrc, String name) {
+        return
+            Container(
+                width: ScreenUtil().setWidth(179.5),
+                height: ScreenUtil().setHeight(173),
+                child: Column(
+                    children: <Widget>[
+                        Container(
+                            width: ScreenUtil().setWidth(100),
+                            height: ScreenUtil().setHeight(100),
+                            margin: EdgeInsets.only(
+                                bottom: ScreenUtil().setHeight(19)
+                            ),
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(210, 217, 250, 1),
+                                image: DecorationImage(
+                                    image:AssetImage(imgSrc)
+                                ),
+                                shape: BoxShape.circle
+                            ),
+                            child:
+                            FlatButton(
+                                onPressed: () => {},
+                            )
+                        ),
+                        Container(
+                            height: ScreenUtil().setHeight(27),
+                            child: Text(
+                                name,
+                                style: TextStyle(
+                                    height: 1,
+                                    fontSize: ScreenUtil().setSp(26)
+                                ),
+                            )
+                        )
+                    ],
+                ),
+            );
+    }
+
     Container chatIconClose() {
         return Container(
-            margin: EdgeInsets.only(
-                left: ScreenUtil().setWidth(8),
-                right: ScreenUtil().setWidth(8),
-                bottom: ScreenUtil().setHeight(32),
-            ),
             child:
             GestureDetector(
                 child: Container(
-                    width: ScreenUtil().setWidth(36),
-                    height: ScreenUtil().setHeight(36),
+                    padding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(8),
+                        right: ScreenUtil().setWidth(8),
+                        bottom: ScreenUtil().setHeight(32),
+                    ),
+                    width: ScreenUtil().setWidth(52),
+                    height: ScreenUtil().setHeight(100),
                     decoration: BoxDecoration(
                         image: DecorationImage(
                             image:AssetImage('assets/images/icon/iconAttachFold.png')

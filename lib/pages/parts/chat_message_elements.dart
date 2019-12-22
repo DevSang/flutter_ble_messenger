@@ -10,8 +10,9 @@ const String name = "hwa";
 class ChatMessageElements extends StatelessWidget {
     final ChatMessage chatMessage;
     final AnimationController animationController; // 등록 시 보여질 효과
+    final bool isLastSendMessage; // 마지막 보낸 메세지
+    ChatMessageElements({this.chatMessage, this.animationController, this.isLastSendMessage});
 
-    ChatMessageElements({this.chatMessage, this.animationController});
 
     @override
     Widget build(BuildContext context) {
@@ -166,6 +167,10 @@ class ChatMessageElements extends StatelessWidget {
                 ),
                 Container(
                     margin: EdgeInsets.only(
+                        bottom:
+                            isLastSendMessage
+                                ? ScreenUtil.getInstance().setHeight(28)
+                                : ScreenUtil.getInstance().setHeight(0)
                     ),
                     constraints: BoxConstraints(maxWidth: 230),
                     padding: const EdgeInsets.all(8.0),

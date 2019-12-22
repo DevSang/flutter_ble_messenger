@@ -28,17 +28,24 @@ class ChatUserListState extends State<ChatUserList> {
         ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true)..init(context);
 
         return new Container(
+            color: Colors.white,
               child: Column(
                   children: <Widget>[
                       Container(
-                          width: ScreenUtil().setWidth(618),
-                          height: ScreenUtil().setWidth(80),
+                          width: ScreenUtil().setWidth(620),
+                          height: ScreenUtil().setWidth(64),
                           padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(30),
-                            right:   ScreenUtil().setWidth(30)
+                            left: ScreenUtil().setWidth(40),
+                            right:   ScreenUtil().setWidth(36)
                           ),
                           decoration: BoxDecoration(
-                              color: Colors.grey[200]
+                              color: Color.fromRGBO(240, 240, 240, 1),
+                              border: Border(
+                                  top: BorderSide(
+                                      width: ScreenUtil().setWidth(1),
+                                      color: Color.fromRGBO(39, 39, 39, 0.15)
+                                  )
+                              )
                           ),
                           child:
                           Row(
@@ -56,26 +63,31 @@ class ChatUserListState extends State<ChatUserList> {
                                                           : "관전 유저"
                                                   ),
                                                   style: TextStyle(
-                                                      fontSize: ScreenUtil().setSp(26)
+                                                      height: 1,
+                                                      fontSize: ScreenUtil().setSp(26),
+                                                      letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                      color: Color.fromRGBO(39, 39, 39, 1)
                                                   ),
                                               ),
                                               Container(
-                                                  height: ScreenUtil().setHeight(24),
+                                                  height: ScreenUtil().setHeight(26),
                                                   padding: EdgeInsets.only(
-                                                      left: ScreenUtil().setWidth(10),
+                                                      left: ScreenUtil().setWidth(16),
                                                       right: ScreenUtil().setWidth(16),
                                                   ),
                                                   child: Text(
                                                       widget.userInfoList.length.toString(),
                                                       style: TextStyle(
-                                                          fontSize: ScreenUtil().setSp(24)
+                                                          height: 1,
+                                                          fontSize: ScreenUtil().setSp(26),
+                                                          letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                          color: Color.fromRGBO(107, 107, 107, 1)
                                                       ),
                                                   ),
                                               ),
                                           ],
                                       )
                                   ),
-
                                   Container(
                                       width: ScreenUtil().setWidth(40),
                                       child: FlatButton(
@@ -91,7 +103,6 @@ class ChatUserListState extends State<ChatUserList> {
                                                                 ? "assets/images/icon/iconFold.png"
                                                                 : "assets/images/icon/iconExpand.png")
                                           ),
-                                          shape: BoxShape.circle
                                       ),
                                   )
                               ],
@@ -129,27 +140,45 @@ class BuildUserInfo extends StatelessWidget {
                 children: <Widget>[
                     Container(
                         padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(30),
-                            right: ScreenUtil().setWidth(30)
+                            left: ScreenUtil().setWidth(40),
+                            right: ScreenUtil().setWidth(36)
                         ),
-                        height: ScreenUtil().setHeight(150),
+                        height: ScreenUtil().setHeight(104),
                         child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                                // 프로필 이미지
                                 Container(
-                                    child: ClipRRect(
-                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                        child: Image.asset(
-                                            userInfo.profileImg,
-                                            width: ScreenUtil().setWidth(150),
-                                            height: ScreenUtil().setWidth(150),
-                                        )
-                                    )
-                                ),
-                                // 프로필 이미지
-                                Container(
-                                    child: Text(userInfo.nick)
+                                    width: ScreenUtil().setWidth(504),
+                                    child: Row(
+                                        children: <Widget>[
+                                            // 프로필 이미지
+                                            Container(
+                                                child: ClipRRect(
+                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                                    child: Image.asset(
+                                                        userInfo.profileImg,
+                                                        width: ScreenUtil().setWidth(80),
+                                                        height: ScreenUtil().setWidth(80),
+                                                    )
+                                                )
+                                            ),
+                                            // 이름
+                                            Container(
+                                                padding: EdgeInsets.only(
+                                                    left: ScreenUtil().setWidth(21)
+                                                ),
+                                                child: Text(
+                                                    userInfo.nick,
+                                                    style: TextStyle(
+                                                        height: 1,
+                                                        fontSize: ScreenUtil().setSp(26),
+                                                        letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                        color: Color.fromRGBO(39, 39, 39, 1)
+                                                    ),
+                                                )
+                                            ),
+                                        ],
+                                    ),
                                 ),
                                 // 연락처 아이콘
                                 userInfo.existContact ? contactIcon : new Container()
@@ -170,14 +199,12 @@ class BuildUserInfo extends StatelessWidget {
     }
 
     Widget contactIcon = new Container(
-        width: ScreenUtil().setWidth(66),
-        height: ScreenUtil().setHeight(66),
+        width: ScreenUtil().setWidth(40),
+        height: ScreenUtil().setHeight(40),
         decoration: BoxDecoration(
-            color: Colors.white,
             image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconBell.png")
+                image:AssetImage("assets/images/icon/iconAddress.png")
             ),
-            shape: BoxShape.circle
         )
     );
 
@@ -189,7 +216,7 @@ class BuildUserInfo extends StatelessWidget {
                 width: ScreenUtil().setWidth(40),
                 height: ScreenUtil().setHeight(40),
                 decoration: BoxDecoration(
-                    color: Colors.blue,
+                    color: Color.fromRGBO(77, 96, 191, 1),
                     image: DecorationImage(
                         image:AssetImage("assets/images/icon/iconBell.png")
                     ),
