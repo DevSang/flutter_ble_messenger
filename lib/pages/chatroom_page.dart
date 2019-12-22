@@ -530,7 +530,11 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         );
     }
 
-    /// connect, subscribe
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : topic 구독
+    */
     void connectStomp() {
         // connect to MsgServer
         s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
@@ -548,25 +552,28 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         );
     }
 
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : 메세지 수신 후 처리
+    */
     void messageReceieved(HashMap data) {
         message = new ChatMessage.fromJSON(json.decode(data['contents']));
         print("type???" + (message.chatType == "TALK").toString());
 
-        if(message.chatType == "TALK") {
-            ChatMessageElements cmb = ChatMessageElements(
-                chatMessage: message,
-                animationController: AnimationController(
-                    duration: Duration(milliseconds: 700),
-                    vsync: this,
-                )
-            );
+        ChatMessageElements cmb = ChatMessageElements(
+            chatMessage: message,
+            animationController: AnimationController(
+                duration: Duration(milliseconds: 700),
+                vsync: this,
+            )
+        );
 
-            setState(() {
-                _messages.insert(0, cmb);
-            });
+        setState(() {
+            _messages.insert(0, cmb);
+        });
 
-            cmb.animationController.forward();
-        }
+        cmb.animationController.forward();
     }
 
     Widget buildInput() {

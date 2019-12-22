@@ -16,7 +16,16 @@ class ChatMessageElements extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         int userIdx = Constant.USER_IDX;
-        bool receivedMsg = userIdx == chatMessage.senderIdx ? false : true; // false : Send, true : Received
+        // false : Send, true : Received
+        bool receivedMsg = (chatMessage.chatType == "TALK" && userIdx != chatMessage.senderIdx) ? true : false;
+        // chatType(TALK, ENTER, QUIT)에 따른 화면 처리
+        Widget chatElement = chatMessage.chatType == "TALK"
+                            ? receivedMsg
+                                ? receivedBubble(context)
+                                : sendBubble(context)
+                            : chatMessage.chatType == "ENTER"
+                                ? enterNotice(context)
+                                : Container();
 
         // 위젯에 애니메이션을 발생하기 위해 SizeTransition을 추가
         return SizeTransition(
@@ -26,10 +35,11 @@ class ChatMessageElements extends StatelessWidget {
                 child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
+
                         // 유저 썸네일 노출 여부 (상대방 메세지에만 노출)
                         receivedMsg ? thumbnail : new Container(),
                         Expanded(
-                            child: receivedMsg ? receivedBubble(context) : sendBubble(context)
+                            child: chatElement
                         )
                     ],
                 )
@@ -152,6 +162,38 @@ class ChatMessageElements extends StatelessWidget {
                     ),
                 )
             ],
+        );
+    }
+
+    Widget enterNotice(BuildContext context) {
+        return new Container(
+            child: Container(
+                margin: EdgeInsets.only(
+                    top: ScreenUtil.getInstance().setHeight(18),
+                    bottom: ScreenUtil.getInstance().setHeight(18)
+                ),
+                width: ScreenUtil().setWidth(718),
+                height: ScreenUtil().setHeight(48),
+                decoration: BoxDecoration(
+                    color: Color.fromRGBO(0, 0, 0, 0.16),
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(ScreenUtil.getInstance().setWidth(8))
+                    )
+                ),
+                child: new Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                        Text(
+                            chatMessage.senderIdx.toString() + "님이 입장하였습니다.",
+                            style: TextStyle(
+                                fontSize: ScreenUtil(allowFontScaling: true).setSp(22),
+                                color: Colors.white
+                            ),
+                        )
+                    ],
+                )
+            )
         );
     }
 }
