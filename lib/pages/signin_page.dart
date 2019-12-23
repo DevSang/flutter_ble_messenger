@@ -21,24 +21,40 @@ class _SignInPageState extends State<SignInPage>{
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent));
     return Scaffold(
       body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/background/bgGradeLogin.png"),
+            fit: BoxFit.cover,
+          ),
+        ),
         child: _isLoading ? Center(child: CircularProgressIndicator()) : ListView(
           children: <Widget>[
-            headerSection(),
-            textSection(),
-            buttonSection(),
-            registerSection(),
+            _LoginMainImage(),
+            _loginInputText(),
+            _SignInButton(),
+            _registerSection(),
           ],
         ),
       ),
     appBar: AppBar(
       centerTitle: true,
       backgroundColor: Colors.white,
-    title: Text("로그인",
+    title: Text("HWA 로그인",
       style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
-
-
     ),
     ),
+    );
+  }
+
+
+
+  Widget _LoginMainImage(){
+    return Container(
+        child: Row(
+            children: <Widget>[
+              Image.asset('assets/background/bgGradeLogin.png', width: 100, height: 100)
+              ]
+        )
     );
   }
 
@@ -69,31 +85,11 @@ class _SignInPageState extends State<SignInPage>{
     }
   }
 
-  Container buttonSection() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      height: 40.0,
-      padding: EdgeInsets.symmetric(horizontal: 15.0),
-      margin: EdgeInsets.only(top: 15.0),
-      child: RaisedButton(
-        onPressed: phoneController.text.isEmpty || authCodeController.text.isEmpty ? null : () {
-          setState(() {
-            _isLoading = true;
-          });
-          signIn(phoneController.text, authCodeController.text);
-        },
-        elevation: 0.0,
-        child: Text("Sign In", style: TextStyle(color: Colors.white)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-      ),
-    );
-  }
-
 
   final TextEditingController phoneController = new TextEditingController();
   final TextEditingController authCodeController = new TextEditingController();
 
-  Container textSection() {
+  Widget _loginInputText() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
       child: Column(
@@ -146,30 +142,44 @@ class _SignInPageState extends State<SignInPage>{
     );
   }
 
-  Container registerSection(){
+
+  Widget _SignInButton() {
     return Container(
-      padding: EdgeInsets.only(left: 50, right: 50),
-      child: Column(
+      width: MediaQuery.of(context).size.width,
+      height: 40.0,
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      margin: EdgeInsets.only(top: 15.0),
+      child: RaisedButton(
+        onPressed: phoneController.text.isEmpty || authCodeController.text.isEmpty ? null : () {
+          setState(() {
+            _isLoading = true;
+          });
+          signIn(phoneController.text, authCodeController.text);
+        },
+        elevation: 0.0,
+        child: Text("Sign In", style: TextStyle(color: Colors.white)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+      ),
+    );
+  }
+
+
+  Widget _registerSection(){
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
+
           InkWell(
-            child: Text("Sign Up", style: TextStyle(color: Colors.black, fontSize: 15)),
+            child: Text("New Here? ", style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans'))
+          ),
+          InkWell(
+            child: Text("Sign Up", style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans')),
               onTap: (){ Navigator.pushNamed(context, '/register');
               },
           )
         ],
       ),
-    );
-  }
-
-  Container headerSection() {
-    return Container(
-      margin: EdgeInsets.only(top: 50.0),
-      padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
-      child: Text("HWA",
-          style: TextStyle(
-              color: Colors.white70,
-              fontSize: 40.0,
-              fontWeight: FontWeight.bold)),
     );
   }
 }

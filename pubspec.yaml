@@ -100,6 +100,7 @@ flutter:
     - assets/images/background/bgMap.png
     - assets/images/profile_img.png
     - assets/images/businesscard.png
+    - assets/images/bgGradeLogin.png
 
   uses-material-design: true
 
