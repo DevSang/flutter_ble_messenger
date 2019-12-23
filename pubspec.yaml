@@ -60,6 +60,7 @@ flutter:
     - assets/images/logo.png
     - assets/images/icon/iconAddress.png
     - assets/images/icon/iconAttachCamera.png
+    - assets/images/icon/iconAttachClose.png
     - assets/images/icon/iconAttachMore.png
     - assets/images/icon/iconAttachPhoto.png
     - assets/images/icon/iconAttachFold.png
