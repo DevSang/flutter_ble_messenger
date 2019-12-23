@@ -64,14 +64,20 @@ flutter:
     - assets/images/icon/iconAttachPhoto.png
     - assets/images/icon/iconAttachFold.png
     - assets/images/icon/iconBell.png
+    - assets/images/icon/iconBlock.png
     - assets/images/icon/iconBounds.png
     - assets/images/icon/iconCar.png
+    - assets/images/icon/iconClosePopup.png
+    - assets/images/icon/iconDirectChat.png
+    - assets/images/icon/iconEject.png
     - assets/images/icon/iconFold.png
     - assets/images/icon/iconLike.png
     - assets/images/icon/iconExit.png
     - assets/images/icon/iconExpand.png
     - assets/images/icon/iconLikeCount.png
     - assets/images/icon/iconPin.png
+    - assets/images/icon/iconRequest.png
+    - assets/images/icon/iconRequestCalling.png
     - assets/images/icon/iconVideoPlay.png
     - assets/images/icon/iconViewCard.png
     - assets/images/icon/iconViewCount.png

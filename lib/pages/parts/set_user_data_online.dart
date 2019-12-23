@@ -24,7 +24,7 @@ class SetUserDataOnline {
                 profileImg: "assets/images/profile_img.png",
                 partType: "Online",
                 existContact: false,
-                businessCard: null,
+                businessCard: "",
                 userIntro: ".",
                 addFriend: false,
                 isHost: false,

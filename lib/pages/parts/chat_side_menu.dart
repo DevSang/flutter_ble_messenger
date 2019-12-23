@@ -35,7 +35,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
         return BoxDecoration(
             color: Color.fromRGBO(153, 153, 153, 1),
             image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconLikeCount.png")
+                image:AssetImage("assets/images/icon/iconLike.png")
             ),
             shape: BoxShape.circle
         );
@@ -47,7 +47,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
         return BoxDecoration(
             color: Color.fromRGBO(240, 93, 72, 1),
             image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconLikeCount.png")
+                image:AssetImage("assets/images/icon/iconLike.png")
             ),
             shape: BoxShape.circle
         );

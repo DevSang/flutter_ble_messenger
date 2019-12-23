@@ -15,12 +15,16 @@ class ChatUserList extends StatefulWidget {
 class ChatUserListState extends State<ChatUserList> {
     // 현재 채팅 Advertising condition
     bool openedList;
+    // 자신의 방장여부
+    bool isHost;
 
 
     @override
     void initState() {
         super.initState();
         openedList = true;
+        //TODO: 방장 여부 맵핑
+        isHost = false;
     }
 
     @override
@@ -115,7 +119,7 @@ class ChatUserListState extends State<ChatUserList> {
                                    shrinkWrap: true,
                                    itemCount: widget.userInfoList.length,
                                    itemBuilder: (BuildContext context, int index){
-                                       return BuildUserInfo(userInfo: widget.userInfoList[index]);
+                                       return BuildUserInfo(isHost: isHost, userInfo: widget.userInfoList[index]);
                                    }
                                ),
                           )
@@ -130,12 +134,14 @@ class ChatUserListState extends State<ChatUserList> {
 }
 
 class BuildUserInfo extends StatelessWidget {
+    final bool isHost;
     final ChatUserInfo userInfo;
-    BuildUserInfo({this.userInfo});
+    BuildUserInfo({Key key, @required this.isHost, this.userInfo});
+
 
     @override
     Widget build(BuildContext context) {
-        return GestureDetector(
+        return InkWell(
             child: Stack(
                 children: <Widget>[
                     Container(
@@ -193,7 +199,7 @@ class BuildUserInfo extends StatelessWidget {
                 ],
             ),
             onTap: (){
-                _showModalSheet(context);
+                _showModalSheet(context, userInfo);
             },
         );
     }
@@ -235,16 +241,24 @@ class BuildUserInfo extends StatelessWidget {
                 height: ScreenUtil().setHeight(40),
                 decoration: BoxDecoration(
                     color: Colors.orange,
-                    image: DecorationImage(
-                        image:AssetImage("assets/images/icon/iconBell.png")
-                    ),
                     shape: BoxShape.circle
+                ),
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                        "나",
+                        style: TextStyle(
+                            height: 1,
+                            color: Colors.white,
+                            fontSize: ScreenUtil().setWidth(20)
+                        ),
+                    )
                 )
             )
         )
     );
 
-    void _showModalSheet(BuildContext context) {
+    void _showModalSheet(BuildContext context, ChatUserInfo userInfo) {
         showModalBottomSheet(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -255,22 +269,23 @@ class BuildUserInfo extends StatelessWidget {
             context: context,
             builder: (builder) {
                 return Container(
-                    height: ScreenUtil().setHeight(640),
+                    height: ScreenUtil().setHeight(598),
                     decoration: BoxDecoration(
                     ),
                     child: Column(
                         children: <Widget>[
                             Container(
                                 width: ScreenUtil().setWidth(750),
-                                height: ScreenUtil().setHeight(120),
-                                padding: EdgeInsets.all(
-                                    ScreenUtil().setWidth(30)
+                                height: ScreenUtil().setHeight(104),
+                                padding: EdgeInsets.only(
+                                    left: ScreenUtil().setWidth(36),
+                                    right: ScreenUtil().setWidth(36)
                                 ),
                                 decoration: BoxDecoration(
                                     border: Border(
                                         bottom: BorderSide(
-                                            width: ScreenUtil().setWidth(1),
-                                            color: Colors.blue
+                                            width: ScreenUtil().setWidth(2),
+                                            color: Color.fromRGBO(39, 39, 39, 0.15)
                                         )
                                     )
                                 ),
@@ -278,32 +293,35 @@ class BuildUserInfo extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                         Container(
-                                            width: ScreenUtil().setWidth(70),
-                                            height: ScreenUtil().setHeight(40),
+                                            width: ScreenUtil().setWidth(54),
+                                            height: ScreenUtil().setHeight(54),
                                             decoration: BoxDecoration(
-                                                color: Colors.blue,
                                                 image: DecorationImage(
-                                                    image:AssetImage("assets/images/icon/iconBell.png")
+                                                    image:AssetImage(
+                                                        userInfo.businessCard != ""
+                                                        ? "assets/images/icon/iconViewCard.png"
+                                                        : "")
                                                 )
                                             )
                                         ),
                                         Container(
                                             child: Text(
-                                                '강희근',
+                                                userInfo.nick,
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                    fontSize: ScreenUtil().setSp(26),
+                                                    height: 1,
+                                                    fontSize: ScreenUtil().setSp(32),
+                                                    letterSpacing: ScreenUtil().setWidth(-0.8),
                                                     color: Color.fromRGBO(39, 39, 39, 1)
                                                 ),
                                             )
                                         ),
                                         Container(
-                                            width: ScreenUtil().setWidth(70),
+                                            width: ScreenUtil().setWidth(40),
                                             height: ScreenUtil().setHeight(40),
                                             decoration: BoxDecoration(
-                                                color: Colors.blue,
                                                 image: DecorationImage(
-                                                    image:AssetImage("assets/images/icon/iconBell.png")
+                                                    image:AssetImage("assets/images/icon/iconClosePopup.png")
                                                 )
                                             ),
                                             child: FlatButton(
@@ -316,39 +334,61 @@ class BuildUserInfo extends StatelessWidget {
                                 )
                             ),
                             Container(
-                                margin: EdgeInsets.only(
-                                    top: ScreenUtil().setHeight(30),
-                                    bottom: ScreenUtil().setHeight(30),
-                                ),
-                                child: ClipRRect(
-                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                    child: Image.asset(
-                                        userInfo.profileImg,
-                                        width: ScreenUtil().setWidth(180),
-                                        height: ScreenUtil().setWidth(180),
-                                    )
-                                )
-                            ),
-                            Container(
-                                child: Text("안녕하세요. 강희근입니다.")
-                            ),
-                            Container(
-                                padding: EdgeInsets.only(
-                                    left: ScreenUtil().setWidth(50),
-                                    right: ScreenUtil().setWidth(50),
-                                ),
-                                margin: EdgeInsets.only(
-                                    top: ScreenUtil().setHeight(30),
-                                ),
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                height: ScreenUtil().setHeight(492),
+                                child: Column(
                                     children: <Widget>[
-                                        userFunc("assets/images/icon/iconBell.png", "친구 요청", null),
-                                        userFunc("assets/images/icon/iconBell.png", "1:1 채팅", null),
-                                        userFunc("assets/images/icon/iconBell.png", "차단하기", null),
-                                        userFunc("assets/images/icon/iconBell.png", "내보내기", null)
+                                        Container(
+                                            width: ScreenUtil().setWidth(180),
+                                            height: ScreenUtil().setWidth(180),
+                                            margin: EdgeInsets.only(
+                                                top: ScreenUtil().setHeight(32),
+                                                bottom: ScreenUtil().setHeight(26),
+                                            ),
+                                            child: ClipRRect(
+                                                borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                                child: Image.asset(
+                                                    userInfo.profileImg,
+                                                )
+                                            )
+                                        ),
+                                        Container(
+                                            height: ScreenUtil().setHeight(24),
+                                            child: Text(
+                                                userInfo.userIntro,
+                                                style: TextStyle(
+                                                    height: 1,
+                                                    fontSize: ScreenUtil().setSp(26),
+                                                    letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                    color: Color.fromRGBO(107, 107, 107, 1)
+                                                ),
+                                            )
+                                        ),
+                                        Container(
+                                            width: ScreenUtil().setWidth(718),
+                                            padding: EdgeInsets.only(
+                                                left: ScreenUtil().setWidth(16),
+                                                right: ScreenUtil().setWidth(16),
+                                            ),
+                                            margin: EdgeInsets.only(
+                                                top: ScreenUtil().setHeight(42),
+                                            ),
+                                            child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                    userInfo.addFriend
+                                                        ? userFunc("assets/images/icon/iconRequest.png", "친구 요청", null)
+                                                        : Container()
+                                                    ,
+                                                    userFunc("assets/images/icon/iconDirectChat.png", "1:1 채팅", null),
+                                                    userFunc("assets/images/icon/iconBlock.png", "차단하기", null),
+                                                    isHost
+                                                        ? userFunc("assets/images/icon/iconEject.png", "내보내기", null)
+                                                        : Container()
+                                                ],
+                                            ),
+                                        )
                                     ],
-                                ),
+                                )
                             )
                         ],
                     ),
@@ -359,15 +399,16 @@ class BuildUserInfo extends StatelessWidget {
 
     Widget userFunc(String iconSrc, String title,Function fn) {
         return new Container(
+            width: ScreenUtil().setWidth(179.5),
             child: Column(
                 children: <Widget>[
                     GestureDetector(
                         child: Container(
                             margin: EdgeInsets.only(
-                                bottom: ScreenUtil().setHeight(10),
+                                bottom: ScreenUtil().setHeight(18),
                             ),
-                            width: ScreenUtil().setWidth(120),
-                            height: ScreenUtil().setHeight(120),
+                            width: ScreenUtil().setWidth(100),
+                            height: ScreenUtil().setHeight(100),
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(210, 217, 250, 1),
                                 image: DecorationImage(
@@ -380,10 +421,17 @@ class BuildUserInfo extends StatelessWidget {
                             fn();
                         }
                     ),
-                    Text(
-                        title,
-                        style: TextStyle(
-                            fontSize: ScreenUtil().setSp(22)
+                    Container(
+                        height: ScreenUtil().setHeight(24),
+                        child:
+                        Text(
+                            title,
+                            style: TextStyle(
+                                height: 1,
+                                fontSize: ScreenUtil().setSp(26),
+                                letterSpacing: ScreenUtil().setWidth(-0.33),
+                                color: Color.fromRGBO(107, 107, 107, 1)
+                            ),
                         )
                     )
                 ],
