@@ -84,6 +84,7 @@ class _HwaTabState extends State<HwaTab> {
 
          actions: <Widget>[
            IconButton(
+
              icon: Image.asset('assets/images/icon/navIconHot.png'),
              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => TrendPage())),
              padding: EdgeInsets.only(right: 16),
