@@ -19,7 +19,7 @@ import 'package:Hwa/data/models/chat_count_user.dart';
 
 import 'package:Hwa/pages/notice_page.dart';
 import 'package:Hwa/pages/parts/chat_side_menu.dart';
-import 'package:Hwa/pages/parts/chat_message_elements.dart';
+import 'package:Hwa/pages/parts/chat_message_list.dart';
 
 
 /*
@@ -70,6 +70,10 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     bool isFocused;
     // 현재 채팅 좋아요 TODO: 추후 맵핑
     bool isLike;
+    // Focus된 메세지
+    int focusMsg;
+    // 채팅 입력 여부
+    bool isEmpty;
     // 채팅 입력 줄 수
     int inputLineCount;
     // 입력칸 높이
@@ -99,6 +103,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         isFocused = false;
         openedNf = true;
         isLike = false;
+        isEmpty = true;
         inputLineCount = 1;
         _inputHeight = 72;
 
@@ -107,8 +112,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         /// Stomp 초기화
         connectStomp();
         isReceived = false;
-
-        print("### initState");
     }
 
     @override
@@ -155,9 +158,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
      * @description : topic 구독
     */
     void connectStomp() {
-
-        print("### connectStomp");
-
         // connect to MsgServer
         s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
         s.connectWithToken(token: "token");
@@ -181,6 +181,8 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     */
     void messageReceieved(HashMap data) {
         message = new ChatMessage.fromJSON(json.decode(data['contents']));
+
+        print("received!!!!!!!"+json.decode(data['contents']).toString());
 
         ChatMessage cmb = ChatMessage(
             chatType: message.chatType,
@@ -266,29 +268,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         }
     }
 
-    /*
-     * @author : hs
-     * @date : 2019-12-22
-     * @description : 메세지 맵핑
-    */
-    Widget buildMessage(int index, ChatMessage message) {
-        ChatMessageElements cme = ChatMessageElements(
-            chatMessage: message,
-            animationController:
-                isReceived && index == 0
-                ? AnimationController(
-                    duration: Duration(milliseconds: 500),
-                    vsync: this )
-                : null
-            ,
-            isLastSendMessage: isLastSendMessage(index)
-        );
-
-        if(cme.animationController != null) cme.animationController.forward();
-
-        return cme;
-    }
-
     Future<bool> onBackPress() {
         if (isShowMenu) {
             setState(() {
@@ -306,7 +285,10 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     void _onTapTextField() {
         isFocused
             ? null
-            : setState(() {isFocused = true;});
+            : setState(() {
+                isFocused = true;
+                isShowMenu = false;
+            });
     }
 
 
@@ -325,6 +307,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                         fontSize: ScreenUtil.getInstance().setSp(32)
                     ),
                 ),
+                brightness: Brightness.light,
                 leading: new IconButton(
                     icon: new Image.asset('assets/images/icon/navIconPrev.png'),
                     onPressed: (){
@@ -370,7 +353,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                 child: Column(
                                     children: <Widget>[
                                         // List of messages
-                                        buildListMessage(),
+                                        ChatMessageList(messageList: messageList),
 
                                         // Input content
                                         buildInput(),
@@ -523,12 +506,16 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     }
 
     Widget buildMenu() {
+        FocusScope.of(context).unfocus();
+
         return Container(
             width: ScreenUtil().setWidth(750),
             height: ScreenUtil().setHeight(432),
             padding: EdgeInsets.only(
               top: ScreenUtil().setHeight(43),
               bottom: ScreenUtil().setHeight(43),
+              left: ScreenUtil().setHeight(16),
+              right: ScreenUtil().setHeight(16),
             ),
             child: Column(
                 children: <Widget>[
@@ -545,6 +532,12 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
             ),
             decoration: BoxDecoration(
                 color: Colors.white,
+                border: Border(
+                    top: BorderSide(
+                        width: ScreenUtil().setWidth(2),
+                        color: Color.fromRGBO(39, 39, 39, 0.15)
+                    )
+                )
             ),
         );
     }
@@ -552,7 +545,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     Widget buildMenuItem(String imgSrc, String name) {
         return
             Container(
-                width: ScreenUtil().setWidth(179.5),
+                width: ScreenUtil().setWidth(176),
                 height: ScreenUtil().setHeight(173),
                 child: Column(
                     children: <Widget>[
@@ -575,7 +568,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                             )
                         ),
                         Container(
-                            height: ScreenUtil().setHeight(27),
                             child: Text(
                                 name,
                                 style: TextStyle(
@@ -623,23 +615,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                 image:AssetImage(iconPath)
             ),
             shape: BoxShape.circle
-        );
-    }
-
-    //메세지 리스트에 추가
-    Widget buildListMessage() {
-        return Flexible(
-            child: ListView.builder(
-                padding: EdgeInsets.only(
-                    left: ScreenUtil.getInstance().setWidth(16.0),
-                    right: ScreenUtil.getInstance().setWidth(16.0)
-                ),
-                reverse: true,
-
-                itemCount: messageList.length,
-
-                itemBuilder: (BuildContext context, int index) => buildMessage(index, messageList[index]),
-            )
         );
     }
 
@@ -713,14 +688,24 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                                     onTap: _onTapTextField,
                                                     onChanged: (String chat){
                                                         int count = '\n'.allMatches(chat).length + 1;
-                                                        if (inputLineCount == count) {
-                                                            return;
-                                                        } else if (count <= 5) {  // use a maximum height of 6 rows
+                                                        if (chat.length == 0 && inputLineCount == count) {
+                                                            setState(() {
+                                                                isEmpty = true;
+                                                            });
+                                                        } else if (inputLineCount != count && count <= 5) {  // use a maximum height of 6 rows
                                                             // height values can be adapted based on the font size
                                                             var inputHeight = 36.0 + (count * 36.0);
+
                                                             setState(() {
                                                                 inputLineCount = count;
                                                                 _inputHeight = inputHeight;
+
+                                                                if (chat.length == 0) isEmpty = true;
+                                                                else isEmpty = false;
+                                                            });
+                                                        } else {
+                                                            setState(() {
+                                                                isEmpty = false;
                                                             });
                                                         }
                                                     },
@@ -744,14 +729,22 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                         child: Container(
                                             width: ScreenUtil().setWidth(56),
                                             height: ScreenUtil().setHeight(56),
-                                            decoration: setIcon('assets/images/icon/iconSendMessage.png')
+                                            decoration: BoxDecoration(
+                                                color: isEmpty
+                                                            ? Color.fromRGBO(204, 204, 204, 1)
+                                                            : Color.fromRGBO(77, 96, 191, 1)
+                                                ,
+                                                image: DecorationImage(
+                                                    image:AssetImage('assets/images/icon/iconSendMessage.png')
+                                                ),
+                                                shape: BoxShape.circle
+                                            )
                                         ),
                                         onTap:(){
                                             onSendMessage(textEditingController.text, 0);
                                         }
                                     ),
                                     decoration: BoxDecoration(
-                                        color: Color.fromRGBO(245, 245, 245, 1),
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(ScreenUtil().setWidth(36.0))
                                         )
@@ -782,7 +775,11 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                 margin: EdgeInsets.only(right: ScreenUtil().setWidth(0)),
                                 width: ScreenUtil().setWidth(64),
                                 height: ScreenUtil().setHeight(64),
-                                decoration: setIcon('assets/images/icon/iconAttachMore.png')
+                                decoration: setIcon(
+                                    isShowMenu
+                                        ? 'assets/images/icon/iconAttachClose.png'
+                                        : 'assets/images/icon/iconAttachMore.png'
+                                )
                             ),
                             onTap:(){
                                 getMenu();
