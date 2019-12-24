@@ -2,6 +2,9 @@
 # Created by https://www.gitignore.io/api/flutter
 # Edit at https://www.gitignore.io/?templates=flutter
 
+### custom ###
+.idea/
+
 ### Flutter ###
 # Flutter/Dart/Pub related
 **/doc/api/
