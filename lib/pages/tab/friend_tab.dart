@@ -145,19 +145,16 @@ class _FriendTabState extends State<FriendTab> {
         backgroundColor: Colors.white,
         title: Text("단화 친구", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
     ),
-          leading: SizedBox (
-          width: 25.0,
-          height: 25.0,
-          child: FloatingActionButton (
-            heroTag: "profile",
-            backgroundColor: Colors.black54,
-            onPressed: () => Navigator.pushNamed(context, '/profile'),
+          leading: InkWell(
+            onTap: () => Navigator.pushNamed(context, '/profile'),
+            child: CircleAvatar (
+              radius: 55.0,
+              backgroundImage: AssetImage("assets/images/sns/snsIconFacebook.png"),
+            ),
           ),
-        ),
 
         ),
-
-    body: AlphabetListScrollView(
+          body: AlphabetListScrollView(
             strList: strList,
             highlightTextStyle: TextStyle(
               color: Colors.yellow,
@@ -171,6 +168,9 @@ class _FriendTabState extends State<FriendTab> {
             },
             keyboardUsage: true,
             headerWidgetList: <AlphabetScrollListHeader>[
+
+
+
               AlphabetScrollListHeader(widgetList: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),

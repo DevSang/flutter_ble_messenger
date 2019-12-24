@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:Hwa/pages/signup_page.dart';
+import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/app.dart';
 import 'dart:convert';
 
@@ -31,6 +32,7 @@ class _SignInPageState extends State<SignInPage>{
           children: <Widget>[
             _loginMainImage(),
             _loginInputText(),
+            _loginInputCodeField(),
             _SignInButton(),
             _loginText(),
             _socialLogin(),
@@ -59,6 +61,35 @@ class _SignInPageState extends State<SignInPage>{
         )
     );
   }
+
+  //TODO signin API test
+//  signIn(String phone, authCode) async {
+//    SharedPreferences loginPref = await SharedPreferences.getInstance();
+//    Map data = {
+//      'phone': phone,
+//      'authcode': authCode
+//    };
+//
+//    var response = CallApi.commonApiCall(data, 'auth/A05-SignInAuth');
+//    var jsonResponse = null;
+//
+//    if(response.statusCode == 200) {
+//      jsonResponse = json.encode(response.body);
+//      if(jsonResponse != null) {
+//        setState(() {
+//          _isLoading = false;
+//        });
+//        loginPref.setString("token", jsonResponse['token']);
+//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
+//      }
+//    }
+//    else {
+//      setState(() {
+//        _isLoading = false;
+//      });
+//      print(response.body);
+//    }
+//  }
 
   signIn(String phone, authCode) async {
     SharedPreferences loginPref = await SharedPreferences.getInstance();
@@ -94,9 +125,10 @@ class _SignInPageState extends State<SignInPage>{
   Widget _loginInputText() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-      child: Column(
+      child: Row(
         children: <Widget>[
-          TextFormField(
+          Flexible(
+          child: TextFormField(
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
               WhitelistingTextInputFormatter.digitsOnly
@@ -116,16 +148,37 @@ class _SignInPageState extends State<SignInPage>{
             filled: true,
           )
           ),
-          SizedBox(height: 10.0),
+
+          ),
+          Container(
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+              child: Text('인증문자 받기',style: TextStyle(color: Colors.white)),
+              color: Colors.grey,
+              onPressed: () {},
+            ),
+          )
+
+        ],
+      ),
+    );
+  }
+
+  Widget _loginInputCodeField(){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+      child: Column(
+        children: <Widget>[
           TextFormField(
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              WhitelistingTextInputFormatter.digitsOnly
-            ],
-            controller: authCodeController,
-            cursorColor: Colors.white,
-            obscureText: true,
-            style: TextStyle(color: Colors.white70),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
+              ],
+              controller: authCodeController,
+              cursorColor: Colors.white,
+              obscureText: true,
+              style: TextStyle(color: Colors.white70),
 
               decoration: InputDecoration(
                 hintText: "인증번호",
@@ -143,7 +196,6 @@ class _SignInPageState extends State<SignInPage>{
       ),
     );
   }
-
 
   Widget _SignInButton() {
     return Container(

@@ -14,33 +14,32 @@ class HwaTab extends StatefulWidget {
 
 class _HwaTabState extends State<HwaTab> {
 
-
-  List<Note> _notes = List<Note>();
-
-  Future<List<Note>> fetchNotes() async {
-    var url = 'https://raw.githubusercontent.com/boriszv/json/master/random_example.json';
-    var response = await http.get(url);
-
-    var notes = List<Note>();
-
-    if (response.statusCode == 200) {
-      var notesJson = json.decode(response.body);
-      for (var noteJson in notesJson) {
-        notes.add(Note.fromJson(noteJson));
-      }
-    }
-    return notes;
-  }
-
-  @override
-  void initState() {
-    fetchNotes().then((value) {
-      setState(() {
-        _notes.addAll(value);
-      });
-    });
-    super.initState();
-  }
+//  List<Note> _notes = List<Note>();
+//
+//  Future<List<Note>> fetchNotes() async {
+//    var url = 'https://raw.githubusercontent.com/boriszv/json/master/random_example.json';
+//    var response = await http.get(url);
+//
+//    var notes = List<Note>();
+//
+//    if (response.statusCode == 200) {
+//      var notesJson = json.decode(response.body);
+//      for (var noteJson in notesJson) {
+//        notes.add(Note.fromJson(noteJson));
+//      }
+//    }
+//    return notes;
+//  }
+//
+//  @override
+//  void initState() {
+//    fetchNotes().then((value) {
+//      setState(() {
+//        _notes.addAll(value);
+//      });
+//    });
+//    super.initState();
+//  }
 
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
@@ -58,11 +57,9 @@ class _HwaTabState extends State<HwaTab> {
          ),
        ),
          child: ListView(
-
-
-
            children: <Widget>[
-             getLocation()
+             _getLocation(),
+             _mainTalkList()
            ],
          ),
        ),
@@ -75,16 +72,14 @@ class _HwaTabState extends State<HwaTab> {
          ),
 
 
-         leading: SizedBox (
-           width: 25.0,
-           height: 25.0,
-           child: FloatingActionButton (
-             heroTag: "profile",
-             backgroundColor: Colors.black54,
-           onPressed: () => Navigator.pushNamed(context, '/profile'),
-         ),
-         ),
+           leading: InkWell(
+             onTap: () => Navigator.pushNamed(context, '/profile'),
+             child: CircleAvatar (
+               radius: 55.0,
+               backgroundImage: AssetImage("assets/images/sns/snsIconFacebook.png"),
 
+             ),
+           ),
 
          actions: <Widget>[
            IconButton(
@@ -104,7 +99,7 @@ class _HwaTabState extends State<HwaTab> {
   }
 
 
-  Container getLocation() {
+  Widget _getLocation() {
     return Container(
       margin: EdgeInsets.only(top: 10),
       child: Row(
@@ -142,22 +137,53 @@ class _HwaTabState extends State<HwaTab> {
     );
   }
 
-  Container chatListMain(){
+
+Widget _mainTalkList(){
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
       child: Column(
         children: <Widget>[
-          ListView(
-
+          Container(
+            decoration:  BoxDecoration (
+              color: Colors.white,
+          borderRadius: BorderRadius.all( Radius.circular(10.0)),
+    ),
+          child: ListTile(
+            leading: CircleAvatar(
+              backgroundColor: Colors.white,
+              backgroundImage: AssetImage('assets/images/sns/snsIconFacebook.png'),
+            ),
+            title: Text('단화방 제목이 표시되는 자리임',style: TextStyle(fontSize: 17),),
+            subtitle: Text('4명'),
+            trailing: Text('지금'),
+            onTap: () {},
+          ),
+          ),
+          Container(
+            margin: EdgeInsets.only(top: 10, bottom: 0),
+            decoration:  BoxDecoration (
+              color: Colors.white,
+              borderRadius: BorderRadius.all( Radius.circular(10.0)),
+            ),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: Colors.white,
+                backgroundImage: AssetImage('assets/images/sns/snsIconFacebook.png'),
+              ),
+              title: Text('단화방 제목이 표시되는 자리임',style: TextStyle(fontSize: 17),),
+              subtitle: Text('4명'),
+              trailing: Text('지금'),
+              onTap: () {},
+            ),
           )
+
+
+
         ],
+
       ),
-
-
-
     );
-  }
-
-
+}
 
   _getCurrentLocation() {
     geolocator
