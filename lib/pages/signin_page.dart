@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:Hwa/pages/signup_page.dart';
+import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/app.dart';
 import 'dart:convert';
 
@@ -59,6 +60,35 @@ class _SignInPageState extends State<SignInPage>{
         )
     );
   }
+
+  //TODO signin API test
+//  signIn(String phone, authCode) async {
+//    SharedPreferences loginPref = await SharedPreferences.getInstance();
+//    Map data = {
+//      'phone': phone,
+//      'authcode': authCode
+//    };
+//
+//    var response = CallApi.commonApiCall(data, 'auth/A05-SignInAuth');
+//    var jsonResponse = null;
+//
+//    if(response.statusCode == 200) {
+//      jsonResponse = json.encode(response.body);
+//      if(jsonResponse != null) {
+//        setState(() {
+//          _isLoading = false;
+//        });
+//        loginPref.setString("token", jsonResponse['token']);
+//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
+//      }
+//    }
+//    else {
+//      setState(() {
+//        _isLoading = false;
+//      });
+//      print(response.body);
+//    }
+//  }
 
   signIn(String phone, authCode) async {
     SharedPreferences loginPref = await SharedPreferences.getInstance();

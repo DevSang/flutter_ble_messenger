@@ -1,4 +1,7 @@
 class Constant {
+    /// API 관련 변수
+    static final String API_SERVER_HTTP = "http://api.hwaya.net/";
+
     /// Stomp 관련 변수
     static final String CHAT_SERVER_WS = "wss://msg.hwaya.net/danhwa";
     static final String CHAT_SERVER_HTTP = "https://msg.hwaya.net";
