@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:Hwa/pages/signup_name.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:convert' show utf8;
 
 
 
@@ -24,24 +23,52 @@ class _SignUpPageState extends State<SignUpPage>{
       body: Container(
         child: ListView(
             children: <Widget>[
-              headerSection(),
-              regPhoneText(),
+              _regPhoneTextField(),
+              _regPhoneNumTextField(),
               regButton(),
-              regAuthText(),
-              regNextButton(context),
+              _regAuthCodeText(),
+              _regAuthTextField(),
+              _regNextButton(context),
               ]
         ),
-      )
+      ),
+      appBar: AppBar(
+        leading: Padding(
+          padding: EdgeInsets.only(left: 16),
+          child: IconButton(
+            icon: Image.asset("assets/images/icon/navIconPrev.png"),
+            onPressed: () => Navigator.of(context).pop(null),
+          ),
+        ),
+      centerTitle: true,
+      backgroundColor: Colors.white,
+      title: Text("회원가입",style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
+      ),
+    ),
       );
   }
 }
 
 final TextEditingController _phoneRegController = new TextEditingController();
-final TextEditingController _phoneRegAuthController = new TextEditingController();
 
-Container regPhoneText() {
+Widget _regPhoneTextField(){
   return Container(
-      child:  TextFormField(
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      margin: EdgeInsets.only(top: 20, bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("휴대폰번호 입력",style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+        ],
+      )
+  );
+}
+
+
+Widget _regPhoneNumTextField(){
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 15.0),
+    child: TextFormField(
         maxLength: 11,
         onChanged: (regPhoneNum) {
           print(regPhoneNum);
@@ -49,21 +76,30 @@ Container regPhoneText() {
         onFieldSubmitted: (regPhoneNum) {
           print('회원가입 전화번호  :$regPhoneNum');
         },
-  keyboardType: TextInputType.number,
-  inputFormatters: <TextInputFormatter>[
-  WhitelistingTextInputFormatter.digitsOnly
-  ],
-  controller: _phoneRegController,
-  cursorColor: Colors.white,
-  style: TextStyle(color: Colors.black),
-  decoration: InputDecoration(
-    hintText: "전화번호 입력",
-  border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-  hintStyle: TextStyle(color: Colors.black),
-  ),
-  ),
+        keyboardType: TextInputType.number,
+        inputFormatters: <TextInputFormatter>[
+          WhitelistingTextInputFormatter.digitsOnly
+        ],
+        controller: _phoneRegController,
+        cursorColor: Colors.white,
+        obscureText: true,
+        style: TextStyle(color: Colors.white70),
+
+        decoration: InputDecoration(
+          hintText: "휴대폰번호 ( -없이 숫자만 입력)",
+          hintStyle: TextStyle(color: Colors.black38),
+          border:  OutlineInputBorder(
+            borderRadius:  BorderRadius.circular(10.0),
+            borderSide:  BorderSide(
+            ),
+          ),
+          fillColor: Colors.grey[200],
+          filled: true,
+        )
+    ),
   );
 }
+
 
 postTest() async {
   final uri = 'https://api.hwaya.net/auth/A01-SignUpAuth';
@@ -102,11 +138,27 @@ Container regButton(){
 
 
 
-
-
-Container regAuthText() {
+Widget _regAuthCodeText(){
   return Container(
-    child:  TextFormField(
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
+      margin: EdgeInsets.only(top: 20, bottom: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text("인증번호 입력",style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+        ],
+      )
+  );
+}
+
+final TextEditingController _regAuthCodeController = new TextEditingController();
+
+
+
+Widget _regAuthTextField(){
+  return Container(
+    padding: EdgeInsets.symmetric(horizontal: 15.0),
+    child: TextFormField(
       maxLength: 6,
       onChanged: (regAuthCode) {
         print(regAuthCode);
@@ -118,42 +170,45 @@ Container regAuthText() {
       inputFormatters: <TextInputFormatter>[
         WhitelistingTextInputFormatter.digitsOnly
       ],
-      controller: _phoneRegAuthController,
+      controller: _regAuthCodeController,
       cursorColor: Colors.white,
-      style: TextStyle(color: Colors.black),
-      decoration: InputDecoration(
-        hintText: "인증번호 입력",
-        border: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
-        hintStyle: TextStyle(color: Colors.black),
-      ),
-    ),
-  );
-}
+      obscureText: true,
+      style: TextStyle(color: Colors.white70),
 
-Container regNextButton(BuildContext context){
-  return Container(
-      padding: EdgeInsets.only(left: 50, right: 50),
-  child: RaisedButton(
-    child: Text("다음", style: TextStyle(color: Colors.white)),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-      onPressed: () {
-        Navigator.pushNamed(context, '/register2');
-        },
+      decoration: InputDecoration(
+        hintText: "인증번호",
+        hintStyle: TextStyle(color: Colors.black38),
+        border:  OutlineInputBorder(
+          borderRadius:  BorderRadius.circular(10.0),
+          borderSide:  BorderSide(
+          ),
+        ),
+        fillColor: Colors.grey[200],
+        filled: true,
+      )
   ),
   );
 }
 
-Container headerSection() {
+
+Widget _regNextButton(BuildContext context){
   return Container(
-    margin: EdgeInsets.only(top: 50.0),
-    padding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
-    child: Text("회원 가입화면 ",
-        style: TextStyle(
-            color: Colors.black,
-            fontSize: 40.0,
-            fontWeight: FontWeight.bold)),
+  width: MediaQuery.of(context).size.width,
+  height: 50.0,
+  padding: EdgeInsets.symmetric(horizontal: 15.0),
+  child: RaisedButton(
+  onPressed:(){
+  Navigator.pushNamed(context, '/register2');
+  },
+    color: Colors.black38,
+    elevation: 0.0,
+  child: Text("다음", style: TextStyle(color: Colors.white)),
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+  ),
   );
 }
+
+
 
 
 

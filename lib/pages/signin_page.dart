@@ -29,9 +29,11 @@ class _SignInPageState extends State<SignInPage>{
         ),
         child: _isLoading ? Center(child: CircularProgressIndicator()) : ListView(
           children: <Widget>[
-            _LoginMainImage(),
+            _loginMainImage(),
             _loginInputText(),
             _SignInButton(),
+            _loginText(),
+            _socialLogin(),
             _registerSection(),
           ],
         ),
@@ -47,12 +49,12 @@ class _SignInPageState extends State<SignInPage>{
   }
 
 
-
-  Widget _LoginMainImage(){
+  Widget _loginMainImage(){
     return Container(
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset('assets/background/bgGradeLogin.png', width: 100, height: 100)
+              Image.asset('assets/images/visualImageLogin.png', width: 200, height: 200)
               ]
         )
     );
@@ -91,7 +93,7 @@ class _SignInPageState extends State<SignInPage>{
 
   Widget _loginInputText() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 20.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
       child: Column(
         children: <Widget>[
           TextFormField(
@@ -114,7 +116,7 @@ class _SignInPageState extends State<SignInPage>{
             filled: true,
           )
           ),
-          SizedBox(height: 30.0),
+          SizedBox(height: 10.0),
           TextFormField(
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
@@ -146,9 +148,8 @@ class _SignInPageState extends State<SignInPage>{
   Widget _SignInButton() {
     return Container(
       width: MediaQuery.of(context).size.width,
-      height: 40.0,
+      height: 50.0,
       padding: EdgeInsets.symmetric(horizontal: 15.0),
-      margin: EdgeInsets.only(top: 15.0),
       child: RaisedButton(
         onPressed: phoneController.text.isEmpty || authCodeController.text.isEmpty ? null : () {
           setState(() {
@@ -163,18 +164,60 @@ class _SignInPageState extends State<SignInPage>{
     );
   }
 
+  Widget _loginText(){
+    return Container(
+        margin: EdgeInsets.only(top: 20, bottom: 10),
+      child: Column(
+       crossAxisAlignment: CrossAxisAlignment.center,
+       children: <Widget>[
+       Text("Or Sign in with",style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans'))
+       ],
+      )
+    );
+  }
+
+  Widget _socialLogin(){
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          InkWell(
+            child: Image.asset('assets/images/sns/snsIconKakao.png')
+          ),
+
+          InkWell(
+              child: Text("Kakao", style: TextStyle(color: Colors.black38, fontSize: 14,fontFamily: 'NotoSans'),
+              )
+          ),
+          InkWell(
+              child: Image.asset('assets/images/sns/snsIconFacebook.png')
+          ),
+          InkWell(
+              child: Text("Facebook", style: TextStyle(color: Colors.black38, fontSize: 14,fontFamily: 'NotoSans'))
+          ),
+          InkWell(
+              child: Image.asset('assets/images/sns/snsIconGoogle.png')
+          ),
+          InkWell(
+              child: Text("Google", style: TextStyle(color: Colors.black38, fontSize: 14,fontFamily: 'NotoSans'))
+          ),
+
+        ],
+      ),
+    );
+  }
 
   Widget _registerSection(){
     return Container(
+      margin: EdgeInsets.only(top: 40, bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-
           InkWell(
             child: Text("New Here? ", style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans'))
           ),
           InkWell(
-            child: Text("Sign Up", style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans')),
+            child: Text("Sign Up", style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans',fontWeight: FontWeight.bold)),
               onTap: (){ Navigator.pushNamed(context, '/register');
               },
           )
