@@ -43,11 +43,13 @@ flutter:
   fonts:
     - family: NotoSans
       fonts:
-        - asset: assets/fonts/NotoSansKR-Bold.otf
         - asset: assets/fonts/NotoSansKR-Regular.otf
+          weight: 400
+        - asset: assets/fonts/NotoSansKR-Bold.otf
         - asset: assets/fonts/NotoSansKR-Black.otf
         - asset: assets/fonts/NotoSansKR-Light.otf
         - asset: assets/fonts/NotoSansKR-Medium.otf
+          weight: 500
         - asset: assets/fonts/NotoSansKR-Thin.otf
     - family: NanumSquare
       fonts:
@@ -94,6 +96,7 @@ flutter:
     - assets/images/icon/navIconPrev.png
     - assets/images/icon/navIconMenu.png
     - assets/images/icon/navIconSearch.png
+    - assets/images/icon/navIconWrite.png
     - assets/images/icon/tabIconChat.png
     - assets/images/icon/tabIconChatActive.png
     - assets/images/icon/tabIconFriend.png

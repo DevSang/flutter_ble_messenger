@@ -9,6 +9,8 @@ import 'package:Hwa/pages/signin_page.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
 import 'package:Hwa/pages/notice_page.dart';
+import 'package:Hwa/pages/notice_write_page.dart';
+import 'package:Hwa/pages/notice_detail_page.dart';
 
 Future main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -40,6 +42,8 @@ class MyApp extends StatelessWidget {
         '/trend': (context) => TrendPage(), // trend
         '/chatroom': (context) => ChatroomPage(),
         '/notice': (context) => NoticePage(),
+        '/notice_write': (context) => NoticeWritePage(),
+        '/notice_detail': (context) => NoticeDetailPage(),
         }
     );
   }
