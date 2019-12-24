@@ -74,6 +74,7 @@ class _HwaTabState extends State<HwaTab> {
          title: Text("단화방", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
          ),
 
+
            leading: InkWell(
              onTap: () => Navigator.pushNamed(context, '/profile'),
              child: CircleAvatar (
