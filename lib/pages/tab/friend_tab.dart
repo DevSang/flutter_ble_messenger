@@ -141,10 +141,23 @@ class _FriendTabState extends State<FriendTab> {
     var currentStr = "";
     return MaterialApp(
         home: Scaffold(
-          appBar: AppBar(
-            title: const Text('HWA Friends'),
+        appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: Text("단화 친구", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
+    ),
+          leading: SizedBox (
+          width: 25.0,
+          height: 25.0,
+          child: FloatingActionButton (
+            heroTag: "profile",
+            backgroundColor: Colors.black54,
+            onPressed: () => Navigator.pushNamed(context, '/profile'),
           ),
-          body: AlphabetListScrollView(
+        ),
+
+        ),
+
+    body: AlphabetListScrollView(
             strList: strList,
             highlightTextStyle: TextStyle(
               color: Colors.yellow,

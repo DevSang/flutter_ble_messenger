@@ -1,12 +1,12 @@
-//class ChatMain {
-//  final String chatName;
-//  final String chatImage;
-//  final String chatJoinNum;
-//  final String chatStatus;
-//  final String chatPopular;
-//
-//  ChatMain({this.chatName,this.chatImage,this.chatJoinNum,this.chatStatus, this.chatPopular});
-//  }
+class ChatMain {
+  final String chatName;
+  final String chatImage;
+  final String chatJoinNum;
+  final String chatStatus;
+  final String chatPopular;
+
+  ChatMain({this.chatName,this.chatImage,this.chatJoinNum,this.chatStatus, this.chatPopular});
+  }
 
 
 class Note {

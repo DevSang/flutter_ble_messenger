@@ -1,4 +1,3 @@
-
 import 'package:Hwa/data/models/chat_user_info.dart';
 
 class SetUserDataOnline {
