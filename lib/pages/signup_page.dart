@@ -202,7 +202,7 @@ Widget _regNextButton(BuildContext context){
   },
     color: Colors.black38,
     elevation: 0.0,
-  child: Text("다음", style: TextStyle(color: Colors.white)),
+  child: Text("다음", style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans')),
   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
   ),
   );
