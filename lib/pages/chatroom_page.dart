@@ -478,7 +478,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                             onTap: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                        return NoticePage();
+                                        return NoticePage(chatIdx: 0);
                                     })
                                 );
                             },

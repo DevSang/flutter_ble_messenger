@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
 import 'package:Hwa/pages/parts/set_chat_notice_data.dart';
 import 'package:intl/intl.dart';
+import 'package:Hwa/pages/notice_write_page.dart';
+import 'package:Hwa/pages/notice_detail_page.dart';
 
 /*
  * @project : HWA - Mobile
@@ -47,9 +49,13 @@ class NoticePageState extends State<NoticePage> {
                 actions:[
                     Builder(
                         builder: (context) => IconButton(
-                            icon: new Image.asset('assets/images/icon/navIconMenu.png'),
+                            icon: new Image.asset('assets/images/icon/navIconWrite.png'),
                             onPressed: () {
-                                // TODO: Write Notice
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder: (context) {
+                                        return NoticeWritePage(chatIdx: 0);
+                                    })
+                                );
                             },
                         ),
                     ),
@@ -140,13 +146,13 @@ class NoticePageState extends State<NoticePage> {
     Widget buildNoticeItem(ChatNoticeItem chatNoticeItem) {
         return new Container(
             padding: EdgeInsets.only(
-                top: ScreenUtil().setWidth(19),
+                top: ScreenUtil().setWidth(17),
                 bottom: ScreenUtil().setWidth(18),
                 left: ScreenUtil().setWidth(16),
                 right: ScreenUtil().setWidth(16),
             ),
             margin: EdgeInsets.only(
-                bottom: ScreenUtil().setWidth(10)
+                bottom: ScreenUtil().setHeight(10)
             ),
             color: Colors.white,
             child: Row(
@@ -154,6 +160,7 @@ class NoticePageState extends State<NoticePage> {
                 children: <Widget>[
                     Container(
                         margin: EdgeInsets.only(
+                            top: ScreenUtil().setHeight(2),
                             right: ScreenUtil().setWidth(11.5)
                         ),
                         child: ClipRRect(
@@ -172,7 +179,6 @@ class NoticePageState extends State<NoticePage> {
                         child: Column (
                             children: <Widget>[
                                 Container(
-                                    color: Colors.amber,
                                     width: ScreenUtil().setWidth(245),
                                     margin: EdgeInsets.only(
                                         bottom: ScreenUtil().setWidth(6)
@@ -237,12 +243,14 @@ class NoticePageState extends State<NoticePage> {
                         )
                     ),
                     Container(
+                        margin: EdgeInsets.only(
+                            top: ScreenUtil().setHeight(2),
+                        ),
                         child: GestureDetector(
                             child: Container(
                                 width: ScreenUtil().setWidth(20),
                                 height: ScreenUtil().setHeight(20),
                                 decoration: BoxDecoration(
-                                    color: Colors.blue,
                                     image: DecorationImage(
                                         image:AssetImage("assets/images/icon/iconActionMenuOpen.png")
                                     ),
