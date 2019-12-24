@@ -197,9 +197,6 @@ class _SignInPageState extends State<SignInPage>{
     );
   }
 
-
-
-
   Widget _SignInButton() {
     return Container(
       width: MediaQuery.of(context).size.width,
