@@ -74,17 +74,13 @@ class _HwaTabState extends State<HwaTab> {
          title: Text("단화방", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
          ),
 
-
-         leading: SizedBox (
-           width: 25.0,
-           height: 25.0,
-           child: FloatingActionButton (
-             heroTag: "profile",
-             backgroundColor: Colors.black54,
-           onPressed: () => Navigator.pushNamed(context, '/profile'),
-         ),
-         ),
-
+           leading: InkWell(
+             onTap: () => Navigator.pushNamed(context, '/profile'),
+             child: CircleAvatar (
+               radius: 55.0,
+               backgroundImage: AssetImage("assets/images/sns/snsIconFacebook.png"),
+             ),
+           ),
 
          actions: <Widget>[
            IconButton(
