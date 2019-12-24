@@ -3,7 +3,6 @@ import 'package:Hwa/utility/eval.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:js';
 import 'package:flutter_test/flutter_test.dart';
 
 /*
