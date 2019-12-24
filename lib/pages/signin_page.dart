@@ -32,6 +32,7 @@ class _SignInPageState extends State<SignInPage>{
           children: <Widget>[
             _loginMainImage(),
             _loginInputText(),
+            _loginInputCodeField(),
             _SignInButton(),
             _loginText(),
             _socialLogin(),
@@ -124,9 +125,10 @@ class _SignInPageState extends State<SignInPage>{
   Widget _loginInputText() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-      child: Column(
+      child: Row(
         children: <Widget>[
-          TextFormField(
+          Flexible(
+          child: TextFormField(
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
               WhitelistingTextInputFormatter.digitsOnly
@@ -146,16 +148,37 @@ class _SignInPageState extends State<SignInPage>{
             filled: true,
           )
           ),
-          SizedBox(height: 10.0),
+
+          ),
+          Container(
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5.0)),
+              child: Text('인증문자 받기',style: TextStyle(color: Colors.white)),
+              color: Colors.grey,
+              onPressed: () {},
+            ),
+          )
+
+        ],
+      ),
+    );
+  }
+
+  Widget _loginInputCodeField(){
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+      child: Column(
+        children: <Widget>[
           TextFormField(
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              WhitelistingTextInputFormatter.digitsOnly
-            ],
-            controller: authCodeController,
-            cursorColor: Colors.white,
-            obscureText: true,
-            style: TextStyle(color: Colors.white70),
+              keyboardType: TextInputType.number,
+              inputFormatters: <TextInputFormatter>[
+                WhitelistingTextInputFormatter.digitsOnly
+              ],
+              controller: authCodeController,
+              cursorColor: Colors.white,
+              obscureText: true,
+              style: TextStyle(color: Colors.white70),
 
               decoration: InputDecoration(
                 hintText: "인증번호",
@@ -173,6 +196,8 @@ class _SignInPageState extends State<SignInPage>{
       ),
     );
   }
+
+
 
 
   Widget _SignInButton() {
