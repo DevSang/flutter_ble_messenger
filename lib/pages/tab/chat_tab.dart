@@ -35,7 +35,7 @@ class _ChatTabState extends State<ChatTab> {
       InkWell(
         child: Text('|', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'NotoSans'))),
           InkWell(
-            child: Text('최신순', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'NotoSans')),
+            child: Text('참여날짜순', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'NotoSans')),
               )
         ],
     ),

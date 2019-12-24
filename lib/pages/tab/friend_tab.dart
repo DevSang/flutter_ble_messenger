@@ -154,8 +154,7 @@ class _FriendTabState extends State<FriendTab> {
           ),
 
         ),
-
-    body: AlphabetListScrollView(
+          body: AlphabetListScrollView(
             strList: strList,
             highlightTextStyle: TextStyle(
               color: Colors.yellow,
@@ -169,6 +168,9 @@ class _FriendTabState extends State<FriendTab> {
             },
             keyboardUsage: true,
             headerWidgetList: <AlphabetScrollListHeader>[
+
+
+
               AlphabetScrollListHeader(widgetList: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
