@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 const String name = "hwa";
 
@@ -67,11 +68,13 @@ class ChatMessageElementsState extends State<ChatMessageList> {
         // chatType(TALK, ENTER, QUIT)에 따른 화면 처리
         Widget chatElement = chatMessage.chatType == "TALK"
             ? receivedMsg
-            ? receivedBubble(chatIndex, chatMessage)
-            : sendBubble(chatIndex, chatMessage, isLastSendMessage)
+                ? receivedBubble(chatIndex, chatMessage)
+                : sendBubble(chatIndex, chatMessage, isLastSendMessage)
             : chatMessage.chatType == "ENTER"
-            ? enterNotice(chatMessage)
-            : quitNotice(chatMessage);
+                ? enterNotice(chatMessage)
+                : chatMessage.chatType == "IMAGE"
+                    ? sendImageBubble(chatIndex, chatMessage, isLastSendMessage)
+                    : quitNotice(chatMessage);
 
         return Container(
             child: Row(
@@ -293,4 +296,48 @@ class ChatMessageElementsState extends State<ChatMessageList> {
             )
         );
     }
+
+    // 보낸 이미지 스타일
+    Widget sendImageBubble(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage) {
+        return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+                Container(
+                    color: Color.fromRGBO(166, 181, 255, 1),
+                    alignment: AlignmentDirectional(0.0, 0.0),
+                    width: 10,
+                    child: Container(
+                        padding: const EdgeInsets.only(top:3.0, bottom: 3.0),
+                        decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.only(
+                                bottomRight: Radius.circular(10.0)
+                            ),
+                            color: Color.fromRGBO(210, 217, 250, 1)
+                        )
+                    ),
+                ),
+                Container(
+                    margin: EdgeInsets.only(
+                        bottom:
+                        isLastSendMessage
+                            ? ScreenUtil.getInstance().setHeight(28)
+                            : ScreenUtil.getInstance().setHeight(0)
+                    ),
+                    constraints: BoxConstraints(maxWidth: 230),
+                    padding: const EdgeInsets.all(8.0),
+                    child: CachedNetworkImage(
+                        placeholder: (context, url) => CircularProgressIndicator(),
+                        imageUrl: chatMessage.message,
+                    ),
+                    decoration: BoxDecoration(
+                        color: Color.fromRGBO(166, 181, 255, 1),
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(ScreenUtil.getInstance().setWidth(8))
+                        )
+                    ),
+                )
+            ],
+        );
+    }
 }
+

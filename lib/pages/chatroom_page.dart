@@ -211,12 +211,13 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-
+        print(imageFile.path);
         if (imageFile != null) {
             setState(() {
-                isLoading = true;
+                isLoading = false;
             });
-            uploadFile();
+//            uploadFile();
+            onSendMessage(imageFile.path, 1);
         }
     }
 
@@ -228,21 +229,21 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         });
     }
 
-    Future uploadFile() async {
-        String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-        // TODO: upload Image
-    }
-
     void onSendMessage(String content, int type) {
         // type: 0 = text, 1 = image, 2 = sticker
+
+
         if (content.trim() != '') {
             textEditingController.clear();
+            var sendType = type == 0
+                                ? "TALK"
+                                : type == 1
+                                    ? "IMAGE"
+                                    : "STICKER";
             final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
-
-            String message = '{"type":"TALK","roomIdx":1,"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content + '","userCountObj":null,"createTs":' + now.toString() + '}';
+            String message = '{"type": "'+ sendType +'","roomIdx":1,"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content + '","userCountObj":null,"createTs":' + now.toString() + '}';
 
             print(message);
-
             print(s);
 
             s.send(
@@ -254,6 +255,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
             Fluttertoast.showToast(msg: '메세지를 입력해주세요.');
         }
     }
+
 
     /*
      * @author : hs
