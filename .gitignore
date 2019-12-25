@@ -4,6 +4,12 @@
 
 ### custom ###
 .idea/
+.idea/libraries/Dart_Packages.xml
+.idea/libraries/Flutter_Plugins.xml
+.idea/workspace.xml
+.packages
+*.log
+pubspec.lock
 
 ### Flutter ###
 # Flutter/Dart/Pub related

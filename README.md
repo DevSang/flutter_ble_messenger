@@ -28,7 +28,6 @@ flutter pub get
 * built_value: https://pub.dev/packages/built_value Immutable value types; EnumClass, classes that behave like enums;JSON serialization 
 * tuple: https://pub.dev/packages/tuple 튜플 자료형을 사용할 수 있음
 
-
 ## Reference
 1. Flutter CI/CD
  - https://docs.google.com/presentation/d/1G_ZqZ6K6DboY_2y-YJQGcGiCTGiHto7dkaywcU30eqM/edit#slide=id.g793529b7f2_0_234

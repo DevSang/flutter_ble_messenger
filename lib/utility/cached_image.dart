@@ -8,26 +8,16 @@ import 'package:flutter_test/flutter_test.dart';
  * @project : HWA - Mobile
  * @author : sh
  * @date : 2019-12-24
- * @description : Call api utility
- *              - return : response(No Json encode) || Error
+ * @description : About cache image fucntion
+ *                image type - business card image(BCI)
+ *                           - my profile image(MPI)
+ *                           - frei
  */
 class CachedImage {
-  static commonApiCall(Map data, uri) async {
-    var responseBody = null;
-    try {
-      var response = await http.post(Constant.API_SERVER_HTTP + uri, body: data);
+  static saveImageCache(String type) async {
 
-      if(response.statusCode == 200) {
-        responseBody = json.encode(response.body);
-        if(responseBody != null) {
-          return response;
-        } else {
-          print("#No response" + json.decode(response.body));
-          return false;
-        }
-      }
-    } catch (e) {
-      expect(e, isUnsupportedError);
-    }
+  }
+  static getImageCache(Map data, uri) async {
+
   }
 }
