@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Hwa/data/models/chat_notice_item.dart';
 import 'package:Hwa/pages/parts/set_chat_notice_data.dart';
-import 'package:intl/intl.dart';
+import 'package:Hwa/utility/convert_time.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:Hwa/utility/action_sheet.dart';
+
 import 'package:Hwa/pages/notice_write_page.dart';
 import 'package:Hwa/pages/notice_detail_page.dart';
+import 'package:Hwa/data/models/chat_notice_item.dart';
 
 /*
  * @project : HWA - Mobile
@@ -36,6 +39,7 @@ class NoticePageState extends State<NoticePage> {
                 title: Text(
                     "코엑스 별마당 도서관",
                     style: TextStyle(
+                        fontFamily: "NotoSans",
                         color: Color.fromRGBO(39, 39, 39, 1),
                         fontSize: ScreenUtil.getInstance().setSp(16)
                     ),
@@ -125,6 +129,9 @@ class NoticePageState extends State<NoticePage> {
                     index == 1 ? '공지' : '투표',
                     textAlign: TextAlign.center,
                     style: TextStyle(
+                        fontFamily: "NotoSans",
+                        fontWeight: FontWeight.w500,
+                        fontSize: ScreenUtil().setSp(14),
                         color: textColor
                     ),
                 ),
@@ -144,131 +151,144 @@ class NoticePageState extends State<NoticePage> {
     }
 
     Widget buildNoticeItem(ChatNoticeItem chatNoticeItem) {
-        return new Container(
-            padding: EdgeInsets.only(
-                top: ScreenUtil().setWidth(17),
-                bottom: ScreenUtil().setWidth(18),
-                left: ScreenUtil().setWidth(16),
-                right: ScreenUtil().setWidth(16),
-            ),
-            margin: EdgeInsets.only(
-                bottom: ScreenUtil().setHeight(10)
-            ),
-            color: Colors.white,
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.only(
-                            top: ScreenUtil().setHeight(2),
-                            right: ScreenUtil().setWidth(11.5)
-                        ),
-                        child: ClipRRect(
-                            borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(45)),
-                            child: Image.asset(
-                                chatNoticeItem.userImg,
-                                width: ScreenUtil().setWidth(45),
-                                height: ScreenUtil().setWidth(45),
+        return new GestureDetector(
+            child: Container(
+                padding: EdgeInsets.only(
+                    top: ScreenUtil().setWidth(17),
+                    bottom: ScreenUtil().setWidth(18),
+                    left: ScreenUtil().setWidth(16),
+                    right: ScreenUtil().setWidth(16),
+                ),
+                margin: EdgeInsets.only(
+                    bottom: ScreenUtil().setHeight(10)
+                ),
+                color: Colors.white,
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                        Container(
+                            margin: EdgeInsets.only(
+                                top: ScreenUtil().setHeight(2),
+                                right: ScreenUtil().setWidth(11.5)
+                            ),
+                            child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(45)),
+                                child: Image.asset(
+                                    chatNoticeItem.userImg,
+                                    width: ScreenUtil().setWidth(45),
+                                    height: ScreenUtil().setWidth(45),
+                                )
                             )
-                        )
-                    ),
-                    Container(
-                        margin: EdgeInsets.only(
-                            right: ScreenUtil().setWidth(21)
                         ),
-                        child: Column (
-                            children: <Widget>[
-                                Container(
-                                    width: ScreenUtil().setWidth(245),
-                                    margin: EdgeInsets.only(
-                                        bottom: ScreenUtil().setWidth(6)
-                                    ),
-                                    child: Text(
-                                        chatNoticeItem.content,
-                                        style: TextStyle(
-                                            fontSize: ScreenUtil().setSp(15),
-                                            color: Color.fromRGBO(39, 39, 39, 1),
-                                            letterSpacing: ScreenUtil().setWidth(-0.75),
-                                            height: 1.5,
+                        Container(
+                            margin: EdgeInsets.only(
+                                top: ScreenUtil().setHeight(0),
+                                right: ScreenUtil().setWidth(21)
+                            ),
+                            child: Column (
+                                children: <Widget>[
+                                    Container(
+                                        width: ScreenUtil().setWidth(245),
+                                        margin: EdgeInsets.only(
+                                            bottom: ScreenUtil().setWidth(6)
+                                        ),
+                                        child: Text(
+                                            chatNoticeItem.content,
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: ScreenUtil().setSp(15),
+                                                color: Color.fromRGBO(39, 39, 39, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.75),
+                                                height: 1.5,
 
+                                            ),
+                                        )
+                                    ),
+                                    Container(
+                                        width: ScreenUtil().setWidth(245),
+                                        height: ScreenUtil().setHeight(13.5),
+                                        child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            children: <Widget>[
+                                                Container(
+                                                    margin: EdgeInsets.only(
+                                                        right: ScreenUtil().setWidth(13.5)
+                                                    ),
+                                                    child: Text(
+                                                        ConvertTime().getTime(chatNoticeItem.regTime),
+                                                        style: TextStyle(
+                                                            fontFamily: "NanumSquare",
+                                                            fontWeight: FontWeight.w400,
+                                                            fontSize: ScreenUtil().setSp(13),
+                                                            height: 1.1,
+                                                            color: Color.fromRGBO(107, 107, 107, 1)
+                                                        ),
+                                                    ),
+                                                ),
+                                                Container(
+                                                    margin: EdgeInsets.only(
+                                                        right: ScreenUtil().setWidth(5.5)
+                                                    ),
+                                                    child: Text(
+                                                        '댓글',
+                                                        style: TextStyle(
+                                                            fontFamily: "NotoSans",
+                                                            fontWeight: FontWeight.w400,
+                                                            fontSize: ScreenUtil().setSp(13),
+                                                            height: 1.1,
+                                                            color: Color.fromRGBO(107, 107, 107, 1)
+                                                        ),
+                                                    ),
+                                                ),
+                                                Container(
+                                                    child: Text(
+                                                        chatNoticeItem.replyCount.toString(),
+                                                        style: TextStyle(
+                                                            fontFamily: "NanumSquare",
+                                                            fontWeight: FontWeight.w400,
+                                                            fontSize: ScreenUtil().setSp(13),
+                                                            height: 1.1,
+                                                            color: Color.fromRGBO(107, 107, 107, 1)
+                                                        ),
+                                                    ),
+                                                )
+                                            ],
+                                        )
+                                    )
+                                ],
+                            )
+                        ),
+                        Container(
+                            margin: EdgeInsets.only(
+                                top: ScreenUtil().setHeight(2),
+                            ),
+                            child: GestureDetector(
+                                child: Container(
+                                    width: ScreenUtil().setWidth(20),
+                                    height: ScreenUtil().setHeight(20),
+                                    decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image:AssetImage("assets/images/icon/iconActionMenuOpen.png")
                                         ),
                                     )
                                 ),
-                                Container(
-                                    width: ScreenUtil().setWidth(245),
-                                    height: ScreenUtil().setHeight(13.5),
-                                    child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        children: <Widget>[
-                                            Container(
-                                                margin: EdgeInsets.only(
-                                                    right: ScreenUtil().setWidth(13.5)
-                                                ),
-                                                child: Text(
-                                                    getTime(chatNoticeItem.regTime),
-                                                    style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(13),
-                                                        height: 1.1,
-                                                        color: Color.fromRGBO(107, 107, 107, 1)
-                                                    ),
-                                                ),
-                                            ),
-                                            Container(
-                                                margin: EdgeInsets.only(
-                                                    right: ScreenUtil().setWidth(5.5)
-                                                ),
-                                                child: Text(
-                                                    '댓글',
-                                                    style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(13),
-                                                        height: 1.1,
-                                                        color: Color.fromRGBO(107, 107, 107, 1)
-                                                    ),
-                                                ),
-                                            ),
-                                            Container(
-                                                child: Text(
-                                                    chatNoticeItem.replyCount.toString(),
-                                                    style: TextStyle(
-                                                        fontSize: ScreenUtil().setSp(13),
-                                                        height: 1.1,
-                                                        color: Color.fromRGBO(107, 107, 107, 1)
-                                                    ),
-                                                ),
-                                            )
-                                        ],
-                                    )
-                                )
-                            ],
-                        )
-                    ),
-                    Container(
-                        margin: EdgeInsets.only(
-                            top: ScreenUtil().setHeight(2),
-                        ),
-                        child: GestureDetector(
-                            child: Container(
-                                width: ScreenUtil().setWidth(20),
-                                height: ScreenUtil().setHeight(20),
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image:AssetImage("assets/images/icon/iconActionMenuOpen.png")
-                                    ),
-                                )
+                                onTap:(){
+                                    showCupertinoModalPopup(context: context, builder: (context) => ActionSheet());
+                                    print("clicked");
+                                }
                             ),
-                            onTap:(){
-
-                            }
-                        ),
-                    )
-                ],
-            )
+                        )
+                    ],
+                )
+            ),
+            onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) {
+                        return NoticeDetailPage(notice: chatNoticeItem);
+                    })
+                );
+            },
         );
-    }
-
-    String getTime(targetDate) {
-        DateTime converted = new DateTime.fromMicrosecondsSinceEpoch(targetDate*1000);
-        String time = DateFormat('yyyy.MM.dd  h:mma').format(converted);
-        return time;
     }
 }

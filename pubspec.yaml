@@ -47,6 +47,7 @@ flutter:
         - asset: assets/fonts/NotoSansKR-Regular.otf
           weight: 400
         - asset: assets/fonts/NotoSansKR-Bold.otf
+          weight: 600
         - asset: assets/fonts/NotoSansKR-Black.otf
         - asset: assets/fonts/NotoSansKR-Light.otf
         - asset: assets/fonts/NotoSansKR-Medium.otf
@@ -55,7 +56,9 @@ flutter:
     - family: NanumSquare
       fonts:
         - asset: assets/fonts/NanumSquare_acR.ttf
+          weight: 400
         - asset: assets/fonts/NanumSquare_acB.ttf
+          weight: 500
         - asset: assets/fonts/NanumSquare_acL.ttf
         - asset: assets/fonts/NanumSquare_acEB.ttf
 
@@ -73,6 +76,7 @@ flutter:
     - assets/images/icon/iconBounds.png
     - assets/images/icon/iconCar.png
     - assets/images/icon/iconClosePopup.png
+    - assets/images/icon/iconDeleteSmall.png
     - assets/images/icon/iconDirectChat.png
     - assets/images/icon/iconEject.png
     - assets/images/icon/iconFold.png
