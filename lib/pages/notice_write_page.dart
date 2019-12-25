@@ -89,7 +89,6 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                     ),
                 ],
                 centerTitle: true,
-                elevation: 6.0,
                 backgroundColor: Colors.white,
             ),
             body: buildNotice(),

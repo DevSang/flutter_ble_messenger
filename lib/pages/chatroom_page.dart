@@ -77,7 +77,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     // 채팅 입력 줄 수
     int inputLineCount;
     // 입력칸 높이
-    double _inputHeight;
+    int _inputHeight;
 
     // Stomp 관련
     StompClient s;
@@ -105,7 +105,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         isLike = false;
         isEmpty = true;
         inputLineCount = 1;
-        _inputHeight = 72;
+        _inputHeight = 36;
 
         getMessageList();
 
@@ -203,12 +203,17 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     /*
      * @author : hs
      * @date : 2019-12-22
-     * @description : 메세지 리스트 받아오기
+     * @description : 화면 입장 후 메세지 리스트 받아오기
     */
     getMessageList() async {
         setState(() {});
     }
 
+    /*
+     * @author : hs
+     * @date : 2019-12-24
+     * @description : Image 받아오기
+    */
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
 
@@ -220,6 +225,11 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         }
     }
 
+    /*
+     * @author : hs
+     * @date : 2019-12-24
+     * @description : 하단 Menu 처리 Show <-> Hide
+    */
     void getMenu() {
         // Hide keyboard when menu appear
         focusNode.unfocus();
@@ -228,11 +238,21 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         });
     }
 
+    /*
+     * @author : hs
+     * @date : 2019-12-24
+     * @description : File 업로드 
+    */
     Future uploadFile() async {
         String fileName = DateTime.now().millisecondsSinceEpoch.toString();
         // TODO: upload Image
     }
-
+    
+    /*
+     * @author : hs
+     * @date : 2019-12-24
+     * @description : Message 전송
+    */
     void onSendMessage(String content, int type) {
         // type: 0 = text, 1 = image, 2 = sticker
         if (content.trim() != '') {
@@ -294,7 +314,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true)..init(context);
+        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
         return new Scaffold(
             appBar: new AppBar(
                 iconTheme: IconThemeData(
@@ -303,8 +323,10 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                 title: Text(
                     "코엑스 별마당 도서관",
                     style: TextStyle(
+                        fontFamily: "NotoSans",
+                        fontWeight: FontWeight.w500,
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(32)
+                        fontSize: ScreenUtil.getInstance().setSp(16)
                     ),
                 ),
                 brightness: Brightness.light,
@@ -317,9 +339,9 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                 actions:[
                     GestureDetector(
                         child: Container(
-                            margin: EdgeInsets.only(right: ScreenUtil().setWidth(10)),
-                            width: ScreenUtil().setWidth(54),
-                            height: ScreenUtil().setHeight(54),
+                            margin: EdgeInsets.only(right: ScreenUtil().setWidth(5)),
+                            width: ScreenUtil().setWidth(27),
+                            height: ScreenUtil().setHeight(27),
                             decoration: adCondition
                         ),
                         onTap:(){
@@ -395,12 +417,12 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 
     Widget buildNotice() {
         return Positioned(
-            top: ScreenUtil().setHeight(20),
-            right: ScreenUtil().setWidth(20),
+            top: ScreenUtil().setHeight(10),
+            right: ScreenUtil().setWidth(10),
             child: GestureDetector(
                 child: Container(
-                    width: ScreenUtil().setWidth(66),
-                    height: ScreenUtil().setHeight(66),
+                    width: ScreenUtil().setWidth(33),
+                    height: ScreenUtil().setHeight(33),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         image: DecorationImage(
@@ -420,22 +442,22 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 
     Widget buildNoticeOpen() {
         return Positioned(
-            top: ScreenUtil().setHeight(16),
-            left: ScreenUtil().setWidth(16),
+            top: ScreenUtil().setHeight(8),
+            left: ScreenUtil().setWidth(8),
             child: Container(
-                width: ScreenUtil().setWidth(718),
-                height: ScreenUtil().setHeight(74),
+                width: ScreenUtil().setWidth(359),
+                height: ScreenUtil().setHeight(37),
                 decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.all(
-                        Radius.circular(ScreenUtil().setWidth(8)),
+                        Radius.circular(ScreenUtil().setWidth(4)),
                     ),
                     boxShadow: [
                         new BoxShadow(
                             color: Color.fromRGBO(0, 0, 0, 0.05),
-                            blurRadius: ScreenUtil().setWidth(4), // has the effect of softening the shadow
+                            blurRadius: ScreenUtil().setWidth(2), // has the effect of softening the shadow
                             spreadRadius: ScreenUtil().setWidth(0),
-                            offset: new Offset(0, ScreenUtil().setWidth(4))
+                            offset: new Offset(0, ScreenUtil().setWidth(2))
                         )
                     ]
                 ),
@@ -445,10 +467,10 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                             child: Row(
                                 children: <Widget> [
                                     Container(
-                                        width: ScreenUtil().setWidth(40),
-                                        height: ScreenUtil().setHeight(40),
+                                        width: ScreenUtil().setWidth(20),
+                                        height: ScreenUtil().setHeight(20),
                                         margin: EdgeInsets.only(
-                                            left: ScreenUtil().setHeight(22)
+                                            left: ScreenUtil().setHeight(11)
                                         ),
                                         decoration: BoxDecoration(
                                             color: Colors.white,
@@ -458,15 +480,18 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                         )
                                     ),
                                     Container(
-                                        width: ScreenUtil().setWidth(564),
+                                        width: ScreenUtil().setWidth(282),
                                         margin: EdgeInsets.only(
-                                            left: ScreenUtil().setHeight(17),
-                                            right: ScreenUtil().setHeight(17)
+                                            left: ScreenUtil().setHeight(8.5),
+                                            right: ScreenUtil().setHeight(8.5)
                                         ),
                                         child: Text(
                                             '타인을 향한 비방시 강퇴 조치를 취합니다.',
                                             style: TextStyle(
-                                                fontSize: ScreenUtil().setSp(26),
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                letterSpacing: ScreenUtil.getInstance().setWidth(-0.65),
+                                                fontSize: ScreenUtil().setSp(13),
                                                 color: Color.fromRGBO(39, 39, 39, 1)
                                             ),
                                         )
@@ -482,7 +507,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                             },
                         ),
                         Container(
-                            width: ScreenUtil().setWidth(40),
+                            width: ScreenUtil().setWidth(20),
                             child: FlatButton(
                                 onPressed:(){
                                     setState(() {
@@ -509,13 +534,13 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         FocusScope.of(context).unfocus();
 
         return Container(
-            width: ScreenUtil().setWidth(750),
-            height: ScreenUtil().setHeight(432),
+            width: ScreenUtil().setWidth(375),
+            height: ScreenUtil().setHeight(216),
             padding: EdgeInsets.only(
-              top: ScreenUtil().setHeight(43),
-              bottom: ScreenUtil().setHeight(43),
-              left: ScreenUtil().setHeight(16),
-              right: ScreenUtil().setHeight(16),
+              top: ScreenUtil().setHeight(21.5),
+              bottom: ScreenUtil().setHeight(21.5),
+              left: ScreenUtil().setHeight(8),
+              right: ScreenUtil().setHeight(8),
             ),
             child: Column(
                 children: <Widget>[
@@ -545,15 +570,15 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     Widget buildMenuItem(String imgSrc, String name) {
         return
             Container(
-                width: ScreenUtil().setWidth(176),
-                height: ScreenUtil().setHeight(173),
+                width: ScreenUtil().setWidth(88),
+                height: ScreenUtil().setHeight(86.5),
                 child: Column(
                     children: <Widget>[
                         Container(
-                            width: ScreenUtil().setWidth(100),
-                            height: ScreenUtil().setHeight(100),
+                            width: ScreenUtil().setWidth(50),
+                            height: ScreenUtil().setHeight(50),
                             margin: EdgeInsets.only(
-                                bottom: ScreenUtil().setHeight(19)
+                                bottom: ScreenUtil().setHeight(9.5)
                             ),
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(210, 217, 250, 1),
@@ -572,7 +597,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                 name,
                                 style: TextStyle(
                                     height: 1,
-                                    fontSize: ScreenUtil().setSp(26)
+                                    fontSize: ScreenUtil().setSp(13)
                                 ),
                             )
                         )
@@ -587,12 +612,12 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
             GestureDetector(
                 child: Container(
                     padding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(8),
-                        right: ScreenUtil().setWidth(8),
-                        bottom: ScreenUtil().setHeight(32),
+                        left: ScreenUtil().setWidth(4),
+                        right: ScreenUtil().setWidth(4),
+                        bottom: ScreenUtil().setHeight(16),
                     ),
-                    width: ScreenUtil().setWidth(52),
-                    height: ScreenUtil().setHeight(100),
+                    width: ScreenUtil().setWidth(26),
+                    height: ScreenUtil().setHeight(50),
                     decoration: BoxDecoration(
                         image: DecorationImage(
                             image:AssetImage('assets/images/icon/iconAttachFold.png')
@@ -630,19 +655,19 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                     isFocused ? chatIconClose() : chatIconOpen(),
                     // Edit text
                     Container(
-                        width: isFocused ? ScreenUtil().setWidth(686) :ScreenUtil().setWidth(460),
+                        width: isFocused ? ScreenUtil().setWidth(343) :ScreenUtil().setWidth(230),
                         margin: EdgeInsets.only(
-                            top: ScreenUtil().setHeight(12),
-                            bottom: ScreenUtil().setHeight(12)
+                            top: ScreenUtil().setHeight(6),
+                            bottom: ScreenUtil().setHeight(6)
                         ),
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(245, 245, 245, 1),
                             border: Border.all(
                                 color: Color.fromRGBO(214, 214, 214, 1),
-                                width: ScreenUtil().setWidth(2.0)
+                                width: ScreenUtil().setWidth(1)
                             ),
                             borderRadius: BorderRadius.all(
-                                Radius.circular(ScreenUtil().setWidth(36.0))
+                                Radius.circular(ScreenUtil().setWidth(18))
                             )
                         ),
                         child: Row(
@@ -650,20 +675,19 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                             children: <Widget>[
                                 Expanded (
                                     child: Container(
-                                        width: isFocused ? ScreenUtil().setWidth(602) : ScreenUtil().setWidth(376),
+                                        width: isFocused ? ScreenUtil().setWidth(301) : ScreenUtil().setWidth(188),
                                         height: ScreenUtil().setHeight(_inputHeight),
-                                        margin: EdgeInsets.only(right: ScreenUtil().setWidth(16)),
+                                        margin: EdgeInsets.only(right: ScreenUtil().setWidth(8)),
 
                                         child: new ConstrainedBox(
                                             constraints: BoxConstraints(
-                                                minHeight: ScreenUtil().setHeight(72),
-                                                maxHeight: ScreenUtil().setHeight(212)
+                                                minHeight: ScreenUtil().setHeight(36),
+                                                maxHeight: ScreenUtil().setHeight(106)
                                             ),
 
 
                                             child: new SingleChildScrollView(
                                                 scrollDirection: Axis.vertical,
-                                                reverse: true,
 
                                                 // here's the actual text box
                                                 child: new TextField(
@@ -673,15 +697,15 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                                     maxLines: null,
                                                     style: TextStyle(
                                                         color: Color.fromRGBO(39, 39, 39, 1),
-                                                        fontSize: ScreenUtil().setSp(30.0),
+                                                        fontSize: ScreenUtil().setSp(15),
                                                         letterSpacing: ScreenUtil().setWidth(-1.15),
                                                     ),
                                                     decoration: InputDecoration(
                                                         border: InputBorder.none,
                                                         contentPadding: EdgeInsets.only(
-                                                            left: ScreenUtil().setWidth(26.0),
-                                                            right: ScreenUtil().setWidth(18.0),
-                                                            bottom: ScreenUtil().setHeight(16)
+                                                            left: ScreenUtil().setWidth(13),
+                                                            right: ScreenUtil().setWidth(9),
+                                                            bottom: ScreenUtil().setHeight(8)
                                                         )
                                                     ),
                                                     autofocus: false,
@@ -694,7 +718,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                                             });
                                                         } else if (inputLineCount != count && count <= 5) {  // use a maximum height of 6 rows
                                                             // height values can be adapted based on the font size
-                                                            var inputHeight = 36.0 + (count * 36.0);
+                                                            var inputHeight = 18 + (count * 18);
 
                                                             setState(() {
                                                                 inputLineCount = count;
@@ -720,15 +744,15 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                 // Button send message
                                 Container(
                                     margin: EdgeInsets.only(
-                                        right: ScreenUtil().setWidth(8),
-                                        bottom: ScreenUtil().setWidth(8),
-                                        top: ScreenUtil().setWidth(8)
+                                        right: ScreenUtil().setWidth(4),
+                                        bottom: ScreenUtil().setWidth(4),
+                                        top: ScreenUtil().setWidth(4)
                                     ),
                                     child:
                                     GestureDetector(
                                         child: Container(
-                                            width: ScreenUtil().setWidth(56),
-                                            height: ScreenUtil().setHeight(56),
+                                            width: ScreenUtil().setWidth(28),
+                                            height: ScreenUtil().setHeight(28),
                                             decoration: BoxDecoration(
                                                 color: isEmpty
                                                             ? Color.fromRGBO(204, 204, 204, 1)
@@ -746,7 +770,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                     ),
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(ScreenUtil().setWidth(36.0))
+                                            Radius.circular(ScreenUtil().setWidth(18))
                                         )
                                     ),
                                 ),
@@ -760,21 +784,21 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 
     Container chatIconOpen() {
         return Container(
-            width: ScreenUtil().setWidth(278),
+            width: ScreenUtil().setWidth(139),
             child: Row(
                 children: <Widget>[
                     Container(
                         margin: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(16),
-                            right: ScreenUtil().setWidth(24),
-                            bottom: ScreenUtil().setWidth(16),
+                            left: ScreenUtil().setWidth(8),
+                            right: ScreenUtil().setWidth(12),
+                            bottom: ScreenUtil().setWidth(8),
                         ),
                         child:
                         GestureDetector(
                             child: Container(
                                 margin: EdgeInsets.only(right: ScreenUtil().setWidth(0)),
-                                width: ScreenUtil().setWidth(64),
-                                height: ScreenUtil().setHeight(64),
+                                width: ScreenUtil().setWidth(32),
+                                height: ScreenUtil().setHeight(32),
                                 decoration: setIcon(
                                     isShowMenu
                                         ? 'assets/images/icon/iconAttachClose.png'
@@ -789,14 +813,14 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                     ),
                     Container(
                         margin: EdgeInsets.only(
-                            right: ScreenUtil().setWidth(24),
-                            bottom: ScreenUtil().setWidth(16),
+                            right: ScreenUtil().setWidth(12),
+                            bottom: ScreenUtil().setWidth(8),
                         ),
                         child:
                         GestureDetector(
                             child: Container(
-                                width: ScreenUtil().setWidth(64),
-                                height: ScreenUtil().setHeight(64),
+                                width: ScreenUtil().setWidth(32),
+                                height: ScreenUtil().setHeight(32),
                                 decoration: setIcon('assets/images/icon/iconAttachCamera.png')
                             ),
                             onTap:(){
@@ -807,14 +831,14 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                     ),
                     Container(
                         margin: EdgeInsets.only(
-                            right: ScreenUtil().setWidth(22),
-                            bottom: ScreenUtil().setWidth(16),
+                            right: ScreenUtil().setWidth(11),
+                            bottom: ScreenUtil().setWidth(8),
                         ),
                         child:
                         GestureDetector(
                             child: Container(
-                                width: ScreenUtil().setWidth(64),
-                                height: ScreenUtil().setHeight(64),
+                                width: ScreenUtil().setWidth(32),
+                                height: ScreenUtil().setHeight(32),
                                 decoration: setIcon('assets/images/icon/iconAttachPhoto.png')
                             ),
                             onTap:(){
