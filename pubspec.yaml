@@ -28,10 +28,6 @@ dependencies:
   configurable_expansion_tile: ^1.0.0
   firebase_messaging: ^6.0.9
   timeago: ^2.0.22
-
-
-
-
 #  flutter_kakao_login:
 #  flutter_facebook_login:
 #  google_sign_in:

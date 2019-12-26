@@ -285,26 +285,28 @@ class _SignInPageState extends State<SignInPage>{
           ),
 
           InkWell(
-              child: Text("Kakao", style: TextStyle(color: Colors.black38, fontSize: 14,fontFamily: 'NotoSans'),
+              child: Text("Kakao", style: TextStyle(color: Colors.black54, fontSize: 15 ,fontFamily: 'NotoSans'),
               )
           ),
           InkWell(
               child: Image.asset('assets/images/sns/snsIconFacebook.png')
           ),
           InkWell(
-              child: Text("Facebook", style: TextStyle(color: Colors.black38, fontSize: 14,fontFamily: 'NotoSans'))
+              child: Text("Facebook", style: TextStyle(color: Colors.black54, fontSize: 15,fontFamily: 'NotoSans'))
           ),
           InkWell(
               child: Image.asset('assets/images/sns/snsIconGoogle.png')
           ),
           InkWell(
-              child: Text("Google", style: TextStyle(color: Colors.black38, fontSize: 14,fontFamily: 'NotoSans'))
+              child: Text("Google", style: TextStyle(color: Colors.black54, fontSize: 15,fontFamily: 'NotoSans'))
           ),
 
         ],
       ),
     );
   }
+
+
 
   Widget _registerSection(){
     return Container(
@@ -324,4 +326,9 @@ class _SignInPageState extends State<SignInPage>{
       ),
     );
   }
+
+
+
+
 }
+
