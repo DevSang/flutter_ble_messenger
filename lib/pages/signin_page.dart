@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
@@ -14,7 +15,7 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage>{
-
+  String phone_number = '';
   bool _isLoading = false;
 
   @override
@@ -90,40 +91,9 @@ class _SignInPageState extends State<SignInPage>{
 //    }
 //  }
 
-//  signIn(String phone, authCode) async {
-//    SharedPreferences loginPref = await SharedPreferences.getInstance();
-//    Map data = {
-//      'phone': phone,
-//      'authcode': authCode
-//    };
-//
-//    var jsonResponse = null;
-//    var response = await http.post("http://api.hwaya.net/auth/A05-SignInAuth", body: data);
-//    if(response.statusCode == 200) {
-//      jsonResponse = json.encode(response.body);
-//      if(jsonResponse != null) {
-//        setState(() {
-//          _isLoading = false;
-//        });
-//        loginPref.setString("token", jsonResponse['token']);
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
-//      }
-//    }
-//    else {
-//      setState(() {
-//        _isLoading = false;
-//      });
-//      print(response.body);
-//    }
-//  }
-
 
   final TextEditingController _authCodeController =  TextEditingController();
-
-
   final TextEditingController _phoneController =  TextEditingController();
-
-
 
   Widget _loginInputText() {
     return Container(
@@ -187,11 +157,6 @@ class _SignInPageState extends State<SignInPage>{
     );
   }
 
-
-//TODO 하는 중
-
-  String phone_number = '';
-
   loginCodeRequest() async {
     print("phone number :: " +  _phoneController.text);
     String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
@@ -208,15 +173,25 @@ class _SignInPageState extends State<SignInPage>{
 
     var data = jsonDecode(response.body);
     String phoneNum = data['phone_number'];
+    String message = data['message'];
     if (response.statusCode == 200) {
       print(phoneNum);
-      print("200 OK!");
+      loginToastMsg(message);
     } else {
+      loginToastMsg(message);
       print('failed：${response.statusCode}');
     }
   }
 
-
+  loginToastMsg(String toast){
+    return Fluttertoast.showToast(
+        msg: "toast",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white);
+  }
 
 
   Widget _loginInputCodeField(){
