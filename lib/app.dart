@@ -44,7 +44,6 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
       body: Center(child: Text("Main Page")),
-      drawer: Drawer(),
     );
   }
 

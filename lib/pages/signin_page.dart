@@ -15,7 +15,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage>{
-  String phone_number = '';
   bool _isLoading = false;
 
   @override
@@ -147,7 +146,6 @@ class _SignInPageState extends State<SignInPage>{
                 setState(() {
                   loginCodeRequest();
                 });
-
               },
             ),
           )
@@ -170,7 +168,6 @@ class _SignInPageState extends State<SignInPage>{
     ).then((http.Response response) {
       print("signin :: " + response.body);
     });
-
     var data = jsonDecode(response.body);
     String phoneNum = data['phone_number'];
     String message = data['message'];
@@ -189,9 +186,10 @@ class _SignInPageState extends State<SignInPage>{
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIos: 1,
-        backgroundColor: Colors.grey,
+        backgroundColor: Colors.red,
         textColor: Colors.white);
   }
+
 
 
   Widget _loginInputCodeField(){
@@ -240,30 +238,41 @@ class _SignInPageState extends State<SignInPage>{
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: RaisedButton(
         onPressed: () {
-          loginRequest();
-        } ,
+          setState(() {
+            authCodeLoginRequest();
+          });},
         child: Text("Sign In", style: TextStyle(color: Colors.white)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
       ),
     );
   }
 
-  loginRequest() async {
-    final uri = 'https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth';
-    var requestBody = {
-      'phone_number':'01032711739',
-      "auth_number": "891629"
-    };
-
-    http.Response response = await http.post(
-      uri,
-      body: jsonEncode(requestBody),
-      headers: {'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'},
-    );
-
-    print(response.body);
+  authCodeLoginRequest() async {
+    print("auth number :: " +  _authCodeController.text);
+    String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
+    final response = await http.post(url,
+        headers: {
+          'Content-Type':'application/json',
+          'X-Requested-With': 'XMLHttpRequest'},
+        body: jsonEncode({
+          "phone_number": _phoneController.text,
+          "auth_number": _authCodeController.text
+        })
+    ).then((http.Response response) {
+      print("로그인 :: " + response.body);
+    });
+    var data = jsonDecode(response.body);
+    String authNum = data['auth_number'];
+    String message = data['message'];
+    if (response.statusCode == 200) {
+      print(authNum);
+      loginToastMsg(message);
+    } else {
+      loginToastMsg(message);
+      print('failed：${response.statusCode}');
+    }
   }
+
 
 
   Widget _loginText(){
