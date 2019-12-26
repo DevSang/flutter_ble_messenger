@@ -86,6 +86,7 @@ Widget _regPhoneNumTextField(){
         style: TextStyle(color: Colors.white70),
 
         decoration: InputDecoration(
+          counterText: "",
           hintText: "휴대폰번호 ( -없이 숫자만 입력)",
           hintStyle: TextStyle(color: Colors.black38),
           border:  OutlineInputBorder(
@@ -174,8 +175,8 @@ Widget _regAuthTextField(){
       cursorColor: Colors.white,
       obscureText: true,
       style: TextStyle(color: Colors.white70),
-
       decoration: InputDecoration(
+        counterText: "",
         hintText: "인증번호",
         hintStyle: TextStyle(color: Colors.black38),
         border:  OutlineInputBorder(

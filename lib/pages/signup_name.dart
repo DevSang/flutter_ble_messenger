@@ -76,6 +76,7 @@ Widget _regAuthTextField(){
         obscureText: true,
         style: TextStyle(color: Colors.white70),
         decoration: InputDecoration(
+          counterText: "",
           hintText: "닉네임을 입력하세요",
           hintStyle: TextStyle(color: Colors.black38),
           border:  OutlineInputBorder(
