@@ -22,7 +22,7 @@ class SetUserData {
             ),
             ChatUserInfo(
                 nick: "노민정",
-                profileImg: CachedImageUtility.loadImageFromPreferences('profileImg'),
+                profileImg: null,
                 partType: "BLE",
                 existContact: false,
                 businessCard: "",

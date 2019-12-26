@@ -4,7 +4,7 @@ import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
-
+import 'package:Hwa/pages/tab/test_tab.dart';
 //바텀 네비게이션 바
 
 class BottomNavigation extends StatefulWidget {
@@ -22,6 +22,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
       ..add(FriendTab())
       ..add(ChatTab())
       ..add(ChatroomPage());
+//      ..add(ImageTest());
+
     super.initState();
 }
   @override
@@ -63,7 +65,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
             BottomNavigationBarItem(
                 icon: _currentIndex == 3 ? Image.asset('assets/images/icon/tabIconChatActive.png') : Image.asset('assets/images/icon/tabIconChat.png'),
                 title: Text ('Chatroom')
-            )
+            ),
+//            BottomNavigationBarItem(
+//                icon: _currentIndex == 4 ? Image.asset('assets/images/icon/tabIconChatActive.png') : Image.asset('assets/images/icon/tabIconChat.png'),
+//                title: Text ('test')
+//            )
           ]
       ),
     );

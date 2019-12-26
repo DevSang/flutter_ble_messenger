@@ -2,10 +2,12 @@ import 'dart:typed_data';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:core';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'dart:collection';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:Hwa/data/models/image_data.dart';
 
 /*
  * @project : HWA - Mobile
@@ -18,24 +20,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
  *                           - my profile image(MPI)
  *                           - common receive image
  */
-class CachedImageUtility {
-  static String IMAGE_KEYWORD = "IMAGE";
+class CachedImageUtility{
+  static final today = new DateTime.now();
 
   static Future<String> getImageFromPreferences(String imageKeyword) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    print('#prefs : ' + prefs.getString(imageKeyword));
     return prefs.getString(imageKeyword) ?? null;
-  }
-
-  static Future<bool> saveImageToPreferences(String imageKeyword, value) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.setString(imageKeyword, value);
   }
 
   static Image imageFromBase64String(String base64String) {
     return Image.memory(
-      base64Decode(base64String),
-      fit: BoxFit.fill,
+      base64.decode(base64String),
+      width: ScreenUtil().setWidth(500),
+      height: ScreenUtil().setHeight(500)
     );
   }
 
@@ -47,19 +44,39 @@ class CachedImageUtility {
     return base64Encode(data);
   }
 
-  static Future<File> loadImageFromPreferences(String imageKeyword) async {
-    print('#loadImageFromPreferences');
-    print('#imageKeyword : ' + imageKeyword);
-    getImageFromPreferences(imageKeyword).then((img) {
-      print('#loaded Img');
-      if (null == img) {
-        return null;
-      } else {
-        return img;
-      }
-    });
 
+
+
+  static Future<bool> saveImageToPreferences(String imageKeyword, value, int expireSec) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    ImageData imgData = ImageData(
+        value: value,
+        expiration: 'profile' == imageKeyword ? null : today.add(new Duration(seconds: expireSec)).toString()
+    );
+
+    return prefs.setString(imageKeyword, json.encode(imgData.toJson()));
   }
+
+
+  static Future<Image> loadImageFromPreferences({@required String keyword}) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var imgData = await getImageFromPreferences(keyword);
+    var jsonImgData = json.decode(imgData);
+    DateTime expireDate = DateTime.parse(jsonImgData['expiration']);
+
+    //만료 되면
+    if(expireDate.isBefore(today)){
+      prefs.remove(keyword);
+      return null;
+    } else {
+      return imageFromBase64String(jsonImgData['value']);
+    }
+  }
+
+
+
+
 
   static pickImageFromGallery() async {
     return await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -68,35 +85,5 @@ class CachedImageUtility {
   static pickImageFromCamera() async {
     return await ImagePicker.pickImage(source: ImageSource.camera);
   }
-
-
-//  Widget imageFromGallery(Future<File> imageFile) {
-//    return FutureBuilder<File>(
-//      future: imageFile,
-//      builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-//        if (snapshot.connectionState == ConnectionState.done &&
-//            null != snapshot.data) {
-//          //print(snapshot.data.path);
-//          saveImageToPreferences(
-//              base64String(snapshot.data.readAsBytesSync()));
-//          return Image.file(
-//            snapshot.data,
-//          );
-//        } else if (null != snapshot.error) {
-//          return Image.asset(
-//            "assets/images/profile_img.png",
-//            width: ScreenUtil().setWidth(80),
-//            height: ScreenUtil().setWidth(80),
-//          );
-//        } else {
-//          return Image.asset(
-//            "assets/images/profile_img.png",
-//            width: ScreenUtil().setWidth(80),
-//            height: ScreenUtil().setWidth(80),
-//          );
-//        }
-//      },
-//    );
-//  }
 
 }

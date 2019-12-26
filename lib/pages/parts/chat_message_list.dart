@@ -5,7 +5,6 @@ import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/package/fullPhoto.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 const String name = "hwa";
 

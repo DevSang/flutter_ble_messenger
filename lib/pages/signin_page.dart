@@ -69,7 +69,7 @@ class _SignInPageState extends State<SignInPage>{
 //      'authcode': authCode
 //    };
 //
-//    var response = CallApi.commonApiCall(data, 'auth/A05-SignInAuth');
+//    var response = CallApi.commonApiCall(method: HTTP_METHOD.post, data : data, uri:'auth/A05-SignInAuth');
 //    var jsonResponse = null;
 //
 //    if(response.statusCode == 200) {
