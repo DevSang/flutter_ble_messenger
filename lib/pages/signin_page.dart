@@ -118,8 +118,12 @@ class _SignInPageState extends State<SignInPage>{
 //  }
 
 
-  final TextEditingController phoneController = new TextEditingController();
-  final TextEditingController authCodeController = new TextEditingController();
+  final TextEditingController _authCodeController =  TextEditingController();
+
+
+  final TextEditingController _phoneController =  TextEditingController();
+
+
 
   Widget _loginInputText() {
     return Container(
@@ -128,6 +132,11 @@ class _SignInPageState extends State<SignInPage>{
         children: <Widget>[
           Flexible(
           child: TextFormField(
+              validator: (e) {
+                if (e.isEmpty) {
+                  return "전화번호를 입력하세요";
+                }
+              },
             maxLength: 11,
               onChanged: (loginAuthCode) {
                 print(loginAuthCode);
@@ -139,7 +148,7 @@ class _SignInPageState extends State<SignInPage>{
             inputFormatters: <TextInputFormatter>[
               WhitelistingTextInputFormatter.digitsOnly
             ],
-            controller: phoneController,
+            controller: _phoneController,
             cursorColor: Colors.white,
             style: TextStyle(color: Colors.black),
           decoration: InputDecoration(
@@ -159,12 +168,16 @@ class _SignInPageState extends State<SignInPage>{
           ),
           Container(
             child: RaisedButton(
+
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),
               child: Text('인증문자 받기',style: TextStyle(color: Colors.white)),
               color: Colors.grey,
               onPressed: () {
-                loginCodeRequest();
+                setState(() {
+                  _phoneController.text = loginCodeRequest();
+                });
+
               },
             ),
           )
@@ -175,21 +188,27 @@ class _SignInPageState extends State<SignInPage>{
   }
 
 
+//TODO 하는 중
+
+  String phone_number = '';
+
   loginCodeRequest() async {
-    final uri = 'https://api.hwaya.net/api/v2/auth/A05-SignInAuth';
-    var requestBody = {
-      'phone_number':'01032711739',
-    };
+    final response = await http.post("https://api.hwaya.net/api/v2/auth/A05-SignInAuth",
+        headers: {'Content-Type':'application/json'},
+        body: jsonEncode({"phone_number": phone_number}));
 
-    http.Response response = await http.post(
-      uri,
-      body: jsonEncode(requestBody),
 
-      headers: {'Content-Type': 'application/json'},
-    );
+    var data = jsonDecode(response.body);
+    String phoneNum = data['phone_number'];
+    if (response.statusCode == 200) {
+      print(phoneNum);
+      print("200 OK!");
+    } else {
+      print('failed：${response.statusCode}');
+    }
+    }
 
-    print(response.body);
-  }
+
 
 
   Widget _loginInputCodeField(){
@@ -209,7 +228,7 @@ class _SignInPageState extends State<SignInPage>{
               inputFormatters: <TextInputFormatter>[
                 WhitelistingTextInputFormatter.digitsOnly
               ],
-              controller: authCodeController,
+              controller: _authCodeController,
               cursorColor: Colors.white,
               obscureText: true,
               style: TextStyle(color: Colors.white70),
