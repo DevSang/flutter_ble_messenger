@@ -43,7 +43,7 @@ class _SignInPageState extends State<SignInPage>{
       centerTitle: true,
       backgroundColor: Colors.white,
     title: Text("HWA 로그인",
-      style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
+      style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'NotoSans'),
     ),
     ),
     );
@@ -101,11 +101,6 @@ class _SignInPageState extends State<SignInPage>{
         children: <Widget>[
           Flexible(
           child: TextFormField(
-              validator: (e) {
-                if (e.isEmpty) {
-                  return "전화번호를 입력하세요";
-                }
-              },
             maxLength: 11,
               onChanged: (loginAuthCode) {
                 print(loginAuthCode);
@@ -118,9 +113,19 @@ class _SignInPageState extends State<SignInPage>{
               WhitelistingTextInputFormatter.digitsOnly
             ],
             controller: _phoneController,
-            cursorColor: Colors.white,
-            style: TextStyle(color: Colors.black),
+            cursorColor: Colors.black,
+            style: TextStyle(color: Colors.black,fontFamily: 'NotoSans'),
           decoration: InputDecoration(
+            suffixIcon: RaisedButton(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Text("인증문자 받기",style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
+                ),
+                color: Color.fromRGBO(77, 96, 191, 1),
+                onPressed: () {
+                  loginCodeRequest();
+                }),
             counterText: "",
             hintText: "휴대폰 번호 (-없이 숫자만 입력)",
             hintStyle: TextStyle(color: Colors.black38),
@@ -135,21 +140,6 @@ class _SignInPageState extends State<SignInPage>{
           ),
 
           ),
-          Container(
-            child: RaisedButton(
-
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0)),
-              child: Text('인증문자 받기',style: TextStyle(color: Colors.white)),
-              color: Colors.grey,
-              onPressed: () {
-                setState(() {
-                  loginCodeRequest();
-                });
-              },
-            ),
-          )
-
         ],
       ),
     );
@@ -190,11 +180,9 @@ class _SignInPageState extends State<SignInPage>{
         textColor: Colors.white);
   }
 
-
-
   Widget _loginInputCodeField(){
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       child: Column(
         children: <Widget>[
           TextFormField(
@@ -210,9 +198,10 @@ class _SignInPageState extends State<SignInPage>{
                 WhitelistingTextInputFormatter.digitsOnly
               ],
               controller: _authCodeController,
-              cursorColor: Colors.white,
+              cursorColor: Colors.black,
               obscureText: true,
-              style: TextStyle(color: Colors.white70),
+              style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
+              ),
               decoration: InputDecoration(
                 counterText: "",
                 hintText: "인증번호",
@@ -236,13 +225,13 @@ class _SignInPageState extends State<SignInPage>{
       width: MediaQuery.of(context).size.width,
       height: 50.0,
       padding: EdgeInsets.symmetric(horizontal: 15.0),
+//      color: Color.fromRGBO(204, 204, 204, 1),
       child: RaisedButton(
         onPressed: () {
-          setState(() {
             authCodeLoginRequest();
-          });},
-        child: Text("Sign In", style: TextStyle(color: Colors.white)),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+          },
+        child: Text("Sign In", style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       ),
     );
   }
