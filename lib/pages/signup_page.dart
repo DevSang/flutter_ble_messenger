@@ -25,7 +25,7 @@ class _SignUpPageState extends State<SignUpPage>{
             children: <Widget>[
               _regPhoneTextField(),
               _regPhoneNumTextField(),
-              _regButton(),
+              _regButton(context),
               _regAuthCodeText(),
               _regAuthTextField(),
               _regNextButton(context),
@@ -102,10 +102,10 @@ Widget _regPhoneNumTextField(){
 }
 
 
-Widget _regButton(){
+Widget _regButton(BuildContext context){
   return Container(
-    width: 100.0,
-    height: 40.0,
+    width: MediaQuery.of(context).size.width,
+    height: 50.0,
     padding: EdgeInsets.symmetric(horizontal: 15.0),
     margin: EdgeInsets.only(top: 15.0),
     child: RaisedButton(
@@ -201,7 +201,8 @@ Widget _regNextButton(BuildContext context){
   return Container(
   width: MediaQuery.of(context).size.width,
   height: 50.0,
-  padding: EdgeInsets.symmetric(horizontal: 15.0),
+    margin: EdgeInsets.only(top: 15.0),
+    padding: EdgeInsets.symmetric(horizontal: 15.0),
   child: RaisedButton(
   onPressed:(){
     registerNext();

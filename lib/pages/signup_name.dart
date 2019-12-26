@@ -69,11 +69,7 @@ validateUsername(nickname) {
   http.get("https://api.hwaya.net/api/v2/auth/A03-Nickname?nickname=$nickname")
       .then((val) {
         print(val.body.toString());
-//    if (val['valid']) {
-//      _isValid = true;
-//    } else {
-//      _isValid = false;
-//    }
+
   });
 
   return _isValid;
