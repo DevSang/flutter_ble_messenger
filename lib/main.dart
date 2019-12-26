@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
         DeviceOrientation.portraitDown,
     ]);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.white
     ));
     return MaterialApp(
       title: 'HWA',

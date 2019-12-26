@@ -94,6 +94,7 @@ class _HwaTabState extends State<HwaTab> {
 
            )
          ],
+           brightness: Brightness.light,
        ),
      );
   }
