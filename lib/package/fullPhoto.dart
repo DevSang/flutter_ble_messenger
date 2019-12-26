@@ -8,16 +8,7 @@ class FullPhoto extends StatelessWidget {
 
     @override
     Widget build(BuildContext context) {
-        return new Scaffold(
-            appBar: new AppBar(
-                title: new Text(
-                    'FULL PHOTO',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-                centerTitle: true,
-            ),
-            body: new FullPhotoScreen(url: url),
-        );
+        return FullPhotoScreen(url: url);
     }
 }
 
@@ -42,6 +33,19 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
 
     @override
     Widget build(BuildContext context) {
-        return Container(child: PhotoView(imageProvider: NetworkImage(url)));
+        /// 추후 서버에 이미지 등록시 교체
+//        return Container(child: PhotoView(imageProvider: NetworkImage(url)));
+        return Dismissible(
+            direction: DismissDirection.vertical,
+            key: Key('key'),
+            onDismissed: (direction) {
+                Navigator.of(context).pop();
+            },
+            child: Container(
+                color: Colors.transparent,
+                child: PhotoView(imageProvider: AssetImage(url))
+            )
+        );
     }
+
 }

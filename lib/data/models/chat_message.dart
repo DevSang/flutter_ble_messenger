@@ -6,7 +6,7 @@ class ChatMessage {
     final int roomIdx;
     final int senderIdx;
     final String message;
-//    final ChatCountUser userCount;
+//    final String imageSrc;
     final int chatTime;
     ChatMessage({this.chatType ,this.roomIdx, this.senderIdx, this.message, this.chatTime});
 
@@ -16,6 +16,7 @@ class ChatMessage {
             roomIdx : json['roomIdx'],
             senderIdx : json['senderIdx'],
             message : json['message'],
+//            imageSrc : json['imageSrc'],
             chatTime : json['createTs']
         );
     }
