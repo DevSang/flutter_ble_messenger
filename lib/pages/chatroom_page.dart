@@ -140,6 +140,8 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 
     @override
     void dispose() {
+        s.unsubscribe(topic: "/sub/danhwa/1");
+        s.disconnect();
         super.dispose();
     }
 
@@ -867,20 +869,31 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     }
 
     Future dialogBC(BuildContext context) {
-        print("dd");
         return showDialog(
             context: context,
             builder: (BuildContext context) {
                 return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setWidth(10)))
+                    ),
+                    contentPadding: EdgeInsets.all(0),
                     content: Container(
                         width: ScreenUtil().setWidth(281),
                         height: ScreenUtil().setHeight(291),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10))
-                        ),
+                        padding: EdgeInsets.all(0),
                         child: Column(
                             children: <Widget>[
                                 Container(
+                                    width: ScreenUtil().setWidth(281),
+                                    height: ScreenUtil().setHeight(42),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                                width: ScreenUtil().setWidth(1),
+                                                color: Color.fromRGBO(39, 39, 39, 0.15)
+                                            )
+                                        )
+                                    ),
                                     child: Text(
                                         '명함 공유',
                                         style: TextStyle(
@@ -888,8 +901,8 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                             fontFamily: "NotoSans",
                                             fontWeight: FontWeight.w500,
                                             fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
-                                            color: Color.fromRGBO(39, 39, 39, 0.7),
-                                            letterSpacing: ScreenUtil().setWidth(0.8),
+                                            color: Color.fromRGBO(39, 39, 39, 1),
+                                            letterSpacing: ScreenUtil().setWidth(-0.8),
                                         ),
                                     ),
                                 ),
