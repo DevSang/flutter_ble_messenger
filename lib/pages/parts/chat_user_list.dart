@@ -1,7 +1,14 @@
+//pub module
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Hwa/data/models/chat_user_info.dart';
 import 'package:configurable_expansion_tile/configurable_expansion_tile.dart';
+import 'dart:async';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+
+//import module
+import 'package:Hwa/data/models/chat_user_info.dart';
+import 'package:Hwa/utility/cached_image_utility.dart';
 
 class ChatUserList extends StatefulWidget {
     final List<ChatUserInfo> userInfoList;
@@ -17,6 +24,18 @@ class ChatUserListState extends State<ChatUserList> {
     bool openedList;
     // 자신의 방장여부
     bool isHost;
+
+    //About image
+    Future<File> profileImageFile;
+    Image imageFromPreferences;
+
+    Future setUserProfileImage (ImageSource source, ChatUserInfo userInfo) {
+//        CachedImageUtility.saveImageToPreferences(CachedImageUtility.base64String(profileImageFile.readAsBytesSync()));
+
+        setState(() {
+            userInfo.profileImg =  ImagePicker.pickImage(source: source);
+        });
+    }
 
 
     @override
@@ -119,7 +138,7 @@ class ChatUserListState extends State<ChatUserList> {
                                    shrinkWrap: true,
                                    itemCount: widget.userInfoList.length,
                                    itemBuilder: (BuildContext context, int index){
-                                       return BuildUserInfo(isHost: isHost, userInfo: widget.userInfoList[index]);
+                                       return BuildUserInfo(isHost: isHost, userInfo: widget.userInfoList[index], setUserProfileImage: setUserProfileImage);
                                    }
                                ),
                           )
@@ -127,8 +146,6 @@ class ChatUserListState extends State<ChatUserList> {
 
                   ],
               )
-
-
           );
     }
 }
@@ -136,11 +153,12 @@ class ChatUserListState extends State<ChatUserList> {
 class BuildUserInfo extends StatelessWidget {
     final bool isHost;
     final ChatUserInfo userInfo;
-    BuildUserInfo({Key key, @required this.isHost, this.userInfo});
-
-
+    final Function setUserProfileImage;
+    BuildUserInfo({Key key, @required this.isHost, this.userInfo, this.setUserProfileImage});
     @override
     Widget build(BuildContext context) {
+        print(userInfo.nick + userInfo.profileImg.toString());
+
         return InkWell(
             child: Stack(
                 children: <Widget>[
@@ -158,14 +176,42 @@ class BuildUserInfo extends StatelessWidget {
                                     child: Row(
                                         children: <Widget>[
                                             // 프로필 이미지
-                                            Container(
-                                                child: ClipRRect(
-                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                                    child: Image.asset(
-                                                        userInfo.profileImg,
-                                                        width: ScreenUtil().setWidth(80),
-                                                        height: ScreenUtil().setWidth(80),
-                                                    )
+                                            null == userInfo.profileImg ?
+                                                Container(
+                                                    child: ClipRRect(
+                                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                                        child: Image.asset(
+                                                            "assets/images/profile_img.png",
+                                                            width: ScreenUtil().setWidth(80),
+                                                            height: ScreenUtil().setWidth(80),
+                                                        )
+                                                     )
+                                                ) :
+                                                Container(
+                                                    child: ClipRRect(
+                                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                                        child: FutureBuilder<File>(
+                                                            future: userInfo.profileImg,
+                                                            builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+                                                                if (snapshot.connectionState == ConnectionState.done &&
+                                                                    null != snapshot.data) {
+                                                                    print(snapshot.data.toString());
+                                                                    CachedImageUtility.saveImageToPreferences('profileImg', CachedImageUtility.base64String(snapshot.data.readAsBytesSync()));
+//                                                                    userInfo.profileImg = CachedImageUtility.loadImageFromPreferences('profileImg');
+                                                                    return Image.file(
+                                                                        snapshot.data,
+                                                                        width: ScreenUtil().setWidth(80),
+                                                                        height: ScreenUtil().setWidth(80),
+                                                                    );
+                                                                } else {
+                                                                    return Image.asset(
+                                                                        "assets/images/profile_img.png",
+                                                                        width: ScreenUtil().setWidth(80),
+                                                                        height: ScreenUtil().setWidth(80),
+                                                                    );
+                                                                }
+                                                            },
+                                                        ),
                                                 )
                                             ),
                                             // 이름
@@ -199,6 +245,7 @@ class BuildUserInfo extends StatelessWidget {
                 ],
             ),
             onTap: (){
+                /// 프로필 팝업
                 _showModalSheet(context, userInfo);
             },
         );
@@ -337,19 +384,46 @@ class BuildUserInfo extends StatelessWidget {
                                 height: ScreenUtil().setHeight(492),
                                 child: Column(
                                     children: <Widget>[
-                                        Container(
-                                            width: ScreenUtil().setWidth(180),
-                                            height: ScreenUtil().setWidth(180),
-                                            margin: EdgeInsets.only(
-                                                top: ScreenUtil().setHeight(32),
-                                                bottom: ScreenUtil().setHeight(26),
-                                            ),
-                                            child: ClipRRect(
-                                                borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                                child: Image.asset(
-                                                    userInfo.profileImg,
+                                        GestureDetector(
+                                            child: Container(
+                                                width: ScreenUtil().setWidth(180),
+                                                height: ScreenUtil().setWidth(180),
+                                                margin: EdgeInsets.only(
+                                                    top: ScreenUtil().setHeight(32),
+                                                    bottom: ScreenUtil().setHeight(26),
+                                                ),
+                                                child: ClipRRect(
+                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                                    child: FutureBuilder<File>(
+                                                        future: userInfo.profileImg,
+                                                        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
+                                                            if (snapshot.connectionState == ConnectionState.done &&
+                                                                null != snapshot.data) {
+                                                                //print(snapshot.data.path);
+                                                                CachedImageUtility.saveImageToPreferences('profileImg',
+                                                                    CachedImageUtility.base64String(snapshot.data.readAsBytesSync()));
+                                                                return Image.file(
+                                                                    snapshot.data,
+                                                                );
+                                                            } else if (null != snapshot.error) {
+                                                                return Image.asset(
+                                                                    "assets/images/profile_img.png",
+                                                                    width: ScreenUtil().setWidth(80),
+                                                                    height: ScreenUtil().setWidth(80),
+                                                                );
+                                                            } else {
+                                                                return Image.asset(
+                                                                    "assets/images/profile_img.png",
+                                                                    width: ScreenUtil().setWidth(80),
+                                                                    height: ScreenUtil().setWidth(80),
+                                                                );
+                                                            }
+                                                        },
+                                                    ),
                                                 )
-                                            )
+                                            ),onTap: () {
+                                                setUserProfileImage(ImageSource.gallery, userInfo);
+                                            },
                                         ),
                                         Container(
                                             height: ScreenUtil().setHeight(24),

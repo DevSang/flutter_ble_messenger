@@ -38,7 +38,7 @@ class ChatroomPage extends StatefulWidget {
     State createState() => new ChatScreenState(peerId: peerId, peerAvatar: peerAvatar);
 }
 
-class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin {
+class ChatScreenState extends State<ChatroomPage> {
     ChatScreenState({Key key, @required this.peerId, @required this.peerAvatar});
 
     String peerId;
@@ -225,6 +225,8 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 //            });
 
 //            uploadFile();
+
+            /// FileUpload 사진
             onSendMessage(imageFile.path, 1);
         }
     }
@@ -243,6 +245,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
 //            });
 
 //            uploadFile();
+            /// FileUpload 사진
             onSendMessage(imageFile, 1);
         }
     }
@@ -270,7 +273,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                     ? "TALK"
                     : type == 1
                     ? "IMAGE"
-                    : "STICKER";
+                    : "SERVICE";
             }
         } else {
             sendType = "IMAGE";
@@ -370,7 +373,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                     ),
                 ],
                 centerTitle: true,
-                elevation: 6.0,
+                elevation: 0,
                 backgroundColor: Colors.white,
             ),
             endDrawer: SafeArea(
@@ -382,7 +385,13 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                         children: <Widget>[
                             Container(
                                 decoration: BoxDecoration(
-                                    color: Color.fromRGBO(210, 217, 250, 1)
+                                    color: Color.fromRGBO(210, 217, 250, 1),
+                                    border: Border(
+                                        top: BorderSide(
+                                            width: ScreenUtil().setWidth(0.5),
+                                            color: Color.fromRGBO(178, 178, 178, 0.8)
+                                        )
+                                    )
                                 ),
                                 child: Column(
                                     children: <Widget>[
@@ -392,8 +401,9 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                         // Input content
                                         buildInput(),
 
+                                        /// 하단 메뉴 서비스 추가 시 코드 교체
                                         // Menu
-                                            (isShowMenu && !isFocused ? buildMenu() : Container()),
+//                                            (isShowMenu && !isFocused ? buildMenu() : Container()),
                                     ],
                                 ),
                             ),
@@ -736,13 +746,18 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                 width: ScreenUtil().setWidth(32),
                                 height: ScreenUtil().setHeight(32),
                                 decoration: setIcon(
-                                    isShowMenu
-                                        ? 'assets/images/icon/iconAttachClose.png'
-                                        : 'assets/images/icon/iconAttachMore.png'
+                                    /// 하단 메뉴 서비스 추가 시 코드 교체
+//                                    isShowMenu
+//                                        ? 'assets/images/icon/iconAttachClose.png'
+//                                        : 'assets/images/icon/iconAttachMore.png'
+                                    'assets/images/icon/iconViewCard.png'
                                 )
                             ),
                             onTap:(){
-                                getMenu();
+                                /// 하단 메뉴 서비스 추가 시 코드 교체
+//                                getMenu();
+                                FocusScope.of(context).unfocus();
+                                dialogBC(context);
                             }
                         ),
                         color: Colors.white,
@@ -788,8 +803,159 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         );
     }
 
+    Future dialogBC(BuildContext context) {
+        return showDialog(
+            context: context,
+            builder: (BuildContext context) {
+                return AlertDialog(
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setWidth(10)))
+                    ),
+                    contentPadding: EdgeInsets.all(0),
+                    content: Container(
+                        width: ScreenUtil().setWidth(281),
+                        height: ScreenUtil().setHeight(291),
+                        padding: EdgeInsets.all(0),
+                        child: Column(
+                            children: <Widget>[
+                                Container(
+                                    width: ScreenUtil().setWidth(281),
+                                    height: ScreenUtil().setHeight(42),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            bottom: BorderSide(
+                                                width: ScreenUtil().setWidth(1),
+                                                color: Color.fromRGBO(39, 39, 39, 0.15)
+                                            )
+                                        )
+                                    ),
+                                    child: Center(
+                                        child: Text(
+                                            '명함 공유',
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                color: Color.fromRGBO(39, 39, 39, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.8),
+                                            ),
+                                        ),
+                                    ),
+                                ),
+                                Container(
+                                    width: ScreenUtil().setWidth(200),
+                                    height: ScreenUtil().setHeight(111),
+                                    margin: EdgeInsets.only(
+                                        top: ScreenUtil().setHeight(14),
+                                        bottom: ScreenUtil().setHeight(14),
+                                    ),
+                                    child: Image.asset(
+                                        'assets/images/businesscard.png',
+                                        fit:BoxFit.fitWidth
+                                    ),
+                                ),
+                                Container(
+                                    width: ScreenUtil().setWidth(281),
+                                    decoration: BoxDecoration(
+                                        border: Border(
+                                            top: BorderSide(
+                                                width: ScreenUtil().setWidth(1),
+                                                color: Color.fromRGBO(39, 39, 39, 0.15)
+                                            )
+                                        )
+                                    ),
+                                    child: Container(
+                                        margin: EdgeInsets.only(
+                                            top: ScreenUtil().setHeight(21),
+                                        ),
+                                        child: Text(
+                                            '현재 단화방에 명함을 공유하시겠습니까?',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                height: 1,
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                letterSpacing: ScreenUtil.getInstance().setHeight(-0.33),
+                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                color: Color.fromRGBO(107, 107, 107, 1)
+                                            )
+                                        )
+                                    )
+                                ),
+                                Container(
+                                    margin: EdgeInsets.only(
+                                        top: ScreenUtil().setHeight(21),
+                                        bottom: ScreenUtil().setHeight(17),
+                                    ),
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                            cardShareButton(1, (){
+                                                Navigator.of(context, rootNavigator: true).pop('dialog');
+                                            }),
+                                            cardShareButton(2, (){
+                                                /// FileUpload 명함
+                                                onSendMessage('assets/images/businesscard.png',2);
+                                                Navigator.of(context, rootNavigator: true).pop('dialog');
+                                            }),
+                                        ],
+                                    )
+                                )
+                            ],
+                        ),
+                    )
+                );
+            }
+        );
+    }
+
+    Widget cardShareButton(int index, Function fn) {
+        String title = index == 1 ? '취소' : '공유하기';
+        Color tabColor = index == 1 ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(77, 96, 191, 1);
+        Color borderColor = index == 1 ? Color.fromRGBO(158, 158, 158, 1) : Color.fromRGBO(77, 96, 191, 1);
+        Color textColor = index == 1 ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(255, 255, 255, 1);
+
+        return InkWell(
+            child: Container(
+                width: ScreenUtil().setWidth(125),
+                height: ScreenUtil().setHeight(36),
+                margin: EdgeInsets.only(
+                    left: index == 2 ? ScreenUtil().setWidth(5) : 0,
+                ),
+                decoration: BoxDecoration(
+                    color: tabColor,
+                    border: Border.all(
+                        width: ScreenUtil().setWidth(1),
+                        color: borderColor,
+                    ),
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(ScreenUtil().setWidth(20))
+                    )
+                ),
+                child: Center (
+                    child: Text(
+                        title,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: ScreenUtil.getInstance().setHeight(-0.33),
+                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                            color: textColor
+                        ),
+                    ),
+                ),
+            ),
+            onTap: () {
+                fn();
+            },
+        );
+    }
+
+    ///
+    /// 하단 메뉴 서비스 추가 시 코드 활용-------------------
+    ///
     Widget buildMenu() {
-        FocusScope.of(context).unfocus();
 
         return Container(
             width: ScreenUtil().setWidth(375),
@@ -868,52 +1034,4 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
             );
     }
 
-    Future dialogBC(BuildContext context) {
-        return showDialog(
-            context: context,
-            builder: (BuildContext context) {
-                return AlertDialog(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setWidth(10)))
-                    ),
-                    contentPadding: EdgeInsets.all(0),
-                    content: Container(
-                        width: ScreenUtil().setWidth(281),
-                        height: ScreenUtil().setHeight(291),
-                        padding: EdgeInsets.all(0),
-                        child: Column(
-                            children: <Widget>[
-                                Container(
-                                    width: ScreenUtil().setWidth(281),
-                                    height: ScreenUtil().setHeight(42),
-                                    decoration: BoxDecoration(
-                                        border: Border(
-                                            bottom: BorderSide(
-                                                width: ScreenUtil().setWidth(1),
-                                                color: Color.fromRGBO(39, 39, 39, 0.15)
-                                            )
-                                        )
-                                    ),
-                                    child: Text(
-                                        '명함 공유',
-                                        style: TextStyle(
-                                            height: 1,
-                                            fontFamily: "NotoSans",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
-                                            color: Color.fromRGBO(39, 39, 39, 1),
-                                            letterSpacing: ScreenUtil().setWidth(-0.8),
-                                        ),
-                                    ),
-                                ),
-                                Container(),
-                                Container(),
-                                Container()
-                            ],
-                        ),
-                    )
-                );
-            }
-        );
-    }
 }

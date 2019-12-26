@@ -89,6 +89,7 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                     ),
                 ],
                 centerTitle: true,
+                elevation: 0,
                 backgroundColor: Colors.white,
             ),
             body: buildNotice(),
@@ -97,29 +98,41 @@ class NoticeWritePageState extends State<NoticeWritePage> {
 
     Widget buildNotice() {
         return Container(
-            width: ScreenUtil().setWidth(343),
-            padding: EdgeInsets.only(
-                left: ScreenUtil().setWidth(16),
-                right: ScreenUtil().setWidth(16),
+            width: ScreenUtil().setWidth(375),
+            decoration: BoxDecoration(
+                border: Border(
+                    top: BorderSide(
+                        width: ScreenUtil().setWidth(0.5),
+                        color: Color.fromRGBO(178, 178, 178, 0.8)
+                    )
+                )
             ),
-            margin: EdgeInsets.only(
-                top: ScreenUtil().setHeight(20)
-            ),
-            child: TextField(
-                minLines: 100,
-                maxLines: null,
-                keyboardType: TextInputType.multiline,
-
-                // 텍스트폼필드에 스타일 적용
-                decoration: InputDecoration(
-                    hintText: '단화방에 알리고 싶은 공지를 남겨보세요',
-                    hintStyle: TextStyle(
-                        fontSize: ScreenUtil().setSp(15), 
-                        color: Color.fromRGBO(39, 39, 39, 0.4)
-                    ),
-                    border: InputBorder.none,
+            child:
+            Container(
+                width: ScreenUtil().setWidth(343),
+                padding: EdgeInsets.only(
+                    left: ScreenUtil().setWidth(16),
+                    right: ScreenUtil().setWidth(16),
                 ),
-            ),
+                margin: EdgeInsets.only(
+                    top: ScreenUtil().setHeight(20)
+                ),
+                child: TextField(
+                    minLines: 100,
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline,
+
+                    // 텍스트폼필드에 스타일 적용
+                    decoration: InputDecoration(
+                        hintText: '단화방에 알리고 싶은 공지를 남겨보세요',
+                        hintStyle: TextStyle(
+                            fontSize: ScreenUtil().setSp(15),
+                            color: Color.fromRGBO(39, 39, 39, 0.4)
+                        ),
+                        border: InputBorder.none,
+                    ),
+                ),
+            )
         );
     }
 

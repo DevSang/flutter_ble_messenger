@@ -38,6 +38,7 @@ class _ChatTabState extends State<ChatTab> {
             child: Text('참여날짜순', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'NotoSans')),
               )
         ],
+          brightness: Brightness.light,
     ),
     );
   }

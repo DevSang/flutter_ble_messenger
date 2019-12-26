@@ -25,7 +25,6 @@ class _SignUpPageState extends State<SignUpPage>{
             children: <Widget>[
               _regPhoneTextField(),
               _regPhoneNumTextField(),
-              regButton(),
               _regAuthCodeText(),
               _regAuthTextField(),
               _regNextButton(context),
@@ -36,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage>{
         leading: Padding(
           padding: EdgeInsets.only(left: 16),
           child: IconButton(
-            icon: Image.asset("assets/images/icon/navIconPrev.png"),
+            icon: Image.asset("assets/images/icon/navIconClose.png"),
             onPressed: () => Navigator.of(context).pop(null),
           ),
         ),
@@ -50,6 +49,7 @@ class _SignUpPageState extends State<SignUpPage>{
 }
 
 final TextEditingController _phoneRegController = new TextEditingController();
+final TextEditingController _regAuthCodeController = new TextEditingController();
 
 Widget _regPhoneTextField(){
   return Container(
@@ -80,13 +80,24 @@ Widget _regPhoneNumTextField(){
         inputFormatters: <TextInputFormatter>[
           WhitelistingTextInputFormatter.digitsOnly
         ],
-        controller: _phoneRegController,
-        cursorColor: Colors.white,
-        obscureText: true,
-        style: TextStyle(color: Colors.white70),
 
+        controller: _phoneRegController,
+        cursorColor: Colors.black,
+        obscureText: true,
+        style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
+        ),
         decoration: InputDecoration(
-          counterText: "",
+          suffixIcon: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+              ),
+            child: Text("인증문자 받기",style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
+            ),
+              color: Color.fromRGBO(77, 96, 191, 1),
+              onPressed: () {
+                registerCodeRequest();
+              }),
+          counterText:"",
           hintText: "휴대폰번호 ( -없이 숫자만 입력)",
           hintStyle: TextStyle(color: Colors.black38),
           border:  OutlineInputBorder(
@@ -102,42 +113,27 @@ Widget _regPhoneNumTextField(){
 }
 
 
-postTest() async {
-  final uri = 'https://api.hwaya.net/auth/A01-SignUpAuth';
-  var requestBody = {
-    'phone_number':'01032711739',
-//      'auth_code':'218796'
-  };
-
-  http.Response response = await http.post(
-    uri,
-    body: jsonEncode(requestBody),
-
-    headers: {'Content-Type': 'application/json'},
-  );
-
-  print(response.body);
-}
-
-Container regButton(){
-  return Container(
-    width: 100.0,
-    height: 40.0,
-    padding: EdgeInsets.symmetric(horizontal: 15.0),
-    margin: EdgeInsets.only(top: 15.0),
-    child: RaisedButton(
-      onPressed: (){
-        postTest();
+registerCodeRequest() async {
+  print("phone number :: " +  _phoneRegController.text);
+  String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
+  final response = await http.post(url,
+      headers: {
+        'Content-Type':'application/json'
       },
-      color: Colors.blue,
-
-      child: Text("인증번호 받기", style: TextStyle(color: Colors.white)),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-    ),
-  );
+      body: jsonEncode({
+        "phone_number": _phoneRegController.text
+      })
+  ).then((http.Response response) {
+    print("signup :: " + response.body);
+  });
+  var data = jsonDecode(response.body);
+  String phoneNum = data['phone_number'];
+  if (response.statusCode == 200) {
+    print(phoneNum);
+  } else {
+    print('failed：${response.statusCode}');
+  }
 }
-
-
 
 Widget _regAuthCodeText(){
   return Container(
@@ -152,7 +148,6 @@ Widget _regAuthCodeText(){
   );
 }
 
-final TextEditingController _regAuthCodeController = new TextEditingController();
 
 
 
@@ -172,9 +167,9 @@ Widget _regAuthTextField(){
         WhitelistingTextInputFormatter.digitsOnly
       ],
       controller: _regAuthCodeController,
-      cursorColor: Colors.white,
+      cursorColor: Colors.black,
       obscureText: true,
-      style: TextStyle(color: Colors.white70),
+      style: TextStyle(color: Colors.black, fontFamily: "NotoSans",),
       decoration: InputDecoration(
         counterText: "",
         hintText: "인증번호",
@@ -196,9 +191,11 @@ Widget _regNextButton(BuildContext context){
   return Container(
   width: MediaQuery.of(context).size.width,
   height: 50.0,
-  padding: EdgeInsets.symmetric(horizontal: 15.0),
+    margin: EdgeInsets.only(top: 15.0),
+    padding: EdgeInsets.symmetric(horizontal: 15.0),
   child: RaisedButton(
   onPressed:(){
+    registerNext();
   Navigator.pushNamed(context, '/register2');
   },
     color: Colors.black38,
@@ -208,6 +205,32 @@ Widget _regNextButton(BuildContext context){
   ),
   );
 }
+
+
+registerNext() async {
+  print("register authcode :: " +  _regAuthCodeController.text);
+  String url = "https://api.hwaya.net/api/v2/auth/A02-SignUpSmsAuth";
+  final response = await http.post(url,
+      headers: {
+        'Content-Type':'application/json',
+        'X-Requested-With': 'XMLHttpRequest'}
+        ,
+      body: jsonEncode({
+        "phone_number": _phoneRegController.text,
+        "auth_number": _regAuthCodeController.text
+      })
+  ).then((http.Response response) {
+    print("register authcode  :: " + response.body);
+  });
+  var data = jsonDecode(response.body);
+  String phoneNum = data['auth_number'];
+  if (response.statusCode == 200) {
+    print(phoneNum);
+  } else {
+    print('failed：${response.statusCode}');
+  }
+}
+
 
 
 
