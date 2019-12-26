@@ -68,33 +68,64 @@ class ChatMessageElementsState extends State<ChatMessageList> {
         int userIdx = Constant.USER_IDX;
 
         // false : Send, true : Received
-        bool receivedMsg = ((chatMessage.chatType == "TALK" || chatMessage.chatType == "IMAGE") && userIdx != chatMessage.senderIdx)
+        bool receivedMsg = (userIdx != chatMessage.senderIdx)
                             ? true
                             : false;
 
         // chatType(TALK, ENTER, QUIT)에 따른 화면 처리
-        Widget chatElement = chatMessage.chatType == "TALK"
-            ? receivedMsg
-                ? receivedBubble(chatIndex, chatMessage)
-                : sendBubble(chatIndex, chatMessage, isLastSendMessage)
-            : chatMessage.chatType == "ENTER"
-                ? enterNotice(chatMessage)
-                : chatMessage.chatType == "IMAGE"
-                    ? sendImageBubble(chatMessage, isLastSendMessage)
-                    : quitNotice(chatMessage);
+        Widget chatElement = chatMessage.chatType == "ENTER"
+            ? enterNotice(chatMessage)                                          // 입장 메세지
+            : chatMessage.chatType == "QUIT"
+                ? quitNotice(chatMessage)                                       // 퇴장 메세지
+                : receivedMsg
+                    ? receivedLayout(chatIndex, chatMessage)                    // 받은 메세지 - 모든 타입 메세지
+                    : chatMessage.chatType == "TALK"
+                        ? sendText(chatIndex, chatMessage, isLastSendMessage)   // 보낸 메세지 - 텍스트 메세지
+                        : chatMessage.chatType == "IMAGE"
+                            ? imageBubble(chatMessage, isLastSendMessage)       // 보낸 메세지 - 이미지 메세지
+                            : businessCardBubble(chatIndex, chatMessage);       // 보낸 메세지 - 서비스 메세지 (현재는 명함 서비스만)
 
         return Container(
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-
-                    // 유저 썸네일 노출 여부 (상대방 메세지에만 노출)
-                    receivedMsg ? thumbnail : new Container(),
                     Expanded(
                         child: chatElement
                     )
                 ],
             )
+        );
+    }
+
+    // 받은 메세지 레이아웃 (프로필이미지, 이름, 시간)
+    Widget receivedLayout(int chatIndex, ChatMessage chatMessage) {
+
+        return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+                thumbnail,
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                            Text(
+                                name,
+                                style: TextStyle(
+                                    fontFamily: "NotoSans",
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                                    color: Color.fromRGBO(39, 39, 39, 0.7),
+                                    letterSpacing: ScreenUtil.getInstance().setHeight(-0.28),
+                                )
+                            ),
+                            chatMessage.chatType == "TALK"
+                                ? receivedText(chatIndex, chatMessage)
+                                : chatMessage.chatType == "IMAGE"
+                            ,
+                        ],
+                    )
+                )
+            ],
         );
     }
 
@@ -107,24 +138,39 @@ class ChatMessageElementsState extends State<ChatMessageList> {
         )
     );
 
+    // 메세지 시간 레이아웃
+    Widget msgTime(int chatTime, bool receivedMsg) {
+        return Container(
+            margin:
+            receivedMsg
+                ? EdgeInsets.only(
+                    bottom: ScreenUtil.getInstance().setHeight(4),
+                    left: ScreenUtil.getInstance().setWidth(7))
+                : EdgeInsets.only(
+                    bottom: ScreenUtil.getInstance().setHeight(4),
+                    right: ScreenUtil.getInstance().setWidth(7))
+            ,
+            child: Text(
+                GetTimeDifference.timeDifference(chatTime),
+                style: TextStyle(
+                    height: 1,
+                    fontFamily: "NanumSquare",
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                    color: Color.fromRGBO(39, 39, 39, 0.7)
+                )
+            ),
+        );
+    }
+
     // 받은 메세지 말풍선 스타일
-    Widget receivedBubble(int chatIndex, ChatMessage chatMessage) {
+    Widget receivedText(int chatIndex, ChatMessage chatMessage) {
         bool isSelected = clickedMessage == chatIndex
                             ? true
                             : false;
         return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-                Text(
-                    name,
-                    style: TextStyle(
-                        fontFamily: "NotoSans",
-                        fontWeight: FontWeight.w400,
-                        fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                        color: Color.fromRGBO(39, 39, 39, 0.7),
-                        letterSpacing: ScreenUtil.getInstance().setHeight(-0.28),
-                    )
-                ),
                 // Triangle on the bubble
                 Container(
                     color: isSelected
@@ -162,9 +208,6 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                         left: ScreenUtil().setWidth(14.5),
                                         right: ScreenUtil().setWidth(14.5),
                                     ),
-                                    margin: EdgeInsets.only(
-                                        right: ScreenUtil.getInstance().setWidth(7)
-                                    ),
                                     child: Text(
                                         chatMessage.message,
                                         style: TextStyle(
@@ -192,104 +235,83 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                     });
                                 },
                             ),
-                            Container(
-                                margin: EdgeInsets.only(
-                                    bottom: ScreenUtil.getInstance().setHeight(4)
-                                ),
-                                child: Text(
-                                    GetTimeDifference.timeDifference(chatMessage.chatTime),
-                                    style: TextStyle(
-                                        height: 1,
-                                        fontFamily: "NanumSquare",
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                                        color: Color.fromRGBO(39, 39, 39, 0.7)
-                                    )
-                                ),
-                            )
+                            msgTime(chatMessage.chatTime, true)
                         ],
                     )
-                )
+                ),
             ],
         );
     }
 
     // 보낸 메세지 말풍선 스타일
-    Widget sendBubble(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage) {
-        return Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+    Widget sendText(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage) {
+        return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-                Container(
-                    color: Color.fromRGBO(166, 181, 255, 1),
-                    alignment: AlignmentDirectional(0.0, 0.0),
-                    width: ScreenUtil.getInstance().setWidth(15),
-                    height: ScreenUtil.getInstance().setHeight(5),
-                    child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                                bottomRight: Radius.circular(
-                                    ScreenUtil().setWidth(10)
-                                )
-                            ),
-                            color: Color.fromRGBO(210, 217, 250, 1)
-                        )
-                    ),
-                ),
-                Container(
-                    margin: EdgeInsets.only(
-                        bottom:
-                        isLastSendMessage
-                            ? ScreenUtil.getInstance().setHeight(14)
-                            : ScreenUtil.getInstance().setHeight(0)
-                    ),
-                    child: Row(
+                Expanded(
+                    child: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: <Widget>[
                             Container(
-                                margin: EdgeInsets.only(
-                                    right: ScreenUtil.getInstance().setWidth(7),
-                                    bottom: ScreenUtil.getInstance().setHeight(4)
-                                ),
-                                child: Text(
-                                    GetTimeDifference.timeDifference(chatMessage.chatTime),
-                                    style: TextStyle(
-                                        fontFamily: "NanumSquare",
-                                        fontWeight: FontWeight.w400,
-                                        letterSpacing: ScreenUtil.getInstance().setHeight(-0.28),
-                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                                        color: Color.fromRGBO(39, 39, 39, 0.7)
+                                color: Color.fromRGBO(166, 181, 255, 1),
+                                alignment: AlignmentDirectional(0.0, 0.0),
+                                width: ScreenUtil.getInstance().setWidth(15),
+                                height: ScreenUtil.getInstance().setHeight(5),
+                                child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.only(
+                                            bottomRight: Radius.circular(
+                                                ScreenUtil().setWidth(10)
+                                            )
+                                        ),
+                                        color: Color.fromRGBO(210, 217, 250, 1)
                                     )
                                 ),
                             ),
                             Container(
-                                constraints: BoxConstraints(maxWidth: 115),
-                                padding: EdgeInsets.only(
-                                    top: ScreenUtil().setHeight(10.5),
-                                    bottom: ScreenUtil().setHeight(10.5),
-                                    left: ScreenUtil().setWidth(14.5),
-                                    right: ScreenUtil().setWidth(14.5),
+                                margin: EdgeInsets.only(
+                                    bottom:
+                                    isLastSendMessage
+                                        ? ScreenUtil.getInstance().setHeight(14)
+                                        : ScreenUtil.getInstance().setHeight(0)
                                 ),
-                                child: Text(
-                                    chatMessage.message,
-                                    style: TextStyle(
-                                        fontFamily: "NotoSans",
-                                        fontWeight: FontWeight.w500,
-                                    ),
-                                ),
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(166, 181, 255, 1),
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: Radius.circular(ScreenUtil().setWidth(10)),
-                                        bottomLeft: Radius.circular(ScreenUtil().setWidth(10)),
-                                        bottomRight: Radius.circular(ScreenUtil().setWidth(10)),
-                                    )
+                                child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: <Widget>[
+                                        msgTime(chatMessage.chatTime, false),
+                                        Container(
+                                            constraints: BoxConstraints(maxWidth: 115),
+                                            padding: EdgeInsets.only(
+                                                top: ScreenUtil().setHeight(10.5),
+                                                bottom: ScreenUtil().setHeight(10.5),
+                                                left: ScreenUtil().setWidth(14.5),
+                                                right: ScreenUtil().setWidth(14.5),
+                                            ),
+                                            child: Text(
+                                                chatMessage.message,
+                                                style: TextStyle(
+                                                    fontFamily: "NotoSans",
+                                                    fontWeight: FontWeight.w500,
+                                                ),
+                                            ),
+                                            decoration: BoxDecoration(
+                                                color: Color.fromRGBO(166, 181, 255, 1),
+                                                borderRadius: BorderRadius.only(
+                                                    topLeft: Radius.circular(ScreenUtil().setWidth(10)),
+                                                    bottomLeft: Radius.circular(ScreenUtil().setWidth(10)),
+                                                    bottomRight: Radius.circular(ScreenUtil().setWidth(10)),
+                                                )
+                                            ),
+                                        )
+                                    ],
                                 ),
                             )
                         ],
-                    ),
+                    )
+
                 )
-            ],
+            ]
         );
     }
 
@@ -371,7 +393,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
     }
 
     // 보낸 이미지 스타일
-    Widget sendImageBubble(ChatMessage chatMessage, bool isLastSendMessage) {
+    Widget imageBubble(ChatMessage chatMessage, bool isLastSendMessage) {
         return Container(
             margin: EdgeInsets.only(
                 bottom:
@@ -417,6 +439,65 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                     )
                 ],
             ),
+        );
+    }
+
+    // 명함 메세지 말풍선 스타일
+    Widget businessCardBubble(int chatIndex, ChatMessage chatMessage) {
+        return
+        Container(
+            margin: EdgeInsets.only(
+                bottom: ScreenUtil.getInstance().setHeight(14)
+            ),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                   Container(
+                        constraints: BoxConstraints(maxWidth: 115),
+                        padding: EdgeInsets.only(
+                            top: ScreenUtil().setHeight(10.5),
+                            bottom: ScreenUtil().setHeight(10.5),
+                            left: ScreenUtil().setWidth(14.5),
+                            right: ScreenUtil().setWidth(14.5),
+                        ),
+                        margin: EdgeInsets.only(
+                            right: ScreenUtil.getInstance().setWidth(7)
+                        ),
+                        child: Text(
+                            chatMessage.message,
+                            style: TextStyle(
+                                fontFamily: "NotoSans",
+                                fontWeight: FontWeight.w500,
+                                fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
+                                color: Color.fromRGBO(39, 39, 39, 0.96)
+                            )
+                        ),
+                        decoration: BoxDecoration(
+                            color: Color.fromRGBO(255, 255, 255, 1),
+                            borderRadius: BorderRadius.only(
+                                topRight: Radius.circular(ScreenUtil().setWidth(10)),
+                                bottomLeft: Radius.circular(ScreenUtil().setWidth(10)),
+                                bottomRight: Radius.circular(ScreenUtil().setWidth(10)),
+                            )
+                        ),
+                    ),
+                    Container(
+                        margin: EdgeInsets.only(
+                            bottom: ScreenUtil.getInstance().setHeight(4)
+                        ),
+                        child: Text(
+                            GetTimeDifference.timeDifference(chatMessage.chatTime),
+                            style: TextStyle(
+                                height: 1,
+                                fontFamily: "NanumSquare",
+                                fontWeight: FontWeight.w400,
+                                fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                                color: Color.fromRGBO(39, 39, 39, 0.7)
+                            )
+                        ),
+                    )
+                ],
+            )
         );
     }
 }
