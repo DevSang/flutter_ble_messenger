@@ -373,7 +373,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                     ),
                 ],
                 centerTitle: true,
-                elevation: 6.0,
+                elevation: 0,
                 backgroundColor: Colors.white,
             ),
             endDrawer: SafeArea(
@@ -385,7 +385,13 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                         children: <Widget>[
                             Container(
                                 decoration: BoxDecoration(
-                                    color: Color.fromRGBO(210, 217, 250, 1)
+                                    color: Color.fromRGBO(210, 217, 250, 1),
+                                    border: Border(
+                                        top: BorderSide(
+                                            width: ScreenUtil().setWidth(0.5),
+                                            color: Color.fromRGBO(178, 178, 178, 0.8)
+                                        )
+                                    )
                                 ),
                                 child: Column(
                                     children: <Widget>[
@@ -890,6 +896,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                             cardShareButton(2, (){
                                                 /// FileUpload 명함
                                                 onSendMessage('assets/images/icon/iconViewCard.png',2);
+                                                Navigator.of(context, rootNavigator: true).pop('dialog');
                                             }),
                                         ],
                                     )

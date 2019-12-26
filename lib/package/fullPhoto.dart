@@ -33,8 +33,6 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
 
     @override
     Widget build(BuildContext context) {
-        /// 추후 서버에 이미지 등록시 교체
-//        return Container(child: PhotoView(imageProvider: NetworkImage(url)));
         return Dismissible(
             direction: DismissDirection.vertical,
             key: Key('key'),
@@ -44,6 +42,9 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
             child: Container(
                 color: Colors.transparent,
                 child: PhotoView(imageProvider: AssetImage(url))
+
+                /// 추후 서버에 이미지 등록시 교체
+//              child: PhotoView(imageProvider: NetworkImage(url))
             )
         );
     }
