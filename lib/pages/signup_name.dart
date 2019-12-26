@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:Hwa/app.dart';
 import 'package:flutter/services.dart';
-
+import 'package:http/http.dart' as http;
 
 final TextEditingController _regNameController = new TextEditingController();
 
 class SignUpNamePage extends StatefulWidget{
-
-
   @override
   _SignUpNamePageState createState() => _SignUpNamePageState();
 }
+
 class _SignUpNamePageState extends State<SignUpNamePage>{
+  bool availNick;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    availNick = false;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,20 +63,44 @@ Widget _regNickTextField(){
 }
 
 
+validateUsername(nickname) {
+  bool _isValid;
+
+  http.get("https://api.hwaya.net/api/v2/auth/A03-Nickname?nickname=$nickname")
+      .then((val) {
+        print(val.body.toString());
+//    if (val['valid']) {
+//      _isValid = true;
+//    } else {
+//      _isValid = false;
+//    }
+  });
+
+  return _isValid;
+}
+
 
 Widget _regAuthTextField(){
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
     child: TextFormField(
+        validator: (value) {
+          if (value.isEmpty) {
+            return '닉네임을 입력해주세요';
+          } else {
+            if (validateUsername(value)) {
+              return '이미 사용중인 닉네임입니다.';
+            }
+          }
+        },
         onChanged: (regNickname) {
-          print(regNickname);
+          validateUsername(regNickname);
         },
         onFieldSubmitted: (regNickname) {
           print('닉네임 입력 :$regNickname');
         },
         keyboardType: TextInputType.text,
         inputFormatters: <TextInputFormatter>[
-          WhitelistingTextInputFormatter.digitsOnly
         ],
         controller: _regNameController,
         cursorColor: Colors.white,
