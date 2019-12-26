@@ -245,6 +245,7 @@ class BuildUserInfo extends StatelessWidget {
                 ],
             ),
             onTap: (){
+                /// 프로필 팝업
                 _showModalSheet(context, userInfo);
             },
         );

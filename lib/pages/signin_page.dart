@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
@@ -14,12 +15,10 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage>{
-
   bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent));
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -91,36 +90,9 @@ class _SignInPageState extends State<SignInPage>{
 //    }
 //  }
 
-  signIn(String phone, authCode) async {
-    SharedPreferences loginPref = await SharedPreferences.getInstance();
-    Map data = {
-      'phone': phone,
-      'authcode': authCode
-    };
 
-    var jsonResponse = null;
-    var response = await http.post("http://api.hwaya.net/auth/A05-SignInAuth", body: data);
-    if(response.statusCode == 200) {
-      jsonResponse = json.encode(response.body);
-      if(jsonResponse != null) {
-        setState(() {
-          _isLoading = false;
-        });
-        loginPref.setString("token", jsonResponse['token']);
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
-      }
-    }
-    else {
-      setState(() {
-        _isLoading = false;
-      });
-      print(response.body);
-    }
-  }
-
-
-  final TextEditingController phoneController = new TextEditingController();
-  final TextEditingController authCodeController = new TextEditingController();
+  final TextEditingController _authCodeController =  TextEditingController();
+  final TextEditingController _phoneController =  TextEditingController();
 
   Widget _loginInputText() {
     return Container(
@@ -129,14 +101,27 @@ class _SignInPageState extends State<SignInPage>{
         children: <Widget>[
           Flexible(
           child: TextFormField(
+              validator: (e) {
+                if (e.isEmpty) {
+                  return "전화번호를 입력하세요";
+                }
+              },
+            maxLength: 11,
+              onChanged: (loginAuthCode) {
+                print(loginAuthCode);
+              },
+              onFieldSubmitted: (loginAuthCode) {
+                print('login phone number 입력 :$loginAuthCode');
+              },
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
               WhitelistingTextInputFormatter.digitsOnly
             ],
-            controller: phoneController,
+            controller: _phoneController,
             cursorColor: Colors.white,
             style: TextStyle(color: Colors.black),
           decoration: InputDecoration(
+            counterText: "",
             hintText: "휴대폰 번호 (-없이 숫자만 입력)",
             hintStyle: TextStyle(color: Colors.black38),
             border:  OutlineInputBorder(
@@ -152,11 +137,16 @@ class _SignInPageState extends State<SignInPage>{
           ),
           Container(
             child: RaisedButton(
+
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0)),
               child: Text('인증문자 받기',style: TextStyle(color: Colors.white)),
               color: Colors.grey,
-              onPressed: () {},
+              onPressed: () {
+                setState(() {
+                  loginCodeRequest();
+                });
+              },
             ),
           )
 
@@ -165,22 +155,66 @@ class _SignInPageState extends State<SignInPage>{
     );
   }
 
+  loginCodeRequest() async {
+    print("phone number :: " +  _phoneController.text);
+    String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
+    final response = await http.post(url,
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: jsonEncode({
+          "phone_number": _phoneController.text
+        })
+    ).then((http.Response response) {
+      print("signin :: " + response.body);
+    });
+    var data = jsonDecode(response.body);
+    String phoneNum = data['phone_number'];
+    String message = data['message'];
+    if (response.statusCode == 200) {
+      print(phoneNum);
+      loginToastMsg(message);
+    } else {
+      loginToastMsg(message);
+      print('failed：${response.statusCode}');
+    }
+  }
+
+  loginToastMsg(String toast){
+    return Fluttertoast.showToast(
+        msg: "toast",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white);
+  }
+
+
+
   Widget _loginInputCodeField(){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
       child: Column(
         children: <Widget>[
           TextFormField(
+              maxLength: 6,
+              onChanged: (loginAuthCode) {
+                print(loginAuthCode);
+              },
+              onFieldSubmitted: (loginAuthCode) {
+                print('login authcode 입력 :$loginAuthCode');
+              },
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
                 WhitelistingTextInputFormatter.digitsOnly
               ],
-              controller: authCodeController,
+              controller: _authCodeController,
               cursorColor: Colors.white,
               obscureText: true,
               style: TextStyle(color: Colors.white70),
-
               decoration: InputDecoration(
+                counterText: "",
                 hintText: "인증번호",
                 hintStyle: TextStyle(color: Colors.black38),
                 border:  OutlineInputBorder(
@@ -203,18 +237,43 @@ class _SignInPageState extends State<SignInPage>{
       height: 50.0,
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: RaisedButton(
-        onPressed: phoneController.text.isEmpty || authCodeController.text.isEmpty ? null : () {
+        onPressed: () {
           setState(() {
-            _isLoading = true;
-          });
-          signIn(phoneController.text, authCodeController.text);
-        },
-        elevation: 0.0,
+            authCodeLoginRequest();
+          });},
         child: Text("Sign In", style: TextStyle(color: Colors.white)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
       ),
     );
   }
+
+  authCodeLoginRequest() async {
+    print("auth number :: " +  _authCodeController.text);
+    String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
+    final response = await http.post(url,
+        headers: {
+          'Content-Type':'application/json',
+          'X-Requested-With': 'XMLHttpRequest'},
+        body: jsonEncode({
+          "phone_number": _phoneController.text,
+          "auth_number": _authCodeController.text
+        })
+    ).then((http.Response response) {
+      print("로그인 :: " + response.body);
+    });
+    var data = jsonDecode(response.body);
+    String authNum = data['auth_number'];
+    String message = data['message'];
+    if (response.statusCode == 200) {
+      print(authNum);
+      loginToastMsg(message);
+    } else {
+      loginToastMsg(message);
+      print('failed：${response.statusCode}');
+    }
+  }
+
+
 
   Widget _loginText(){
     return Container(

@@ -25,7 +25,7 @@ class _SignUpPageState extends State<SignUpPage>{
             children: <Widget>[
               _regPhoneTextField(),
               _regPhoneNumTextField(),
-              regButton(),
+              _regButton(),
               _regAuthCodeText(),
               _regAuthTextField(),
               _regNextButton(context),
@@ -50,6 +50,7 @@ class _SignUpPageState extends State<SignUpPage>{
 }
 
 final TextEditingController _phoneRegController = new TextEditingController();
+final TextEditingController _regAuthCodeController = new TextEditingController();
 
 Widget _regPhoneTextField(){
   return Container(
@@ -84,8 +85,8 @@ Widget _regPhoneNumTextField(){
         cursorColor: Colors.white,
         obscureText: true,
         style: TextStyle(color: Colors.white70),
-
         decoration: InputDecoration(
+          counterText:"",
           hintText: "휴대폰번호 ( -없이 숫자만 입력)",
           hintStyle: TextStyle(color: Colors.black38),
           border:  OutlineInputBorder(
@@ -101,24 +102,7 @@ Widget _regPhoneNumTextField(){
 }
 
 
-postTest() async {
-  final uri = 'https://api.hwaya.net/auth/A01-SignUpAuth';
-  var requestBody = {
-    'phone_number':'01032711739',
-//      'auth_code':'218796'
-  };
-
-  http.Response response = await http.post(
-    uri,
-    body: jsonEncode(requestBody),
-
-    headers: {'Content-Type': 'application/json'},
-  );
-
-  print(response.body);
-}
-
-Container regButton(){
+Widget _regButton(){
   return Container(
     width: 100.0,
     height: 40.0,
@@ -126,15 +110,38 @@ Container regButton(){
     margin: EdgeInsets.only(top: 15.0),
     child: RaisedButton(
       onPressed: (){
-        postTest();
+        registerCodeRequest();
       },
       color: Colors.blue,
-
       child: Text("인증번호 받기", style: TextStyle(color: Colors.white)),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
     ),
   );
 }
+
+registerCodeRequest() async {
+  print("phone number :: " +  _phoneRegController.text);
+  String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
+  final response = await http.post(url,
+      headers: {
+        'Content-Type':'application/json'
+      },
+      body: jsonEncode({
+        "phone_number": _phoneRegController.text
+      })
+  ).then((http.Response response) {
+    print("signup :: " + response.body);
+  });
+  var data = jsonDecode(response.body);
+  String phoneNum = data['phone_number'];
+  if (response.statusCode == 200) {
+    print(phoneNum);
+  } else {
+    print('failed：${response.statusCode}');
+  }
+}
+
+
 
 
 
@@ -151,7 +158,6 @@ Widget _regAuthCodeText(){
   );
 }
 
-final TextEditingController _regAuthCodeController = new TextEditingController();
 
 
 
@@ -174,8 +180,8 @@ Widget _regAuthTextField(){
       cursorColor: Colors.white,
       obscureText: true,
       style: TextStyle(color: Colors.white70),
-
       decoration: InputDecoration(
+        counterText: "",
         hintText: "인증번호",
         hintStyle: TextStyle(color: Colors.black38),
         border:  OutlineInputBorder(
@@ -198,6 +204,7 @@ Widget _regNextButton(BuildContext context){
   padding: EdgeInsets.symmetric(horizontal: 15.0),
   child: RaisedButton(
   onPressed:(){
+    registerNext();
   Navigator.pushNamed(context, '/register2');
   },
     color: Colors.black38,
@@ -207,6 +214,32 @@ Widget _regNextButton(BuildContext context){
   ),
   );
 }
+
+
+registerNext() async {
+  print("register authcode :: " +  _regAuthCodeController.text);
+  String url = "https://api.hwaya.net/api/v2/auth/A02-SignUpSmsAuth";
+  final response = await http.post(url,
+      headers: {
+        'Content-Type':'application/json',
+        'X-Requested-With': 'XMLHttpRequest'}
+        ,
+      body: jsonEncode({
+        "phone_number": _phoneRegController.text,
+        "auth_number": _regAuthCodeController.text
+      })
+  ).then((http.Response response) {
+    print("register authcode  :: " + response.body);
+  });
+  var data = jsonDecode(response.body);
+  String phoneNum = data['auth_number'];
+  if (response.statusCode == 200) {
+    print(phoneNum);
+  } else {
+    print('failed：${response.statusCode}');
+  }
+}
+
 
 
 
