@@ -19,7 +19,6 @@ class _SignInPageState extends State<SignInPage>{
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.transparent));
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -91,32 +90,32 @@ class _SignInPageState extends State<SignInPage>{
 //    }
 //  }
 
-  signIn(String phone, authCode) async {
-    SharedPreferences loginPref = await SharedPreferences.getInstance();
-    Map data = {
-      'phone': phone,
-      'authcode': authCode
-    };
-
-    var jsonResponse = null;
-    var response = await http.post("http://api.hwaya.net/auth/A05-SignInAuth", body: data);
-    if(response.statusCode == 200) {
-      jsonResponse = json.encode(response.body);
-      if(jsonResponse != null) {
-        setState(() {
-          _isLoading = false;
-        });
-        loginPref.setString("token", jsonResponse['token']);
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
-      }
-    }
-    else {
-      setState(() {
-        _isLoading = false;
-      });
-      print(response.body);
-    }
-  }
+//  signIn(String phone, authCode) async {
+//    SharedPreferences loginPref = await SharedPreferences.getInstance();
+//    Map data = {
+//      'phone': phone,
+//      'authcode': authCode
+//    };
+//
+//    var jsonResponse = null;
+//    var response = await http.post("http://api.hwaya.net/auth/A05-SignInAuth", body: data);
+//    if(response.statusCode == 200) {
+//      jsonResponse = json.encode(response.body);
+//      if(jsonResponse != null) {
+//        setState(() {
+//          _isLoading = false;
+//        });
+//        loginPref.setString("token", jsonResponse['token']);
+//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
+//      }
+//    }
+//    else {
+//      setState(() {
+//        _isLoading = false;
+//      });
+//      print(response.body);
+//    }
+//  }
 
 
   final TextEditingController phoneController = new TextEditingController();
@@ -129,6 +128,13 @@ class _SignInPageState extends State<SignInPage>{
         children: <Widget>[
           Flexible(
           child: TextFormField(
+            maxLength: 11,
+              onChanged: (loginAuthCode) {
+                print(loginAuthCode);
+              },
+              onFieldSubmitted: (loginAuthCode) {
+                print('login phone number 입력 :$loginAuthCode');
+              },
             keyboardType: TextInputType.number,
             inputFormatters: <TextInputFormatter>[
               WhitelistingTextInputFormatter.digitsOnly
@@ -137,6 +143,7 @@ class _SignInPageState extends State<SignInPage>{
             cursorColor: Colors.white,
             style: TextStyle(color: Colors.black),
           decoration: InputDecoration(
+            counterText: "",
             hintText: "휴대폰 번호 (-없이 숫자만 입력)",
             hintStyle: TextStyle(color: Colors.black38),
             border:  OutlineInputBorder(
@@ -156,7 +163,9 @@ class _SignInPageState extends State<SignInPage>{
                   borderRadius: BorderRadius.circular(5.0)),
               child: Text('인증문자 받기',style: TextStyle(color: Colors.white)),
               color: Colors.grey,
-              onPressed: () {},
+              onPressed: () {
+                loginCodeRequest();
+              },
             ),
           )
 
@@ -165,12 +174,37 @@ class _SignInPageState extends State<SignInPage>{
     );
   }
 
+
+  loginCodeRequest() async {
+    final uri = 'https://api.hwaya.net/api/v2/auth/A05-SignInAuth';
+    var requestBody = {
+      'phone_number':'01032711739',
+    };
+
+    http.Response response = await http.post(
+      uri,
+      body: jsonEncode(requestBody),
+
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    print(response.body);
+  }
+
+
   Widget _loginInputCodeField(){
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
       child: Column(
         children: <Widget>[
           TextFormField(
+              maxLength: 6,
+              onChanged: (loginAuthCode) {
+                print(loginAuthCode);
+              },
+              onFieldSubmitted: (loginAuthCode) {
+                print('login authcode 입력 :$loginAuthCode');
+              },
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
                 WhitelistingTextInputFormatter.digitsOnly
@@ -179,8 +213,8 @@ class _SignInPageState extends State<SignInPage>{
               cursorColor: Colors.white,
               obscureText: true,
               style: TextStyle(color: Colors.white70),
-
               decoration: InputDecoration(
+                counterText: "",
                 hintText: "인증번호",
                 hintStyle: TextStyle(color: Colors.black38),
                 border:  OutlineInputBorder(
@@ -203,18 +237,32 @@ class _SignInPageState extends State<SignInPage>{
       height: 50.0,
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: RaisedButton(
-        onPressed: phoneController.text.isEmpty || authCodeController.text.isEmpty ? null : () {
-          setState(() {
-            _isLoading = true;
-          });
-          signIn(phoneController.text, authCodeController.text);
-        },
-        elevation: 0.0,
+        onPressed: () {
+          loginRequest();
+        } ,
         child: Text("Sign In", style: TextStyle(color: Colors.white)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
       ),
     );
   }
+
+  loginRequest() async {
+    final uri = 'https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth';
+    var requestBody = {
+      'phone_number':'01032711739',
+      "auth_number": "891629"
+    };
+
+    http.Response response = await http.post(
+      uri,
+      body: jsonEncode(requestBody),
+      headers: {'Content-Type': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'},
+    );
+
+    print(response.body);
+  }
+
 
   Widget _loginText(){
     return Container(
