@@ -4,8 +4,8 @@ import 'dart:convert';
 import 'dart:collection';
 
 //import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:Hwa/package/fullPhoto.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -216,16 +216,34 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
     */
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-        print(imageFile.path);
         if (imageFile != null) {
-            setState(() {
-                isLoading = false;
-            });
+            print(imageFile.path);
+//            setState(() {
+//                isLoading = false;
+//            });
+
 //            uploadFile();
             onSendMessage(imageFile.path, 1);
         }
     }
 
+    /*
+     * @author : hs
+     * @date : 2019-12-25
+     * @description :
+    */
+    Future getCamera() async {
+        imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+        if (imageFile != null) {
+            print(imageFile.path);
+//            setState(() {
+//                isLoading = false;
+//            });
+
+//            uploadFile();
+            onSendMessage(imageFile, 1);
+        }
+    }
     /*
      * @author : hs
      * @date : 2019-12-24
@@ -239,31 +257,31 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         });
     }
 
-    void onSendMessage(String content, int type) {
-        // type: 0 = text, 1 = image, 2 = sticker
+    void onSendMessage(dynamic content, int type) {
+        String message;
+        String sendType;
 
-
-        if (content.trim() != '') {
-            textEditingController.clear();
-            var sendType = type == 0
-                                ? "TALK"
-                                : type == 1
-                                    ? "IMAGE"
-                                    : "STICKER";
-            final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
-            String message = '{"type": "'+ sendType +'","roomIdx":1,"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content + '","userCountObj":null,"createTs":' + now.toString() + '}';
-
-            print(message);
-            print(s);
-
-            s.send(
-                topic: "/pub/danhwa",
-                message: message
-            );
-
+        if (content.runtimeType == String) {
+            if (content.trim() != '') {
+                textEditingController.clear();
+                sendType = type == 0
+                    ? "TALK"
+                    : type == 1
+                    ? "IMAGE"
+                    : "STICKER";
+            }
         } else {
-            Fluttertoast.showToast(msg: '메세지를 입력해주세요.');
+            sendType = "IMAGE";
         }
+
+        final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
+        message = '{"type": "'+ sendType +'","roomIdx":1,"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
+
+        /// MESSAGE SEND
+        s.send(
+            topic: "/pub/danhwa",
+            message: message
+        );
     }
 
 
@@ -522,82 +540,6 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
         );
     }
 
-    Widget buildMenu() {
-        FocusScope.of(context).unfocus();
-
-        return Container(
-            width: ScreenUtil().setWidth(375),
-            height: ScreenUtil().setHeight(216),
-            padding: EdgeInsets.only(
-              top: ScreenUtil().setHeight(21.5),
-              bottom: ScreenUtil().setHeight(21.5),
-              left: ScreenUtil().setHeight(8),
-              right: ScreenUtil().setHeight(8),
-            ),
-            child: Column(
-                children: <Widget>[
-                    Container(
-                        child: Row(
-                            children: <Widget>[
-                                buildMenuItem("assets/images/icon/iconViewCard.png", "명함"),
-                                buildMenuItem("assets/images/icon/iconWallet.png", "거래"),
-                                buildMenuItem("assets/images/icon/iconCar.png", "합승/카풀")
-                            ],
-                        )
-                    )
-                ],
-            ),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                    top: BorderSide(
-                        width: ScreenUtil().setWidth(2),
-                        color: Color.fromRGBO(39, 39, 39, 0.15)
-                    )
-                )
-            ),
-        );
-    }
-
-    Widget buildMenuItem(String imgSrc, String name) {
-        return
-            Container(
-                width: ScreenUtil().setWidth(88),
-                height: ScreenUtil().setHeight(86.5),
-                child: Column(
-                    children: <Widget>[
-                        Container(
-                            width: ScreenUtil().setWidth(50),
-                            height: ScreenUtil().setHeight(50),
-                            margin: EdgeInsets.only(
-                                bottom: ScreenUtil().setHeight(9.5)
-                            ),
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(210, 217, 250, 1),
-                                image: DecorationImage(
-                                    image:AssetImage(imgSrc)
-                                ),
-                                shape: BoxShape.circle
-                            ),
-                            child:
-                            FlatButton(
-                                onPressed: () => {},
-                            )
-                        ),
-                        Container(
-                            child: Text(
-                                name,
-                                style: TextStyle(
-                                    height: 1,
-                                    fontSize: ScreenUtil().setSp(13)
-                                ),
-                            )
-                        )
-                    ],
-                ),
-            );
-    }
-
     Container chatIconClose() {
         return Container(
             child:
@@ -816,7 +758,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                 decoration: setIcon('assets/images/icon/iconAttachCamera.png')
                             ),
                             onTap:(){
-                                getImage();
+                                getCamera();
                             }
                         ),
                         color: Colors.white,
@@ -841,6 +783,124 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                     ),
                 ],
             ),
+        );
+    }
+
+    Widget buildMenu() {
+        FocusScope.of(context).unfocus();
+
+        return Container(
+            width: ScreenUtil().setWidth(375),
+            height: ScreenUtil().setHeight(216),
+            padding: EdgeInsets.only(
+                top: ScreenUtil().setHeight(21.5),
+                bottom: ScreenUtil().setHeight(21.5),
+                left: ScreenUtil().setHeight(8),
+                right: ScreenUtil().setHeight(8),
+            ),
+            child: Column(
+                children: <Widget>[
+                    Container(
+                        child: Row(
+                            children: <Widget>[
+                                buildMenuItem("assets/images/icon/iconViewCard.png", "명함", dialogBC),
+                                buildMenuItem("assets/images/icon/iconWallet.png", "거래", null),
+                                buildMenuItem("assets/images/icon/iconCar.png", "합승/카풀", null)
+                            ],
+                        )
+                    )
+                ],
+            ),
+            decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                    top: BorderSide(
+                        width: ScreenUtil().setWidth(2),
+                        color: Color.fromRGBO(39, 39, 39, 0.15)
+                    )
+                )
+            ),
+        );
+    }
+
+    Widget buildMenuItem(String imgSrc, String name, dynamic widget) {
+        return
+            Container(
+                width: ScreenUtil().setWidth(88),
+                height: ScreenUtil().setHeight(86.5),
+                child: Column(
+                    children: <Widget>[
+                        Container(
+                            width: ScreenUtil().setWidth(50),
+                            height: ScreenUtil().setHeight(50),
+                            margin: EdgeInsets.only(
+                                bottom: ScreenUtil().setHeight(9.5)
+                            ),
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(210, 217, 250, 1),
+                                image: DecorationImage(
+                                    image:AssetImage(imgSrc)
+                                ),
+                                shape: BoxShape.circle
+                            ),
+                            child:
+                            FlatButton(
+                                onPressed: () => {
+                                    name == "명함"
+                                        ? widget(context)
+                                        : Container()
+                                },
+                            )
+                        ),
+                        Container(
+                            child: Text(
+                                name,
+                                style: TextStyle(
+                                    height: 1,
+                                    fontSize: ScreenUtil().setSp(13)
+                                ),
+                            )
+                        )
+                    ],
+                ),
+            );
+    }
+
+    Future dialogBC(BuildContext context) {
+        print("dd");
+        return showDialog(
+            context: context,
+            builder: (BuildContext context) {
+                return AlertDialog(
+                    content: Container(
+                        width: ScreenUtil().setWidth(281),
+                        height: ScreenUtil().setHeight(291),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10))
+                        ),
+                        child: Column(
+                            children: <Widget>[
+                                Container(
+                                    child: Text(
+                                        '명함 공유',
+                                        style: TextStyle(
+                                            height: 1,
+                                            fontFamily: "NotoSans",
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                            color: Color.fromRGBO(39, 39, 39, 0.7),
+                                            letterSpacing: ScreenUtil().setWidth(0.8),
+                                        ),
+                                    ),
+                                ),
+                                Container(),
+                                Container(),
+                                Container()
+                            ],
+                        ),
+                    )
+                );
+            }
         );
     }
 }

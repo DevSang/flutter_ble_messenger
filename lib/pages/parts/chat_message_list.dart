@@ -1,8 +1,10 @@
+import 'package:Hwa/package/fullPhoto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/package/fullPhoto.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 const String name = "hwa";
@@ -34,6 +36,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
         return Flexible(
             child: ListView.builder(
                 padding: EdgeInsets.only(
+                    top: ScreenUtil.getInstance().setHeight(50),
                     left: ScreenUtil.getInstance().setWidth(8),
                     right: ScreenUtil.getInstance().setWidth(8)
                 ),
@@ -63,8 +66,12 @@ class ChatMessageElementsState extends State<ChatMessageList> {
     Widget buildChatMessage(int chatIndex, ChatMessage chatMessage) {
         bool isLastSendMessage = checkMessage(chatIndex);
         int userIdx = Constant.USER_IDX;
+
         // false : Send, true : Received
-        bool receivedMsg = (chatMessage.chatType == "TALK" && userIdx != chatMessage.senderIdx) ? true : false;
+        bool receivedMsg = ((chatMessage.chatType == "TALK" || chatMessage.chatType == "IMAGE") && userIdx != chatMessage.senderIdx)
+                            ? true
+                            : false;
+
         // chatType(TALK, ENTER, QUIT)에 따른 화면 처리
         Widget chatElement = chatMessage.chatType == "TALK"
             ? receivedMsg
@@ -73,7 +80,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
             : chatMessage.chatType == "ENTER"
                 ? enterNotice(chatMessage)
                 : chatMessage.chatType == "IMAGE"
-                    ? sendImageBubble(chatIndex, chatMessage, isLastSendMessage)
+                    ? sendImageBubble(chatMessage, isLastSendMessage)
                     : quitNotice(chatMessage);
 
         return Container(
@@ -364,45 +371,52 @@ class ChatMessageElementsState extends State<ChatMessageList> {
     }
 
     // 보낸 이미지 스타일
-    Widget sendImageBubble(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage) {
-        return Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
-                Container(
-                    color: Color.fromRGBO(166, 181, 255, 1),
-                    alignment: AlignmentDirectional(0.0, 0.0),
-                    width: 10,
-                    child: Container(
-                        padding: const EdgeInsets.only(top:3.0, bottom: 3.0),
-                        decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                                bottomRight: Radius.circular(10.0)
+    Widget sendImageBubble(ChatMessage chatMessage, bool isLastSendMessage) {
+        return Container(
+            margin: EdgeInsets.only(
+                bottom:
+                isLastSendMessage
+                    ? ScreenUtil.getInstance().setHeight(14)
+                    : ScreenUtil.getInstance().setHeight(0)
+            ),
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                    Container(
+                        margin: EdgeInsets.only(
+                            right: ScreenUtil.getInstance().setWidth(7),
+                            bottom: ScreenUtil.getInstance().setHeight(4)
+                        ),
+                        child: Text(
+                            GetTimeDifference.timeDifference(chatMessage.chatTime),
+                            style: TextStyle(
+                                fontFamily: "NanumSquare",
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: ScreenUtil.getInstance().setHeight(-0.28),
+                                fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                                color: Color.fromRGBO(39, 39, 39, 0.7)
+                            )
+                        ),
+                    ),
+                    GestureDetector(
+                        child: Container(
+                            child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
+                                child: Image.asset(
+//                                chatMessage.message,
+                                    "assets/images/profile_img.png",
+                                    width: ScreenUtil().setWidth(230),
+                                )
                             ),
-                            color: Color.fromRGBO(210, 217, 250, 1)
-                        )
-                    ),
-                ),
-                Container(
-                    margin: EdgeInsets.only(
-                        bottom:
-                        isLastSendMessage
-                            ? ScreenUtil.getInstance().setHeight(28)
-                            : ScreenUtil.getInstance().setHeight(0)
-                    ),
-                    constraints: BoxConstraints(maxWidth: 230),
-                    padding: const EdgeInsets.all(8.0),
-                    child: CachedNetworkImage(
-                        placeholder: (context, url) => CircularProgressIndicator(),
-                        imageUrl: chatMessage.message,
-                    ),
-                    decoration: BoxDecoration(
-                        color: Color.fromRGBO(166, 181, 255, 1),
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(ScreenUtil.getInstance().setWidth(8))
-                        )
-                    ),
-                )
-            ],
+                        ),
+                        onTap: () {
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: "assets/images/profile_img.png")));
+                        },
+                    )
+                ],
+            ),
         );
     }
 }
