@@ -152,7 +152,7 @@ class _FriendTabState extends State<FriendTab> {
               backgroundImage: AssetImage("assets/images/sns/snsIconFacebook.png"),
             ),
           ),
-
+          brightness: Brightness.light,
         ),
           body: AlphabetListScrollView(
             strList: strList,

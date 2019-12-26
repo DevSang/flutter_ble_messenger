@@ -38,7 +38,7 @@ class ChatroomPage extends StatefulWidget {
     State createState() => new ChatScreenState(peerId: peerId, peerAvatar: peerAvatar);
 }
 
-class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin {
+class ChatScreenState extends State<ChatroomPage> {
     ChatScreenState({Key key, @required this.peerId, @required this.peerAvatar});
 
     String peerId;
@@ -850,7 +850,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                         bottom: ScreenUtil().setHeight(14),
                                     ),
                                     child: Image.asset(
-                                        'assets/images/icon/iconViewCard.png',
+                                        'assets/images/businesscard.png',
                                         fit:BoxFit.fitWidth
                                     ),
                                 ),
@@ -895,7 +895,7 @@ class ChatScreenState extends State<ChatroomPage> with TickerProviderStateMixin 
                                             }),
                                             cardShareButton(2, (){
                                                 /// FileUpload 명함
-                                                onSendMessage('assets/images/icon/iconViewCard.png',2);
+                                                onSendMessage('assets/images/businesscard.png',2);
                                                 Navigator.of(context, rootNavigator: true).pop('dialog');
                                             }),
                                         ],
