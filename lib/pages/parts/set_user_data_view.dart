@@ -10,7 +10,7 @@ class SetUserDataView {
         userInfoList = [
             ChatUserInfo(
                 nick: "노희진",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: null,
                 partType: "View",
                 existContact: true,
                 businessCard: "assets/images/businesscard.png",
@@ -21,7 +21,7 @@ class SetUserDataView {
             ),
             ChatUserInfo(
                 nick: "안영후",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: null,
                 partType: "View",
                 existContact: false,
                 businessCard: "assets/images/businesscard.png",

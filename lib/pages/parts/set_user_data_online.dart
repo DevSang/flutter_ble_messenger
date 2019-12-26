@@ -9,7 +9,7 @@ class SetUserDataOnline {
         userInfoList = [
             ChatUserInfo(
                 nick: "나영희",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: null,
                 partType: "Online",
                 existContact: true,
                 businessCard: "assets/images/businesscard.png",
@@ -20,7 +20,7 @@ class SetUserDataOnline {
             ),
             ChatUserInfo(
                 nick: "김영서",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: null,
                 partType: "Online",
                 existContact: false,
                 businessCard: "",
@@ -31,7 +31,7 @@ class SetUserDataOnline {
             ),
             ChatUserInfo(
                 nick: "뱍지원",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: null,
                 partType: "Online",
                 existContact: false,
                 businessCard: "assets/images/businesscard.png",

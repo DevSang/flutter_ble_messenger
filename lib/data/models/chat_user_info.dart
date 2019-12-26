@@ -1,6 +1,8 @@
+import 'dart:io';
+
 class ChatUserInfo {
     final String nick;
-    final String profileImg;
+    Future<File> profileImg;
     final String partType;
     final bool existContact;
     final String businessCard;
