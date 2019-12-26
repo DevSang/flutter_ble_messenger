@@ -36,7 +36,7 @@ class _SignUpPageState extends State<SignUpPage>{
         leading: Padding(
           padding: EdgeInsets.only(left: 16),
           child: IconButton(
-            icon: Image.asset("assets/images/icon/navIconPrev.png"),
+            icon: Image.asset("assets/images/icon/navIconClose.png"),
             onPressed: () => Navigator.of(context).pop(null),
           ),
         ),

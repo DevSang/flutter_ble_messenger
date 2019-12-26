@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:Hwa/app.dart';
 import 'package:flutter/services.dart';
@@ -26,7 +28,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
           leading: Padding(
             padding: EdgeInsets.only(left: 16),
             child: IconButton(
-              icon: Image.asset("assets/images/icon/navIconPrev.png"),
+              icon: Image.asset("assets/images/icon/navIconClose.png"),
               onPressed: () => Navigator.of(context).pop(null),
             ),
           ),
@@ -89,6 +91,7 @@ Widget _regAuthTextField(){
             }
           }
         },
+
         onChanged: (regNickname) {
           validateUsername(regNickname);
         },
@@ -99,12 +102,17 @@ Widget _regAuthTextField(){
         inputFormatters: <TextInputFormatter>[
         ],
         controller: _regNameController,
-        cursorColor: Colors.white,
+        cursorColor: Colors.black,
         obscureText: true,
-        style: TextStyle(color: Colors.white70),
+        style: TextStyle(color: Colors.black),
         decoration: InputDecoration(
           counterText: "",
           hintText: "닉네임을 입력하세요",
+          suffixIcon: IconButton(
+              icon: Image.asset("assets/images/icon/iconDeleteSmall.png"),
+              onPressed: () {
+
+              }),
           hintStyle: TextStyle(color: Colors.black38),
           border:  OutlineInputBorder(
             borderRadius:  BorderRadius.circular(10.0),
