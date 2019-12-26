@@ -1,5 +1,6 @@
 
 import 'package:Hwa/data/models/chat_user_info.dart';
+import 'package:Hwa/utility/cached_image_utility.dart';
 
 class SetUserData {
 
@@ -10,7 +11,7 @@ class SetUserData {
         userInfoList = [
             ChatUserInfo(
                 nick: "강희근",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: null,
                 partType: "BLE",
                 existContact: true,
                 businessCard: "assets/images/businesscard.png",
@@ -21,7 +22,7 @@ class SetUserData {
             ),
             ChatUserInfo(
                 nick: "노민정",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: CachedImageUtility.loadImageFromPreferences('profileImg'),
                 partType: "BLE",
                 existContact: false,
                 businessCard: "",
@@ -32,7 +33,7 @@ class SetUserData {
             ),
             ChatUserInfo(
                 nick: "김은선",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: null,
                 partType: "BLE",
                 existContact: false,
                 businessCard: "assets/images/businesscard.png",
@@ -43,7 +44,7 @@ class SetUserData {
             ),
             ChatUserInfo(
                 nick: "김재희",
-                profileImg: "assets/images/profile_img.png",
+                profileImg: null,
                 partType: "BLE",
                 existContact: true,
                 businessCard: "",

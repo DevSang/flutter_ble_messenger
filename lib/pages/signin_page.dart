@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
@@ -14,7 +15,6 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage>{
-
   bool _isLoading = false;
 
   @override
@@ -90,40 +90,9 @@ class _SignInPageState extends State<SignInPage>{
 //    }
 //  }
 
-//  signIn(String phone, authCode) async {
-//    SharedPreferences loginPref = await SharedPreferences.getInstance();
-//    Map data = {
-//      'phone': phone,
-//      'authcode': authCode
-//    };
-//
-//    var jsonResponse = null;
-//    var response = await http.post("http://api.hwaya.net/auth/A05-SignInAuth", body: data);
-//    if(response.statusCode == 200) {
-//      jsonResponse = json.encode(response.body);
-//      if(jsonResponse != null) {
-//        setState(() {
-//          _isLoading = false;
-//        });
-//        loginPref.setString("token", jsonResponse['token']);
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
-//      }
-//    }
-//    else {
-//      setState(() {
-//        _isLoading = false;
-//      });
-//      print(response.body);
-//    }
-//  }
-
 
   final TextEditingController _authCodeController =  TextEditingController();
-
-
   final TextEditingController _phoneController =  TextEditingController();
-
-
 
   Widget _loginInputText() {
     return Container(
@@ -177,7 +146,6 @@ class _SignInPageState extends State<SignInPage>{
                 setState(() {
                   loginCodeRequest();
                 });
-
               },
             ),
           )
@@ -186,11 +154,6 @@ class _SignInPageState extends State<SignInPage>{
       ),
     );
   }
-
-
-//TODO 하는 중
-
-  String phone_number = '';
 
   loginCodeRequest() async {
     print("phone number :: " +  _phoneController.text);
@@ -205,17 +168,27 @@ class _SignInPageState extends State<SignInPage>{
     ).then((http.Response response) {
       print("signin :: " + response.body);
     });
-
     var data = jsonDecode(response.body);
     String phoneNum = data['phone_number'];
+    String message = data['message'];
     if (response.statusCode == 200) {
       print(phoneNum);
-      print("200 OK!");
+      loginToastMsg(message);
     } else {
+      loginToastMsg(message);
       print('failed：${response.statusCode}');
     }
   }
 
+  loginToastMsg(String toast){
+    return Fluttertoast.showToast(
+        msg: "toast",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIos: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white);
+  }
 
 
 
@@ -265,30 +238,41 @@ class _SignInPageState extends State<SignInPage>{
       padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: RaisedButton(
         onPressed: () {
-          loginRequest();
-        } ,
+          setState(() {
+            authCodeLoginRequest();
+          });},
         child: Text("Sign In", style: TextStyle(color: Colors.white)),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
       ),
     );
   }
 
-  loginRequest() async {
-    final uri = 'https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth';
-    var requestBody = {
-      'phone_number':'01032711739',
-      "auth_number": "891629"
-    };
-
-    http.Response response = await http.post(
-      uri,
-      body: jsonEncode(requestBody),
-      headers: {'Content-Type': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'},
-    );
-
-    print(response.body);
+  authCodeLoginRequest() async {
+    print("auth number :: " +  _authCodeController.text);
+    String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
+    final response = await http.post(url,
+        headers: {
+          'Content-Type':'application/json',
+          'X-Requested-With': 'XMLHttpRequest'},
+        body: jsonEncode({
+          "phone_number": _phoneController.text,
+          "auth_number": _authCodeController.text
+        })
+    ).then((http.Response response) {
+      print("로그인 :: " + response.body);
+    });
+    var data = jsonDecode(response.body);
+    String authNum = data['auth_number'];
+    String message = data['message'];
+    if (response.statusCode == 200) {
+      print(authNum);
+      loginToastMsg(message);
+    } else {
+      loginToastMsg(message);
+      print('failed：${response.statusCode}');
+    }
   }
+
 
 
   Widget _loginText(){
