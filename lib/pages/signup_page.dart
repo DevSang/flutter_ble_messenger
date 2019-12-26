@@ -25,7 +25,6 @@ class _SignUpPageState extends State<SignUpPage>{
             children: <Widget>[
               _regPhoneTextField(),
               _regPhoneNumTextField(),
-              _regButton(),
               _regAuthCodeText(),
               _regAuthTextField(),
               _regNextButton(context),
@@ -36,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage>{
         leading: Padding(
           padding: EdgeInsets.only(left: 16),
           child: IconButton(
-            icon: Image.asset("assets/images/icon/navIconPrev.png"),
+            icon: Image.asset("assets/images/icon/navIconClose.png"),
             onPressed: () => Navigator.of(context).pop(null),
           ),
         ),
@@ -81,11 +80,23 @@ Widget _regPhoneNumTextField(){
         inputFormatters: <TextInputFormatter>[
           WhitelistingTextInputFormatter.digitsOnly
         ],
+
         controller: _phoneRegController,
-        cursorColor: Colors.white,
+        cursorColor: Colors.black,
         obscureText: true,
-        style: TextStyle(color: Colors.white70),
+        style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
+        ),
         decoration: InputDecoration(
+          suffixIcon: RaisedButton(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+              ),
+            child: Text("인증문자 받기",style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
+            ),
+              color: Color.fromRGBO(77, 96, 191, 1),
+              onPressed: () {
+                registerCodeRequest();
+              }),
           counterText:"",
           hintText: "휴대폰번호 ( -없이 숫자만 입력)",
           hintStyle: TextStyle(color: Colors.black38),
@@ -101,23 +112,6 @@ Widget _regPhoneNumTextField(){
   );
 }
 
-
-Widget _regButton(){
-  return Container(
-    width: 100.0,
-    height: 40.0,
-    padding: EdgeInsets.symmetric(horizontal: 15.0),
-    margin: EdgeInsets.only(top: 15.0),
-    child: RaisedButton(
-      onPressed: (){
-        registerCodeRequest();
-      },
-      color: Colors.blue,
-      child: Text("인증번호 받기", style: TextStyle(color: Colors.white)),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-    ),
-  );
-}
 
 registerCodeRequest() async {
   print("phone number :: " +  _phoneRegController.text);
@@ -140,10 +134,6 @@ registerCodeRequest() async {
     print('failed：${response.statusCode}');
   }
 }
-
-
-
-
 
 Widget _regAuthCodeText(){
   return Container(
@@ -177,9 +167,9 @@ Widget _regAuthTextField(){
         WhitelistingTextInputFormatter.digitsOnly
       ],
       controller: _regAuthCodeController,
-      cursorColor: Colors.white,
+      cursorColor: Colors.black,
       obscureText: true,
-      style: TextStyle(color: Colors.white70),
+      style: TextStyle(color: Colors.black, fontFamily: "NotoSans",),
       decoration: InputDecoration(
         counterText: "",
         hintText: "인증번호",
@@ -201,7 +191,8 @@ Widget _regNextButton(BuildContext context){
   return Container(
   width: MediaQuery.of(context).size.width,
   height: 50.0,
-  padding: EdgeInsets.symmetric(horizontal: 15.0),
+    margin: EdgeInsets.only(top: 15.0),
+    padding: EdgeInsets.symmetric(horizontal: 15.0),
   child: RaisedButton(
   onPressed:(){
     registerNext();

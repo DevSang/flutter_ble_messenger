@@ -2,13 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:configurable_expansion_tile/configurable_expansion_tile.dart';
+
 import 'package:Hwa/data/models/chat_user_info.dart';
+
 import 'package:Hwa/pages/parts/chat_user_list.dart';
 import 'package:Hwa/pages/parts/set_user_data.dart';
 import 'package:Hwa/pages/parts/set_user_data_online.dart';
 import 'package:Hwa/pages/parts/set_user_data_view.dart';
+import 'package:Hwa/pages/chatroom_setting.dart';
 
-
+//TODO: Host 여부에 따른 Setting
+/*
+ * @project : HWA - Mobile
+ * @author : hs
+ * @date : 2019-12-26
+ * @description : 단화방 사이드 메뉴
+ */
 class ChatSideMenu extends StatefulWidget {
     final bool isLike;
     ChatSideMenu({Key key, @required this.isLike});
@@ -197,7 +206,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                             child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                    GestureDetector(
+                                    InkWell(
                                         child: Container(
                                             width: ScreenUtil().setWidth(56),
                                             height: ScreenUtil().setHeight(56),
@@ -208,7 +217,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                             )
                                         ),
                                     ),
-                                    GestureDetector(
+                                    InkWell(
                                         child: Container(
                                             width: ScreenUtil().setWidth(56),
                                             height: ScreenUtil().setHeight(56),
@@ -218,6 +227,13 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                 ),
                                             )
                                         ),
+                                        onTap: () {
+                                            Navigator.push(context,
+                                                MaterialPageRoute(builder: (context) {
+                                                    return ChatroomSettingPage(chatIdx: 0);
+                                                })
+                                            );
+                                        },
                                     )
                                 ],
                             ),

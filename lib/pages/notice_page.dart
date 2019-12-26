@@ -65,7 +65,7 @@ class NoticePageState extends State<NoticePage> {
                     ),
                 ],
                 centerTitle: true,
-                elevation: 6.0,
+                elevation: 0,
                 backgroundColor: Colors.white,
             ),
             body: noticeList(),
@@ -74,7 +74,15 @@ class NoticePageState extends State<NoticePage> {
 
     Widget noticeList() {
         return new Container(
-            color: Color.fromRGBO(235, 235, 235, 1),
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(235, 235, 235, 1),
+                border: Border(
+                    top: BorderSide(
+                        width: ScreenUtil().setWidth(0.5),
+                        color: Color.fromRGBO(178, 178, 178, 0.8)
+                    )
+                )
+            ),
             child: Column(
                 children: <Widget>[
                     // 상단 Tab Bar

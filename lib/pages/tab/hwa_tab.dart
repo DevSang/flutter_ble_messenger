@@ -14,33 +14,6 @@ class HwaTab extends StatefulWidget {
 
 class _HwaTabState extends State<HwaTab> {
 
-//  List<Note> _notes = List<Note>();
-//
-//  Future<List<Note>> fetchNotes() async {
-//    var url = 'https://raw.githubusercontent.com/boriszv/json/master/random_example.json';
-//    var response = await http.get(url);
-//
-//    var notes = List<Note>();
-//
-//    if (response.statusCode == 200) {
-//      var notesJson = json.decode(response.body);
-//      for (var noteJson in notesJson) {
-//        notes.add(Note.fromJson(noteJson));
-//      }
-//    }
-//    return notes;
-//  }
-//
-//  @override
-//  void initState() {
-//    fetchNotes().then((value) {
-//      setState(() {
-//        _notes.addAll(value);
-//      });
-//    });
-//    super.initState();
-//  }
-
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
 
   Position _currentPosition;
@@ -94,6 +67,7 @@ class _HwaTabState extends State<HwaTab> {
 
            )
          ],
+           brightness: Brightness.light,
        ),
      );
   }
@@ -102,6 +76,7 @@ class _HwaTabState extends State<HwaTab> {
   Widget _getLocation() {
     return Container(
       margin: EdgeInsets.only(top: 10),
+      padding: EdgeInsets.symmetric(horizontal: 15.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
@@ -121,15 +96,21 @@ class _HwaTabState extends State<HwaTab> {
             ),
           ),
 
-
-          InkWell(
-            child: Text('현재 위치', style: TextStyle(fontSize: 13, color: Colors.black54),
+Expanded(
+child: InkWell(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 15.0),
+              child: Text('현재 위치', style: TextStyle(fontSize: 13, color: Colors.black54),
             ),
           ),
+)
+),
 
 
           InkWell(
-            child: Text("$_currentAddress", style: TextStyle(fontSize: 15, color: Colors.black),
+            child: Container(
+              child: Text("$_currentAddress", style: TextStyle(fontSize: 15, color: Colors.black),
+            ),
             ),
           ),
         ],
