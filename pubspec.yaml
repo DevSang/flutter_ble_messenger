@@ -85,6 +85,7 @@ flutter:
     - assets/images/icon/iconExit.png
     - assets/images/icon/iconExpand.png
     - assets/images/icon/iconLikeCount.png
+    - assets/images/icon/iconMore.png
     - assets/images/icon/iconPin.png
     - assets/images/icon/iconRequest.png
     - assets/images/icon/iconRequestCalling.png
