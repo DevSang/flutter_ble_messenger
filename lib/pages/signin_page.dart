@@ -175,7 +175,7 @@ class _SignInPageState extends State<SignInPage>{
               color: Colors.grey,
               onPressed: () {
                 setState(() {
-                  _phoneController.text = loginCodeRequest();
+                  loginCodeRequest();
                 });
 
               },
@@ -193,10 +193,18 @@ class _SignInPageState extends State<SignInPage>{
   String phone_number = '';
 
   loginCodeRequest() async {
-    final response = await http.post("https://api.hwaya.net/api/v2/auth/A05-SignInAuth",
-        headers: {'Content-Type':'application/json'},
-        body: jsonEncode({"phone_number": phone_number}));
-
+    print("phone number :: " +  _phoneController.text);
+    String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
+    final response = await http.post(url,
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: jsonEncode({
+          "phone_number": _phoneController.text
+        })
+    ).then((http.Response response) {
+      print("signin :: " + response.body);
+    });
 
     var data = jsonDecode(response.body);
     String phoneNum = data['phone_number'];
@@ -206,7 +214,7 @@ class _SignInPageState extends State<SignInPage>{
     } else {
       print('failed：${response.statusCode}');
     }
-    }
+  }
 
 
 
