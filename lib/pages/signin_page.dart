@@ -44,8 +44,7 @@ class _SignInPageState extends State<SignInPage>{
       backgroundColor: Colors.white,
     title: Text("HWA 로그인",
       style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'NotoSans'),
-    ),
-    ),
+    )),
     );
   }
 
