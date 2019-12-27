@@ -30,7 +30,6 @@ class _SignInPageState extends State<SignInPage> {
     Navigator.pushReplacementNamed(context, '/home');
   }
 
-
     @override
   Widget build(BuildContext context) {
     return Scaffold(
