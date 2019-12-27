@@ -68,7 +68,7 @@ class _HwaTabState extends State<HwaTab> {
             new FlatButton(
               child: new Text('생성하기'),
               onPressed: () {
-                _createChat(_textFieldController.value.toString());
+                _createChat(_textFieldController.text);
               },
             )
           ]
@@ -87,11 +87,11 @@ class _HwaTabState extends State<HwaTab> {
     var userIdx = spf.getString("userIdx");
 
     try {
-      String uri = Constant.CHAT_SERVER_HTTP + "/danhwa/room?userIdx=" + userIdx + "&title=" + title;
-      final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: uri);
+      String uri = "/danhwa/room?userIdx=" + userIdx + "&title=" + title;
+      final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
       print("##단화방 생성 : " + response.body);
     } catch (e) {
-      print("##error"+e);
+      print("##error"+ e);
     }
   }
 
