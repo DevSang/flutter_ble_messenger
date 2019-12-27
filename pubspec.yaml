@@ -64,9 +64,11 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/images/icon/appIcon.jpg
     - assets/images/icon/iconActionMenuOpen.png
     - assets/images/icon/iconAddress.png
     - assets/images/icon/iconAttachCamera.png
+    - assets/images/icon/iconAttachCard.png
     - assets/images/icon/iconAttachClose.png
     - assets/images/icon/iconAttachMore.png
     - assets/images/icon/iconAttachPhoto.png
@@ -84,6 +86,8 @@ flutter:
     - assets/images/icon/iconExit.png
     - assets/images/icon/iconExpand.png
     - assets/images/icon/iconLikeCount.png
+    - assets/images/icon/iconMasterBadge.png
+    - assets/images/icon/iconMore.png
     - assets/images/icon/iconPin.png
     - assets/images/icon/iconRequest.png
     - assets/images/icon/iconRequestCalling.png
@@ -102,6 +106,7 @@ flutter:
     - assets/images/icon/navIconMenu.png
     - assets/images/icon/navIconSearch.png
     - assets/images/icon/navIconWrite.png
+    - assets/images/icon/photoProfileDefault.png
     - assets/images/icon/tabIconChat.png
     - assets/images/icon/tabIconChatActive.png
     - assets/images/icon/tabIconFriend.png

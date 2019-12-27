@@ -1,8 +1,9 @@
 import 'package:Hwa/pages/trend_page.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/service/get_time_difference.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:Hwa/utility/get_same_size.dart';
 
 import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/pages/parts/set_chat_list_data.dart';
@@ -19,24 +20,30 @@ class _HwaTabState extends State<HwaTab> {
   List<ChatListItem> chatList;
   Position _currentPosition;
   String _currentAddress;
+  double sameSize;
 
   @override
   void initState() {
     super.initState();
     chatList = new SetChaListData().main();
+    sameSize  = GetSameSize().main();
   }
 
   @override
   Widget build(BuildContext context) {
-    ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
+
     return Scaffold(
       appBar: TabAppBar(
         title: '단화방',
-        child: Row(
+        /// AppBar Row 내 요소 하단 정렬을 위한 높이 처리
+        leftChild: Container(
+            height: 0
+        ),
+        rightChild: Row(
           children: <Widget>[
             Container(
-                width: ScreenUtil().setWidth(22),
-                height: ScreenUtil().setHeight(22),
+                width: sameSize*22,
+                height: sameSize*22,
                 margin: EdgeInsets.only(right: 16),
                 child: InkWell(
                   child: Image.asset('assets/images/icon/navIconHot.png'),
@@ -45,8 +52,8 @@ class _HwaTabState extends State<HwaTab> {
                 )
             ),
             Container(
-                width: ScreenUtil().setWidth(22),
-                height: ScreenUtil().setHeight(22),
+                width: sameSize*22,
+                height: sameSize*22,
                 child: InkWell(
                   child: Image.asset('assets/images/icon/navIconNew.png'),
                   onTap: () => Navigator.push(
@@ -99,8 +106,8 @@ class _HwaTabState extends State<HwaTab> {
                     left: ScreenUtil().setWidth(8),
                     right: ScreenUtil().setWidth(4.5),
                   ),
-                  width: ScreenUtil().setWidth(22.0),
-                  height: ScreenUtil().setHeight(22.0),
+                  width: sameSize*22,
+                  height: sameSize*22,
                   decoration: BoxDecoration(
                       color: Color.fromRGBO(107, 107, 107, 1),
                       image: DecorationImage(
@@ -158,6 +165,7 @@ class _HwaTabState extends State<HwaTab> {
   Widget buildChatItem(ChatListItem chatListItem) {
     return Container(
       height: ScreenUtil().setHeight(82),
+      width: ScreenUtil().setWidth(343),
       margin: EdgeInsets.only(
         bottom: ScreenUtil().setHeight(10),
       ),
@@ -182,8 +190,8 @@ class _HwaTabState extends State<HwaTab> {
         children: <Widget>[
           // 단화방 이미지
           Container(
-              width: ScreenUtil().setHeight(50),
-              height: ScreenUtil().setHeight(50),
+              width: sameSize*50,
+              height: sameSize*50,
               margin: EdgeInsets.only(
                 right: ScreenUtil().setWidth(15),
               ),
@@ -194,8 +202,8 @@ class _HwaTabState extends State<HwaTab> {
                 child:
                 Image.asset(
                   chatListItem.chatImg,
-                  width: ScreenUtil().setHeight(50),
-                  height: ScreenUtil().setHeight(50),
+                  width: sameSize*50,
+                  height: sameSize*50,
                   fit: BoxFit.cover,
                 ),
               )

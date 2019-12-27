@@ -5,6 +5,7 @@ import 'package:Hwa/pages/bottom_navigation.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -35,6 +36,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("HWA", style: TextStyle(color: Colors.white)),
