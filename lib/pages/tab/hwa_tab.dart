@@ -21,6 +21,7 @@ class _HwaTabState extends State<HwaTab> {
   Position _currentPosition;
   String _currentAddress;
   double sameSize;
+  TextEditingController _textFieldController = TextEditingController();
 
   @override
   void initState() {
@@ -29,9 +30,42 @@ class _HwaTabState extends State<HwaTab> {
     sameSize  = GetSameSize().main();
   }
 
+  _displayDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(
+            '단화 생성하기'
+          ),
+          content: TextField(
+            controller: _textFieldController,
+            decoration: InputDecoration(
+              /// GPS 연동
+              hintText: "스타벅스 강남R점"
+            ),
+          ),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text('취소'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: new Text('생성하기'),
+              onPressed: () {
+
+              },
+            )
+          ]
+        );
+      }
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: TabAppBar(
         title: '단화방',
