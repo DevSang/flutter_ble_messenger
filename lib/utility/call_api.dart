@@ -21,9 +21,11 @@ enum HTTP_METHOD {
 }
 
 class CallApi {
-  static commonApiCall({ @required HTTP_METHOD method, @required String uri, Map data}) async {
-    var responseBody = null;
+  static commonApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(data == null) {
+        data = {};
+    }
     var token = prefs.getString('token').toString();
     var headers = {
       'Content-Type':'application/json',
@@ -31,37 +33,43 @@ class CallApi {
     };
 
     try {
-      var response = setHttpCallType(method, headers, uri, data);
+      var response = setHttpCallType(method.toString(), headers, url, data);
+      print("#Request Url : " + url.toString());
+      print("#Method : " + method.toString());
+      print("#Headers : " + headers.toString());
+      print("#Data : " + data.toString());
 
-      if(response.statusCode == 200) {
-        responseBody = json.encode(response.body);
-        if(responseBody != null) {
-          return response;
-        } else {
-          print("#No response" + json.decode(response.body));
-          return false;
-        }
-      }
+      return response;
+//      var statusCode = response.statusCode.toString();
+//      if(statusCode.indexOf("20") > -1) {
+//        responseBody = json.encode(response.body);
+//        if(responseBody != null) {
+//          return response;
+//        } else {
+//          print("#No response" + json.decode(response.body));
+//          return false;
+//        }
+//      }
     } catch (e) {
       expect(e, isUnsupportedError);
     }
   }
 
-  static setHttpCallType(method, headers, uri, data) async {
+  static setHttpCallType(method, headers, url, data) async {
     switch(method) {
-      case "post": return await http.post(Constant.API_SERVER_HTTP + uri, headers: headers, body: data);
+      case "HTTP_METHOD.post": return await http.post(Constant.API_SERVER_HTTP + url, headers: headers, body: jsonEncode(data));
       break;
 
-      case "get": return await http.get(Constant.API_SERVER_HTTP + uri, headers: headers,);
+      case "HTTP_METHOD.get": return await http.get(Constant.API_SERVER_HTTP + url, headers: headers,);
       break;
 
-      case "put": return await http.put(Constant.API_SERVER_HTTP + uri, headers: headers, body: data);
+      case "HTTP_METHOD.put": return await http.put(Constant.API_SERVER_HTTP + url, headers: headers, body: data);
       break;
 
-      case "patch": return await http.patch(Constant.API_SERVER_HTTP + uri, headers: headers, body: data);
+      case "HTTP_METHOD.patch": return await http.patch(Constant.API_SERVER_HTTP + url, headers: headers, body: data);
       break;
 
-      case "delete": return await http.delete(Constant.API_SERVER_HTTP + uri, headers: headers,);
+      case "HTTP_METHOD.delete": return await http.delete(Constant.API_SERVER_HTTP + url, headers: headers,);
       break;
 
       default: { print("Invalid choice http call method"); }

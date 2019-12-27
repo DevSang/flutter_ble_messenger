@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:Hwa/pages/signin_page.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
-import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 
 class MainPage extends StatefulWidget {
   @override
@@ -25,7 +25,7 @@ class _MainPageState extends State<MainPage> {
 
   checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
-//    sharedPreferences.remove('token');
+    sharedPreferences.remove('token');
 
     var token = sharedPreferences.getString("token");
     var userIdx = sharedPreferences.getString("userIdx");
@@ -71,12 +71,14 @@ class _MainPageState extends State<MainPage> {
    * @date : 2019-12-21
    * @description : FCM 수신 테스트 코드 삽입, TODO 소스코드 적용, MSG 혹은 API서버 - token 저장 api 연동
    */
-  void firebaseCloudMessaging_Listeners() {
-    if (Platform.isIOS) iOS_Permission();
+  void firebaseCloudMessaging_Listeners() async {
+      sharedPreferences = await SharedPreferences.getInstance();
 
-    _firebaseMessaging.getToken().then((token) {
-      print('# FCM : token:' + token);
-    });
+      if (Platform.isIOS) iOS_Permission();
+        _firebaseMessaging.getToken().then((token) {
+          print('# FCM : token:' + token);
+          sharedPreferences.setString('pushToken', token);
+      });
 
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
