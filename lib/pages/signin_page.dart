@@ -121,7 +121,8 @@ class _SignInPageState extends State<SignInPage> {
       child: Row(
         children: <Widget>[
           Flexible(
-            child: TextFormField(
+            child:
+              TextFormField(
                 maxLength: 11,
                 onChanged: (loginAuthCode) {
                   print(loginAuthCode);
@@ -136,31 +137,39 @@ class _SignInPageState extends State<SignInPage> {
                 controller: _phoneController,
                 cursorColor: Colors.black,
                 style: TextStyle(color: Colors.black, fontFamily: 'NotoSans'),
-                decoration: InputDecoration(
-                  suffixIcon: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Text("인증문자 받기", style: TextStyle(
-                          color: Colors.white, fontFamily: 'NotoSans'),
-                      ),
-                      color: Color.fromRGBO(77, 96, 191, 1),
-                      onPressed: () {
-                        loginCodeRequest();
-                      }),
-                  counterText: "",
-                  hintText: "휴대폰 번호 (-없이 숫자만 입력)",
-                  hintStyle: TextStyle(color: Colors.black38),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(
+                decoration:
+                  InputDecoration(
+                    suffixIcon:
+                    Container(
+                      margin: EdgeInsets.only(right:5),
+                      child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Text("인증문자 받기",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'NotoSans'
+                            ),
+                          ),
+                          color: Color.fromRGBO(77, 96, 191, 1),
+                          onPressed: () {
+                            loginCodeRequest();
+                          }
+                      )
                     ),
-                  ),
-                  fillColor: Colors.grey[200],
-                  filled: true,
-                )
-            ),
-
+                    counterText: "",
+                    hintText: "휴대폰 번호 (-없이 숫자만 입력)",
+                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(
+                      ),
+                    ),
+                    fillColor: Colors.grey[200],
+                    filled: true,
+                  )
+              ),
           ),
         ],
       ),
@@ -229,7 +238,7 @@ class _SignInPageState extends State<SignInPage> {
               decoration: InputDecoration(
                 counterText: "",
                 hintText: "인증번호",
-                hintStyle: TextStyle(color: Colors.black38),
+                hintStyle: TextStyle(color: Colors.black38, fontSize:15),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide(

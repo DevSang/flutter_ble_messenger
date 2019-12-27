@@ -83,7 +83,7 @@ Widget _regPhoneNumTextField(){
 
         controller: phoneRegController,
         cursorColor: Colors.black,
-        obscureText: true,
+        obscureText: false,
         style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
         ),
         decoration: InputDecoration(
