@@ -749,7 +749,7 @@ class ChatScreenState extends State<ChatroomPage> {
 //                                    isShowMenu
 //                                        ? 'assets/images/icon/iconAttachClose.png'
 //                                        : 'assets/images/icon/iconAttachMore.png'
-                                    'assets/images/icon/iconViewCard.png'
+                                    'assets/images/icon/iconAttachCard.png'
                                 )
                             ),
                             onTap:(){

@@ -1,37 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/pages/parts/set_chat_list_data.dart';
+import 'package:Hwa/pages/parts/tab_app_bar.dart';
 class ChatTab extends StatefulWidget {
   @override
   _ChatTabState createState() => _ChatTabState();
 }
 
 class _ChatTabState extends State<ChatTab> {
+  double sameSize;
+
+  @override
+  void initState() {
+    super.initState();
+    sameSize  = GetSameSize().main();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
 
         backgroundColor: Colors.white,
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          title: Row (
-            mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text("참여했던 단화방", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')),
-              ]
+        appBar: TabAppBar(
+          title: '참여했던 단화방',
+          leftChild: Container(
+              height: 0
           ),
-
-          leading: InkWell(
-            onTap: () => Navigator.pushNamed(context, '/profile'),
-            child: CircleAvatar (
-              radius: 55.0,
-              backgroundImage: AssetImage("assets/images/sns/snsIconFacebook.png"),
-            ),
-          ),
-
-          actions: <Widget>[
-            InkWell( child: Text('최신순', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'NotoSans'))),
-            InkWell( child: Text('|', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'NotoSans'))),
-            InkWell(child: Text('참여날짜순', style: TextStyle(color: Colors.black, fontSize: 16, fontFamily: 'NotoSans')))
-          ],
+          rightChild: Container(),
         ),
     );
   }
