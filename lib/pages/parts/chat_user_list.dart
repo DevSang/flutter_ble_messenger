@@ -242,7 +242,7 @@ class BuildUserInfo extends StatelessWidget {
                 decoration: BoxDecoration(
                     color: Color.fromRGBO(77, 96, 191, 1),
                     image: DecorationImage(
-                        image:AssetImage("assets/images/icon/iconBell.png")
+                        image:AssetImage("assets/images/icon/iconMasterBadge.png")
                     ),
                     shape: BoxShape.circle
                 )

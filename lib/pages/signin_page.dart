@@ -33,25 +33,30 @@ class _SignInPageState extends State<SignInPage> {
     @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/background/bgGradeLogin.png"),
-            fit: BoxFit.cover,
+      body: new GestureDetector(
+        onTap: (){
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+        child: new Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/background/bgGradeLogin.png"),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : ListView(
-          children: <Widget>[
-            _loginMainImage(),
-            _loginInputText(),
-            _loginInputCodeField(),
-            _SignInButton(),
-            _loginText(),
-            _socialLogin(),
-            _registerSection(context),
-          ],
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : ListView(
+            children: <Widget>[
+              _loginMainImage(),
+              _loginInputText(),
+              _loginInputCodeField(),
+              _SignInButton(),
+              _loginText(),
+              _socialLogin(),
+              _registerSection(context),
+            ],
+          ),
         ),
       ),
       appBar: AppBar(
@@ -67,45 +72,21 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget _loginMainImage() {
     return Container(
+        height: 203,
         child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Image.asset(
-                  'assets/images/visualImageLogin.png', width: 200, height: 200)
+                'assets/images/login/visualImageLogin.png',
+                width: 241,
+                height: 263,
+                fit: BoxFit.cover,
+                alignment: Alignment(0, -1),
+              )
             ]
         )
     );
   }
-
-  //TODO signin API test
-//  signIn(String phone, authCode) async {
-//    SharedPreferences loginPref = await SharedPreferences.getInstance();
-//    Map data = {
-//      'phone': phone,
-//      'authcode': authCode
-//    };
-//
-//    var response = CallApi.commonApiCall(method: HTTP_METHOD.post, data : data, uri:'auth/A05-SignInAuth');
-//    var jsonResponse = null;
-//
-//    if(response.statusCode == 200) {
-//      jsonResponse = json.encode(response.body);
-//      if(jsonResponse != null) {
-//        setState(() {
-//          _isLoading = false;
-//        });
-//        loginPref.setString("token", jsonResponse['token']);
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
-//      }
-//    }
-//    else {
-//      setState(() {
-//        _isLoading = false;
-//      });
-//      print(response.body);
-//    }
-//  }
-
 
   final TextEditingController _authCodeController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -116,7 +97,8 @@ class _SignInPageState extends State<SignInPage> {
       child: Row(
         children: <Widget>[
           Flexible(
-            child: TextFormField(
+            child:
+              TextFormField(
                 maxLength: 11,
                 onChanged: (loginAuthCode) {
                   print(loginAuthCode);
@@ -131,31 +113,39 @@ class _SignInPageState extends State<SignInPage> {
                 controller: _phoneController,
                 cursorColor: Colors.black,
                 style: TextStyle(color: Colors.black, fontFamily: 'NotoSans'),
-                decoration: InputDecoration(
-                  suffixIcon: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      child: Text("인증문자 받기", style: TextStyle(
-                          color: Colors.white, fontFamily: 'NotoSans'),
-                      ),
-                      color: Color.fromRGBO(77, 96, 191, 1),
-                      onPressed: () {
-                        loginCodeRequest();
-                      }),
-                  counterText: "",
-                  hintText: "휴대폰 번호 (-없이 숫자만 입력)",
-                  hintStyle: TextStyle(color: Colors.black38),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(
+                decoration:
+                  InputDecoration(
+                    suffixIcon:
+                    Container(
+                      margin: EdgeInsets.only(right:5),
+                      child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: Text("인증문자 받기",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'NotoSans'
+                            ),
+                          ),
+                          color: Color.fromRGBO(77, 96, 191, 1),
+                          onPressed: () {
+                            loginCodeRequest();
+                          }
+                      )
                     ),
-                  ),
-                  fillColor: Colors.grey[200],
-                  filled: true,
-                )
-            ),
-
+                    counterText: "",
+                    hintText: "휴대폰 번호 (-없이 숫자만 입력)",
+                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide(
+                      ),
+                    ),
+                    fillColor: Colors.grey[200],
+                    filled: true,
+                  )
+              ),
           ),
         ],
       ),
@@ -165,33 +155,34 @@ class _SignInPageState extends State<SignInPage> {
   loginCodeRequest() async {
     print("phone number :: " + _phoneController.text);
     String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
+
+    Map requestData = {
+      'phone_number': _phoneController.text,
+    };
+
     final response = await http.post(url,
         headers: {
           'Content-Type': 'application/json'
         },
-        body: jsonEncode({
-          "phone_number": _phoneController.text
-        })
-    ).then((http.Response response) {
-      print("signin :: " + response.body);
-    });
+        body: jsonEncode(requestData)
+    );
+
     var data = jsonDecode(response.body);
-    String phoneNum = data['phone_number'];
     String message = data['message'];
-    String token = data['token'];
-    if (response.statusCode == 200) {
-      print(phoneNum);
-      print(token);
-      loginToastMsg(message);
+
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      print("#Auth code requset info :" + response.body);
+      print("#인증문자 요청에 성공하였습니다.");
+      loginToastMsg("인증문자 요청에 성공하였습니다.");
     } else {
-      loginToastMsg(message);
+      loginToastMsg("서버 요청에 실패하였습니다.");
       print('failed：${response.statusCode}');
     }
   }
 
-  loginToastMsg(String toast) {
+  loginToastMsg(String message) {
     return Fluttertoast.showToast(
-        msg: "toast",
+        msg: message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIos: 1,
@@ -224,7 +215,7 @@ class _SignInPageState extends State<SignInPage> {
               decoration: InputDecoration(
                 counterText: "",
                 hintText: "인증번호",
-                hintStyle: TextStyle(color: Colors.black38),
+                hintStyle: TextStyle(color: Colors.black38, fontSize:15),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10.0),
                   borderSide: BorderSide(
@@ -256,7 +247,8 @@ class _SignInPageState extends State<SignInPage> {
 //      color: Color.fromRGBO(204, 204, 204, 1),
       child: RaisedButton(
         onPressed: () {
-          _getAndSaveToken();
+//          _getAndSaveToken();
+          authCodeLoginRequest();
         },
         child: Text("Sign In", style: TextStyle(
             color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')),
@@ -266,36 +258,42 @@ class _SignInPageState extends State<SignInPage> {
   }
 
    authCodeLoginRequest() async {
-    if (_formkey.currentState.validate()) {
-      _formkey.currentState.save();
-      try {
-        print("auth number :: " + _authCodeController.text);
-        String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
-        final response = await http.post(url,
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest'},
-            body: jsonEncode({
-              "phone_number": _phoneController.text,
-              "auth_number": _authCodeController.text
-            })
-        ).then((http.Response response) {
-          print("로그인 :: " + response.body);
-        });
-        var data = jsonDecode(response.body);
-        String authNum = data['auth_number'];
-        String message = data['message'];
-        if (response.statusCode == 200) {
-          print(authNum);
-          loginToastMsg(message);
-        } else {
-          loginToastMsg(message);
-          print('failed：${response.statusCode}');
-        }
-      } catch (e) {
-        showError(e);
+     SharedPreferences loginPref = await SharedPreferences.getInstance();
+
+    try {
+      print("auth number :: " + _authCodeController.text);
+      String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
+      final response = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'},
+          body: jsonEncode({
+            "phone_number": _phoneController.text,
+            "auth_number": _authCodeController.text
+          })
+      );
+
+      var data = jsonDecode(response.body)['data'];
+
+      if (response.statusCode == 200) {
+        print("로그인에 성공하였습니다.");
+        print("로그인정보 :" + response.body);
+
+        var token = data['token'];
+        var userIdx = data['userInfo']['idx'];
+        loginPref.setString('token', token.toString());
+        loginPref.setString('userIdx', userIdx.toString());
+
+        loginToastMsg("로그인에 성공하였습니다.");
+        Navigator.pushNamed(context, '/main');
+      } else {
+        loginToastMsg("서버 요청에 실패하였습니다.");
+        print('failed：${response.statusCode}');
       }
+    } catch (e) {
+      showError(e);
     }
+
   }
 
   showError(String errMessage) {
@@ -316,7 +314,6 @@ class _SignInPageState extends State<SignInPage> {
           );
         });
   }
-
 
   Widget _loginText() {
     return Container(

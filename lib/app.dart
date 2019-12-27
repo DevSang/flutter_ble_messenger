@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:Hwa/pages/signin_page.dart';
+import 'package:Hwa/pages/bottom_navigation.dart';
+import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MainPage extends StatefulWidget {
   @override
@@ -10,26 +13,38 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
   SharedPreferences sharedPreferences;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   @override
   void initState() {
-    super.initState();
     checkLoginStatus();
     firebaseCloudMessaging_Listeners();
+    super.initState();
   }
 
   checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
+//    sharedPreferences.remove('token');
+
+    var token = sharedPreferences.getString("token");
+    var userIdx = sharedPreferences.getString("userIdx");
+    print("Token : " + token.toString());
+    print("userIdx : " + userIdx.toString());
+
     if(sharedPreferences.getString("token") == null) {
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
+    }
+    else {
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    ScreenUtil.instance =
+        ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("HWA", style: TextStyle(color: Colors.white)),
@@ -37,11 +52,15 @@ class _MainPageState extends State<MainPage> {
           FlatButton(
             onPressed: () {
               sharedPreferences.clear();
-              Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
+              Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (BuildContext context) => SignInPage()),
+                  (Route<dynamic> route) => false
+              );
             },
             child: Text("로그아웃", style: TextStyle(color: Colors.white)),
           ),
         ],
+        backgroundColor: Colors.white,
       ),
       body: Center(child: Text("Main Page")),
     );
@@ -55,8 +74,8 @@ class _MainPageState extends State<MainPage> {
   void firebaseCloudMessaging_Listeners() {
     if (Platform.isIOS) iOS_Permission();
 
-    _firebaseMessaging.getToken().then((token){
-      print('# FCM : token:'+token);
+    _firebaseMessaging.getToken().then((token) {
+      print('# FCM : token:' + token);
     });
 
     _firebaseMessaging.configure(
@@ -79,14 +98,10 @@ class _MainPageState extends State<MainPage> {
    */
   void iOS_Permission() {
     _firebaseMessaging.requestNotificationPermissions(
-            IosNotificationSettings(sound: true, badge: true, alert: true)
-    );
+        IosNotificationSettings(sound: true, badge: true, alert: true));
     _firebaseMessaging.onIosSettingsRegistered
-            .listen((IosNotificationSettings settings)
-    {
+        .listen((IosNotificationSettings settings) {
       print("Settings registered: $settings");
     });
   }
-
-
 }

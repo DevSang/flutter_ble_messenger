@@ -13,6 +13,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/pages/notice_write_page.dart';
 import 'package:Hwa/pages/notice_detail_page.dart';
 
+import 'package:Hwa/utility/get_same_size.dart';
+
 Future main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 //  SharedPreferences prefs = await SharedPreferences.getInstance();

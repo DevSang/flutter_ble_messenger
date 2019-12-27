@@ -2,6 +2,10 @@ import 'package:alphabet_list_scroll_view/alphabet_list_scroll_view.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:Hwa/pages/parts/tab_app_bar.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
 class User {
 
@@ -23,23 +27,29 @@ class _FriendTabState extends State<FriendTab> {
   List<Widget> favouriteList = [];
   List<Widget> normalList = [];
   TextEditingController searchController = TextEditingController();
+  double sameSize;
 
   @override
   void initState() {
+    sameSize  = GetSameSize().main();
+
     for (var i = 0; i < 100; i++) {
       var name = faker.person.name();
       userList.add(User(name, faker.company.name(), false));
     }
+
     for (var i = 0; i < 4; i++) {
       var name = faker.person.name();
       userList.add(User(name, faker.company.name(), true));
     }
+
     userList
         .sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
     filterList();
     searchController.addListener(() {
       filterList();
     });
+
     super.initState();
   }
 
@@ -79,8 +89,8 @@ class _FriendTabState extends State<FriendTab> {
                     NetworkImage("http://placeimg.com/200/200/people"),
                   ),
                   Container(
-                      height: 40,
-                      width: 40,
+                      height: sameSize*40,
+                      width: sameSize*40,
                       child: Center(
                         child: Icon(
                           Icons.star,
@@ -141,18 +151,39 @@ class _FriendTabState extends State<FriendTab> {
     var currentStr = "";
     return MaterialApp(
         home: Scaffold(
-        appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text("단화 친구", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans')
-    ),
-          leading: InkWell(
-            onTap: () => Navigator.pushNamed(context, '/profile'),
-            child: CircleAvatar (
-              radius: 55.0,
-              backgroundImage: AssetImage("assets/images/sns/snsIconFacebook.png"),
+        appBar: TabAppBar(
+          title: '단화 친구',
+          leftChild: Container(
+            margin: EdgeInsets.only(
+              left: ScreenUtil().setWidth(8)
             ),
+            child: Row(
+              children: <Widget>[
+                Text(
+                  50.toString(),
+                  style: TextStyle(
+                    height: 1,
+                    fontFamily: "NanumSquare",
+                    fontWeight: FontWeight.w500,
+                    fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                    color: Color.fromRGBO(107, 107, 107, 1),
+                    letterSpacing: ScreenUtil().setWidth(-0.33),
+                  ),
+                ),
+                Text(
+                  "명",
+                  style: TextStyle(
+                    height: 1,
+                    fontFamily: "NotoSans",
+                    fontWeight: FontWeight.w500,
+                    fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                    color: Color.fromRGBO(107, 107, 107, 1),
+                    letterSpacing: ScreenUtil().setWidth(-0.33),
+                  ),
+                ),
+              ],
+            )
           ),
-          brightness: Brightness.light,
         ),
           body: AlphabetListScrollView(
             strList: strList,
