@@ -25,7 +25,7 @@ class _MainPageState extends State<MainPage> {
 
   checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
-    sharedPreferences.remove('token');
+//    sharedPreferences.remove('token');
 
     var token = sharedPreferences.getString("token");
     var userIdx = sharedPreferences.getString("userIdx");
