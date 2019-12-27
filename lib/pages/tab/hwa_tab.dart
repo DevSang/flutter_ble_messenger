@@ -9,6 +9,10 @@ import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/pages/parts/set_chat_list_data.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
 
+import 'package:Hwa/utility/call_api.dart';
+
+import 'package:Hwa/constant.dart';
+
 class HwaTab extends StatefulWidget {
   @override
   _HwaTabState createState() => _HwaTabState();
@@ -21,16 +25,24 @@ class _HwaTabState extends State<HwaTab> {
   Position _currentPosition;
   String _currentAddress;
   double sameSize;
-  TextEditingController _textFieldController = TextEditingController();
+  int count;
+  TextEditingController _textFieldController;
 
   @override
   void initState() {
     super.initState();
     chatList = new SetChaListData().main();
     sameSize  = GetSameSize().main();
+    count = 0;
+    _textFieldController = TextEditingController(text: '스타벅스 강남R점' + count.toString());
   }
 
-  _displayDialog(BuildContext context) async {
+  /*
+   * @author : hs
+   * @date : 2019-12-27
+   * @description : 단화방 생성 Dialog
+  */
+  void _displayDialog(BuildContext context) async {
     return showDialog(
       context: context,
       builder: (context) {
@@ -42,7 +54,7 @@ class _HwaTabState extends State<HwaTab> {
             controller: _textFieldController,
             decoration: InputDecoration(
               /// GPS 연동
-              hintText: "스타벅스 강남R점"
+                hintText: _textFieldController.text
             ),
           ),
           actions: <Widget>[
@@ -55,13 +67,34 @@ class _HwaTabState extends State<HwaTab> {
             new FlatButton(
               child: new Text('생성하기'),
               onPressed: () {
-
+                _createChat(_textFieldController.value.toString());
               },
             )
           ]
         );
       }
     );
+  }
+
+  /*
+   * @author : hs
+   * @date : 2019-12-27
+   * @description : 단화방 생성 API 호출
+  */
+  void _createChat(String title) {
+    String uri = Constant.CHAT_SERVER_HTTP + "/danhwa/room";
+
+    print("####" + title);
+
+    print(CallApi.setHttpCallType(
+      "post",
+      {
+        'userIdx' : Constant.USER_IDX,
+        'title' : title
+      },
+      uri,
+      null
+    ));
   }
 
   @override
@@ -90,8 +123,9 @@ class _HwaTabState extends State<HwaTab> {
                 height: sameSize*22,
                 child: InkWell(
                   child: Image.asset('assets/images/icon/navIconNew.png'),
-                  onTap: () => Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => TrendPage())),
+                  onTap: () => {
+                    _displayDialog(context)
+                  },
                 )
             ),
           ],

@@ -46,9 +46,13 @@ class _TrendPageState extends State<TrendPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
-              height: ScreenUtil().setHeight(70),
               padding:
-                  EdgeInsets.only(top: 10, left: 10, right: 50, bottom: 10),
+                  EdgeInsets.only(
+                      top: 10,
+                      left: 10,
+                      right: 50,
+                      bottom: 10
+                  ),
               child: Column(
                 children: <Widget>[
                     // 검색 영역
@@ -67,7 +71,9 @@ class _TrendPageState extends State<TrendPage> {
     return Container(
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(50), color: Colors.grey[200]),
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.grey[200]
+        ),
         child: TextField(
           decoration: InputDecoration(
             prefixIcon: Icon(
