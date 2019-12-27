@@ -20,9 +20,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     list
       ..add(HwaTab())
       ..add(FriendTab())
-      ..add(ChatTab())
-      ..add(ChatroomPage());
-//      ..add(ImageTest());
+      ..add(ChatTab());
 
     super.initState();
 }
@@ -60,10 +58,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
             BottomNavigationBarItem(
                 icon: _currentIndex == 2 ? Image.asset('assets/images/icon/tabIconChatActive.png') : Image.asset('assets/images/icon/tabIconChat.png'),
                 title: Text ('Chat')
-            ),
-            BottomNavigationBarItem(
-                icon: _currentIndex == 3 ? Image.asset('assets/images/icon/tabIconChatActive.png') : Image.asset('assets/images/icon/tabIconChat.png'),
-                title: Text ('Chatroom')
             ),
 //            BottomNavigationBarItem(
 //                icon: _currentIndex == 4 ? Image.asset('assets/images/icon/tabIconChatActive.png') : Image.asset('assets/images/icon/tabIconChat.png'),
