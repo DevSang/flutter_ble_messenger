@@ -19,12 +19,6 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
     Widget build(BuildContext context) {
         sameSize  = GetSameSize().main();
 
-        SystemChrome.setSystemUIOverlayStyle(
-            SystemUiOverlayStyle.dark.copyWith(
-                statusBarColor: Colors.white,
-            )
-        );
-
         return PreferredSize(
             preferredSize: preferredSize,
             child: SafeArea(
