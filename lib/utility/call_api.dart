@@ -82,9 +82,9 @@ class CallApi {
         return await setResponse(response);
     }
 
-    static setHttpCallType(prefixUrl, method, headers, url, data) async {
+    static setHttpCallType(String prefixUrl, method, headers, url, Map data) async {
         switch(method) {
-            case "HTTP_METHOD.post": return await http.post(prefixUrl + url, headers: headers, body: jsonEncode(data));
+            case "HTTP_METHOD.post": return await http.post(prefixUrl + url, headers: headers, body: data);
             break;
 
             case "HTTP_METHOD.get": return await http.get(prefixUrl + url, headers: headers,);
