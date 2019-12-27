@@ -87,7 +87,7 @@ class _HwaTabState extends State<HwaTab> {
     var userIdx = spf.getString("userIdx");
 
     try {
-      String uri = Constant.CHAT_SERVER_HTTP + "/danhwa/room?user_Idx=" + userIdx + "&title=" + title;
+      String uri = Constant.CHAT_SERVER_HTTP + "/danhwa/room?userIdx=" + userIdx + "&title=" + title;
       final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: uri);
       print("##단화방 생성 : " + response.body);
     } catch (e) {
