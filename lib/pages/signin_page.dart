@@ -3,9 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
-import 'package:Hwa/pages/signup_page.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/app.dart';
 import 'dart:convert';
 
 //로그인 page
@@ -17,6 +15,7 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
   bool _isLoading = false;
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+  SharedPreferences spf;
 
   String phone_number, auth_number;
 
@@ -257,42 +256,57 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-   authCodeLoginRequest() async {
-     SharedPreferences loginPref = await SharedPreferences.getInstance();
+    authCodeLoginRequest() async {
+        SharedPreferences loginPref = await SharedPreferences.getInstance();
+        try {
+            print("auth number :: " + _authCodeController.text);
+            String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
+            final response = await http.post(url,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'},
+                body: jsonEncode({
+                  "phone_number": _phoneController.text,
+                  "auth_number": _authCodeController.text
+                })
+            );
 
-    try {
-      print("auth number :: " + _authCodeController.text);
-      String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
-      final response = await http.post(url,
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest'},
-          body: jsonEncode({
-            "phone_number": _phoneController.text,
-            "auth_number": _authCodeController.text
-          })
-      );
+            var data = jsonDecode(response.body)['data'];
 
-      var data = jsonDecode(response.body)['data'];
+            if (response.statusCode == 200) {
+                print("#로그인에 성공하였습니다.");
+                print("#로그인정보 :" + response.body);
 
-      if (response.statusCode == 200) {
-        print("로그인에 성공하였습니다.");
-        print("로그인정보 :" + response.body);
-
-        var token = data['token'];
-        loginPref.setString('token', token.toString());
-
-        loginToastMsg("로그인에 성공하였습니다.");
-        Navigator.pushNamed(context, '/main');
-      } else {
-        loginToastMsg("서버 요청에 실패하였습니다.");
-        print('failed：${response.statusCode}');
-      }
-    } catch (e) {
-      showError(e);
+                var token = data['token'];
+                var userIdx = data['userInfo']['idx'];
+                loginPref.setString('token', token.toString());
+                loginPref.setString('userIdx', userIdx.toString());
+                loginToastMsg("로그인에 성공하였습니다.");
+                pushTokenRequest();
+                Navigator.pushNamed(context, '/main');
+            } else {
+              loginToastMsg("서버 요청에 실패하였습니다.");
+              print('failed：${response.statusCode}');
+            }
+        } catch (e) {
+            showError(e);
+        }
     }
 
-  }
+    pushTokenRequest() async {
+        spf = await SharedPreferences.getInstance();
+        var userIdx = spf.getString("userIdx");
+        var pushToken = spf.getString("pushToken");
+        try {
+            String url = "/api/v2/user/push_token?user_idx=" + userIdx + "&push_token=" + pushToken;
+            final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
+            print("#Save push token : " + response.body.toString());
+            print("#Save push token : " + response.statusCode.toString());
+            print("#Push token 저장에 성공하였습니다.");
+        } catch (e) {
+            showError(e);
+        }
+    }
 
   showError(String errMessage) {
     showDialog(
