@@ -72,11 +72,17 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget _loginMainImage() {
     return Container(
+        height: 203,
         child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Image.asset(
-                  'assets/images/login/visualImageLogin.png', width: 200, height: 200)
+                'assets/images/login/visualImageLogin.png',
+                width: 241,
+                height: 263,
+                fit: BoxFit.cover,
+                alignment: Alignment(0, -1),
+              )
             ]
         )
     );
