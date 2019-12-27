@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:lazy_load_scrollview/lazy_load_scrollview.dart';
 
 class User {
 
