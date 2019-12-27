@@ -24,17 +24,19 @@ class ImageTestState extends State<ImageTest> {
 
   pickTestImg() async {
     imageFile = await CachedImageUtility.pickImageFromGallery();
-    saveTestImg();
+    saveTestImg(imageFile);
   }
 
-  saveTestImg() {
-    List<int> imageBytes = imageFile.readAsBytesSync();
-    String base64Image = base64Encode(imageBytes);
-    CachedImageUtility.saveImageToPreferences('test', base64Image, 5);
+  saveTestImg(File imageFile) {
+    CachedImageUtility.saveImageToPreferences(
+        imageType: Image_type.test_img,
+        imageFile: imageFile,
+        fileName: 'test'
+    );
   }
 
   getTestImg () async {
-    var tempImg = await CachedImageUtility.loadImageFromPreferences(keyword : 'test');
+    var tempImg = await CachedImageUtility.loadImageFromPreferences(imageType: Image_type.test_img, fileName: 'test');
     setState(() {
       imageFromPreferences = tempImg;
     });
