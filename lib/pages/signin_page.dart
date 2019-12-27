@@ -71,7 +71,7 @@ class _SignInPageState extends State<SignInPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Image.asset(
-                  'assets/images/visualImageLogin.png', width: 200, height: 200)
+                  'assets/images/login/visualImageLogin.png', width: 200, height: 200)
             ]
         )
     );
