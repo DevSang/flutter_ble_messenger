@@ -12,8 +12,16 @@ import 'package:shared_preferences/shared_preferences.dart';
  * @description : Call api utility
  *              - return : response(No Json encode) || Error
  */
+enum HTTP_METHOD {
+  post,
+  get,
+  put,
+  patch,
+  delete
+}
+
 class CallApi {
-  static commonApiCall(Map data, uri, method) async {
+  static commonApiCall({ @required HTTP_METHOD method, @required String uri, Map data}) async {
     var responseBody = null;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var token = prefs.getString('token');

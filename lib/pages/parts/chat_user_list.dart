@@ -176,45 +176,16 @@ class BuildUserInfo extends StatelessWidget {
                                     child: Row(
                                         children: <Widget>[
                                             // 프로필 이미지
-                                            null == userInfo.profileImg ?
-                                                Container(
-                                                    child: ClipRRect(
-                                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                                        child: Image.asset(
-                                                            "assets/images/profile_img.png",
-                                                            width: ScreenUtil().setWidth(80),
-                                                            height: ScreenUtil().setWidth(80),
-                                                        )
-                                                     )
-                                                ) :
-                                                Container(
-                                                    child: ClipRRect(
-                                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                                        child: FutureBuilder<File>(
-                                                            future: userInfo.profileImg,
-                                                            builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-                                                                if (snapshot.connectionState == ConnectionState.done &&
-                                                                    null != snapshot.data) {
-                                                                    print(snapshot.data.toString());
-                                                                    CachedImageUtility.saveImageToPreferences('profileImg', CachedImageUtility.base64String(snapshot.data.readAsBytesSync()));
-//                                                                    userInfo.profileImg = CachedImageUtility.loadImageFromPreferences('profileImg');
-                                                                    return Image.file(
-                                                                        snapshot.data,
-                                                                        width: ScreenUtil().setWidth(80),
-                                                                        height: ScreenUtil().setWidth(80),
-                                                                    );
-                                                                } else {
-                                                                    return Image.asset(
-                                                                        "assets/images/profile_img.png",
-                                                                        width: ScreenUtil().setWidth(80),
-                                                                        height: ScreenUtil().setWidth(80),
-                                                                    );
-                                                                }
-                                                            },
-                                                        ),
-                                                )
+                                            Container(
+                                                child: ClipRRect(
+                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                                    child: Image.asset(
+                                                        "assets/images/profile_img.png",
+                                                        width: ScreenUtil().setWidth(80),
+                                                        height: ScreenUtil().setWidth(80),
+                                                    )
+                                                 )
                                             ),
-                                            // 이름
                                             Container(
                                                 padding: EdgeInsets.only(
                                                     left: ScreenUtil().setWidth(21)
@@ -394,32 +365,12 @@ class BuildUserInfo extends StatelessWidget {
                                                 ),
                                                 child: ClipRRect(
                                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                                    child: FutureBuilder<File>(
-                                                        future: userInfo.profileImg,
-                                                        builder: (BuildContext context, AsyncSnapshot<File> snapshot) {
-                                                            if (snapshot.connectionState == ConnectionState.done &&
-                                                                null != snapshot.data) {
-                                                                //print(snapshot.data.path);
-                                                                CachedImageUtility.saveImageToPreferences('profileImg',
-                                                                    CachedImageUtility.base64String(snapshot.data.readAsBytesSync()));
-                                                                return Image.file(
-                                                                    snapshot.data,
-                                                                );
-                                                            } else if (null != snapshot.error) {
-                                                                return Image.asset(
-                                                                    "assets/images/profile_img.png",
-                                                                    width: ScreenUtil().setWidth(80),
-                                                                    height: ScreenUtil().setWidth(80),
-                                                                );
-                                                            } else {
-                                                                return Image.asset(
-                                                                    "assets/images/profile_img.png",
-                                                                    width: ScreenUtil().setWidth(80),
-                                                                    height: ScreenUtil().setWidth(80),
-                                                                );
-                                                            }
-                                                        },
-                                                    ),
+                                                    child:
+                                                        Image.asset(
+                                                            "assets/images/profile_img.png",
+                                                            width: ScreenUtil().setWidth(80),
+                                                            height: ScreenUtil().setWidth(80),
+                                                        ),
                                                 )
                                             ),onTap: () {
                                                 setUserProfileImage(ImageSource.gallery, userInfo);

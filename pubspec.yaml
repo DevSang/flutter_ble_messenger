@@ -12,7 +12,6 @@ dependencies:
   shared_preferences:
   http:
   json_annotation:
-  cached_network_image: ^2.0.0-rc
   rxdart:
   alphabet_list_scroll_view:
   faker:
@@ -28,6 +27,10 @@ dependencies:
   configurable_expansion_tile: ^1.0.0
   firebase_messaging: ^6.0.9
   timeago: ^2.0.22
+
+
+
+
 #  flutter_kakao_login:
 #  flutter_facebook_login:
 #  google_sign_in:
@@ -94,7 +97,6 @@ flutter:
     - assets/images/icon/iconSetting.png
     - assets/images/icon/navIconHot.png
     - assets/images/icon/navIconClose.png
-    - assets/images/icon/navIconDown.png
     - assets/images/icon/navIconNew.png
     - assets/images/icon/navIconPrev.png
     - assets/images/icon/navIconMenu.png
@@ -114,6 +116,8 @@ flutter:
     - assets/images/sns/snsIconFacebook.png
     - assets/images/sns/snsIconGoogle.png
     - assets/images/sns/snsIconKakao.png
+    - assets/images/iosLaunchScreen/hwaImage.png
+    - assets/images/iosLaunchScreen/visualImage.png
 
   uses-material-design: true
 
