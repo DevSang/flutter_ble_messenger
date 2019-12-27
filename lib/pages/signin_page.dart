@@ -33,25 +33,30 @@ class _SignInPageState extends State<SignInPage> {
     @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/background/bgGradeLogin.png"),
-            fit: BoxFit.cover,
+      body: new GestureDetector(
+        onTap: (){
+          FocusScope.of(context).requestFocus(new FocusNode());
+        },
+        child: new Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/background/bgGradeLogin.png"),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: _isLoading
-            ? Center(child: CircularProgressIndicator())
-            : ListView(
-          children: <Widget>[
-            _loginMainImage(),
-            _loginInputText(),
-            _loginInputCodeField(),
-            _SignInButton(),
-            _loginText(),
-            _socialLogin(),
-            _registerSection(context),
-          ],
+          child: _isLoading
+              ? Center(child: CircularProgressIndicator())
+              : ListView(
+            children: <Widget>[
+              _loginMainImage(),
+              _loginInputText(),
+              _loginInputCodeField(),
+              _SignInButton(),
+              _loginText(),
+              _socialLogin(),
+              _registerSection(context),
+            ],
+          ),
         ),
       ),
       appBar: AppBar(
