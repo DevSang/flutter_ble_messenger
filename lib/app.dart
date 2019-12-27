@@ -26,10 +26,17 @@ class _MainPageState extends State<MainPage> {
 
   checkLoginStatus() async {
     sharedPreferences = await SharedPreferences.getInstance();
-    print(sharedPreferences.getString("token").toString());
+//    sharedPreferences.remove('token');
+
+    var token = sharedPreferences.getString("token");
+    var userIdx = sharedPreferences.getString("userIdx");
+    print("Token : " + token.toString());
+    print("userIdx : " + userIdx.toString());
+
     if(sharedPreferences.getString("token") == null) {
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
-    } else {
+    }
+    else {
       Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
     }
   }

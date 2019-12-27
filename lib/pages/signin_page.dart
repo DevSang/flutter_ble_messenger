@@ -280,7 +280,9 @@ class _SignInPageState extends State<SignInPage> {
         print("로그인정보 :" + response.body);
 
         var token = data['token'];
+        var userIdx = data['userInfo']['idx'];
         loginPref.setString('token', token.toString());
+        loginPref.setString('userIdx', userIdx.toString());
 
         loginToastMsg("로그인에 성공하였습니다.");
         Navigator.pushNamed(context, '/main');
