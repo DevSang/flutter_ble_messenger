@@ -15,6 +15,7 @@ class SignUpNamePage extends StatefulWidget{
 class _SignUpNamePageState extends State<SignUpNamePage>{
   bool availNick;
 
+
   @override
   void initState() {
     // TODO: implement initState
@@ -67,21 +68,23 @@ Widget _regNickTextField(){
 
 validateUsername(nickname) {
   bool _isValid;
-
   http.get("https://api.hwaya.net/api/v2/auth/A03-Nickname?nickname=$nickname")
       .then((val) {
         print(val.body.toString());
-
   });
-
   return _isValid;
 }
 
+final _formKey = GlobalKey<FormState>();
+
 
 Widget _regAuthTextField(){
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
-    child: TextFormField(
+  return Form(
+    key: _formKey,
+    child: Padding(
+
+        padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+child: TextFormField(
         validator: (value) {
           if (value.isEmpty) {
             return '닉네임을 입력해주세요';
@@ -91,7 +94,6 @@ Widget _regAuthTextField(){
             }
           }
         },
-
         onChanged: (regNickname) {
           validateUsername(regNickname);
         },
@@ -102,6 +104,7 @@ Widget _regAuthTextField(){
         inputFormatters: <TextInputFormatter>[
         ],
         controller: _regNameController,
+        textAlign: TextAlign.left,
         cursorColor: Colors.black,
         obscureText: true,
         style: TextStyle(color: Colors.black),
@@ -122,6 +125,7 @@ Widget _regAuthTextField(){
           filled: true,
         )
     ),
+    ),
   );
 }
 
@@ -131,10 +135,15 @@ Widget _regStartBtn(BuildContext context){
   return Container(
     width: MediaQuery.of(context).size.width,
     height: 50.0,
+    margin: EdgeInsets.only(top: 10),
     padding: EdgeInsets.symmetric(horizontal: 15.0),
     child: RaisedButton(
       onPressed:(){
-        Navigator.pushNamed(context, '/main');
+     if (_formKey.currentState.validate()) {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text('$validateUsername')));
+    }
+//        Navigator.pushNamed(context, '/main');
       },
       color: Colors.black38,
       elevation: 0.0,
