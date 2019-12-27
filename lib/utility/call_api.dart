@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Hwa/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -21,25 +23,32 @@ enum HTTP_METHOD {
 }
 
 class CallApi {
-  static commonApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    var responseBody;
-    if(data == null) {
-        data = {};
+    static setHeader() async {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var token = prefs.getString('token').toString();
+        var header = {
+            'Content-Type': 'application/json',
+            'X-Authorization': 'Bearer ' + token
+        };
+        return header;
     }
-    var token = prefs.getString('token').toString();
-    var headers = {
-      'Content-Type':'application/json',
-      'X-Authorization':'Bearer ' + token
-    };
 
-    try {
+    static setData(Map data) {
+        if (data == null) {
+            return {};
+        } else {
+            return data;
+        }
+    }
+
+    static logRequest(String prefixUrl, method, header, url, data){
         print("#Request Url : " + url.toString());
         print("#Method : " + method.toString());
-        print("#Headers : " + headers.toString());
+        print("#Headers : " + header.toString());
         print("#Data : " + data.toString());
-        var response = await setHttpCallType(method.toString(), headers, url, data);
+    }
 
+    static setResponse(http.Response response){
         print("#response : " + response.toString());
         var statusCode = response.statusCode.toString();
 
@@ -50,30 +59,48 @@ class CallApi {
             print("#[Error] Status Code :" + statusCode);
             return null;
         }
-    } catch (e) {
-      expect(e, isUnsupportedError);
     }
-  }
 
-  static setHttpCallType(method, headers, url, data) async {
-    switch(method) {
-      case "HTTP_METHOD.post": return await http.post(Constant.API_SERVER_HTTP + url, headers: headers, body: jsonEncode(data));
-      break;
-
-      case "HTTP_METHOD.get": return await http.get(Constant.API_SERVER_HTTP + url, headers: headers,);
-      break;
-
-      case "HTTP_METHOD.put": return await http.put(Constant.API_SERVER_HTTP + url, headers: headers, body: data);
-      break;
-
-      case "HTTP_METHOD.patch": return await http.patch(Constant.API_SERVER_HTTP + url, headers: headers, body: data);
-      break;
-
-      case "HTTP_METHOD.delete": return await http.delete(Constant.API_SERVER_HTTP + url, headers: headers,);
-      break;
-
-      default: { print("Invalid choice http call method"); }
-      break;
+    static commonApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
+        var prefixUrl = Constant.API_SERVER_HTTP;
+        logRequest(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        return await setResponse(response);
     }
-  }
+
+    static messageApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
+        var prefixUrl = Constant.CHAT_SERVER_HTTP;
+        logRequest(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        return await setResponse(response);
+    }
+
+    static chattingApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
+        var prefixUrl = Constant.CHAT_SERVER_WS;
+        logRequest(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        return await setResponse(response);
+    }
+
+    static setHttpCallType(prefixUrl, method, headers, url, data) async {
+        switch(method) {
+            case "HTTP_METHOD.post": return await http.post(prefixUrl + url, headers: headers, body: jsonEncode(data));
+            break;
+
+            case "HTTP_METHOD.get": return await http.get(prefixUrl + url, headers: headers,);
+            break;
+
+            case "HTTP_METHOD.put": return await http.put(prefixUrl + url, headers: headers, body: data);
+            break;
+
+            case "HTTP_METHOD.patch": return await http.patch(prefixUrl + url, headers: headers, body: data);
+            break;
+
+            case "HTTP_METHOD.delete": return await http.delete(prefixUrl + url, headers: headers);
+            break;
+
+            default: { print("Invalid choice http call method"); }
+            break;
+        }
+    }
 }
