@@ -23,6 +23,7 @@ enum HTTP_METHOD {
 class CallApi {
   static commonApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    var responseBody;
     if(data == null) {
         data = {};
     }
@@ -33,23 +34,22 @@ class CallApi {
     };
 
     try {
-      var response = setHttpCallType(method.toString(), headers, url, data);
-      print("#Request Url : " + url.toString());
-      print("#Method : " + method.toString());
-      print("#Headers : " + headers.toString());
-      print("#Data : " + data.toString());
+        print("#Request Url : " + url.toString());
+        print("#Method : " + method.toString());
+        print("#Headers : " + headers.toString());
+        print("#Data : " + data.toString());
+        var response = await setHttpCallType(method.toString(), headers, url, data);
 
-      return response;
-//      var statusCode = response.statusCode.toString();
-//      if(statusCode.indexOf("20") > -1) {
-//        responseBody = json.encode(response.body);
-//        if(responseBody != null) {
-//          return response;
-//        } else {
-//          print("#No response" + json.decode(response.body));
-//          return false;
-//        }
-//      }
+        print("#response : " + response.toString());
+        var statusCode = response.statusCode.toString();
+
+        if(statusCode.indexOf("20") > -1) {
+            print("#Request result : " + response.body.toString());
+            return response;
+        } else {
+            print("#[Error] Status Code :" + statusCode);
+            return null;
+        }
     } catch (e) {
       expect(e, isUnsupportedError);
     }
