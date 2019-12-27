@@ -1,17 +1,17 @@
-import 'package:Hwa/pages/trend_page.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:Hwa/service/get_time_difference.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Hwa/utility/get_same_size.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/data/models/chat_list_item.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/service/get_time_difference.dart';
+import 'package:Hwa/constant.dart';
+
 import 'package:Hwa/pages/parts/set_chat_list_data.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
-
-import 'package:Hwa/utility/call_api.dart';
-
-import 'package:Hwa/constant.dart';
+import 'package:Hwa/pages/trend_page.dart';
 
 class HwaTab extends StatefulWidget {
   @override
@@ -20,6 +20,7 @@ class HwaTab extends StatefulWidget {
 
 class _HwaTabState extends State<HwaTab> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
+  SharedPreferences spf;
 
   List<ChatListItem> chatList;
   Position _currentPosition;
@@ -81,20 +82,17 @@ class _HwaTabState extends State<HwaTab> {
    * @date : 2019-12-27
    * @description : 단화방 생성 API 호출
   */
-  void _createChat(String title) {
-    String uri = Constant.CHAT_SERVER_HTTP + "/danhwa/room";
+  void _createChat(String title) async {
+    spf = await SharedPreferences.getInstance();
+    var userIdx = spf.getString("userIdx");
 
-    print("####" + title);
-
-    print(CallApi.setHttpCallType(
-      "post",
-      {
-        'userIdx' : Constant.USER_IDX,
-        'title' : title
-      },
-      uri,
-      null
-    ));
+    try {
+      String uri = Constant.CHAT_SERVER_HTTP + "/danhwa/room?userIdx=" + userIdx + "&title=" + title;
+      final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: uri);
+      print("##단화방 생성 : " + response.body);
+    } catch (e) {
+      print("##error"+e);
+    }
   }
 
   @override
