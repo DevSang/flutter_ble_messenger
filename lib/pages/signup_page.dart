@@ -48,7 +48,7 @@ class _SignUpPageState extends State<SignUpPage>{
   }
 }
 
-final TextEditingController _phoneRegController = new TextEditingController();
+final TextEditingController phoneRegController = new TextEditingController();
 final TextEditingController _regAuthCodeController = new TextEditingController();
 
 Widget _regPhoneTextField(){
@@ -81,7 +81,7 @@ Widget _regPhoneNumTextField(){
           WhitelistingTextInputFormatter.digitsOnly
         ],
 
-        controller: _phoneRegController,
+        controller: phoneRegController,
         cursorColor: Colors.black,
         obscureText: true,
         style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
@@ -114,14 +114,14 @@ Widget _regPhoneNumTextField(){
 
 
 registerCodeRequest() async {
-  print("phone number :: " +  _phoneRegController.text);
+  print("phone number :: " +  phoneRegController.text);
   String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
   final response = await http.post(url,
       headers: {
         'Content-Type':'application/json'
       },
       body: jsonEncode({
-        "phone_number": _phoneRegController.text
+        "phone_number": phoneRegController.text
       })
   ).then((http.Response response) {
     print("signup :: " + response.body);
@@ -216,7 +216,7 @@ registerNext() async {
         'X-Requested-With': 'XMLHttpRequest'}
         ,
       body: jsonEncode({
-        "phone_number": _phoneRegController.text,
+        "phone_number": phoneRegController.text,
         "auth_number": _regAuthCodeController.text
       })
   ).then((http.Response response) {
