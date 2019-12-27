@@ -300,9 +300,11 @@ class _SignInPageState extends State<SignInPage> {
         try {
             String url = "/api/v2/user/push_token?user_idx=" + userIdx + "&push_token=" + pushToken;
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
-            print("#Save push token : " + response.body.toString());
-            print("#Save push token : " + response.statusCode.toString());
-            print("#Push token 저장에 성공하였습니다.");
+            if(response != null){
+                print("#Push token 저장에 성공하였습니다.");
+            } else {
+                print("#서버요청에 실패하였습니다");
+            }
         } catch (e) {
             showError(e);
         }
