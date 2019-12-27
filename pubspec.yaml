@@ -116,6 +116,8 @@ flutter:
     - assets/images/sns/snsIconFacebook.png
     - assets/images/sns/snsIconGoogle.png
     - assets/images/sns/snsIconKakao.png
+    - assets/images/iosLaunchScreen/hwaImage.png
+    - assets/images/iosLaunchScreen/visualImage.png
 
   uses-material-design: true
 

@@ -329,7 +329,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                             max: 3.0,
                             value: _value.toDouble(),
                             divisions: 3,
-                            onChanged: (  value) {
+                            onChanged: (value) {
                                 print(value.round().toString());
                                 setState(() {
                                     _value = value.round();
