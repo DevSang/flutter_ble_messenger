@@ -88,36 +88,6 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  //TODO signin API test
-//  signIn(String phone, authCode) async {
-//    SharedPreferences loginPref = await SharedPreferences.getInstance();
-//    Map data = {
-//      'phone': phone,
-//      'authcode': authCode
-//    };
-//
-//    var response = CallApi.commonApiCall(method: HTTP_METHOD.post, data : data, uri:'auth/A05-SignInAuth');
-//    var jsonResponse = null;
-//
-//    if(response.statusCode == 200) {
-//      jsonResponse = json.encode(response.body);
-//      if(jsonResponse != null) {
-//        setState(() {
-//          _isLoading = false;
-//        });
-//        loginPref.setString("token", jsonResponse['token']);
-//        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => MainPage()), (Route<dynamic> route) => false);
-//      }
-//    }
-//    else {
-//      setState(() {
-//        _isLoading = false;
-//      });
-//      print(response.body);
-//    }
-//  }
-
-
   final TextEditingController _authCodeController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
@@ -185,33 +155,34 @@ class _SignInPageState extends State<SignInPage> {
   loginCodeRequest() async {
     print("phone number :: " + _phoneController.text);
     String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
+
+    Map requestData = {
+      'phone_number': _phoneController.text,
+    };
+
     final response = await http.post(url,
         headers: {
           'Content-Type': 'application/json'
         },
-        body: jsonEncode({
-          "phone_number": _phoneController.text
-        })
-    ).then((http.Response response) {
-      print("signin :: " + response.body);
-    });
+        body: jsonEncode(requestData)
+    );
+
     var data = jsonDecode(response.body);
-    String phoneNum = data['phone_number'];
     String message = data['message'];
-    String token = data['token'];
-    if (response.statusCode == 200) {
-      print(phoneNum);
-      print(token);
-      loginToastMsg(message);
+
+    if (response.statusCode == 200 || response.statusCode == 202) {
+      print("#Auth code requset info :" + response.body);
+      print("#인증문자 요청에 성공하였습니다.");
+      loginToastMsg("인증문자 요청에 성공하였습니다.");
     } else {
-      loginToastMsg(message);
+      loginToastMsg("서버 요청에 실패하였습니다.");
       print('failed：${response.statusCode}');
     }
   }
 
-  loginToastMsg(String toast) {
+  loginToastMsg(String message) {
     return Fluttertoast.showToast(
-        msg: "toast",
+        msg: message,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIos: 1,
@@ -276,7 +247,8 @@ class _SignInPageState extends State<SignInPage> {
 //      color: Color.fromRGBO(204, 204, 204, 1),
       child: RaisedButton(
         onPressed: () {
-          _getAndSaveToken();
+//          _getAndSaveToken();
+          authCodeLoginRequest();
         },
         child: Text("Sign In", style: TextStyle(
             color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')),
@@ -286,36 +258,40 @@ class _SignInPageState extends State<SignInPage> {
   }
 
    authCodeLoginRequest() async {
-    if (_formkey.currentState.validate()) {
-      _formkey.currentState.save();
-      try {
-        print("auth number :: " + _authCodeController.text);
-        String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
-        final response = await http.post(url,
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest'},
-            body: jsonEncode({
-              "phone_number": _phoneController.text,
-              "auth_number": _authCodeController.text
-            })
-        ).then((http.Response response) {
-          print("로그인 :: " + response.body);
-        });
-        var data = jsonDecode(response.body);
-        String authNum = data['auth_number'];
-        String message = data['message'];
-        if (response.statusCode == 200) {
-          print(authNum);
-          loginToastMsg(message);
-        } else {
-          loginToastMsg(message);
-          print('failed：${response.statusCode}');
-        }
-      } catch (e) {
-        showError(e);
+     SharedPreferences loginPref = await SharedPreferences.getInstance();
+
+    try {
+      print("auth number :: " + _authCodeController.text);
+      String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
+      final response = await http.post(url,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'},
+          body: jsonEncode({
+            "phone_number": _phoneController.text,
+            "auth_number": _authCodeController.text
+          })
+      );
+
+      var data = jsonDecode(response.body)['data'];
+
+      if (response.statusCode == 200) {
+        print("로그인에 성공하였습니다.");
+        print("로그인정보 :" + response.body);
+
+        var token = data['token'];
+        loginPref.setString('token', token.toString());
+
+        loginToastMsg("로그인에 성공하였습니다.");
+        Navigator.pushNamed(context, '/main');
+      } else {
+        loginToastMsg("서버 요청에 실패하였습니다.");
+        print('failed：${response.statusCode}');
       }
+    } catch (e) {
+      showError(e);
     }
+
   }
 
   showError(String errMessage) {
@@ -336,7 +312,6 @@ class _SignInPageState extends State<SignInPage> {
           );
         });
   }
-
 
   Widget _loginText() {
     return Container(

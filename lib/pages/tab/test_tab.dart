@@ -4,6 +4,8 @@ import 'package:Hwa/utility/cached_image_utility.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class ImageTest extends StatefulWidget {
   ImageTest({Key key}) : super(key: key);
@@ -36,11 +38,27 @@ class ImageTestState extends State<ImageTest> {
   }
 
   getTestImg () async {
-    var tempImg = await CachedImageUtility.loadImageFromPreferences(imageType: Image_type.test_img, fileName: 'test');
-    setState(() {
-      imageFromPreferences = tempImg;
-    });
-    print(imageFromPreferences);
+//    var tempImg = await CachedImageUtility.loadImageFromPreferences(imageType: Image_type.test_img, fileName: 'test');
+//    setState(() {
+//      imageFromPreferences = tempImg;
+//    });
+//    print(imageFromPreferences);
+
+
+    SharedPreferences loginPref = await SharedPreferences.getInstance();
+
+    var token2 = loginPref.getString('token');
+    print(token2);
+
+    String url2 = "https://api.hwaya.net/api/hello";
+    final response2 = await http.get(url2,
+        headers: {
+          'X-Authorization':'Bearer ' + token2.toString()
+        });
+    var data2 = jsonDecode(response2.body);
+    if (response2.statusCode == 200) {
+      print("JWT TEST 성공하였습니다.");
+    }
   }
 
   @override
