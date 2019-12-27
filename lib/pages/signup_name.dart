@@ -5,7 +5,7 @@ import 'package:Hwa/app.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-final TextEditingController _regNameController = new TextEditingController();
+final TextEditingController _regNameController =  TextEditingController();
 
 class SignUpNamePage extends StatefulWidget{
   @override
@@ -110,9 +110,8 @@ Widget _regAuthTextField(){
           hintText: "닉네임을 입력하세요",
           suffixIcon: IconButton(
               icon: Image.asset("assets/images/icon/iconDeleteSmall.png"),
-              onPressed: () {
-
-              }),
+              onPressed: () => _regNameController.clear(),
+          ),
           hintStyle: TextStyle(color: Colors.black38),
           border:  OutlineInputBorder(
             borderRadius:  BorderRadius.circular(10.0),
