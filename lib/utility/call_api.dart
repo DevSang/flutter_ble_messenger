@@ -24,10 +24,10 @@ class CallApi {
   static commonApiCall({ @required HTTP_METHOD method, @required String uri, Map data}) async {
     var responseBody = null;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var token = prefs.getString('token');
+    var token = prefs.getString('token').toString();
     var headers = {
       'Content-Type':'application/json',
-      'x-Authorization':'Bearer ' + token
+      'X-Authorization':'Bearer ' + token
     };
 
     try {
