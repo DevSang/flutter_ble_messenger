@@ -178,8 +178,10 @@ class _SignInPageState extends State<SignInPage> {
     var data = jsonDecode(response.body);
     String phoneNum = data['phone_number'];
     String message = data['message'];
+    String token = data['token'];
     if (response.statusCode == 200) {
       print(phoneNum);
+      print(token);
       loginToastMsg(message);
     } else {
       loginToastMsg(message);
@@ -237,6 +239,12 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
+  _getAndSaveToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = await authCodeLoginRequest();
+    await prefs.setString('jwt', token);
+  }
+
   Widget _SignInButton() {
     return Container(
       width: MediaQuery
@@ -248,7 +256,7 @@ class _SignInPageState extends State<SignInPage> {
 //      color: Color.fromRGBO(204, 204, 204, 1),
       child: RaisedButton(
         onPressed: () {
-          authCodeLoginRequest();
+          _getAndSaveToken();
         },
         child: Text("Sign In", style: TextStyle(
             color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')),
@@ -257,7 +265,7 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  void authCodeLoginRequest() async {
+   authCodeLoginRequest() async {
     if (_formkey.currentState.validate()) {
       _formkey.currentState.save();
       try {

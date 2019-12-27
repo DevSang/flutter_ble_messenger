@@ -15,14 +15,15 @@ import 'package:Hwa/pages/notice_detail_page.dart';
 
 Future main() async {
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool isLogged = (prefs.getBool('isLogged') ?? false) ;
+//  SharedPreferences prefs = await SharedPreferences.getInstance();
+//  bool isLogged = (prefs.getBool('isLogged') ?? false) ;
 
-  var home;
-  if(isLogged)
-    home = BottomNavigation();
-  else
-    home = SignInPage() ;
+//  var home;
+//  if(isLogged)
+//    home = BottomNavigation();
+//  else
+//    home = SignInPage() ;
+
 
   runApp(new MyApp());
 }
