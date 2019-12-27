@@ -14,10 +14,24 @@ class SignInPage extends StatefulWidget {
   _SignInPageState createState() => _SignInPageState();
 }
 
-class _SignInPageState extends State<SignInPage>{
+class _SignInPageState extends State<SignInPage> {
   bool _isLoading = false;
+  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+
+  String phone_number, auth_number;
 
   @override
+  void initState() {
+    super.initState();
+    this.checkAuthentication();
+  }
+
+  checkAuthentication() async {
+    Navigator.pushReplacementNamed(context, '/home');
+  }
+
+
+    @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -27,7 +41,9 @@ class _SignInPageState extends State<SignInPage>{
             fit: BoxFit.cover,
           ),
         ),
-        child: _isLoading ? Center(child: CircularProgressIndicator()) : ListView(
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : ListView(
           children: <Widget>[
             _loginMainImage(),
             _loginInputText(),
@@ -35,27 +51,29 @@ class _SignInPageState extends State<SignInPage>{
             _SignInButton(),
             _loginText(),
             _socialLogin(),
-            _registerSection(),
+            _registerSection(context),
           ],
         ),
       ),
-    appBar: AppBar(
-      centerTitle: true,
-      backgroundColor: Colors.white,
-    title: Text("HWA 로그인",
-      style: TextStyle(color: Colors.black, fontSize: 18, fontFamily: 'NotoSans'),
-    )),
+      appBar: AppBar(
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          title: Text("HWA 로그인",
+            style: TextStyle(
+                color: Colors.black, fontSize: 18, fontFamily: 'NotoSans'),
+          )),
     );
   }
 
 
-  Widget _loginMainImage(){
+  Widget _loginMainImage() {
     return Container(
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Image.asset('assets/images/visualImageLogin.png', width: 200, height: 200)
-              ]
+              Image.asset(
+                  'assets/images/visualImageLogin.png', width: 200, height: 200)
+            ]
         )
     );
   }
@@ -90,8 +108,8 @@ class _SignInPageState extends State<SignInPage>{
 //  }
 
 
-  final TextEditingController _authCodeController =  TextEditingController();
-  final TextEditingController _phoneController =  TextEditingController();
+  final TextEditingController _authCodeController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
 
   Widget _loginInputText() {
     return Container(
@@ -99,44 +117,45 @@ class _SignInPageState extends State<SignInPage>{
       child: Row(
         children: <Widget>[
           Flexible(
-          child: TextFormField(
-            maxLength: 11,
-              onChanged: (loginAuthCode) {
-                print(loginAuthCode);
-              },
-              onFieldSubmitted: (loginAuthCode) {
-                print('login phone number 입력 :$loginAuthCode');
-              },
-            keyboardType: TextInputType.number,
-            inputFormatters: <TextInputFormatter>[
-              WhitelistingTextInputFormatter.digitsOnly
-            ],
-            controller: _phoneController,
-            cursorColor: Colors.black,
-            style: TextStyle(color: Colors.black,fontFamily: 'NotoSans'),
-          decoration: InputDecoration(
-            suffixIcon: RaisedButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: Text("인증문자 받기",style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
-                ),
-                color: Color.fromRGBO(77, 96, 191, 1),
-                onPressed: () {
-                  loginCodeRequest();
-                }),
-            counterText: "",
-            hintText: "휴대폰 번호 (-없이 숫자만 입력)",
-            hintStyle: TextStyle(color: Colors.black38),
-            border:  OutlineInputBorder(
-              borderRadius:  BorderRadius.circular(10.0),
-              borderSide:  BorderSide(
-              ),
+            child: TextFormField(
+                maxLength: 11,
+                onChanged: (loginAuthCode) {
+                  print(loginAuthCode);
+                },
+                onFieldSubmitted: (loginAuthCode) {
+                  print('login phone number 입력 :$loginAuthCode');
+                },
+                keyboardType: TextInputType.number,
+                inputFormatters: <TextInputFormatter>[
+                  WhitelistingTextInputFormatter.digitsOnly
+                ],
+                controller: _phoneController,
+                cursorColor: Colors.black,
+                style: TextStyle(color: Colors.black, fontFamily: 'NotoSans'),
+                decoration: InputDecoration(
+                  suffixIcon: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      ),
+                      child: Text("인증문자 받기", style: TextStyle(
+                          color: Colors.white, fontFamily: 'NotoSans'),
+                      ),
+                      color: Color.fromRGBO(77, 96, 191, 1),
+                      onPressed: () {
+                        loginCodeRequest();
+                      }),
+                  counterText: "",
+                  hintText: "휴대폰 번호 (-없이 숫자만 입력)",
+                  hintStyle: TextStyle(color: Colors.black38),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(
+                    ),
+                  ),
+                  fillColor: Colors.grey[200],
+                  filled: true,
+                )
             ),
-            fillColor: Colors.grey[200],
-            filled: true,
-          )
-          ),
 
           ),
         ],
@@ -145,11 +164,11 @@ class _SignInPageState extends State<SignInPage>{
   }
 
   loginCodeRequest() async {
-    print("phone number :: " +  _phoneController.text);
+    print("phone number :: " + _phoneController.text);
     String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
     final response = await http.post(url,
         headers: {
-          'Content-Type':'application/json'
+          'Content-Type': 'application/json'
         },
         body: jsonEncode({
           "phone_number": _phoneController.text
@@ -169,7 +188,7 @@ class _SignInPageState extends State<SignInPage>{
     }
   }
 
-  loginToastMsg(String toast){
+  loginToastMsg(String toast) {
     return Fluttertoast.showToast(
         msg: "toast",
         toastLength: Toast.LENGTH_SHORT,
@@ -179,7 +198,7 @@ class _SignInPageState extends State<SignInPage>{
         textColor: Colors.white);
   }
 
-  Widget _loginInputCodeField(){
+  Widget _loginInputCodeField() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
       child: Column(
@@ -205,9 +224,9 @@ class _SignInPageState extends State<SignInPage>{
                 counterText: "",
                 hintText: "인증번호",
                 hintStyle: TextStyle(color: Colors.black38),
-                border:  OutlineInputBorder(
-                  borderRadius:  BorderRadius.circular(10.0),
-                  borderSide:  BorderSide(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(
                   ),
                 ),
                 fillColor: Colors.grey[200],
@@ -221,114 +240,148 @@ class _SignInPageState extends State<SignInPage>{
 
   Widget _SignInButton() {
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       height: 50.0,
       padding: EdgeInsets.symmetric(horizontal: 15.0),
 //      color: Color.fromRGBO(204, 204, 204, 1),
       child: RaisedButton(
         onPressed: () {
-            authCodeLoginRequest();
-          },
-        child: Text("Sign In", style: TextStyle(color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')),
+          authCodeLoginRequest();
+        },
+        child: Text("Sign In", style: TextStyle(
+            color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       ),
     );
   }
 
-  authCodeLoginRequest() async {
-    print("auth number :: " +  _authCodeController.text);
-    String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
-    final response = await http.post(url,
-        headers: {
-          'Content-Type':'application/json',
-          'X-Requested-With': 'XMLHttpRequest'},
-        body: jsonEncode({
-          "phone_number": _phoneController.text,
-          "auth_number": _authCodeController.text
-        })
-    ).then((http.Response response) {
-      print("로그인 :: " + response.body);
-    });
-    var data = jsonDecode(response.body);
-    String authNum = data['auth_number'];
-    String message = data['message'];
-    if (response.statusCode == 200) {
-      print(authNum);
-      loginToastMsg(message);
-    } else {
-      loginToastMsg(message);
-      print('failed：${response.statusCode}');
+  void authCodeLoginRequest() async {
+    if (_formkey.currentState.validate()) {
+      _formkey.currentState.save();
+      try {
+        print("auth number :: " + _authCodeController.text);
+        String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
+        final response = await http.post(url,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'},
+            body: jsonEncode({
+              "phone_number": _phoneController.text,
+              "auth_number": _authCodeController.text
+            })
+        ).then((http.Response response) {
+          print("로그인 :: " + response.body);
+        });
+        var data = jsonDecode(response.body);
+        String authNum = data['auth_number'];
+        String message = data['message'];
+        if (response.statusCode == 200) {
+          print(authNum);
+          loginToastMsg(message);
+        } else {
+          loginToastMsg(message);
+          print('failed：${response.statusCode}');
+        }
+      } catch (e) {
+        showError(e);
+      }
     }
   }
 
+  showError(String errMessage) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text(errMessage),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+          );
+        });
+  }
 
 
-  Widget _loginText(){
+  Widget _loginText() {
     return Container(
         margin: EdgeInsets.only(top: 20, bottom: 10),
-      child: Column(
-       crossAxisAlignment: CrossAxisAlignment.center,
-       children: <Widget>[
-       Text("Or Sign in with",style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans'))
-       ],
-      )
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Text("Or Sign in with", style: TextStyle(
+                color: Colors.black, fontSize: 15, fontFamily: 'NotoSans'))
+          ],
+        )
     );
   }
 
-  Widget _socialLogin(){
+  Widget _socialLogin() {
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           InkWell(
-            child: Image.asset('assets/images/sns/snsIconKakao.png')
+              child: Image.asset('assets/images/sns/snsIconKakao.png')
           ),
 
           InkWell(
-              child: Text("Kakao", style: TextStyle(color: Colors.black54, fontSize: 15 ,fontFamily: 'NotoSans'),
+              child: Text("Kakao", style: TextStyle(
+                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'),
               )
           ),
           InkWell(
               child: Image.asset('assets/images/sns/snsIconFacebook.png')
           ),
           InkWell(
-              child: Text("Facebook", style: TextStyle(color: Colors.black54, fontSize: 15,fontFamily: 'NotoSans'))
+              child: Text("Facebook", style: TextStyle(
+                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
           ),
           InkWell(
               child: Image.asset('assets/images/sns/snsIconGoogle.png')
           ),
           InkWell(
-              child: Text("Google", style: TextStyle(color: Colors.black54, fontSize: 15,fontFamily: 'NotoSans'))
+              child: Text("Google", style: TextStyle(
+                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
           ),
-
         ],
       ),
     );
   }
 
 
-
-  Widget _registerSection(){
+  Widget _registerSection(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(top: 40, bottom: 20),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           InkWell(
-            child: Text("New Here? ", style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans'))
+              child: Text("New Here? ", style: TextStyle(
+                  color: Colors.black, fontSize: 15, fontFamily: 'NotoSans'))
           ),
           InkWell(
-            child: Text("Sign Up", style: TextStyle(color: Colors.black, fontSize: 15,fontFamily: 'NotoSans',fontWeight: FontWeight.bold)),
-              onTap: (){ Navigator.pushNamed(context, '/register');
-              },
+            child: Text("Sign Up", style: TextStyle(color: Colors.black,
+                fontSize: 15,
+                fontFamily: 'NotoSans',
+                fontWeight: FontWeight.bold)),
+            onTap: () {
+              Navigator.pushNamed(context, '/register');
+            },
           )
         ],
       ),
     );
   }
-
-
-
-
 }
+
+
 

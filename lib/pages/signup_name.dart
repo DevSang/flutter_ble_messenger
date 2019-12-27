@@ -140,10 +140,11 @@ Widget _regStartBtn(BuildContext context){
     child: RaisedButton(
       onPressed:(){
      if (_formKey.currentState.validate()) {
-      Scaffold.of(context)
-          .showSnackBar(SnackBar(content: Text('$validateUsername')));
+
     }
-//        Navigator.pushNamed(context, '/main');
+     else{
+       Navigator.pushNamed(context, '/main');
+     }
       },
       color: Colors.black38,
       elevation: 0.0,
