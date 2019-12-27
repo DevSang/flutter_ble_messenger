@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:Hwa/app.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:Hwa/pages/signup_page.dart';
+import 'dart:convert';
 
 final TextEditingController _regNameController =  TextEditingController();
 
@@ -140,7 +142,7 @@ Widget _regStartBtn(BuildContext context){
     child: RaisedButton(
       onPressed:(){
      if (_formKey.currentState.validate()) {
-
+       registerFinish();
     }
      else{
        Navigator.pushNamed(context, '/main');
@@ -154,5 +156,33 @@ Widget _regStartBtn(BuildContext context){
     ),
   );
 }
+
+// 시작하기 연결
+registerFinish() async {
+  print("phone number :: " + _regNameController.text);
+  String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
+  final response = await http.post(url,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: jsonEncode({
+        "phone_number": phoneRegController.text,
+        "nickname": _regNameController.text
+      })
+  ).then((http.Response response) {
+    print("signin :: " + response.body);
+  });
+  var data = jsonDecode(response.body);
+  String phoneNum = data['phone_number'];
+  String message = data['message'];
+  String token = data['token'];
+  if (response.statusCode == 200) {
+    print(phoneNum);
+    print(token);
+  } else {
+    print('failed：${response.statusCode}');
+  }
+}
+
 
 
