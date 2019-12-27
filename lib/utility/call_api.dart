@@ -63,37 +63,37 @@ class CallApi {
 
     static commonApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
         var prefixUrl = Constant.API_SERVER_HTTP;
-        logRequest(prefixUrl, method.toString(), setHeader(), url, setData(data));
-        var response = await setHttpCallType(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        logRequest(prefixUrl, method.toString(),await setHeader(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(),await setHeader(), url, setData(data));
         return await setResponse(response);
     }
 
     static messageApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
         var prefixUrl = Constant.CHAT_SERVER_HTTP;
-        logRequest(prefixUrl, method.toString(), setHeader(), url, setData(data));
-        var response = await setHttpCallType(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        logRequest(prefixUrl, method.toString(),await setHeader(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(),await setHeader(), url, setData(data));
         return await setResponse(response);
     }
 
     static chattingApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
         var prefixUrl = Constant.CHAT_SERVER_WS;
-        logRequest(prefixUrl, method.toString(), setHeader(), url, setData(data));
-        var response = await setHttpCallType(prefixUrl, method.toString(), setHeader(), url, setData(data));
+        logRequest(prefixUrl, method.toString(),await setHeader(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(),await setHeader(), url, setData(data));
         return await setResponse(response);
     }
 
-    static setHttpCallType(String prefixUrl, method, headers, url, Map data) async {
+    static setHttpCallType(prefixUrl, method, headers, url, data) async {
         switch(method) {
-            case "HTTP_METHOD.post": return await http.post(prefixUrl + url, headers: headers, body: data);
+            case "HTTP_METHOD.post": return await http.post(prefixUrl + url, headers: headers, body: jsonEncode(data));
             break;
 
-            case "HTTP_METHOD.get": return await http.get(prefixUrl + url, headers: headers,);
+            case "HTTP_METHOD.get": return await http.get(prefixUrl + url, headers: headers);
             break;
 
-            case "HTTP_METHOD.put": return await http.put(prefixUrl + url, headers: headers, body: data);
+            case "HTTP_METHOD.put": return await http.put(prefixUrl + url, headers: headers, body: jsonEncode(data));
             break;
 
-            case "HTTP_METHOD.patch": return await http.patch(prefixUrl + url, headers: headers, body: data);
+            case "HTTP_METHOD.patch": return await http.patch(prefixUrl + url, headers: headers, body: jsonEncode(data));
             break;
 
             case "HTTP_METHOD.delete": return await http.delete(prefixUrl + url, headers: headers);
