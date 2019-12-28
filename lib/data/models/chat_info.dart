@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/chat_info.dart';
@@ -22,7 +24,6 @@ class ChatInfo {
 //    bool isPublic;              // 온라인 공개 여부
 //    int inviteRange;            // 초대 범위
 
-
     ChatInfo({
         this.chatIdx
         ,this.createUserIdx
@@ -38,4 +39,23 @@ class ChatInfo {
         , this.mode
         , this.createUser
     });
+
+
+    factory ChatInfo.fromJSON (Map<String, dynamic> jsonData) {
+        return ChatInfo (
+            chatIdx : jsonData['roomIdx'],
+            createUserIdx : jsonData['createUserIdx'],
+            masterUserIdx : jsonData['masterUserIdx'],
+            title : jsonData['title'],
+            chatImg : jsonData['roomImg'],
+            lat : jsonData['lat'],
+            lon : jsonData['lon'],
+            score : jsonData['score'],
+            createTs : jsonData['createTs'],
+            lastMsg : jsonData['lastMsg'],
+            userCount : jsonData['userCount'],
+            mode : jsonData['chatMode'],
+            createUser : new ChatUserInfo.fromJSON(json.decode(jsonData['createUser']))
+        );
+    }
 }
