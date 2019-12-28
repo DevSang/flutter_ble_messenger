@@ -28,7 +28,7 @@ class _HwaTabState extends State<HwaTab> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   SharedPreferences spf;
 
-  List<ChatInfo> chatList = <ChatInfo>[];
+  List<ChatListItem> chatList = <ChatListItem>[];
   Position _currentPosition;
   String _currentAddress;
   double sameSize;
@@ -44,9 +44,9 @@ class _HwaTabState extends State<HwaTab> {
   void initState() {
     super.initState();
     // TODO: 주변 채팅 리스트 받아오기
-    testGetChatList = [1,15,46,12,52];
+//    _getChatListIdx();
+//    _getChatList();
 
-    _getChatList();
     sameSize  = GetSameSize().main();
     count = 0;
     _textFieldController = TextEditingController(text: '스타벅스 강남R점' + count.toString());
@@ -57,13 +57,21 @@ class _HwaTabState extends State<HwaTab> {
   /*
    * @author : hs
    * @date : 2019-12-28
+   * @description : 주변 채팅 리스트 Idxs TODO: 추후 BLE 연동
+  */
+  void _getChatListIdx() {
+    setState(() {
+      testGetChatList = [1,15,46,12,52];
+    });
+  }
+
+  /*
+   * @author : hs
+   * @date : 2019-12-28
    * @description : 채팅 리스트 API 요청
   */
   void _getChatList() {
     testGetChatList.forEach((itemId) => _getChatItem(itemId));
-    Future.delayed(new Duration(seconds: 5), () {
-      _getChatItem(100);
-    });
   }
 
   /*
@@ -73,18 +81,16 @@ class _HwaTabState extends State<HwaTab> {
   */
   void _getChatItem(int chatIdx) async {
     try {
-      String uri = "/danhwa/roomDetail?roomIdx=" + chatIdx.toString();
+      String uri = "/danhwa/room?roomIdx=" + chatIdx.toString();
 
       final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
 
       Map<String, dynamic> jsonParse = json.decode(response.body);
-      ChatInfo chatInfo = new ChatInfo.fromJSON(jsonParse['danhwaRoom']);
+      ChatListItem chatInfo = new ChatListItem.fromJSON(jsonParse);
 
-      print("complete1");
       // 채팅 리스트에 추가
       setState(() {
         chatList.insert(0, chatInfo);
-        print("chatList :: " + chatList.length.toString());
       });
 
     } catch (e) {
@@ -104,17 +110,16 @@ class _HwaTabState extends State<HwaTab> {
       final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
       Map<String, dynamic> jsonParse = json.decode(response.body);
-      ChatInfo chatInfo = new ChatInfo.fromJSON(jsonParse);
+      int createdChatIdx = jsonParse['roomIdx'];
 
       // 채팅 리스트에 추가
       setState(() {
-        chatList.insert(0, chatInfo);
-        print("chatList :: " + chatList.length.toString());
+        _getChatItem(createdChatIdx);
       });
 
       Navigator.push(context,
           MaterialPageRoute(builder: (context) {
-            return ChatroomPage(chatInfo: chatInfo);
+            return ChatroomPage(chatIdx: createdChatIdx);
           })
       ).then((result) {
         Navigator.of(context).pop();
@@ -340,7 +345,7 @@ class _HwaTabState extends State<HwaTab> {
     );
   }
 
-  Widget buildChatItem(ChatInfo chatListItem) {
+  Widget buildChatItem(ChatListItem chatListItem) {
     return InkWell(
       child: Container(
           height: ScreenUtil().setHeight(82),
@@ -487,7 +492,7 @@ class _HwaTabState extends State<HwaTab> {
           )
       ),
       onTap: () => Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ChatroomPage(chatInfo: chatListItem))
+          context, MaterialPageRoute(builder: (context) => ChatroomPage(chatIdx: chatListItem.chatIdx))
       ),
     );
   }

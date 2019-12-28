@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_message.dart';
-import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_user_info.dart';
 
 class ChatInfo {

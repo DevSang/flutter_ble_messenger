@@ -73,34 +73,34 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true)..init(context);
+        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
 
         return
         new SizedBox(
-            width: ScreenUtil().setWidth(620),
+            width: ScreenUtil().setWidth(310),
             child: Drawer(
                 child: Column(
                     children: <Widget>[
                         Container(
                             color: Colors.white,
-                            height: ScreenUtil().setHeight(148),
+                            height: ScreenUtil().setHeight(74),
                             padding: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(20),
-                                bottom: ScreenUtil().setHeight(24),
-                                left: ScreenUtil().setWidth(40)
+                                top: ScreenUtil().setHeight(10),
+                                bottom: ScreenUtil().setHeight(12),
+                                left: ScreenUtil().setWidth(20)
                             ),
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                     Container(
-                                        width: ScreenUtil().setWidth(474),
+                                        width: ScreenUtil().setWidth(237),
                                         child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
                                                 Container (
                                                     margin: EdgeInsets.only(
-                                                        top: ScreenUtil().setHeight(19),
-                                                        bottom: ScreenUtil().setHeight(20)
+                                                        top: ScreenUtil().setHeight(9.5),
+                                                        bottom: ScreenUtil().setHeight(10)
                                                     ),
                                                     child: Row(
                                                         children: <Widget>[
@@ -109,21 +109,21 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                                 style: TextStyle(
                                                                     fontFamily: "assets/fonts/NotoSansKR-Medium.otf",
                                                                     height: 1,
-                                                                    fontSize: ScreenUtil().setSp(32),
+                                                                    fontSize: ScreenUtil().setSp(16),
                                                                     letterSpacing: ScreenUtil().setWidth(-0.8),
                                                                     color: Color.fromRGBO(39, 39, 39, 1)
                                                                 ),
                                                             ),
                                                             Container(
-                                                                height: ScreenUtil().setHeight(24),
+                                                                height: ScreenUtil().setHeight(12),
                                                                 padding: EdgeInsets.only(
-                                                                    left: ScreenUtil().setWidth(23),
+                                                                    left: ScreenUtil().setWidth(11.5),
                                                                 ),
                                                                 child: Text(
                                                                     "3,400",
                                                                     style: TextStyle(
                                                                         height: 1,
-                                                                        fontSize: ScreenUtil().setSp(26),
+                                                                        fontSize: ScreenUtil().setSp(13),
                                                                         letterSpacing: ScreenUtil().setWidth(-0.33),
                                                                         color: Color.fromRGBO(107, 107, 107, 1)
                                                                     ),
@@ -137,7 +137,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                         "스타벅스 강남R점 사람들 얘기나눠요",
                                                         style: TextStyle(
                                                             height: 1,
-                                                            fontSize: ScreenUtil().setSp(26),
+                                                            fontSize: ScreenUtil().setSp(13),
                                                             letterSpacing: ScreenUtil().setWidth(-0.33),
                                                             color: Color.fromRGBO(107, 107, 107, 1)
                                                         ),
@@ -148,28 +148,28 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                     ),
                                     GestureDetector(
                                         child: Container(
-                                            width: ScreenUtil().setWidth(106),
-                                            height: ScreenUtil().setHeight(120),
+                                            width: ScreenUtil().setWidth(53),
+                                            height: ScreenUtil().setHeight(60),
                                             child: Column(
                                                 crossAxisAlignment: CrossAxisAlignment.center,
                                                 children: <Widget>[
                                                     Container(
-                                                        width: ScreenUtil().setWidth(64),
-                                                        height: ScreenUtil().setHeight(64),
+                                                        width: ScreenUtil().setWidth(32),
+                                                        height: ScreenUtil().setHeight(32),
                                                         margin: EdgeInsets.only(
-                                                            bottom: ScreenUtil().setHeight(12)
+                                                            bottom: ScreenUtil().setHeight(6)
                                                         ),
                                                         decoration: likeCondition,
                                                     ),
                                                     Container(
-                                                        width: ScreenUtil().setWidth(80),
+                                                        width: ScreenUtil().setWidth(40),
                                                         child:
                                                         Text(
                                                             "2,500",
                                                             textAlign: TextAlign.center,
                                                             style: TextStyle(
                                                                 height: 1,
-                                                                fontSize: ScreenUtil().setSp(26),
+                                                                fontSize: ScreenUtil().setSp(13),
                                                                 letterSpacing: ScreenUtil().setWidth(-0.33)
                                                             ),
                                                         ),
@@ -196,11 +196,11 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                             ),
                         ),
                         Container(
-                            width: ScreenUtil().setWidth(620),
-                            height: ScreenUtil().setHeight(96),
+                            width: ScreenUtil().setWidth(310),
+                            height: ScreenUtil().setHeight(48),
                             padding: EdgeInsets.only(
-                              left: ScreenUtil().setWidth(28),
-                              right: ScreenUtil().setWidth(28)
+                              left: ScreenUtil().setWidth(14),
+                              right: ScreenUtil().setWidth(14)
                             ),
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(240, 240, 240, 1),
@@ -210,8 +210,8 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                 children: <Widget>[
                                     InkWell(
                                         child: Container(
-                                            width: ScreenUtil().setWidth(56),
-                                            height: ScreenUtil().setHeight(56),
+                                            width: ScreenUtil().setWidth(28),
+                                            height: ScreenUtil().setHeight(28),
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image:AssetImage("assets/images/icon/iconExit.png")
@@ -221,8 +221,8 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                     ),
                                     InkWell(
                                         child: Container(
-                                            width: ScreenUtil().setWidth(56),
-                                            height: ScreenUtil().setHeight(56),
+                                            width: ScreenUtil().setWidth(28),
+                                            height: ScreenUtil().setHeight(28),
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image:AssetImage("assets/images/icon/iconSetting.png")
