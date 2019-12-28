@@ -10,7 +10,7 @@
 .packages
 *.log
 pubspec.lock
-ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/flutter_export_environment.sh
 
 ### Flutter ###
 # Flutter/Dart/Pub related
