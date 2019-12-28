@@ -132,9 +132,9 @@ class _HwaTabState extends State<HwaTab> {
       final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
       print("### 단화방 생성 :: " + response.body);
 
-      Map<String, dynamic> param = Map<String, dynamic>.from(response.body);
+      Map<String, dynamic> jsonParse = json.decode(response.body);
 
-      ChatInfo chatInfo = new ChatInfo.fromJSON(param);
+      ChatInfo chatInfo = new ChatInfo.fromJSON(jsonParse);
 
       Navigator.push(context,
           MaterialPageRoute(builder: (context) {

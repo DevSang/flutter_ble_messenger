@@ -55,7 +55,7 @@ class ChatInfo {
             lastMsg : jsonData['lastMsg'],
             userCount : jsonData['userCount'],
             mode : jsonData['chatMode'],
-            createUser : new ChatUserInfo.fromJSON(json.decode(jsonData['createUser']))
+            createUser : new ChatUserInfo.fromJSON(jsonData['createUser'])
         );
     }
 }
