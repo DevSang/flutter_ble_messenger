@@ -13,7 +13,7 @@ class ChatMessage {
 
     ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickname, this.message, this.userCountObj, this.chatTime});
 
-    factory ChatMessage.fromJSON (Map json) {
+    factory ChatMessage.fromJSON (Map<String, dynamic> json) {
         return ChatMessage (
             chatType : json['type'],
             roomIdx : json['roomIdx'],

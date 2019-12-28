@@ -20,4 +20,17 @@ class ChatUserInfo {
         , this.userIntro
         , this.addFriend
     });
+
+    factory ChatUserInfo.fromJSON (Map json) {
+        return ChatUserInfo (
+            userIdx : json['user_idx'],
+            nick : json['nickname'],
+            profileImg : json['masterUserIdx'],
+            partType : json['profile_picture_idx'],
+//            existContact : json['roomImg'],
+//            businessCard : json['lat'],
+//            userIntro : json['lon'],
+//            addFriend : json['score']
+        );
+    }
 }
