@@ -151,32 +151,33 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  loginCodeRequest() async {
-    print("phone number :: " + _phoneController.text);
-    String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
+    loginCodeRequest() async {
+        FocusScope.of(context).requestFocus(new FocusNode());
+        print("phone number :: " + _phoneController.text);
+        String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
 
-    Map requestData = {
-      'phone_number': _phoneController.text,
-    };
+        Map requestData = {
+            'phone_number': _phoneController.text,
+        };
 
-    final response = await http.post(url,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: jsonEncode(requestData)
-    );
+        final response = await http.post(url,
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: jsonEncode(requestData)
+        );
 
-    var data = jsonDecode(response.body);
-    String message = data['message'];
+        var data = jsonDecode(response.body);
+        String message = data['message'];
 
-    if (response.statusCode == 200 || response.statusCode == 202) {
-      print("#Auth code requset info :" + response.body);
-      print("#인증문자 요청에 성공하였습니다.");
-      loginToastMsg("인증문자 요청에 성공하였습니다.");
-    } else {
-      loginToastMsg("서버 요청에 실패하였습니다.");
-      print('failed：${response.statusCode}');
-    }
+        if (response.statusCode == 200 || response.statusCode == 202) {
+            print("#Auth code requset info :" + response.body);
+            print("#인증문자 요청에 성공하였습니다.");
+            loginToastMsg("인증문자 요청에 성공하였습니다.");
+        } else {
+            loginToastMsg("서버 요청에 실패하였습니다.");
+            print('failed：${response.statusCode}');
+        }
   }
 
   loginToastMsg(String message) {

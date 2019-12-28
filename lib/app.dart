@@ -11,6 +11,8 @@ import 'package:kvsql/kvsql.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
+import 'package:Hwa/data/models/friend_info.dart';
+
 
 final store = KvStore();
 class MainPage extends StatefulWidget {
@@ -24,15 +26,16 @@ class _MainPageState extends State<MainPage> {
 
     @override
     void initState() {
+//        clearLocalStorageForTest();
         //Constant init
         Constant.setUserIdx();
         //Check local store and call init api
-        checkLocalStore();
+        callInitApi();
         //get Firebase push token
         firebaseCloudMessaging_Listeners();
 
         new Future.delayed(
-            const Duration(seconds: 3),
+            const Duration(seconds: 1),
                 () => checkLoginStatus()
         );
 
@@ -56,12 +59,9 @@ class _MainPageState extends State<MainPage> {
     * @date : 2019-12-28
     * @description : Api를 call해서 store에 저장할지 안할지 구분
     */
-    checkLocalStore () async {
+    callInitApi () async {
         await store.onReady;
-        bool isNeedCallApi = await store.count() == 0 ? true : false;
-        if( isNeedCallApi ){
-            getFriendList();
-        }
+        getFriendList();
     }
 
     /*
@@ -70,16 +70,35 @@ class _MainPageState extends State<MainPage> {
     * @description : 친구목록이 Store에 없을 경우 api call 하여 저장
     */
     getFriendList () async {
-        String uri = "/api/v2/relation/relationship?user_idx=" + Constant.USER_IDX.toString();
+        List<FriendInfo> friendInfoList = <FriendInfo>[];
+
+        String uri = "/api/v2/relation/relationship/all?user_idx=" + Constant.USER_IDX.toString();
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
+
         if(response.body != null){
-            await store.put<List<dynamic>>("friendList",jsonDecode(response.body)['data']);
+            List<dynamic> friendList = jsonDecode(response.body)['data'];
+
+            for(var i = 0; i < friendList.length; i++){
+                var friendInfo = friendList[i]['related_user_data'];
+
+                friendInfoList.add(
+                    FriendInfo(
+                        userIdx: friendInfo['userIdx'],
+                        nickname: friendInfo['nickname'],
+                        phone_number: friendInfo['phone_number'],
+                        profile_picture_idx: friendInfo['profile_picture_idx'],
+                        business_card_idx: friendInfo['business_card_idx'],
+                        user_status: friendInfo['user_status']
+                    )
+                );
+            }
+
+//            await store.put<List<dynamic>>("friendList",friendInfoList);
         } else {
-            await store.put<List<dynamic>>("friendList",[]);
+//            await store.put<List<dynamic>>("friendList",[]);
         }
 
-        var myValue = await store.select<List<dynamic>>("friendList");
-        print("#Friend List"+ myValue.toString());
+        Constant.FRIEND_LIST = friendInfoList;
     }
 
     /*
