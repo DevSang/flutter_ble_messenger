@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
+import 'package:Hwa/utility/red_toast.dart';
 
 //로그인 page
 class SignInPage extends StatefulWidget {
@@ -13,11 +14,12 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
-  bool _isLoading = false;
-  final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-  SharedPreferences spf;
+    bool _isLoading = false;
+    final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
+    SharedPreferences spf;
+    FocusNode contextFocus;
 
-  String phone_number, auth_number;
+    String phone_number, auth_number;
 
   @override
   void initState() {
@@ -31,7 +33,7 @@ class _SignInPageState extends State<SignInPage> {
 
     @override
   Widget build(BuildContext context) {
-    return Scaffold(
+        return Scaffold(
       body: new GestureDetector(
         onTap: (){
           FocusScope.of(context).requestFocus(new FocusNode());
@@ -118,6 +120,7 @@ class _SignInPageState extends State<SignInPage> {
                     Container(
                       margin: EdgeInsets.only(right:5),
                       child: RaisedButton(
+                          focusNode: contextFocus,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8.0),
                           ),
@@ -152,33 +155,41 @@ class _SignInPageState extends State<SignInPage> {
   }
 
     loginCodeRequest() async {
-        FocusScope.of(context).requestFocus(new FocusNode());
-        print("phone number :: " + _phoneController.text);
-        String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
-
-        Map requestData = {
-            'phone_number': _phoneController.text,
-        };
-
-        final response = await http.post(url,
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: jsonEncode(requestData)
-        );
-
-        var data = jsonDecode(response.body);
-        String message = data['message'];
-
-        if (response.statusCode == 200 || response.statusCode == 202) {
-            print("#Auth code requset info :" + response.body);
-            print("#인증문자 요청에 성공하였습니다.");
-            loginToastMsg("인증문자 요청에 성공하였습니다.");
+        if(_phoneController.text == '' ){
+            RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
         } else {
-            loginToastMsg("서버 요청에 실패하였습니다.");
-            print('failed：${response.statusCode}');
+            FocusScope.of(context).requestFocus(new FocusNode());
+            print("phone number :: " + _phoneController.text);
+            String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
+
+            Map requestData = {
+                'phone_number': _phoneController.text,
+            };
+
+            final response = await http.post(url,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: jsonEncode(requestData)
+            );
+
+            var data = jsonDecode(response.body);
+            String message = data['message'];
+
+            if (response.statusCode == 200 || response.statusCode == 202) {
+                print("#Auth code requset info :" + response.body);
+                print("#인증문자 요청에 성공하였습니다.");
+                loginToastMsg("인증문자를 요청하였습니다");
+            } else {
+                if(response.statusCode == 406){
+                    RedToast.toast("가입 되어있지 않은 번호입니다. 번호를 다시 확인해주세요.",ToastGravity.TOP);
+                } else {
+                    RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+                }
+                print('failed：${response.statusCode}');
+            }
         }
-  }
+    }
 
   loginToastMsg(String message) {
     return Fluttertoast.showToast(
@@ -210,8 +221,7 @@ class _SignInPageState extends State<SignInPage> {
               controller: _authCodeController,
               cursorColor: Colors.black,
               obscureText: true,
-              style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
-              ),
+              style: TextStyle(color: Colors.black, fontFamily: "NotoSans"),
               decoration: InputDecoration(
                 counterText: "",
                 hintText: "인증번호",
@@ -260,34 +270,38 @@ class _SignInPageState extends State<SignInPage> {
     authCodeLoginRequest() async {
         SharedPreferences loginPref = await SharedPreferences.getInstance();
         try {
-            print("auth number :: " + _authCodeController.text);
-            String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
-            final response = await http.post(url,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'},
-                body: jsonEncode({
-                  "phone_number": _phoneController.text,
-                  "auth_number": _authCodeController.text
-                })
-            );
-
-            var data = jsonDecode(response.body)['data'];
-
-            if (response.statusCode == 200) {
-                print("#로그인에 성공하였습니다.");
-                print("#로그인정보 :" + response.body);
-
-                var token = data['token'];
-                var userIdx = data['userInfo']['idx'];
-                loginPref.setString('token', token.toString());
-                loginPref.setString('userIdx', userIdx.toString());
-                loginToastMsg("로그인에 성공하였습니다.");
-                pushTokenRequest();
-                Navigator.pushNamed(context, '/main');
+            if(_authCodeController.text == ''){
+                RedToast.toast("인증번호를 입력해주세요.", ToastGravity.TOP);
             } else {
-              loginToastMsg("서버 요청에 실패하였습니다.");
-              print('failed：${response.statusCode}');
+                print("auth number :: " + _authCodeController.text);
+                String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
+                final response = await http.post(url,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'},
+                    body: jsonEncode({
+                        "phone_number": _phoneController.text,
+                        "auth_number": _authCodeController.text
+                    })
+                );
+
+                var data = jsonDecode(response.body)['data'];
+
+                if (response.statusCode == 200) {
+                    print("#로그인에 성공하였습니다.");
+                    print("#로그인정보 :" + response.body);
+
+                    var token = data['token'];
+                    var userIdx = data['userInfo']['idx'];
+                    loginPref.setString('token', token.toString());
+                    loginPref.setString('userIdx', userIdx.toString());
+                    RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+                    pushTokenRequest();
+                    Navigator.pushNamed(context, '/main');
+                } else {
+                    RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
+                    print('failed：${response.statusCode}');
+                }
             }
         } catch (e) {
             showError(e);
@@ -299,7 +313,7 @@ class _SignInPageState extends State<SignInPage> {
         var userIdx = spf.getString("userIdx");
         var pushToken = spf.getString("pushToken");
         try {
-            String url = "/api/v2/user/push_token?user_idx=" + userIdx + "&push_token=" + pushToken;
+            String url = "/api/v2/user/push_token?push_token=" + pushToken;
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
             if(response != null){
                 print("#Push token 저장에 성공하였습니다.");

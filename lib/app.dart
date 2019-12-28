@@ -72,7 +72,7 @@ class _MainPageState extends State<MainPage> {
     getFriendList () async {
         List<FriendInfo> friendInfoList = <FriendInfo>[];
 
-        String uri = "/api/v2/relation/relationship/all?user_idx=" + Constant.USER_IDX.toString();
+        String uri = "/api/v2/relation/relationship/all";
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
 
         if(response.body != null){
@@ -168,7 +168,7 @@ class _MainPageState extends State<MainPage> {
     Widget build(BuildContext context) {
         SystemChrome.setSystemUIOverlayStyle(
             SystemUiOverlayStyle.dark.copyWith(
-                statusBarColor: Colors.white,
+                statusBarColor: Colors.black,
             )
         );
 
