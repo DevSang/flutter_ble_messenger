@@ -158,6 +158,7 @@ class ChatScreenState extends State<ChatroomPage> {
     void connectStomp() async {
         // connect to MsgServer
         s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
+        s.connectWebSocket();
 
         prefs = await SharedPreferences.getInstance();
         var userIdx = prefs.getString("userIdx");
@@ -166,7 +167,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
 
         // subscribe topic
-        s.subscribe(topic: "/sub/danhwa/", roomIdx: chatInfo.chatIdx.toString(), userIdx: userIdx).stream.listen((HashMap data) =>
+        s.subscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString(), roomIdx: chatInfo.chatIdx.toString(), userIdx: userIdx).stream.listen((HashMap data) =>
             messageReceieved(data),
             onDone: () {
                 print("Listen Done");
@@ -281,7 +282,7 @@ class ChatScreenState extends State<ChatroomPage> {
         }
 
         final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
-        message = '{"type": "'+ sendType +'","roomIdx":1,"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
+        message = '{"type": "'+ sendType +'","roomIdx":' + chatInfo.chatIdx.toString() + ',"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
 
         /// MESSAGE SEND
         s.send(
