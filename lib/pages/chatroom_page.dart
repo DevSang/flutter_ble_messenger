@@ -15,6 +15,7 @@ import 'package:Hwa/service/stomp_client.dart';
 
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/chat_count_user.dart';
+import 'package:Hwa/data/models/chat_info.dart';
 
 import 'package:Hwa/pages/notice_page.dart';
 import 'package:Hwa/pages/parts/chat_side_menu.dart';
@@ -28,21 +29,18 @@ import 'package:Hwa/pages/parts/chat_message_list.dart';
  * @description : 채팅 페이지
  */
 class ChatroomPage extends StatefulWidget {
-    final String peerId;
-    final String peerAvatar;
+    final ChatInfo chatInfo;
 
-    ChatroomPage({Key key, @required this.peerId, @required this.peerAvatar}) : super(key: key);
+    ChatroomPage({Key key, @required this.chatInfo}) : super(key: key);
 
     @override
-    State createState() => new ChatScreenState(peerId: peerId, peerAvatar: peerAvatar);
+    State createState() => new ChatScreenState(chatInfo: chatInfo);
 }
 
 class ChatScreenState extends State<ChatroomPage> {
-    ChatScreenState({Key key, @required this.peerId, @required this.peerAvatar});
+    ChatScreenState({Key key, @required this.chatInfo});
 
-    String peerId;
-    String peerAvatar;
-    String id;
+    final ChatInfo chatInfo;
 
     String groupChatId;
     SharedPreferences prefs;
@@ -376,7 +374,7 @@ class ChatScreenState extends State<ChatroomPage> {
                 backgroundColor: Colors.white,
             ),
             endDrawer: SafeArea(
-                child: new ChatSideMenu(isLike: isLike)
+                child: new ChatSideMenu(chatInfo: chatInfo)
             ),
             body: GestureDetector(
                 child: WillPopScope(

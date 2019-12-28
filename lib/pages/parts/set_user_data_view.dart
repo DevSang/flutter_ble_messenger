@@ -16,8 +16,6 @@ class SetUserDataView {
                 businessCard: "assets/images/businesscard.png",
                 userIntro: "안녕하세요. 강희근입니다.",
                 addFriend: true,
-                isHost: false,
-                isMe: false
             ),
             ChatUserInfo(
                 nick: "안영후",
@@ -27,8 +25,6 @@ class SetUserDataView {
                 businessCard: "assets/images/businesscard.png",
                 userIntro: "안녕하세요. 강희근입니다2.",
                 addFriend: true,
-                isHost: false,
-                isMe: false
             )
         ];
 

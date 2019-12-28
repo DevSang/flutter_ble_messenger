@@ -17,8 +17,6 @@ class SetUserData {
                 businessCard: "assets/images/businesscard.png",
                 userIntro: "안녕하세요. 강희근입니다.",
                 addFriend: true,
-                isHost: false,
-                isMe: false
             ),
             ChatUserInfo(
                 nick: "노민정",
@@ -28,8 +26,6 @@ class SetUserData {
                 businessCard: "",
                 userIntro: ".",
                 addFriend: false,
-                isHost: false,
-                isMe: true
             ),
             ChatUserInfo(
                 nick: "김은선",
@@ -39,8 +35,6 @@ class SetUserData {
                 businessCard: "assets/images/businesscard.png",
                 userIntro: "안녕하세요. 강희근입니다2.",
                 addFriend: true,
-                isHost: true,
-                isMe: false
             ),
             ChatUserInfo(
                 nick: "김재희",
@@ -50,8 +44,6 @@ class SetUserData {
                 businessCard: "",
                 userIntro: "안녕하세요. 강희근입니다3.",
                 addFriend: false,
-                isHost: false,
-                isMe: false
             )
         ];
 

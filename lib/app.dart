@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:Hwa/pages/signin_page.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -42,27 +43,19 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.white,
+        )
+    );
+
     ScreenUtil.instance =
         ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text("HWA", style: TextStyle(color: Colors.white)),
-        actions: <Widget>[
-          FlatButton(
-            onPressed: () {
-              sharedPreferences.clear();
-              Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (BuildContext context) => SignInPage()),
-                  (Route<dynamic> route) => false
-              );
-            },
-            child: Text("로그아웃", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-        backgroundColor: Colors.white,
+      body: Container(
+        color: Colors.black
       ),
-      body: Center(child: Text("Main Page")),
     );
   }
 
