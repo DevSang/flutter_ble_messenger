@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /*
  * @project : HWA - Mobile
@@ -18,6 +19,8 @@ class StompClient {
   int _topicsCount;
   StreamController<String> general;
 
+  SharedPreferences prefs;
+
   static const String NEWLINE = "\n";
   static const String END_CHAR = "\n\x00";
 
@@ -27,15 +30,46 @@ class StompClient {
    * @description : Constructor
    */
   StompClient({@required urlBackend, onError, onDone}) {
-    channel = IOWebSocketChannel.connect(urlBackend, pingInterval: Duration(seconds: 30));
+    connectStomp(urlBackend: urlBackend, onError: onError, onDone: onDone);
 
-    channel.stream.listen((message) {
-      _messageReceieved(message);
-    }, onError: onError?? onError, onDone: onDone?? onDone);
     general = StreamController();
     _topics = HashMap();
     _streams = HashMap();
     _topicsCount = 0;
+  }
+
+  /*
+   * @author : hs
+   * @date : 2019-12-28
+   * @description : Stomp 연결
+  */
+  void connectStomp({@required urlBackend, onError, onDone}) async {
+    var header = await setHeader();
+
+    print("###header" + header.toString());
+
+    channel = IOWebSocketChannel.connect(urlBackend, pingInterval: Duration(seconds: 30), headers: header);
+
+    print("####channel :: " + channel.toString());
+
+    channel.stream.listen((message) {
+      _messageReceieved(message);
+    }, onError: onError?? onError, onDone: onDone?? onDone);
+  }
+
+  /*
+   * @author : hs
+   * @date : 2019-12-28
+   * @description : Stomp header 생성
+  */
+  Future<Map<String, dynamic>> setHeader() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var token = prefs.getString('token').toString();
+    Map<String, dynamic> header = {
+      'Content-Type': 'application/json',
+      'X-Authorization': 'Bearer ' + token
+    };
+    return header;
   }
 
   /*

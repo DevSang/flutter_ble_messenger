@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:Hwa/data/models/chat_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -11,7 +14,6 @@ import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
 
-import 'package:Hwa/pages/parts/set_chat_list_data.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
 import 'package:Hwa/pages/trend_page.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
@@ -25,7 +27,7 @@ class _HwaTabState extends State<HwaTab> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
   SharedPreferences spf;
 
-  List<ChatListItem> chatList;
+  List<ChatInfo> chatList = <ChatInfo>[];
   Position _currentPosition;
   String _currentAddress;
   double sameSize;
@@ -35,7 +37,8 @@ class _HwaTabState extends State<HwaTab> {
   @override
   void initState() {
     super.initState();
-    chatList = new SetChaListData().main();
+    // TODO: 주변 채팅 리스트 받아오기
+//    chatList = ;
     sameSize  = GetSameSize().main();
     count = 0;
     _textFieldController = TextEditingController(text: '스타벅스 강남R점' + count.toString());
@@ -125,17 +128,25 @@ class _HwaTabState extends State<HwaTab> {
     var userIdx = spf.getString("userIdx");
 
     try {
-      String uri = "/danhwa/room?userIdx=" + userIdx + "&title=" + title;
+      String uri = "/danhwa/room?title=" + title;
       final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
-      print("### 단화방 생성 :: " + response.body);
 
+      Map<String, dynamic> jsonParse = json.decode(response.body);
+      ChatInfo chatInfo = new ChatInfo.fromJSON(jsonParse);
 
+      // 채팅 리스트에 추가
+      setState(() {
+        chatList.insert(0, chatInfo);
+        print("chatList :: " + chatList.length.toString());
+      });
 
       Navigator.push(context,
-          MaterialPageRoute(builder: (context) {
-            return ChatroomPage(chatInfo: response.body);
-          })
-      );
+        MaterialPageRoute(builder: (context) {
+          return ChatroomPage(chatInfo: chatInfo);
+        })
+      ).then((result) {
+        Navigator.of(context).pop();
+      });
 
     } catch (e) {
       print("#### Error :: "+ e.toString());
@@ -144,9 +155,12 @@ class _HwaTabState extends State<HwaTab> {
 
   @override
   Widget build(BuildContext context) {
+
+    print( "chatList build :: " + chatList.length.toString());
+
     return Scaffold(
       appBar: TabAppBar(
-        title: '단화방',
+        title: '주변 단화방',
         /// AppBar Row 내 요소 하단 정렬을 위한 높이 처리
         leftChild: Container(
             height: 0
@@ -279,113 +293,134 @@ class _HwaTabState extends State<HwaTab> {
     );
   }
 
-  Widget buildChatItem(ChatListItem chatListItem) {
-    return Container(
-      height: ScreenUtil().setHeight(82),
-      width: ScreenUtil().setWidth(343),
-      margin: EdgeInsets.only(
-        bottom: ScreenUtil().setHeight(10),
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: ScreenUtil().setWidth(14),
-        vertical: ScreenUtil().setWidth(16),
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(
-            Radius.circular(10.0)
-        ),
-        boxShadow: [
-          new BoxShadow(
-            color: Color.fromRGBO(0, 0, 0, 0.1),
-            offset: new Offset(ScreenUtil().setWidth(0), ScreenUtil().setWidth(5)),
-            blurRadius: ScreenUtil().setWidth(10)
-          )
-        ]
-      ),
-      child: Row(
-        children: <Widget>[
-          // 단화방 이미지
-          Container(
-              width: sameSize*50,
-              height: sameSize*50,
-              margin: EdgeInsets.only(
-                right: ScreenUtil().setWidth(15),
+  Widget buildChatItem(ChatInfo chatListItem) {
+    return InkWell(
+      child: Container(
+          height: ScreenUtil().setHeight(82),
+          width: ScreenUtil().setWidth(343),
+          margin: EdgeInsets.only(
+            bottom: ScreenUtil().setHeight(10),
+          ),
+          padding: EdgeInsets.symmetric(
+            horizontal: ScreenUtil().setWidth(14),
+            vertical: ScreenUtil().setWidth(16),
+          ),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(
+                  Radius.circular(10.0)
               ),
-              child: ClipRRect(
-                borderRadius: new BorderRadius.circular(
-                    ScreenUtil().setWidth(10)
-                ),
-                child:
-                Image.asset(
-                  chatListItem.chatImg,
+              boxShadow: [
+                new BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.1),
+                    offset: new Offset(ScreenUtil().setWidth(0), ScreenUtil().setWidth(5)),
+                    blurRadius: ScreenUtil().setWidth(10)
+                )
+              ]
+          ),
+          child: Row(
+            children: <Widget>[
+              // 단화방 이미지
+              Container(
                   width: sameSize*50,
                   height: sameSize*50,
-                  fit: BoxFit.cover,
-                ),
-              )
-          ),
-          // 단화방 정보
-          Container(
-            width: ScreenUtil().setWidth(250),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                /// 정보, 뱃지
-                Container(
-                  height: ScreenUtil().setHeight(22),
                   margin: EdgeInsets.only(
-                    top: ScreenUtil().setHeight(1),
-                    bottom: ScreenUtil().setHeight(10),
+                    right: ScreenUtil().setWidth(15),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Container(
-                        constraints: BoxConstraints(
-                            maxWidth: ScreenUtil().setWidth(190)
-                        ),
-                        child: Text(
-                          chatListItem.title,
-                          style: TextStyle(
-                            height: 1,
-                            fontFamily: "NotoSans",
-                            fontWeight: FontWeight.w500,
-                            fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
-                            color: Color.fromRGBO(39, 39, 39, 1),
-                            letterSpacing: ScreenUtil().setWidth(-0.8),
-                          ),
-                        ),
-                      ),
-                      chatListItem.isPopular
-                          ? popularBadge()
-                          : Container()
-                    ],
+                  child: ClipRRect(
+                    borderRadius: new BorderRadius.circular(
+                        ScreenUtil().setWidth(10)
+                    ),
+                    child:
+                    Image.asset(
+                      chatListItem.chatImg,
+                      width: sameSize*50,
+                      height: sameSize*50,
+                      fit: BoxFit.cover,
+                    ),
                   )
-                ),
-                /// 인원 수, 시간
-                Container(
-                    height: ScreenUtil().setHeight(13),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(
-                          child: Row(
-                            children: <Widget>[
-                              Text(
-                                chatListItem.count.toString(),
+              ),
+              // 단화방 정보
+              Container(
+                width: ScreenUtil().setWidth(250),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    /// 정보, 뱃지
+                    Container(
+                        height: ScreenUtil().setHeight(22),
+                        margin: EdgeInsets.only(
+                          top: ScreenUtil().setHeight(1),
+                          bottom: ScreenUtil().setHeight(10),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: <Widget>[
+                            Container(
+                              constraints: BoxConstraints(
+                                  maxWidth: ScreenUtil().setWidth(190)
+                              ),
+                              child: Text(
+                                chatListItem.title,
                                 style: TextStyle(
                                   height: 1,
-                                  fontFamily: "NanumSquare",
+                                  fontFamily: "NotoSans",
                                   fontWeight: FontWeight.w500,
-                                  fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                  color: Color.fromRGBO(107, 107, 107, 1),
-                                  letterSpacing: ScreenUtil().setWidth(-0.33),
+                                  fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                  color: Color.fromRGBO(39, 39, 39, 1),
+                                  letterSpacing: ScreenUtil().setWidth(-0.8),
                                 ),
                               ),
-                              Text(
-                                '명',
+                            ),
+                            // TODO : 인기 정책 변경
+                            (chatListItem.score ?? 0) > 10
+                                ? popularBadge()
+                                : Container()
+                          ],
+                        )
+                    ),
+                    /// 인원 수, 시간
+                    Container(
+                        height: ScreenUtil().setHeight(13),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Container(
+                                child: Row(
+                                  children: <Widget>[
+                                    Text(
+                                      chatListItem.userCount.toString(),
+                                      style: TextStyle(
+                                        height: 1,
+                                        fontFamily: "NanumSquare",
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                        color: Color.fromRGBO(107, 107, 107, 1),
+                                        letterSpacing: ScreenUtil().setWidth(-0.33),
+                                      ),
+                                    ),
+                                    Text(
+                                      '명',
+                                      style: TextStyle(
+                                        height: 1,
+                                        fontFamily: "NotoSans",
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                        color: Color.fromRGBO(107, 107, 107, 1),
+                                        letterSpacing: ScreenUtil().setWidth(-0.33),
+                                      ),
+                                    ),
+                                  ],
+                                )
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(
+                                right: ScreenUtil().setWidth(5),
+                              ),
+                              child: Text(
+//                          GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime),
+                                "지금",
                                 style: TextStyle(
                                   height: 1,
                                   fontFamily: "NotoSans",
@@ -395,33 +430,19 @@ class _HwaTabState extends State<HwaTab> {
                                   letterSpacing: ScreenUtil().setWidth(-0.33),
                                 ),
                               ),
-                            ],
-                          )
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                          right: ScreenUtil().setWidth(5),
-                        ),
-                        child: Text(
-                          GetTimeDifference.timeDifference(chatListItem.time),
-                          style: TextStyle(
-                            height: 1,
-                            fontFamily: "NotoSans",
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                            color: Color.fromRGBO(107, 107, 107, 1),
-                            letterSpacing: ScreenUtil().setWidth(-0.33),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                )
-              ],
-            ),
+                            ),
+                          ],
+                        )
+                    )
+                  ],
+                ),
+              )
+            ],
           )
-        ],
-      )
+      ),
+      onTap: () => Navigator.push(
+          context, MaterialPageRoute(builder: (context) => ChatroomPage(chatInfo: chatListItem))
+      ),
     );
   }
 
