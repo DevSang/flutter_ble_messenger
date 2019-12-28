@@ -10,8 +10,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/service/stomp_client.dart';
+import 'package:Hwa/utility/call_api.dart';
 
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/chat_count_user.dart';
@@ -42,7 +44,6 @@ class ChatScreenState extends State<ChatroomPage> {
 
     final ChatInfo chatInfo;
 
-    String groupChatId;
     SharedPreferences prefs;
 
     File imageFile;
@@ -87,9 +88,11 @@ class ChatScreenState extends State<ChatroomPage> {
     void initState() {
         super.initState();
 
-        focusNode.addListener(onFocusChange);
+        /// Stomp 초기화
+        connectStomp();
+        isReceived = false;
 
-        groupChatId = '';
+        focusNode.addListener(onFocusChange);
 
         isLoading = false;
         isShowMenu = false;
@@ -105,10 +108,6 @@ class ChatScreenState extends State<ChatroomPage> {
         _inputHeight = 36;
 
         getMessageList();
-
-        /// Stomp 초기화
-        connectStomp();
-        isReceived = false;
     }
 
     @override
@@ -156,13 +155,18 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2019-12-22
      * @description : topic 구독
     */
-    void connectStomp() {
+    void connectStomp() async {
         // connect to MsgServer
         s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
-        s.connectWithToken(token: "token");
+
+        prefs = await SharedPreferences.getInstance();
+        var userIdx = prefs.getString("userIdx");
+
+        print("chatIdx :::: " + chatInfo.chatIdx.toString());
+
 
         // subscribe topic
-        s.subscribe(topic: "/sub/danhwa/1", roomIdx: "1", userIdx: userIdx).stream.listen((HashMap data) =>
+        s.subscribe(topic: "/sub/danhwa/", roomIdx: chatInfo.chatIdx.toString(), userIdx: userIdx).stream.listen((HashMap data) =>
             messageReceieved(data),
             onDone: () {
                 print("Listen Done");
@@ -333,7 +337,7 @@ class ChatScreenState extends State<ChatroomPage> {
                     color: Color.fromRGBO(77, 96, 191, 1), //change your color here
                 ),
                 title: Text(
-                    "코엑스 별마당 도서관",
+                    chatInfo.title,
                     style: TextStyle(
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,

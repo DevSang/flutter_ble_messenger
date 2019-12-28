@@ -47,15 +47,15 @@ class ChatInfo {
             createUserIdx : jsonData['createUserIdx'],
             masterUserIdx : jsonData['masterUserIdx'],
             title : jsonData['title'],
-            chatImg : jsonData['roomImg'],
+            chatImg : jsonData['roomImg'] ?? "assets/images/icon/appIcon.jpg",
             lat : jsonData['lat'],
             lon : jsonData['lon'],
-            score : jsonData['score'],
+            score : jsonData['score'] ?? 0,
             createTs : jsonData['createTs'],
             lastMsg : jsonData['lastMsg'],
             userCount : jsonData['userCount'],
             mode : jsonData['chatMode'],
-            createUser : new ChatUserInfo.fromJSON(json.decode(jsonData['createUser']))
+            createUser : new ChatUserInfo.fromJSON(jsonData['createUser'])
         );
     }
 }
