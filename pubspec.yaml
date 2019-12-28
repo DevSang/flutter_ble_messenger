@@ -28,7 +28,8 @@ dependencies:
   firebase_messaging: ^6.0.9
   timeago: ^2.0.22
   lazy_load_scrollview: 1.0.1
-
+  kvsql: ^0.3.0
+  sqlcool: ^4.2.0
 
 
 #  flutter_kakao_login:
