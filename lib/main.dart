@@ -9,14 +9,14 @@ import 'package:Hwa/pages/signin_page.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
 import 'package:Hwa/pages/notice_page.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/pages/notice_write_page.dart';
 import 'package:Hwa/pages/notice_detail_page.dart';
 
-import 'package:Hwa/utility/get_same_size.dart';
 
 Future main() async {
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    WidgetsFlutterBinding.ensureInitialized();
+
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 //  SharedPreferences prefs = await SharedPreferences.getInstance();
 //  bool isLogged = (prefs.getBool('isLogged') ?? false) ;
 
@@ -25,9 +25,7 @@ Future main() async {
 //    home = BottomNavigation();
 //  else
 //    home = SignInPage() ;
-
-
-  runApp(new MyApp());
+    runApp(new MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -48,22 +46,22 @@ class MyApp extends StatelessWidget {
         )
     );
     return MaterialApp(
-      title: 'HWA',
-      theme: ThemeData.light(),
-      home: MainPage(),
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/login': (context) => SignInPage(),  // login
-        '/register': (context) => SignUpPage(), //register
-        '/register2': (context) => SignUpNamePage(), //register name check
-        '/main': (context) => BottomNavigation(), // main
-        '/profile': (context) => ProfilePage(), // profile
-        '/trend': (context) => TrendPage(), // trend
-        '/chatroom': (context) => ChatroomPage(),
-        '/notice': (context) => NoticePage(),
-        '/notice_write': (context) => NoticeWritePage(),
-        '/notice_detail': (context) => NoticeDetailPage(),
+        title: 'HWA',
+        theme: ThemeData.light(),
+        home: MainPage(),
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        routes: {
+            '/login': (context) => SignInPage(),  // login
+            '/register': (context) => SignUpPage(), //register
+            '/register2': (context) => SignUpNamePage(), //register name check
+            '/main': (context) => BottomNavigation(), // main
+            '/profile': (context) => ProfilePage(), // profile
+            '/trend': (context) => TrendPage(), // trend
+            '/chatroom': (context) => ChatroomPage(),
+            '/notice': (context) => NoticePage(),
+            '/notice_write': (context) => NoticeWritePage(),
+            '/notice_detail': (context) => NoticeDetailPage(),
         }
     );
   }
