@@ -15,8 +15,6 @@ class SetUserDataOnline {
                 businessCard: "assets/images/businesscard.png",
                 userIntro: "안녕하세요. 강희근입니다.",
                 addFriend: true,
-                isHost: false,
-                isMe: false
             ),
             ChatUserInfo(
                 nick: "김영서",
@@ -26,8 +24,6 @@ class SetUserDataOnline {
                 businessCard: "",
                 userIntro: ".",
                 addFriend: false,
-                isHost: false,
-                isMe: false
             ),
             ChatUserInfo(
                 nick: "뱍지원",
@@ -37,8 +33,6 @@ class SetUserDataOnline {
                 businessCard: "assets/images/businesscard.png",
                 userIntro: "안녕하세요. 강희근입니다2.",
                 addFriend: true,
-                isHost: false,
-                isMe: false
             )
         ];
 

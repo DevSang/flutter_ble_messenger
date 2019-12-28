@@ -1,3 +1,4 @@
+import 'package:Hwa/data/models/chat_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +12,7 @@ import 'package:Hwa/pages/parts/set_user_data_online.dart';
 import 'package:Hwa/pages/parts/set_user_data_view.dart';
 import 'package:Hwa/pages/chatroom_setting.dart';
 
-//TODO: Host 여부에 따른 Setting
+//TODO: Host 여부에 따른 Setting, Liked에 따른 하트 아이콘
 /*
  * @project : HWA - Mobile
  * @author : hs
@@ -19,19 +20,19 @@ import 'package:Hwa/pages/chatroom_setting.dart';
  * @description : 단화방 사이드 메뉴
  */
 class ChatSideMenu extends StatefulWidget {
-    final bool isLike;
-    ChatSideMenu({Key key, @required this.isLike});
+    final ChatInfo chatInfo;
+    ChatSideMenu({Key key, @required this.chatInfo});
 
     @override
-    State createState() => new ChatSideMenuState(isLike: isLike);
+    State createState() => new ChatSideMenuState(chatInfo: chatInfo);
 }
 
 
 class ChatSideMenuState extends State<ChatSideMenu> {
-    ChatSideMenuState({Key key, @required this.isLike});
+    ChatSideMenuState({Key key, @required this.chatInfo});
 
     // 현재 채팅 좋아요 TODO: 추후 맵핑
-    final bool isLike;
+    final ChatInfo chatInfo;
     BoxDecoration likeCondition;
 
     // 현재 채팅 참여유저 TODO: 추후 맵핑
@@ -66,7 +67,8 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     @override
     void initState() {
         super.initState();
-        isLike ? likeCondition = likeChat(context) : likeCondition = unlikeChat(context);
+        //TODO::: 좋아요 맵핑
+        true ? likeCondition = likeChat(context) : likeCondition = unlikeChat(context);
     }
     
     @override
@@ -187,9 +189,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                         Flexible(
                             child: ListView(
                                 children: <Widget>[
-                                    ChatUserList(userInfoList: userInfoListBLE),
-                                    ChatUserList(userInfoList: userInfoListOnline),
-                                    ChatUserList(userInfoList: userInfoListView),
+                                    ChatUserList(userInfoList: userInfoListBLE, hostIdx: chatInfo.createUserIdx),
+                                    ChatUserList(userInfoList: userInfoListOnline, hostIdx: chatInfo.createUserIdx),
+                                    ChatUserList(userInfoList: userInfoListView, hostIdx: chatInfo.createUserIdx),
                                 ],
                             ),
                         ),
