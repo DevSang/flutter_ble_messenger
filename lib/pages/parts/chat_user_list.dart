@@ -10,9 +10,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:Hwa/data/models/chat_user_info.dart';
 import 'package:Hwa/utility/cached_image_utility.dart';
 
+import 'package:Hwa/constant.dart';
+
 class ChatUserList extends StatefulWidget {
     final List<ChatUserInfo> userInfoList;
-    ChatUserList({Key key, @required this.userInfoList}) : super(key: key);
+    final int hostIdx;
+
+    ChatUserList({Key key, @required this.userInfoList, this.hostIdx}) : super(key: key);
 
     @override
     State createState() => new ChatUserListState();
@@ -22,8 +26,6 @@ class ChatUserList extends StatefulWidget {
 class ChatUserListState extends State<ChatUserList> {
     // 현재 채팅 Advertising condition
     bool openedList;
-    // 자신의 방장여부
-    bool isHost;
 
     //About image
     Future<File> profileImageFile;
@@ -42,8 +44,6 @@ class ChatUserListState extends State<ChatUserList> {
     void initState() {
         super.initState();
         openedList = true;
-        //TODO: 방장 여부 맵핑
-        isHost = false;
     }
 
     @override
@@ -138,7 +138,7 @@ class ChatUserListState extends State<ChatUserList> {
                                    shrinkWrap: true,
                                    itemCount: widget.userInfoList.length,
                                    itemBuilder: (BuildContext context, int index){
-                                       return BuildUserInfo(isHost: isHost, userInfo: widget.userInfoList[index], setUserProfileImage: setUserProfileImage);
+                                       return BuildUserInfo(hostIdx: widget.hostIdx, userInfo: widget.userInfoList[index], setUserProfileImage: setUserProfileImage);
                                    }
                                ),
                           )
@@ -151,10 +151,12 @@ class ChatUserListState extends State<ChatUserList> {
 }
 
 class BuildUserInfo extends StatelessWidget {
-    final bool isHost;
+    final int hostIdx;
     final ChatUserInfo userInfo;
     final Function setUserProfileImage;
-    BuildUserInfo({Key key, @required this.isHost, this.userInfo, this.setUserProfileImage});
+
+    BuildUserInfo({Key key, @required this.hostIdx, this.userInfo, this.setUserProfileImage});
+
     @override
     Widget build(BuildContext context) {
         print(userInfo.nick + userInfo.profileImg.toString());
@@ -208,11 +210,11 @@ class BuildUserInfo extends StatelessWidget {
                             ],
                         )
                     ),
-                    // 방장 뱃지
-                    userInfo.isHost ? badgeHost : new Container(),
-
                     // 자신 뱃지
-                    userInfo.isMe ? badgeMe : new Container(),
+                    userInfo.userIdx == Constant.USER_IDX ? badgeMe : new Container(),
+
+                    // 방장 뱃지
+                    userInfo.userIdx == hostIdx ? badgeHost : new Container(),
                 ],
             ),
             onTap: (){
@@ -406,7 +408,7 @@ class BuildUserInfo extends StatelessWidget {
                                                     ,
                                                     userFunc("assets/images/icon/iconDirectChat.png", "1:1 채팅", null),
                                                     userFunc("assets/images/icon/iconBlock.png", "차단하기", null),
-                                                    isHost
+                                                    hostIdx  == Constant.USER_IDX
                                                         ? userFunc("assets/images/icon/iconEject.png", "내보내기", null)
                                                         : Container()
                                                 ],

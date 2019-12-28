@@ -31,9 +31,9 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 
         chatSettingUpdated.chatImg = chatSetting.chatImg;
         chatSettingUpdated.title = chatSetting.title;
-        chatSettingUpdated.intro = chatSetting.intro;
-        chatSettingUpdated.isPublic = chatSetting.isPublic;
-        chatSettingUpdated.inviteRange = chatSetting.inviteRange;
+//        chatSettingUpdated.intro = chatSetting.intro;
+//        chatSettingUpdated.isPublic = chatSetting.isPublic;
+//        chatSettingUpdated.inviteRange = chatSetting.inviteRange;
         chatSettingUpdated.mode = chatSetting.mode;
     }
 
@@ -178,9 +178,9 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
             child: Column(
                 children: <Widget>[
                     buildTextItem('단화방 이름', chatSettingUpdated.title),
-                    buildTextItem('단화방 소개', chatSettingUpdated.intro),
-                    buildSwitchItem('온라인 공개', chatSettingUpdated.isPublic),
-                    buildRangeItem('온라인 공개', chatSettingUpdated.inviteRange),
+//                    buildTextItem('단화방 소개', chatSettingUpdated.intro),
+//                    buildSwitchItem('온라인 공개', chatSettingUpdated.isPublic),
+//                    buildRangeItem('온라인 공개', chatSettingUpdated.inviteRange),
                 ],
             ),
         );
@@ -283,7 +283,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                             onChanged: (value) {
                                 print(value);
                                 setState(() {
-                                    chatSettingUpdated.isPublic = value;
+//                                    chatSettingUpdated.isPublic = value;
                                 });
                             },
                         ),

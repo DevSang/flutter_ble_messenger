@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io' show Platform;
 
 import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/utility/call_api.dart';
@@ -12,6 +14,7 @@ import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/parts/set_chat_list_data.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
 import 'package:Hwa/pages/trend_page.dart';
+import 'package:Hwa/pages/chatroom_page.dart';
 
 class HwaTab extends StatefulWidget {
   @override
@@ -43,37 +46,72 @@ class _HwaTabState extends State<HwaTab> {
    * @date : 2019-12-27
    * @description : 단화방 생성 Dialog
   */
-  void _displayDialog(BuildContext context) async {
+  void _displayIosDialog(BuildContext context) async {
     return showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(
-            '단화 생성하기'
+      child: new CupertinoAlertDialog(
+        title: Text(
+          '단화 생성하기'
+        ),
+        content: TextField(
+          controller: _textFieldController,
+          decoration: InputDecoration(
+            /// GPS 연동
+              hintText: _textFieldController.text
           ),
-          content: TextField(
-            controller: _textFieldController,
-            decoration: InputDecoration(
-              /// GPS 연동
-                hintText: _textFieldController.text
-            ),
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text('취소'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
           ),
-          actions: <Widget>[
-            new FlatButton(
-              child: new Text('취소'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            new FlatButton(
-              child: new Text('생성하기'),
-              onPressed: () {
-                _createChat(_textFieldController.text);
-              },
-            )
-          ]
-        );
-      }
+          new FlatButton(
+            child: new Text('생성하기'),
+            onPressed: () {
+              _createChat(_textFieldController.text);
+            },
+          )
+        ]
+      )
+    );
+  }
+
+  /*
+   * @author : hs
+   * @date : 2019-12-27
+   * @description : 단화방 생성 Dialog
+  */
+  void _displayAndroidDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      child: new AlertDialog(
+        title: Text(
+          '단화 생성하기'
+        ),
+        content: TextField(
+          controller: _textFieldController,
+          decoration: InputDecoration(
+            /// GPS 연동
+              hintText: _textFieldController.text
+          ),
+        ),
+        actions: <Widget>[
+          new FlatButton(
+            child: new Text('취소'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          new FlatButton(
+            child: new Text('생성하기'),
+            onPressed: () {
+              _createChat(_textFieldController.text);
+            },
+          )
+        ]
+      )
     );
   }
 
@@ -89,9 +127,18 @@ class _HwaTabState extends State<HwaTab> {
     try {
       String uri = "/danhwa/room?userIdx=" + userIdx + "&title=" + title;
       final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
-      print("##단화방 생성 : " + response.body);
+      print("### 단화방 생성 :: " + response.body);
+
+
+
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) {
+            return ChatroomPage(chatInfo: response.body);
+          })
+      );
+
     } catch (e) {
-      print("##error"+ e);
+      print("#### Error :: "+ e.toString());
     }
   }
 
@@ -122,7 +169,11 @@ class _HwaTabState extends State<HwaTab> {
                 child: InkWell(
                   child: Image.asset('assets/images/icon/navIconNew.png'),
                   onTap: () => {
-                    _displayDialog(context)
+                    if (Platform.isAndroid) {
+                      _displayAndroidDialog(context)
+                    } else if (Platform.isIOS) {
+                      _displayIosDialog(context)
+                    }
                   },
                 )
             ),
