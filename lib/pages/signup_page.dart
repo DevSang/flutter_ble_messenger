@@ -39,6 +39,9 @@ class _SignUpPageState extends State<SignUpPage>{
             )
         ),
         appBar: AppBar(
+            brightness: Brightness.light,
+            backgroundColor: Colors.white,
+            elevation: 0.0,
             leading: Padding(
             padding: EdgeInsets.only(left: 16),
             child: IconButton(
@@ -47,7 +50,6 @@ class _SignUpPageState extends State<SignUpPage>{
                 ),
             ),
             centerTitle: true,
-            backgroundColor: Colors.white,
             title: Text("회원가입",style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
             ),
             ),

@@ -28,6 +28,9 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         Widget build(BuildContext context) {
             return Scaffold(
                 appBar: AppBar(
+                    brightness: Brightness.light,
+                    backgroundColor: Colors.white,
+                    elevation: 0.0,
                     leading: Padding(
                         padding: EdgeInsets.only(left: 16),
                         child: IconButton(
@@ -36,7 +39,6 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                         ),
                     ),
                     centerTitle: true,
-                    backgroundColor: Colors.white,
                     title: Text("회원가입",style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
                     ),
                 ),
