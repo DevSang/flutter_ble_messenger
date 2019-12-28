@@ -25,8 +25,8 @@ class ChatListItem {
     factory ChatListItem.fromJSON (Map<String, dynamic> jsonData) {
         return ChatListItem (
             chatIdx : jsonData['roomIdx'],
-            chatImg : jsonData['title'] ?? "단화방 제목입니다.",
-            title : jsonData['roomImg'] ?? "assets/images/icon/appIcon.jpg",
+            chatImg : jsonData['roomImg'] ?? "assets/images/icon/appIcon.jpg",
+            title : jsonData['title'] ?? "단화방 제목입니다.",
             lat : jsonData['lat'],
             lon : jsonData['lon'],
             score : jsonData['score'] ?? 0,

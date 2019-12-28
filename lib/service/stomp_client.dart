@@ -47,7 +47,7 @@ class StompClient {
   /*
    * @author : hs
    * @date : 2019-12-28
-   * @description : Stomp 연결
+   * @description : WebSocket 연결
   */
   Future<void> connectWebSocket() async {
     var header = await setHeader();
@@ -84,7 +84,7 @@ class StompClient {
   /*
     * @author : hk
     * @date : 2019-12-20
-    * @description : WebSocket 접속 및 jwt 인증
+    * @description : Stomp 접속 및 jwt 인증
     */
   void connectStomp() {
     channel.sink.add("CONNECT" + NEWLINE +

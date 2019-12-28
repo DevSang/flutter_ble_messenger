@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:kvsql/kvsql.dart';
 import 'dart:io' show Platform;
 
 import 'package:Hwa/data/models/chat_list_item.dart';
@@ -26,7 +27,7 @@ class HwaTab extends StatefulWidget {
 
 class _HwaTabState extends State<HwaTab> {
   final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-  SharedPreferences spf;
+  SharedPreferences prefs;
 
   List<ChatListItem> chatList = <ChatListItem>[];
   Position _currentPosition;
@@ -36,7 +37,6 @@ class _HwaTabState extends State<HwaTab> {
   TextEditingController _textFieldController;
 
   bool isLoading;
-
 
   List<int> testGetChatList;
 
