@@ -311,7 +311,8 @@ class _HwaTabState extends State<HwaTab> {
           ),
           Container(
             child: Text(
-              "$_currentAddress",
+//              '$_currentAddress' ,
+              "위치정보가 없습니다.",
               style: TextStyle(
                 height: 1,
                 fontFamily: "NotoSans",
@@ -465,8 +466,7 @@ class _HwaTabState extends State<HwaTab> {
                                 right: ScreenUtil().setWidth(5),
                               ),
                               child: Text(
-//                          GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime),
-                                "지금",
+                                GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime),
                                 style: TextStyle(
                                   height: 1,
                                   fontFamily: "NotoSans",

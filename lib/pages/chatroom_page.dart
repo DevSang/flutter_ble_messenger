@@ -33,14 +33,14 @@ import 'package:Hwa/pages/parts/chat_message_list.dart';
 class ChatroomPage extends StatefulWidget {
     final ChatInfo chatInfo;
 
-    ChatroomPage({Key key, @required this.chatInfo}) : super(key: key);
+    ChatroomPage({Key key, this.chatInfo}) : super(key: key);
 
     @override
     State createState() => new ChatScreenState(chatInfo: chatInfo);
 }
 
 class ChatScreenState extends State<ChatroomPage> {
-    ChatScreenState({Key key, @required this.chatInfo});
+    ChatScreenState({Key key, this.chatInfo});
 
     final ChatInfo chatInfo;
 
@@ -149,6 +149,7 @@ class ChatScreenState extends State<ChatroomPage> {
             });
         }
     }
+
 
     /*
      * @author : hs
