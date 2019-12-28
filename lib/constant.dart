@@ -1,7 +1,10 @@
+import 'package:Hwa/data/models/friend_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Constant {
+    //App 관련 변수
     static int USER_IDX;
+    static List<FriendInfo> FRIEND_LIST;
 
     static setUserIdx () async {
         var spf = await SharedPreferences.getInstance();
