@@ -3,6 +3,7 @@
 # Edit at https://www.gitignore.io/?templates=flutter
 
 ### custom ###
+.DS_Store
 .idea/
 .idea/libraries/Dart_Packages.xml
 .idea/libraries/Flutter_Plugins.xml
