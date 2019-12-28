@@ -14,38 +14,43 @@ class SignUpPage extends StatefulWidget {
   }
 
 class _SignUpPageState extends State<SignUpPage>{
-
+    FocusNode myFocusNode;
 
 
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      body: Container(
-        child: ListView(
-            children: <Widget>[
-              _regPhoneTextField(),
-              _regPhoneNumTextField(),
-              _regAuthCodeText(),
-              _regAuthTextField(),
-              _regNextButton(context),
-              ]
+        body: new GestureDetector(
+            onTap: (){
+                FocusScope.of(context).requestFocus(new FocusNode());
+            },
+            child: new Container(
+                child: ListView(
+                    children: <Widget>[
+                        _regPhoneTextField(),
+                        _regPhoneNumTextField(context, myFocusNode),
+                        _regAuthCodeText(),
+                        _regAuthTextField(myFocusNode),
+                        _regNextButton(context),
+                    ]
+                ),
+            )
         ),
-      ),
-      appBar: AppBar(
-        leading: Padding(
-          padding: EdgeInsets.only(left: 16),
-          child: IconButton(
-            icon: Image.asset("assets/images/icon/navIconClose.png"),
-            onPressed: () => Navigator.of(context).pop(null),
-          ),
-        ),
-      centerTitle: true,
-      backgroundColor: Colors.white,
-      title: Text("회원가입",style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
-      ),
-    ),
-      );
-  }
+        appBar: AppBar(
+            leading: Padding(
+            padding: EdgeInsets.only(left: 16),
+            child: IconButton(
+                    icon: Image.asset("assets/images/icon/navIconClose.png"),
+                    onPressed: () => Navigator.of(context).pop(null),
+                ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            title: Text("회원가입",style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
+            ),
+            ),
+        );
+    }
 }
 
 final TextEditingController phoneRegController = new TextEditingController();
@@ -65,7 +70,7 @@ Widget _regPhoneTextField(){
 }
 
 
-Widget _regPhoneNumTextField(){
+Widget _regPhoneNumTextField(BuildContext context, FocusNode myFocusNode){
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 15.0),
     child: TextFormField(
@@ -87,16 +92,20 @@ Widget _regPhoneNumTextField(){
         style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
         ),
         decoration: InputDecoration(
-          suffixIcon: RaisedButton(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-              ),
-            child: Text("인증문자 받기",style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
+          suffixIcon:
+            Container(
+                margin: EdgeInsets.only(right:5),
+                child :RaisedButton(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                  ),
+                child: Text("인증문자 받기",style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
+                ),
+                  color: Color.fromRGBO(77, 96, 191, 1),
+                  onPressed: () {
+                    registerCodeRequest(context, myFocusNode);
+              })
             ),
-              color: Color.fromRGBO(77, 96, 191, 1),
-              onPressed: () {
-                registerCodeRequest();
-              }),
           counterText:"",
           hintText: "휴대폰번호 ( -없이 숫자만 입력)",
           hintStyle: TextStyle(color: Colors.black38),
@@ -113,10 +122,11 @@ Widget _regPhoneNumTextField(){
 }
 
 
-registerCodeRequest() async {
-  print("phone number :: " +  phoneRegController.text);
-  String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
-  final response = await http.post(url,
+registerCodeRequest(BuildContext context, FocusNode myFocusNode) async {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    print("phone number :: " +  phoneRegController.text);
+    String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
+    final response = await http.post(url,
       headers: {
         'Content-Type':'application/json'
       },
@@ -151,12 +161,13 @@ Widget _regAuthCodeText(){
 
 
 
-Widget _regAuthTextField(){
+Widget _regAuthTextField(FocusNode myFocusNode){
   return Container(
     padding: EdgeInsets.symmetric(horizontal: 15.0),
     child: TextFormField(
-      maxLength: 6,
-      onChanged: (regAuthCode) {
+        focusNode: myFocusNode,
+        maxLength: 6,
+        onChanged: (regAuthCode) {
         print(regAuthCode);
       },
       onFieldSubmitted: (regAuthCode) {
