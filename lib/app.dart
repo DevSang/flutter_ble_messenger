@@ -19,44 +19,33 @@ class _MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    checkLoginStatus();
     firebaseCloudMessaging_Listeners();
+
+    new Future.delayed(
+        const Duration(seconds: 3),
+            () => checkLoginStatus()
+    );
+
     super.initState();
   }
 
+  
+
   checkLoginStatus() async {
-    sharedPreferences = await SharedPreferences.getInstance();
+      sharedPreferences = await SharedPreferences.getInstance();
 //    sharedPreferences.remove('token');
 
-    var token = sharedPreferences.getString("token");
-    var userIdx = sharedPreferences.getString("userIdx");
-    print("Token : " + token.toString());
-    print("userIdx : " + userIdx.toString());
+      var token = sharedPreferences.getString("token");
+      var userIdx = sharedPreferences.getString("userIdx");
+      print("Token : " + token.toString());
+      print("userIdx : " + userIdx.toString());
 
-    if(sharedPreferences.getString("token") == null) {
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
-    }
-    else {
-      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle.dark.copyWith(
-          statusBarColor: Colors.white,
-        )
-    );
-
-    ScreenUtil.instance =
-        ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
-
-    return Scaffold(
-      body: Container(
-        color: Colors.black
-      ),
-    );
+      if(sharedPreferences.getString("token") == null) {
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
+      }
+      else {
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
+      }
   }
 
   /*
@@ -68,21 +57,21 @@ class _MainPageState extends State<MainPage> {
       sharedPreferences = await SharedPreferences.getInstance();
 
       if (Platform.isIOS) iOS_Permission();
-        _firebaseMessaging.getToken().then((token) {
-          print('# FCM : token:' + token);
-          sharedPreferences.setString('pushToken', token);
+          _firebaseMessaging.getToken().then((token) {
+              print('# FCM : token:' + token);
+              sharedPreferences.setString('pushToken', token);
       });
 
     _firebaseMessaging.configure(
-      onMessage: (Map<String, dynamic> message) async {
-        print('on message $message');
-      },
-      onResume: (Map<String, dynamic> message) async {
-        print('on resume $message');
-      },
-      onLaunch: (Map<String, dynamic> message) async {
-        print('on launch $message');
-      },
+        onMessage: (Map<String, dynamic> message) async {
+            print('on message $message');
+        },
+        onResume: (Map<String, dynamic> message) async {
+            print('on resume $message');
+        },
+        onLaunch: (Map<String, dynamic> message) async {
+            print('on launch $message');
+        },
     );
   }
 
@@ -92,11 +81,35 @@ class _MainPageState extends State<MainPage> {
    * @description : FCM 수신 테스트 코드 삽입, TODO 소스코드 적용
    */
   void iOS_Permission() {
-    _firebaseMessaging.requestNotificationPermissions(
-        IosNotificationSettings(sound: true, badge: true, alert: true));
-    _firebaseMessaging.onIosSettingsRegistered
-        .listen((IosNotificationSettings settings) {
-      print("Settings registered: $settings");
-    });
+      _firebaseMessaging.requestNotificationPermissions(
+          IosNotificationSettings(sound: true, badge: true, alert: true));
+      _firebaseMessaging.onIosSettingsRegistered
+          .listen((IosNotificationSettings settings) {
+              print("Settings registered: $settings");
+      });
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle.dark.copyWith(
+          statusBarColor: Colors.white,
+        )
+    );
+
+    ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
+
+    return Scaffold(
+      body: Container(
+        width: ScreenUtil().setWidth(375),
+        height: ScreenUtil().setHeight(667),
+        color: Colors.black,
+        child:Image.asset(
+            "assets/images/splash.png",
+            fit: BoxFit.cover,
+        ),
+      ),
+    );
   }
 }

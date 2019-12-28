@@ -28,7 +28,6 @@ dependencies:
   firebase_messaging: ^6.0.9
   timeago: ^2.0.22
   lazy_load_scrollview: 1.0.1
-  flare_splash_screen:
 
 
 
@@ -65,6 +64,7 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/images/splash.png
     - assets/images/icon/appIcon.jpg
     - assets/images/icon/iconActionMenuOpen.png
     - assets/images/icon/iconAddress.png
