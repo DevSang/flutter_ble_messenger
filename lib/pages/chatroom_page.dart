@@ -89,11 +89,12 @@ class ChatScreenState extends State<ChatroomPage> {
         /// 단화방 정보 받아오기
         _getChatInfo();
 
-//        /// 단화방 참여
-//        _enterChat();
-//
-//        /// Stomp 초기화
-//        connectStomp();
+        /// 단화방 참여
+        _enterChat();
+
+        /// Stomp 초기화
+        connectStomp();
+
         isReceived = false;
 
         focusNode.addListener(onFocusChange);
@@ -176,9 +177,6 @@ class ChatScreenState extends State<ChatroomPage> {
                 isLoading = false;
             });
 
-            /// 단화방 참여
-            _enterChat();
-
         } catch (e) {
             print("#### Error :: "+ e.toString());
         }
@@ -194,10 +192,7 @@ class ChatScreenState extends State<ChatroomPage> {
         try {
             /// 참여 타입 수정
             String uri = "/danhwa/join?roomIdx=" + chatIdx.toString() + "&type=BLE_JOIN";
-            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
-            print("#######################################Stomp#########################");
-            /// Stomp 초기화
-            connectStomp();
+            await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
         } catch (e) {
             print("#### Error :: "+ e.toString());
@@ -211,16 +206,14 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     void connectStomp() async {
         // connect to MsgServer
-        StompClient(urlBackend: Constant.CHAT_SERVER_WS);
-        s.connectWebSocket();
-
-        prefs = await SharedPreferences.getInstance();
-        var userIdx = prefs.getString("userIdx");
+        s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
+        await s.connectWebSocket();
+        s.connectStomp();
 
         print("chatIdx :::: " + chatIdx.toString());
 
         // subscribe topic
-        s.subscribe(topic: "/sub/danhwa/" + chatIdx.toString(), roomIdx: chatIdx.toString()).stream.listen((HashMap data) =>
+        s.subscribe(topic: "/sub/danhwa/" + chatIdx.toString(), roomIdx: chatIdx.toString(), userIdx: Constant.USER_IDX.toString()).stream.listen((HashMap data) =>
             messageReceieved(data),
             onDone: () {
                 print("Listen Done");

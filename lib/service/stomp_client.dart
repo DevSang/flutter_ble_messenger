@@ -24,13 +24,19 @@ class StompClient {
   static const String NEWLINE = "\n";
   static const String END_CHAR = "\n\x00";
 
+  String urlBackend;
+  var onError;
+  var onDone;
+
   /*
    * @author : hk
    * @date : 2019-12-20
    * @description : Constructor
    */
   StompClient({@required urlBackend, onError, onDone}) {
-    connectStomp(urlBackend: urlBackend, onError: onError, onDone: onDone);
+    this.urlBackend = urlBackend;
+    this.onError = onError;
+    this.onDone = onDone;
 
     general = StreamController();
     _topics = HashMap();
@@ -41,9 +47,9 @@ class StompClient {
   /*
    * @author : hs
    * @date : 2019-12-28
-   * @description : Stomp 연결
+   * @description : WebSocket 연결
   */
-  void connectStomp({@required urlBackend, onError, onDone}) async {
+  Future<void> connectWebSocket() async {
     var header = await setHeader();
 
     print("###header" + header.toString());
@@ -55,6 +61,9 @@ class StompClient {
     channel.stream.listen((message) {
       _messageReceieved(message);
     }, onError: onError?? onError, onDone: onDone?? onDone);
+
+    return;
+
   }
 
   /*
@@ -75,9 +84,9 @@ class StompClient {
   /*
     * @author : hk
     * @date : 2019-12-20
-    * @description : WebSocket 접속 및 jwt 인증
+    * @description : Stomp 접속 및 jwt 인증
     */
-  void connectWebSocket() {
+  void connectStomp() {
     channel.sink.add("CONNECT" + NEWLINE +
 //        "Authorization:Bearer " + token + NEWLINE +
         "accept-version:1.1,1.0" + NEWLINE +
