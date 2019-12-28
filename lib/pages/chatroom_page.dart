@@ -211,16 +211,16 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     void connectStomp() async {
         // connect to MsgServer
-        StompClient(urlBackend: Constant.CHAT_SERVER_WS);
-        s.connectWebSocket();
+        s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
 
-        prefs = await SharedPreferences.getInstance();
-        var userIdx = prefs.getString("userIdx");
+        await s.connectWebSocket();
+
+        s.connectStomp();
 
         print("chatIdx :::: " + chatIdx.toString());
 
         // subscribe topic
-        s.subscribe(topic: "/sub/danhwa/" + chatIdx.toString(), roomIdx: chatIdx.toString()).stream.listen((HashMap data) =>
+        s.subscribe(topic: "/sub/danhwa/" + chatIdx.toString(), roomIdx: chatIdx.toString(), userIdx: Constant.USER_IDX.toString()).stream.listen((HashMap data) =>
             messageReceieved(data),
             onDone: () {
                 print("Listen Done");
