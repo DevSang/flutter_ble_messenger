@@ -17,6 +17,7 @@ import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
 import 'package:Hwa/pages/trend_page.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
+import 'package:Hwa/pages/parts/loading.dart';
 
 class HwaTab extends StatefulWidget {
   @override
@@ -34,14 +35,94 @@ class _HwaTabState extends State<HwaTab> {
   int count;
   TextEditingController _textFieldController;
 
+  bool isLoading;
+
+
+  List<int> testGetChatList;
+
   @override
   void initState() {
     super.initState();
     // TODO: 주변 채팅 리스트 받아오기
-//    chatList = ;
+    testGetChatList = [1,15,46,12,52];
+
+    _getChatList();
     sameSize  = GetSameSize().main();
     count = 0;
     _textFieldController = TextEditingController(text: '스타벅스 강남R점' + count.toString());
+
+    isLoading = false;
+  }
+
+  /*
+   * @author : hs
+   * @date : 2019-12-28
+   * @description : 채팅 리스트 API 요청
+  */
+  void _getChatList() {
+    testGetChatList.forEach((itemId) => _getChatItem(itemId));
+    Future.delayed(new Duration(seconds: 5), () {
+      _getChatItem(100);
+    });
+  }
+
+  /*
+   * @author : hs
+   * @date : 2019-12-28
+   * @description : 채팅 리스트 받아오기 API 호출
+  */
+  void _getChatItem(int chatIdx) async {
+    try {
+      String uri = "/danhwa/roomDetail?roomIdx=" + chatIdx.toString();
+
+      final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
+
+      Map<String, dynamic> jsonParse = json.decode(response.body);
+      ChatInfo chatInfo = new ChatInfo.fromJSON(jsonParse['danhwaRoom']);
+
+      print("complete1");
+      // 채팅 리스트에 추가
+      setState(() {
+        chatList.insert(0, chatInfo);
+        print("chatList :: " + chatList.length.toString());
+      });
+
+    } catch (e) {
+      print("#### Error :: "+ e.toString());
+    }
+  }
+
+  /*
+   * @author : hs
+   * @date : 2019-12-27
+   * @description : 단화방 생성 API 호출
+  */
+  void _createChat(String title) async {
+
+    try {
+      String uri = "/danhwa/room?title=" + title;
+      final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+      Map<String, dynamic> jsonParse = json.decode(response.body);
+      ChatInfo chatInfo = new ChatInfo.fromJSON(jsonParse);
+
+      // 채팅 리스트에 추가
+      setState(() {
+        chatList.insert(0, chatInfo);
+        print("chatList :: " + chatList.length.toString());
+      });
+
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) {
+            return ChatroomPage(chatInfo: chatInfo);
+          })
+      ).then((result) {
+        Navigator.of(context).pop();
+      });
+
+    } catch (e) {
+      print("#### Error :: "+ e.toString());
+    }
   }
 
   /*
@@ -118,41 +199,6 @@ class _HwaTabState extends State<HwaTab> {
     );
   }
 
-  /*
-   * @author : hs
-   * @date : 2019-12-27
-   * @description : 단화방 생성 API 호출
-  */
-  void _createChat(String title) async {
-    spf = await SharedPreferences.getInstance();
-    var userIdx = spf.getString("userIdx");
-
-    try {
-      String uri = "/danhwa/room?title=" + title;
-      final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
-
-      Map<String, dynamic> jsonParse = json.decode(response.body);
-      ChatInfo chatInfo = new ChatInfo.fromJSON(jsonParse);
-
-      // 채팅 리스트에 추가
-      setState(() {
-        chatList.insert(0, chatInfo);
-        print("chatList :: " + chatList.length.toString());
-      });
-
-      Navigator.push(context,
-        MaterialPageRoute(builder: (context) {
-          return ChatroomPage(chatInfo: chatInfo);
-        })
-      ).then((result) {
-        Navigator.of(context).pop();
-      });
-
-    } catch (e) {
-      print("#### Error :: "+ e.toString());
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
 
@@ -211,7 +257,7 @@ class _HwaTabState extends State<HwaTab> {
             getLocation(),
 
             // 채팅 리스트
-            buildChatList()
+            buildChatList(),
           ],
         ),
       )
@@ -390,7 +436,7 @@ class _HwaTabState extends State<HwaTab> {
                                 child: Row(
                                   children: <Widget>[
                                     Text(
-                                      chatListItem.userCount.toString(),
+                                      chatListItem.userCount.total.toString(),
                                       style: TextStyle(
                                         height: 1,
                                         fontFamily: "NanumSquare",
