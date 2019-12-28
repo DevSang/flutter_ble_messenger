@@ -33,6 +33,7 @@ class _SignInPageState extends State<SignInPage> {
 
     @override
   Widget build(BuildContext context) {
+
         return Scaffold(
       body: new GestureDetector(
         onTap: (){
@@ -62,11 +63,16 @@ class _SignInPageState extends State<SignInPage> {
       ),
       appBar: AppBar(
           centerTitle: true,
+          brightness: Brightness.light,
           backgroundColor: Colors.white,
+          elevation: 0.0,
           title: Text("HWA 로그인",
             style: TextStyle(
-                color: Colors.black, fontSize: 18, fontFamily: 'NotoSans'),
-          )),
+                color: Colors.black,
+                fontSize: 18,
+                fontFamily: 'NotoSans'),
+          ),
+      ),
     );
   }
 
