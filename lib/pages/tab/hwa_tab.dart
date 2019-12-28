@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:Hwa/data/models/chat_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -129,11 +132,13 @@ class _HwaTabState extends State<HwaTab> {
       final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
       print("### 단화방 생성 :: " + response.body);
 
+      Map<String, dynamic> param = Map<String, dynamic>.from(response.body);
 
+      ChatInfo chatInfo = new ChatInfo.fromJSON(param);
 
       Navigator.push(context,
           MaterialPageRoute(builder: (context) {
-            return ChatroomPage(chatInfo: response.body);
+            return ChatroomPage(chatInfo: chatInfo);
           })
       );
 
