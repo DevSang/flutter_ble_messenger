@@ -31,20 +31,21 @@ import 'package:Hwa/pages/parts/chat_message_list.dart';
  * @description : 채팅 페이지
  */
 class ChatroomPage extends StatefulWidget {
-    final ChatInfo chatInfo;
+    final int chatIdx;
+    ChatroomPage({Key key, this.chatIdx}) : super(key: key);
 
-    ChatroomPage({Key key, @required this.chatInfo}) : super(key: key);
 
     @override
-    State createState() => new ChatScreenState(chatInfo: chatInfo);
+    State createState() => new ChatScreenState(chatIdx: chatIdx);
 }
 
 class ChatScreenState extends State<ChatroomPage> {
-    ChatScreenState({Key key, @required this.chatInfo});
-
-    final ChatInfo chatInfo;
+    final int chatIdx;
+    ChatScreenState({Key key, this.chatIdx});
 
     SharedPreferences prefs;
+
+    ChatInfo chatInfo = new ChatInfo();
 
     File imageFile;
     bool isLoading;
@@ -81,15 +82,18 @@ class ChatScreenState extends State<ChatroomPage> {
     StompClient s;
     bool isReceived;
 
-    // TODO : 추후 서버에서 jwt 추출로 변경
-    String userIdx = "100";
-
     @override
     void initState() {
         super.initState();
 
-        /// Stomp 초기화
-        connectStomp();
+        /// 단화방 정보 받아오기
+        _getChatInfo();
+
+//        /// 단화방 참여
+//        _enterChat();
+//
+//        /// Stomp 초기화
+//        connectStomp();
         isReceived = false;
 
         focusNode.addListener(onFocusChange);
@@ -136,7 +140,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     void dispose() {
-        s.unsubscribe(topic: "/sub/danhwa/1");
+        s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
         s.disconnect();
         super.dispose();
     }
@@ -151,22 +155,72 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     /*
+       * @author : hs
+       * @date : 2019-12-28
+       * @description : 채팅 정보 받아오기 API 호출
+      */
+    void _getChatInfo() async {
+        setState(() {
+            isLoading = true;
+        });
+
+        try {
+            String uri = "/danhwa/roomDetail?roomIdx=" + chatIdx.toString();
+
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
+
+            Map<String, dynamic> jsonParse = json.decode(response.body);
+
+            setState(() {
+                chatInfo = new ChatInfo.fromJSON(jsonParse['danhwaRoom']);
+                isLoading = false;
+            });
+
+            /// 단화방 참여
+            _enterChat();
+
+        } catch (e) {
+            print("#### Error :: "+ e.toString());
+        }
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-28
+     * @description : 단화방 입장
+    */
+    void _enterChat() async {
+
+        try {
+            /// 참여 타입 수정
+            String uri = "/danhwa/join?roomIdx=" + chatIdx.toString() + "&type=BLE_JOIN";
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+            print("#######################################Stomp#########################");
+            /// Stomp 초기화
+            connectStomp();
+
+        } catch (e) {
+            print("#### Error :: "+ e.toString());
+        }
+    }
+
+    /*
      * @author : hs
      * @date : 2019-12-22
      * @description : topic 구독
     */
     void connectStomp() async {
         // connect to MsgServer
-        s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
+        StompClient(urlBackend: Constant.CHAT_SERVER_WS);
+        s.connectWebSocket();
 
         prefs = await SharedPreferences.getInstance();
         var userIdx = prefs.getString("userIdx");
 
-        print("chatIdx :::: " + chatInfo.chatIdx.toString());
-
+        print("chatIdx :::: " + chatIdx.toString());
 
         // subscribe topic
-        s.subscribe(topic: "/sub/danhwa/", roomIdx: chatInfo.chatIdx.toString(), userIdx: userIdx).stream.listen((HashMap data) =>
+        s.subscribe(topic: "/sub/danhwa/" + chatIdx.toString(), roomIdx: chatIdx.toString()).stream.listen((HashMap data) =>
             messageReceieved(data),
             onDone: () {
                 print("Listen Done");
@@ -281,7 +335,7 @@ class ChatScreenState extends State<ChatroomPage> {
         }
 
         final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
-        message = '{"type": "'+ sendType +'","roomIdx":1,"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
+        message = '{"type": "'+ sendType +'","roomIdx":' + chatIdx.toString() + ',"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
 
         /// MESSAGE SEND
         s.send(
@@ -330,6 +384,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     Widget build(BuildContext context) {
+
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
         return new Scaffold(
             appBar: new AppBar(
@@ -337,7 +392,7 @@ class ChatScreenState extends State<ChatroomPage> {
                     color: Color.fromRGBO(77, 96, 191, 1), //change your color here
                 ),
                 title: Text(
-                    chatInfo.title,
+                    chatInfo.title ?? " ",
                     style: TextStyle(
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,

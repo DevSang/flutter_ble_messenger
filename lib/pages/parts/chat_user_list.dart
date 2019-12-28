@@ -48,18 +48,18 @@ class ChatUserListState extends State<ChatUserList> {
 
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 750, height: 1334, allowFontScaling: true)..init(context);
+        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
 
         return new Container(
             color: Colors.white,
               child: Column(
                   children: <Widget>[
                       Container(
-                          width: ScreenUtil().setWidth(620),
-                          height: ScreenUtil().setWidth(64),
+                          width: ScreenUtil().setWidth(310),
+                          height: ScreenUtil().setWidth(32),
                           padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(40),
-                            right:   ScreenUtil().setWidth(36)
+                            left: ScreenUtil().setWidth(20),
+                            right:   ScreenUtil().setWidth(18)
                           ),
                           decoration: BoxDecoration(
                               color: Color.fromRGBO(240, 240, 240, 1),
@@ -87,22 +87,22 @@ class ChatUserListState extends State<ChatUserList> {
                                                   ),
                                                   style: TextStyle(
                                                       height: 1,
-                                                      fontSize: ScreenUtil().setSp(26),
+                                                      fontSize: ScreenUtil().setSp(13),
                                                       letterSpacing: ScreenUtil().setWidth(-0.33),
                                                       color: Color.fromRGBO(39, 39, 39, 1)
                                                   ),
                                               ),
                                               Container(
-                                                  height: ScreenUtil().setHeight(26),
+                                                  height: ScreenUtil().setHeight(13),
                                                   padding: EdgeInsets.only(
-                                                      left: ScreenUtil().setWidth(16),
-                                                      right: ScreenUtil().setWidth(16),
+                                                      left: ScreenUtil().setWidth(8),
+                                                      right: ScreenUtil().setWidth(8),
                                                   ),
                                                   child: Text(
                                                       widget.userInfoList.length.toString(),
                                                       style: TextStyle(
                                                           height: 1,
-                                                          fontSize: ScreenUtil().setSp(26),
+                                                          fontSize: ScreenUtil().setSp(13),
                                                           letterSpacing: ScreenUtil().setWidth(-0.33),
                                                           color: Color.fromRGBO(107, 107, 107, 1)
                                                       ),
@@ -112,7 +112,7 @@ class ChatUserListState extends State<ChatUserList> {
                                       )
                                   ),
                                   Container(
-                                      width: ScreenUtil().setWidth(40),
+                                      width: ScreenUtil().setWidth(20),
                                       child: FlatButton(
                                           onPressed:(){
                                               setState(() {
@@ -166,15 +166,15 @@ class BuildUserInfo extends StatelessWidget {
                 children: <Widget>[
                     Container(
                         padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(40),
-                            right: ScreenUtil().setWidth(36)
+                            left: ScreenUtil().setWidth(20),
+                            right: ScreenUtil().setWidth(18)
                         ),
-                        height: ScreenUtil().setHeight(104),
+                        height: ScreenUtil().setHeight(52),
                         child: Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                                 Container(
-                                    width: ScreenUtil().setWidth(504),
+                                    width: ScreenUtil().setWidth(252),
                                     child: Row(
                                         children: <Widget>[
                                             // 프로필 이미지
@@ -183,20 +183,20 @@ class BuildUserInfo extends StatelessWidget {
                                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
                                                     child: Image.asset(
                                                         "assets/images/profile_img.png",
-                                                        width: ScreenUtil().setWidth(80),
-                                                        height: ScreenUtil().setWidth(80),
+                                                        width: ScreenUtil().setWidth(40),
+                                                        height: ScreenUtil().setWidth(40),
                                                     )
                                                  )
                                             ),
                                             Container(
                                                 padding: EdgeInsets.only(
-                                                    left: ScreenUtil().setWidth(21)
+                                                    left: ScreenUtil().setWidth(10.5)
                                                 ),
                                                 child: Text(
                                                     userInfo.nick,
                                                     style: TextStyle(
                                                         height: 1,
-                                                        fontSize: ScreenUtil().setSp(26),
+                                                        fontSize: ScreenUtil().setSp(13),
                                                         letterSpacing: ScreenUtil().setWidth(-0.33),
                                                         color: Color.fromRGBO(39, 39, 39, 1)
                                                     ),
@@ -225,8 +225,8 @@ class BuildUserInfo extends StatelessWidget {
     }
 
     Widget contactIcon = new Container(
-        width: ScreenUtil().setWidth(40),
-        height: ScreenUtil().setHeight(40),
+        width: ScreenUtil().setWidth(20),
+        height: ScreenUtil().setHeight(20),
         decoration: BoxDecoration(
             image: DecorationImage(
                 image:AssetImage("assets/images/icon/iconAddress.png")
@@ -235,12 +235,12 @@ class BuildUserInfo extends StatelessWidget {
     );
 
     Widget badgeHost = new Positioned(
-        top: ScreenUtil().setHeight(40),
-        left: ScreenUtil().setWidth(15),
+        top: ScreenUtil().setHeight(20),
+        left: ScreenUtil().setWidth(7.5),
         child: GestureDetector(
             child: Container(
-                width: ScreenUtil().setWidth(40),
-                height: ScreenUtil().setHeight(40),
+                width: ScreenUtil().setWidth(20),
+                height: ScreenUtil().setHeight(20),
                 decoration: BoxDecoration(
                     color: Color.fromRGBO(77, 96, 191, 1),
                     image: DecorationImage(
@@ -253,12 +253,12 @@ class BuildUserInfo extends StatelessWidget {
     );
 
     Widget badgeMe = new Positioned(
-        top: ScreenUtil().setHeight(40),
-        left: ScreenUtil().setWidth(15),
+        top: ScreenUtil().setHeight(20),
+        left: ScreenUtil().setWidth(7.5),
         child: GestureDetector(
             child: Container(
-                width: ScreenUtil().setWidth(40),
-                height: ScreenUtil().setHeight(40),
+                width: ScreenUtil().setWidth(20),
+                height: ScreenUtil().setHeight(20),
                 decoration: BoxDecoration(
                     color: Colors.orange,
                     shape: BoxShape.circle
@@ -270,7 +270,7 @@ class BuildUserInfo extends StatelessWidget {
                         style: TextStyle(
                             height: 1,
                             color: Colors.white,
-                            fontSize: ScreenUtil().setWidth(20)
+                            fontSize: ScreenUtil().setWidth(10)
                         ),
                     )
                 )
@@ -282,29 +282,29 @@ class BuildUserInfo extends StatelessWidget {
         showModalBottomSheet(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(ScreenUtil().setWidth(30)),
-                    topRight: Radius.circular(ScreenUtil().setWidth(30)),
+                    topLeft: Radius.circular(ScreenUtil().setWidth(15)),
+                    topRight: Radius.circular(ScreenUtil().setWidth(15)),
                 ),
             ),
             context: context,
             builder: (builder) {
                 return Container(
-                    height: ScreenUtil().setHeight(598),
+                    height: ScreenUtil().setHeight(299),
                     decoration: BoxDecoration(
                     ),
                     child: Column(
                         children: <Widget>[
                             Container(
-                                width: ScreenUtil().setWidth(750),
-                                height: ScreenUtil().setHeight(104),
+                                width: ScreenUtil().setWidth(375),
+                                height: ScreenUtil().setHeight(52),
                                 padding: EdgeInsets.only(
-                                    left: ScreenUtil().setWidth(36),
-                                    right: ScreenUtil().setWidth(36)
+                                    left: ScreenUtil().setWidth(18),
+                                    right: ScreenUtil().setWidth(18)
                                 ),
                                 decoration: BoxDecoration(
                                     border: Border(
                                         bottom: BorderSide(
-                                            width: ScreenUtil().setWidth(2),
+                                            width: ScreenUtil().setWidth(1),
                                             color: Color.fromRGBO(39, 39, 39, 0.15)
                                         )
                                     )
@@ -313,8 +313,8 @@ class BuildUserInfo extends StatelessWidget {
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                         Container(
-                                            width: ScreenUtil().setWidth(54),
-                                            height: ScreenUtil().setHeight(54),
+                                            width: ScreenUtil().setWidth(27),
+                                            height: ScreenUtil().setHeight(27),
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image:AssetImage(
@@ -330,15 +330,15 @@ class BuildUserInfo extends StatelessWidget {
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     height: 1,
-                                                    fontSize: ScreenUtil().setSp(32),
+                                                    fontSize: ScreenUtil().setSp(16),
                                                     letterSpacing: ScreenUtil().setWidth(-0.8),
                                                     color: Color.fromRGBO(39, 39, 39, 1)
                                                 ),
                                             )
                                         ),
                                         Container(
-                                            width: ScreenUtil().setWidth(40),
-                                            height: ScreenUtil().setHeight(40),
+                                            width: ScreenUtil().setWidth(20),
+                                            height: ScreenUtil().setHeight(20),
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image:AssetImage("assets/images/icon/iconClosePopup.png")
@@ -354,24 +354,24 @@ class BuildUserInfo extends StatelessWidget {
                                 )
                             ),
                             Container(
-                                height: ScreenUtil().setHeight(492),
+                                height: ScreenUtil().setHeight(246),
                                 child: Column(
                                     children: <Widget>[
                                         GestureDetector(
                                             child: Container(
-                                                width: ScreenUtil().setWidth(180),
-                                                height: ScreenUtil().setWidth(180),
+                                                width: ScreenUtil().setWidth(90),
+                                                height: ScreenUtil().setWidth(90),
                                                 margin: EdgeInsets.only(
-                                                    top: ScreenUtil().setHeight(32),
-                                                    bottom: ScreenUtil().setHeight(26),
+                                                    top: ScreenUtil().setHeight(16),
+                                                    bottom: ScreenUtil().setHeight(13),
                                                 ),
                                                 child: ClipRRect(
-                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(35)),
                                                     child:
                                                         Image.asset(
                                                             "assets/images/profile_img.png",
-                                                            width: ScreenUtil().setWidth(80),
-                                                            height: ScreenUtil().setWidth(80),
+                                                            width: ScreenUtil().setWidth(40),
+                                                            height: ScreenUtil().setWidth(40),
                                                         ),
                                                 )
                                             ),onTap: () {
@@ -379,25 +379,25 @@ class BuildUserInfo extends StatelessWidget {
                                             },
                                         ),
                                         Container(
-                                            height: ScreenUtil().setHeight(24),
+                                            height: ScreenUtil().setHeight(12),
                                             child: Text(
                                                 userInfo.userIntro,
                                                 style: TextStyle(
                                                     height: 1,
-                                                    fontSize: ScreenUtil().setSp(26),
+                                                    fontSize: ScreenUtil().setSp(13),
                                                     letterSpacing: ScreenUtil().setWidth(-0.33),
                                                     color: Color.fromRGBO(107, 107, 107, 1)
                                                 ),
                                             )
                                         ),
                                         Container(
-                                            width: ScreenUtil().setWidth(718),
+                                            width: ScreenUtil().setWidth(359),
                                             padding: EdgeInsets.only(
-                                                left: ScreenUtil().setWidth(16),
-                                                right: ScreenUtil().setWidth(16),
+                                                left: ScreenUtil().setWidth(8),
+                                                right: ScreenUtil().setWidth(8),
                                             ),
                                             margin: EdgeInsets.only(
-                                                top: ScreenUtil().setHeight(42),
+                                                top: ScreenUtil().setHeight(21),
                                             ),
                                             child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -426,16 +426,16 @@ class BuildUserInfo extends StatelessWidget {
 
     Widget userFunc(String iconSrc, String title,Function fn) {
         return new Container(
-            width: ScreenUtil().setWidth(179.5),
+            width: ScreenUtil().setWidth(89.75),
             child: Column(
                 children: <Widget>[
                     GestureDetector(
                         child: Container(
                             margin: EdgeInsets.only(
-                                bottom: ScreenUtil().setHeight(18),
+                                bottom: ScreenUtil().setHeight(9),
                             ),
-                            width: ScreenUtil().setWidth(100),
-                            height: ScreenUtil().setHeight(100),
+                            width: ScreenUtil().setWidth(50),
+                            height: ScreenUtil().setHeight(50),
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(210, 217, 250, 1),
                                 image: DecorationImage(
@@ -449,13 +449,13 @@ class BuildUserInfo extends StatelessWidget {
                         }
                     ),
                     Container(
-                        height: ScreenUtil().setHeight(24),
+                        height: ScreenUtil().setHeight(12),
                         child:
                         Text(
                             title,
                             style: TextStyle(
                                 height: 1,
-                                fontSize: ScreenUtil().setSp(26),
+                                fontSize: ScreenUtil().setSp(13),
                                 letterSpacing: ScreenUtil().setWidth(-0.33),
                                 color: Color.fromRGBO(107, 107, 107, 1)
                             ),
