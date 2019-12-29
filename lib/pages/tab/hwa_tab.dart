@@ -55,6 +55,7 @@ class _HwaTabState extends State<HwaTab> {
 
         isLoading = false;
 
+        // 현재 위치 검색
         _getCurrentLocation();
 
     }
@@ -94,12 +95,6 @@ class _HwaTabState extends State<HwaTab> {
 				    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
 			    });
 		    }
-
-
-		    placemark.forEach((p){
-			    print('# placemark : ' + p.toJson().toString());
-
-		    });
 	    }
     }
 
