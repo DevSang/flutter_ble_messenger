@@ -174,9 +174,6 @@ class _SignInPageState extends State<SignInPage> {
                 body: jsonEncode(requestData)
             );
 
-            var data = jsonDecode(response.body);
-            String message = data['message'];
-
             if (response.statusCode == 200 || response.statusCode == 202) {
                 print("#Auth code requset info :" + response.body);
                 print("#인증문자 요청에 성공하였습니다.");
