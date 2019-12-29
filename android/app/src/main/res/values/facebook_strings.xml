@@ -1,4 +1,5 @@
 <resources>
+    <string name="app_name">HWA</string>
     <string name="facebook_app_id">1596664447155921</string>
     <string name="fb_login_protocol_scheme">fb1596664447155921</string>
 </resources>

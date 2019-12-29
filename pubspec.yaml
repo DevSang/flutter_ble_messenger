@@ -30,8 +30,7 @@ dependencies:
   lazy_load_scrollview: 1.0.1
   kvsql: ^0.3.0
   sqlcool: ^4.2.0
-#  flutter_kakao_login: "^0.5.0"
-  kakao_flutter_sdk: ^0.3.2
+  flutter_facebook_login: 3.0.0
 
 
 #  flutter_kakao_login:
