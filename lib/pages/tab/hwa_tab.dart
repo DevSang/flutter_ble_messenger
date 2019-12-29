@@ -47,20 +47,15 @@ class _HwaTabState extends State<HwaTab> {
     // BLE 관련
     final _beacons = <Beacon>[];
     final StreamController<BluetoothState> streamController = StreamController();
-    StreamSubscription<BluetoothState> _streamBluetooth;
-    StreamSubscription<RangingResult> _streamRanging;
-    StreamSubscription<MonitoringResult> _streamMonitoring;
-    String _platformVersion = 'Unknown';
-    BeaconStatus _beaconStatus;
-    AuthorizationStatus _authorizationStatus;
-    BluetoothState _bluetoothState;
-    bool _ranging = false;
-    bool _monitoring = false;
 
     @override
     void initState() {
         super.initState();
         _initState();
+
+        isLoading = false;
+        sameSize  = GetSameSize().main();
+        _textFieldController = TextEditingController(text: '스타벅스 강남R점');
     }
 
     void _initState() async {
@@ -68,12 +63,8 @@ class _HwaTabState extends State<HwaTab> {
 
         // BLE Scanning API 초기화
         HwaBeacon().initializeScanning();
-        // BLE Status 초기화
-        _initBleStatus();
-
-        isLoading = false;
-        sameSize  = GetSameSize().main();
-        _textFieldController = TextEditingController(text: '스타벅스 강남R점');
+        // BLE Scan start
+        _scanBLE();
 
         // 현재 위치 검색
         _getCurrentLocation();
@@ -341,52 +332,11 @@ class _HwaTabState extends State<HwaTab> {
     /*
      * @author : hs
      * @date : 2019-12-29
-     * @description : BLE Status Initialize
-    */
-    Future<void> _initBleStatus() async {
-        String platformVersion;
-        try {
-            platformVersion = await HwaBeacon().getPlatformVersion();
-        } on PlatformException {
-            platformVersion = 'Failed to get platform version.';
-        }
-
-        print("platformVersion ::: " + platformVersion.toString());
-
-        BeaconStatus st;
-        st = await HwaBeacon().checkTxSupported();
-
-        print("st ::: " + st.toString());
-
-        AuthorizationStatus ast;
-        ast = await HwaBeacon().getAuthorizationStatus();
-
-        print("ast ::: " + ast.toString());
-
-        BluetoothState bst = await HwaBeacon().getBluetoothState();
-
-        print("bst ::: " + bst.toString());
-
-        if (!mounted) return;
-
-        setState(() {
-            _platformVersion = platformVersion;
-            _beaconStatus = st;
-            _authorizationStatus = ast;
-            _bluetoothState = bst;
-        });
-
-        _scanBLE();
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-29
      * @description : BLE Scan
     */
     void _scanBLE() {
         setState(() {
-            _streamRanging = HwaBeacon()
+            HwaBeacon()
                 .subscribeRangingHwa()
                 .listen((RangingResult result) {
                     print("Scaning!!! " + result.toString());

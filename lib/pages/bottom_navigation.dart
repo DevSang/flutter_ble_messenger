@@ -14,7 +14,7 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  final List<Widget> list = List();
+  final List<Widget> list = <Widget>[];
   int _currentIndex = 0;
   @override
   void initState() {
