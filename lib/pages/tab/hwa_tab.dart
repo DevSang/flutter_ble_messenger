@@ -62,7 +62,8 @@ class _HwaTabState extends State<HwaTab> {
         await Constant.setUserIdx();
 
         // BLE Scanning API 초기화
-        HwaBeacon().initializeScanning();
+        await HwaBeacon().initializeScanning();
+        print("finish initialize");
         // BLE Scan start
         _scanBLE();
 
@@ -336,25 +337,27 @@ class _HwaTabState extends State<HwaTab> {
      * @date : 2019-12-29
      * @description : BLE Scan
     */
-    void _scanBLE() {
-        setState(() {
-            HwaBeacon()
-                .subscribeRangingHwa()
-                .listen((RangingResult result) {
-                    print("Scaning!!! " + result.toString());
-                if (result != null && result.beacons.isNotEmpty && mounted) {
-                    setState(() {
-                        result.beacons.forEach((beacon) {
-                            developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-                            if (!chatIdxList.contains(beacon.roomId))  {
-                                _getChatItem(beacon.roomId);
-                            }
-                        });
+    void _scanBLE() async {
+
+        HwaBeacon().initializeScanning();
+
+        HwaBeacon()
+            .subscribeRangingHwa()
+            .listen((RangingResult result) {
+            print("Scaning!!! " + result.toString());
+            if (result != null && result.beacons.isNotEmpty && mounted) {
+                setState(() {
+                    result.beacons.forEach((beacon) {
+                        developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
+                        if (!chatIdxList.contains(beacon.roomId))  {
+                            _getChatItem(beacon.roomId);
+                        }
                     });
-                }
-            });
-            HwaBeacon().startRanging();
+                });
+            }
         });
+
+        HwaBeacon().startRanging();
     }
 
     @override
