@@ -74,6 +74,12 @@ class _HwaTabState extends State<HwaTab> {
         _getChatList();
     }
 
+    @override
+    void dispose() {
+        HwaBeacon().stopRanging();
+        super.dispose();
+    }
+
     /*
      * @author : hk
      * @date : 2019-12-29
