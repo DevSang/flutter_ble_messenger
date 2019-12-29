@@ -57,9 +57,12 @@ class _HwaTabState extends State<HwaTab> {
     bool _monitoring = false;
 
     @override
-    void initState() async {
+    void initState() {
         super.initState();
+        _initState();
+    }
 
+    void _initState() async {
         await Constant.setUserIdx();
 
         // BLE Scanning API 초기화
