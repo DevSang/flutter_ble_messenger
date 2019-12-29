@@ -16,7 +16,7 @@ dependencies:
   alphabet_list_scroll_view:
   faker:
   flutter_slidable:
-  geolocator:
+  geolocator: ^5.1.5
   flutter_screenutil: ^0.7.0
   expandable: ^4.0.1
   fluttertoast: ^3.1.3
