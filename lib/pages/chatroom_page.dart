@@ -122,8 +122,10 @@ class ChatScreenState extends State<ChatroomPage> {
     void checkAd() async {
         bool advertising = await HwaBeacon().isAdvertising();
 
-        if (advertising)
+        if (advertising) {
             await HwaBeacon().stopAdvertising();
+            await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+        }
         else
             await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
     }
