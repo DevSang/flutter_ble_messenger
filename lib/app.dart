@@ -26,7 +26,7 @@ class _MainPageState extends State<MainPage> {
 
     @override
     void initState() {
-//        clearLocalStorageForTest();
+        clearLocalStorageForTest();
 
         //Constant init
         Constant.setUserIdx();

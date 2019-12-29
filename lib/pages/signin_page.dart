@@ -4,12 +4,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/utility/social_signin.dart';
 import 'dart:convert';
 import 'package:Hwa/utility/red_toast.dart';
 //import 'package:flutter_kakao_login/flutter_kakao_login.dart';
 //import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:Hwa/pages/signup_page.dart';
 
 //로그인 page
 class SignInPage extends StatefulWidget {
@@ -22,6 +23,7 @@ class _SignInPageState extends State<SignInPage> {
     final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
     SharedPreferences spf;
     FocusNode contextFocus;
+
     String phone_number, auth_number;
 
     GoogleSignInAccount _currentUser;
@@ -56,24 +58,6 @@ class _SignInPageState extends State<SignInPage> {
         }
     }
 
-    String _pickFirstNamedContact(Map<String, dynamic> data) {
-        final List<dynamic> connections = data['connections'];
-        final Map<String, dynamic> contact = connections?.firstWhere(
-                (dynamic contact) => contact['names'] != null,
-            orElse: () => null,
-        );
-        if (contact != null) {
-            final Map<String, dynamic> name = contact['names'].firstWhere(
-                    (dynamic name) => name['displayName'] != null,
-                orElse: () => null,
-            );
-            if (name != null) {
-                return name['displayName'];
-            }
-        }
-        return null;
-    }
-
 //  void kakaoLogin() async {
 //	  FlutterKakaoLogin kakaoSignIn = new FlutterKakaoLogin();
 //	  final KakaoLoginResult result = await kakaoSignIn.logIn();
@@ -93,13 +77,60 @@ class _SignInPageState extends State<SignInPage> {
 //
 //  }
 
-//	void kakaoLogin() async {
-//		String authCode = await AuthCodeClient.instance.requestWithTalk();
-//
-//		print("success;");
-//		print("authCode $authCode");
-//
-//	}
+	void facebookLogin() async {
+		final facebookLogin = FacebookLogin();
+		final result = await facebookLogin.logIn(["email"]);
+
+		switch (result.status) {
+			case FacebookLoginStatus.loggedIn:
+
+				print("# facebookLogin" + result.accessToken.token);
+                final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${result.accessToken.token}');
+                final profile = json.decode(graphResponse.body);
+
+                String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
+                final response = await http.post(url,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: jsonEncode({
+                        "login_type" : "facebook",
+                        "token" : result.accessToken.token.toString()
+                    })
+                );
+
+                var data = jsonDecode(response.body);
+                var message = data['message'].toString();
+
+                if (response.statusCode == 200) {
+                    print("#로그인에 성공하였습니다.");
+                    print("#로그인정보 :" + response.body);
+                    RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+                    pushTokenRequest();
+                    Navigator.pushNamed(context, '/main');
+
+                } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
+                    RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
+                    print('${response.statusCode}');
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                            return SignUpPage(socialId: profile['id'].toString(),socialType: "facebook", accessToken: result.accessToken.token.toString());
+                        })
+                    );
+                } else {
+                    print('${response.statusCode}');
+                    RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+                }
+				break;
+			case FacebookLoginStatus.cancelledByUser:
+				print("# facebookLogin cancelledByUser");
+				break;
+			case FacebookLoginStatus.error:
+				print("# facebookLogin" + result.errorMessage);
+				break;
+		}
+	}
 
   @override
   Widget build(BuildContext context) {
@@ -351,7 +382,8 @@ class _SignInPageState extends State<SignInPage> {
                 final response = await http.post(url,
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'},
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: jsonEncode({
                         "phone_number": _phoneController.text,
                         "auth_number": _authCodeController.text
@@ -462,7 +494,7 @@ class _SignInPageState extends State<SignInPage> {
                     ],
                 ),
                 onPressed: () {
-
+                    facebookLogin();
                 },
             ),
             RaisedButton(

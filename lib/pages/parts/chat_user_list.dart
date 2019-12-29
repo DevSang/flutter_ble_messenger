@@ -159,8 +159,6 @@ class BuildUserInfo extends StatelessWidget {
 
     @override
     Widget build(BuildContext context) {
-        print(userInfo.nick + userInfo.profileImg.toString());
-
         return InkWell(
             child: Stack(
                 children: <Widget>[

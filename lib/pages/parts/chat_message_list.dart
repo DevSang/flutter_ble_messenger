@@ -77,12 +77,8 @@ class ChatMessageElementsState extends State<ChatMessageList> {
             : chatMessage.chatType == "QUIT"
                 ? quitNotice(chatMessage)                                       // 퇴장 메세지
                 : receivedMsg
-                    ? receivedLayout(chatIndex, chatMessage)                    // 받은 메세지 - 모든 타입 메세지
-                    : chatMessage.chatType == "TALK"
-                        ? sendText(chatIndex, chatMessage, isLastSendMessage)   // 보낸 메세지 - 텍스트 메세지
-                        : chatMessage.chatType == "IMAGE"
-                            ? imageBubble(chatMessage, isLastSendMessage)       // 보낸 메세지 - 이미지 메세지
-                            : businessCardBubble(chatIndex, chatMessage);       // 보낸 메세지 - 서비스 메세지 (현재는 명함 서비스만)
+                    ? receivedLayout(chatIndex, chatMessage, isLastSendMessage) // 받은 메세지
+                    : sendLayout(chatIndex, chatMessage, isLastSendMessage);    // 보낸 메세지
 
         return Container(
             child: Row(
@@ -97,7 +93,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
     }
 
     // 받은 메세지 레이아웃 (프로필이미지, 이름, 시간)
-    Widget receivedLayout(int chatIndex, ChatMessage chatMessage) {
+    Widget receivedLayout(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage) {
 
         return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +116,30 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                             chatMessage.chatType == "TALK"
                                 ? receivedText(chatIndex, chatMessage)
                                 : chatMessage.chatType == "IMAGE"
-                            ,
+                                    ? imageBubble(chatMessage, isLastSendMessage, true)
+                                    : businessCardBubble(chatMessage, isLastSendMessage, true)
+                        ],
+                    )
+                )
+            ],
+        );
+    }
+
+    // 보낸 메세지 레이아웃 (프로필이미지, 이름, 시간)
+    Widget sendLayout(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage) {
+
+        return Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: <Widget>[
+                Expanded(
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: <Widget>[
+                            chatMessage.chatType == "TALK"
+                                ? sendText(chatIndex, chatMessage, isLastSendMessage)
+                                : chatMessage.chatType == "IMAGE"
+                                ? imageBubble(chatMessage, isLastSendMessage, false)
+                                : businessCardBubble(chatMessage, isLastSendMessage, false)
                         ],
                     )
                 )
@@ -391,112 +410,168 @@ class ChatMessageElementsState extends State<ChatMessageList> {
         );
     }
 
-    // 보낸 이미지 스타일
-    Widget imageBubble(ChatMessage chatMessage, bool isLastSendMessage) {
+    // 이미지 메세지 스타일
+    Widget imageBubble(ChatMessage chatMessage, bool isLastSendMessage, bool receivedMsg) {
         return Container(
             margin: EdgeInsets.only(
-                bottom:
-                isLastSendMessage
-                    ? ScreenUtil.getInstance().setHeight(14)
-                    : ScreenUtil.getInstance().setHeight(0)
+                top:
+                receivedMsg
+                    ? ScreenUtil.getInstance().setHeight(9)
+                    : ScreenUtil.getInstance().setHeight(0),
+                bottom: ScreenUtil.getInstance().setHeight(14)
             ),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: receivedMsg ? MainAxisAlignment.start : MainAxisAlignment.end,
                 children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.only(
-                            right: ScreenUtil.getInstance().setWidth(7),
-                            bottom: ScreenUtil.getInstance().setHeight(4)
-                        ),
-                        child: Text(
-                            GetTimeDifference.timeDifference(chatMessage.chatTime),
-                            style: TextStyle(
-                                fontFamily: "NanumSquare",
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: ScreenUtil.getInstance().setHeight(-0.28),
-                                fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                                color: Color.fromRGBO(39, 39, 39, 0.7)
-                            )
-                        ),
-                    ),
+                    !receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container() ,
                     GestureDetector(
                         child: Container(
                             child: ClipRRect(
                                 borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
                                 child: Image.asset(
 //                                chatMessage.message,
-                                    "assets/images/profile_img.png",
+                                    "assets/images/splash.png",
                                     width: ScreenUtil().setWidth(230),
                                 )
                             ),
                         ),
                         onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: "assets/images/profile_img.png")));
+                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: "assets/images/splash.png")));
                         },
-                    )
+                    ),
+                    receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
                 ],
             ),
         );
     }
 
     // 명함 메세지 말풍선 스타일
-    Widget businessCardBubble(int chatIndex, ChatMessage chatMessage) {
-        return
-        Container(
+    Widget businessCardBubble(ChatMessage chatMessage, bool isLastSendMessage, bool receivedMsg) {
+        return Container(
             margin: EdgeInsets.only(
+                top:
+                receivedMsg
+                    ? ScreenUtil.getInstance().setHeight(9)
+                    : ScreenUtil.getInstance().setHeight(0),
                 bottom: ScreenUtil.getInstance().setHeight(14)
             ),
-            child: Column(
+            child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                   Container(
-                        constraints: BoxConstraints(maxWidth: 115),
-                        padding: EdgeInsets.only(
-                            top: ScreenUtil().setHeight(10.5),
-                            bottom: ScreenUtil().setHeight(10.5),
-                            left: ScreenUtil().setWidth(14.5),
-                            right: ScreenUtil().setWidth(14.5),
-                        ),
-                        margin: EdgeInsets.only(
-                            right: ScreenUtil.getInstance().setWidth(7)
-                        ),
-                        child: Text(
-                            chatMessage.message,
-                            style: TextStyle(
-                                fontFamily: "NotoSans",
-                                fontWeight: FontWeight.w500,
-                                fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
-                                color: Color.fromRGBO(39, 39, 39, 0.96)
+                mainAxisAlignment: receivedMsg ? MainAxisAlignment.start : MainAxisAlignment.end,
+                children: <Widget>[
+                    // 시간 레이아웃 (보낸 메세지)
+                    !receivedMsg
+                        ? msgTime(chatMessage.chatTime, receivedMsg)
+                        : Container()
+                    ,
+                    GestureDetector(
+                        child: Container(
+                            width: ScreenUtil().setWidth(230),
+                            height: ScreenUtil.getInstance().setHeight(163),
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                    width: ScreenUtil().setWidth(1),
+                                    color: Color.fromRGBO(219, 219, 219, 1)
+                                ),
+                                borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(8)),
+                            ),
+                            child: Column(
+                                children: <Widget>[
+                                    Container(
+                                        width: ScreenUtil().setWidth(230),
+                                        height: ScreenUtil().setHeight(43),
+                                        padding: EdgeInsets.only(
+                                            left: ScreenUtil().setWidth(12.5),
+                                            right: ScreenUtil().setWidth(10),
+                                        ),
+                                        decoration: BoxDecoration(
+                                            border: Border(
+                                                bottom: BorderSide(
+                                                    width: ScreenUtil().setWidth(1),
+                                                    color: Color.fromRGBO(39, 39, 39, 0.15)
+                                                )
+                                            )
+                                        ),
+                                        child: Row(
+                                            children: <Widget>[
+                                                Container(
+                                                    width: ScreenUtil().setWidth(183.5),
+                                                    child: Row(
+                                                        children: <Widget>[
+                                                            Container(
+                                                                child: Text(
+                                                                    chatMessage.senderIdx.toString(),
+                                                                    style: TextStyle(
+                                                                        fontFamily: "NotoSans",
+                                                                        fontWeight: FontWeight.w600,
+                                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
+                                                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                                                        letterSpacing: ScreenUtil().setWidth(-0.75)
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                            Container(
+                                                                child: Text(
+                                                                    '님의 명함 공유',
+                                                                    style: TextStyle(
+                                                                        fontFamily: "NotoSans",
+                                                                        fontWeight: FontWeight.w400,
+                                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
+                                                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                                                        letterSpacing: ScreenUtil().setWidth(-0.75)
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    )
+                                                ),
+                                                Container(
+                                                    width: ScreenUtil().setWidth(22),
+                                                    height: ScreenUtil().setWidth(22),
+                                                    child: InkWell(
+                                                        child: Image.asset(
+                                                            "assets/images/icon/navIconDown.png"
+                                                        ),
+                                                        onTap: (){
+                                                            /// 명함 다운로드
+                                                            print("명함");
+                                                        },
+                                                    ),
+                                                )
+                                            ],
+                                        )
+                                    ),
+                                    Container(
+                                        width: ScreenUtil().setWidth(164),
+                                        height: ScreenUtil().setHeight(91),
+                                        margin: EdgeInsets.only(
+                                            top: ScreenUtil().setHeight(12),
+                                            bottom: ScreenUtil().setHeight(14),
+                                        ),
+                                        child: Image.asset(
+                                            chatMessage.message,
+                                            fit:BoxFit.fitWidth
+                                        ),
+                                    )
+                                ],
                             )
                         ),
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(255, 255, 255, 1),
-                            borderRadius: BorderRadius.only(
-                                topRight: Radius.circular(ScreenUtil().setWidth(10)),
-                                bottomLeft: Radius.circular(ScreenUtil().setWidth(10)),
-                                bottomRight: Radius.circular(ScreenUtil().setWidth(10)),
-                            )
-                        ),
+                        onTap: () {
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: chatMessage.message)));
+                        },
                     ),
-                    Container(
-                        margin: EdgeInsets.only(
-                            bottom: ScreenUtil.getInstance().setHeight(4)
-                        ),
-                        child: Text(
-                            GetTimeDifference.timeDifference(chatMessage.chatTime),
-                            style: TextStyle(
-                                height: 1,
-                                fontFamily: "NanumSquare",
-                                fontWeight: FontWeight.w400,
-                                fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                                color: Color.fromRGBO(39, 39, 39, 0.7)
-                            )
-                        ),
-                    )
+
+                    // 시간 레이아웃 (받은 메세지)
+                    receivedMsg
+                        ? msgTime(chatMessage.chatTime, receivedMsg)
+                        : Container()
+                    ,
                 ],
-            )
+            ),
         );
     }
 }
