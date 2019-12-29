@@ -360,8 +360,9 @@ class _HwaTabState extends State<HwaTab> {
     void _scanBLE() {
         setState(() {
             _streamRanging = HwaBeacon()
-                .subscribeRangingHwa(test: true)
+                .subscribeRangingHwa()
                 .listen((RangingResult result) {
+                    print("Scaning!!! " + result.toString());
                 if (result != null && result.beacons.isNotEmpty && mounted) {
                     setState(() {
                         _beacons.clear();
