@@ -32,21 +32,24 @@ import 'package:Hwa/pages/parts/chat_message_list.dart';
  * @description : 채팅 페이지
  */
 class ChatroomPage extends StatefulWidget {
-    final int chatIdx;
-    ChatroomPage({Key key, this.chatIdx}) : super(key: key);
+    final ChatInfo chatInfo;
+    final bool isLiked;
+    final int likeCount;
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount}) : super(key: key);
 
 
     @override
-    State createState() => new ChatScreenState(chatIdx: chatIdx);
+    State createState() => new ChatScreenState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount);
 }
 
 class ChatScreenState extends State<ChatroomPage> {
-    final int chatIdx;
-    ChatScreenState({Key key, this.chatIdx});
+    final ChatInfo chatInfo;
+    final bool isLiked;
+    final int likeCount;
+
+    ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount});
 
     SharedPreferences prefs;
-
-    ChatInfo chatInfo = new ChatInfo();
 
     File imageFile;
     bool isLoading;
@@ -86,12 +89,6 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     void initState() {
         super.initState();
-
-        /// 단화방 정보 받아오기
-        _getChatInfo();
-
-        /// 단화방 참여
-        _enterChat();
 
         /// Stomp 초기화
         connectStomp();
@@ -157,50 +154,6 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     /*
-       * @author : hs
-       * @date : 2019-12-28
-       * @description : 채팅 정보 받아오기 API 호출
-      */
-    void _getChatInfo() async {
-        setState(() {
-            isLoading = true;
-        });
-
-        try {
-            String uri = "/danhwa/roomDetail?roomIdx=" + chatIdx.toString();
-
-            final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
-
-            Map<String, dynamic> jsonParse = json.decode(response.body);
-
-            setState(() {
-                chatInfo = new ChatInfo.fromJSON(jsonParse['danhwaRoom']);
-                isLoading = false;
-            });
-
-        } catch (e) {
-            print("#### Error :: "+ e.toString());
-        }
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-28
-     * @description : 단화방 입장
-    */
-    void _enterChat() async {
-
-        try {
-            /// 참여 타입 수정
-            String uri = "/danhwa/join?roomIdx=" + chatIdx.toString() + "&type=BLE_JOIN";
-            await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
-
-        } catch (e) {
-            print("#### Error :: "+ e.toString());
-        }
-    }
-
-    /*
      * @author : hs
      * @date : 2019-12-22
      * @description : topic 구독
@@ -211,10 +164,8 @@ class ChatScreenState extends State<ChatroomPage> {
         await s.connectWebSocket();
         s.connectStomp();
 
-        print("chatIdx :::: " + chatIdx.toString());
-
         // subscribe topic
-        s.subscribe(topic: "/sub/danhwa/" + chatIdx.toString(), roomIdx: chatIdx.toString(), userIdx: Constant.USER_IDX.toString()).stream.listen((HashMap data) =>
+        s.subscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString(), roomIdx: chatInfo.chatIdx.toString(), userIdx: Constant.USER_IDX.toString()).stream.listen((HashMap data) =>
             messageReceieved(data),
             onDone: () {
                 print("Listen Done");
@@ -329,7 +280,7 @@ class ChatScreenState extends State<ChatroomPage> {
         }
 
         final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
-        message = '{"type": "'+ sendType +'","roomIdx":' + chatIdx.toString() + ',"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
+        message = '{"type": "'+ sendType +'","roomIdx":' + chatInfo.chatIdx.toString() + ',"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
 
         /// MESSAGE SEND
         s.send(

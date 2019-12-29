@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -103,6 +104,58 @@ class _ChatTabState extends State<ChatTab> {
             )
         )
     );
+  }
+
+  /*
+     * @author : hs
+     * @date : 2019-12-28
+     * @description : 단화방 입장(리스트에서 클릭)
+    */
+  void _joinChat(int chatIdx) async {
+      setState(() {
+          isLoading = true;
+      });
+
+      try {
+          /// 참여 타입 수정
+          String uri = "/danhwa/join?roomIdx=" + chatIdx.toString() + "&type=BLE_JOIN";
+          final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+          Map<String, dynamic> jsonParse = json.decode(response.body);
+          // 단화방 입장
+          _enterChat(jsonParse);
+
+      } catch (e) {
+          print("#### Error :: "+ e.toString());
+      }
+  }
+
+  /*
+       * @author : hs
+       * @date : 2019-12-28
+       * @description : 단화방 입장 파라미터 처리
+      */
+  void _enterChat(Map<String, dynamic> chatInfoJson) async {
+
+      try {
+          ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
+          bool isLiked = chatInfoJson['isLiked'];
+          int likeCount = chatInfoJson['danhwaLikeCount'];
+
+          setState(() {
+              isLoading = false;
+          });
+
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) {
+                  return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount);
+              })
+          );
+
+          isLoading = false;
+      } catch (e) {
+          print("#### Error :: "+ e.toString());
+      }
   }
 
   Widget buildChatItem(ChatListItem chatListItem) {
@@ -247,9 +300,7 @@ class _ChatTabState extends State<ChatTab> {
             ],
           )
       ),
-      onTap: () => Navigator.push(
-          context, MaterialPageRoute(builder: (context) => ChatroomPage(chatIdx: chatListItem.chatIdx))
-      ),
+      onTap: () => _joinChat(chatListItem.chatIdx),
     );
   }
 
