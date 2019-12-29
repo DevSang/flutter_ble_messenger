@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:developer' as developer;
 
+import 'package:Hwa/constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,8 +57,11 @@ class _HwaTabState extends State<HwaTab> {
     bool _monitoring = false;
 
     @override
-    void initState() {
+    void initState() async {
         super.initState();
+
+        await Constant.setUserIdx();
+
         // BLE Scanning API 초기화
         HwaBeacon().initializeScanning();
         // BLE Status 초기화
@@ -340,13 +344,21 @@ class _HwaTabState extends State<HwaTab> {
             platformVersion = 'Failed to get platform version.';
         }
 
+        print("platformVersion ::: " + platformVersion.toString());
+
         BeaconStatus st;
         st = await HwaBeacon().checkTxSupported();
+
+        print("st ::: " + st.toString());
 
         AuthorizationStatus ast;
         ast = await HwaBeacon().getAuthorizationStatus();
 
+        print("ast ::: " + ast.toString());
+
         BluetoothState bst = await HwaBeacon().getBluetoothState();
+
+        print("bst ::: " + bst.toString());
 
         if (!mounted) return;
 
@@ -376,8 +388,8 @@ class _HwaTabState extends State<HwaTab> {
                         _beacons.clear();
                         result.beacons.forEach((beacon) {
                             developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-                            print("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
                             _beacons.add(beacon);
+                            _getChatItem(beacon.roomId);
                         });
                     });
                 }

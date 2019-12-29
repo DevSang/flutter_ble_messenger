@@ -1,3 +1,4 @@
+import 'package:Hwa/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -329,8 +330,10 @@ class _SignInPageState extends State<SignInPage> {
 
                     var token = data['token'];
                     var userIdx = data['userInfo']['idx'];
+
                     loginPref.setString('token', token.toString());
                     loginPref.setString('userIdx', userIdx.toString());
+
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
                     pushTokenRequest();
                     Navigator.pushNamed(context, '/main');
