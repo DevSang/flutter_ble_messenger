@@ -95,7 +95,7 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     void initState() {
         super.initState();
-
+        checkAd();
         /// Stomp 초기화
         connectStomp();
 
