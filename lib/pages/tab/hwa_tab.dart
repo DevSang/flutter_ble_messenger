@@ -207,6 +207,8 @@ class _HwaTabState extends State<HwaTab> {
             setState(() {
                 isLoading = false;
                 HwaBeacon().stopRanging();
+                chatList.clear();
+                chatIdxList.clear();
             });
 
 
