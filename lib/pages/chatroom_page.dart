@@ -6,6 +6,7 @@ import 'dart:collection';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -86,6 +87,10 @@ class ChatScreenState extends State<ChatroomPage> {
     StompClient s;
     bool isReceived;
 
+    // BLE 관련
+    bool _activateBeacon = false;
+    int _ttl = 1;
+
     @override
     void initState() {
         super.initState();
@@ -115,6 +120,11 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     BoxDecoration startAd(BuildContext context) {
+        setState(() {
+            HwaBeacon().startAdvertising(0x333333, _ttl, test: true);
+            print('##BLE START!!!');
+        });
+
         return BoxDecoration(
             color: Color.fromRGBO(77, 96, 191, 1),
             image: DecorationImage(
@@ -127,6 +137,11 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     BoxDecoration stopAd(BuildContext context) {
+        setState(() {
+            HwaBeacon().stopAdvertising();
+            print('##BLE STOP!!!');
+        });
+
         return BoxDecoration(
             color: Color.fromRGBO(153, 153, 153, 1),
             image: DecorationImage(
@@ -352,19 +367,22 @@ class ChatScreenState extends State<ChatroomPage> {
                     }
                 ),
                 actions:[
-                    GestureDetector(
-                        child: Container(
-                            margin: EdgeInsets.only(right: ScreenUtil().setWidth(5)),
-                            width: ScreenUtil().setWidth(27),
-                            height: ScreenUtil().setHeight(27),
-                            decoration: adCondition
-                        ),
-                        onTap:(){
-                            setState(() {
-                                adCondition == startAd(context) ? adCondition = stopAd(context) : adCondition = startAd(context);
-                            });
-                        }
-                    ),
+                    chatInfo.createUser.userIdx == Constant.USER_IDX
+                        ? GestureDetector(
+                            child: Container(
+                                margin: EdgeInsets.only(right: ScreenUtil().setWidth(5)),
+                                width: ScreenUtil().setWidth(27),
+                                height: ScreenUtil().setHeight(27),
+                                decoration: adCondition
+                            ),
+                            onTap:(){
+                                setState(() {
+                                    adCondition == startAd(context) ? adCondition = stopAd(context) : adCondition = startAd(context);
+                                });
+                            }
+                        )
+                        : Container()
+                    ,
                     Builder(
                         builder: (context) => IconButton(
                             icon: new Image.asset('assets/images/icon/navIconMenu.png'),
@@ -378,7 +396,7 @@ class ChatScreenState extends State<ChatroomPage> {
                 brightness: Brightness.light,
             ),
             endDrawer: SafeArea(
-                child: new ChatSideMenu(chatInfo: chatInfo)
+                child: new ChatSideMenu(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount)
             ),
             body: GestureDetector(
                 child: WillPopScope(

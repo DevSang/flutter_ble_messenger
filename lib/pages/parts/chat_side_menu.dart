@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/utility/call_api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -21,59 +25,77 @@ import 'package:Hwa/pages/chatroom_setting.dart';
  */
 class ChatSideMenu extends StatefulWidget {
     final ChatInfo chatInfo;
-    ChatSideMenu({Key key, @required this.chatInfo});
+    bool isLiked;
+    int likeCount;
+    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount});
 
     @override
-    State createState() => new ChatSideMenuState(chatInfo: chatInfo);
+    State createState() => new ChatSideMenuState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount);
 }
 
 
 class ChatSideMenuState extends State<ChatSideMenu> {
-    ChatSideMenuState({Key key, @required this.chatInfo});
+    ChatSideMenuState({Key key, @required this.chatInfo, this.isLiked, this.likeCount});
 
-    // 현재 채팅 좋아요 TODO: 추후 맵핑
     final ChatInfo chatInfo;
-    BoxDecoration likeCondition;
-
+    bool isLiked;
+    int likeCount;
     // 현재 채팅 참여유저 TODO: 추후 맵핑
     List<ChatUserInfo> userInfoListBLE = new SetUserData().main();// 현재 채팅 참여유저 TODO: 추후 맵핑
     List<ChatUserInfo> userInfoListOnline = new SetUserDataOnline().main();// 현재 채팅 참여유저 TODO: 추후 맵핑
     List<ChatUserInfo> userInfoListView = new SetUserDataView().main();
 
     @override
-    BoxDecoration unlikeChat(BuildContext context) {
-        return BoxDecoration(
-            color: Color.fromRGBO(153, 153, 153, 1),
-            image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconLike.png")
-            ),
-            shape: BoxShape.circle
-        );
-
-    }
-
-    @override
-    BoxDecoration likeChat(BuildContext context) {
-        return BoxDecoration(
-            color: Color.fromRGBO(240, 93, 72, 1),
-            image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconLike.png")
-            ),
-            shape: BoxShape.circle
-        );
-
-    }
-
-    @override
     void initState() {
         super.initState();
-        //TODO::: 좋아요 맵핑
-        true ? likeCondition = likeChat(context) : likeCondition = unlikeChat(context);
     }
-    
+
+    /*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : 단화방 좋아요
+    */
+    void _likeChat() async {
+        setState(() {
+            likeCount++;
+        });
+
+        try {
+            /// 참여 타입 수정
+            String uri = "/danhwa/like?roomIdx=" + chatInfo.chatIdx.toString();
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+            print(response.body);
+
+        } catch (e) {
+            print("#### Error :: "+ e.toString());
+        }
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : 단화방 좋아요 취소
+    */
+    void _unLikeChat() async {
+        setState(() {
+            likeCount--;
+        });
+
+        try {
+            /// 참여 타입 수정
+            String uri = "/danhwa/likeCancel?roomIdx=" + chatInfo.chatIdx.toString();
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+            print(response.body);
+
+        } catch (e) {
+            print("#### Error :: "+ e.toString());
+        }
+    }
+
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
 
         return
         new SizedBox(
@@ -120,7 +142,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                                     left: ScreenUtil().setWidth(11.5),
                                                                 ),
                                                                 child: Text(
-                                                                    "3,400",
+                                                                    chatInfo.userCount.total.toString(),
                                                                     style: TextStyle(
                                                                         height: 1,
                                                                         fontSize: ScreenUtil().setSp(13),
@@ -134,7 +156,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                 ),
                                                 Container (
                                                     child: Text(
-                                                        "스타벅스 강남R점 사람들 얘기나눠요",
+                                                        chatInfo.intro ?? "단화방 정보가 없습니다.",
                                                         style: TextStyle(
                                                             height: 1,
                                                             fontSize: ScreenUtil().setSp(13),
@@ -159,13 +181,12 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                         margin: EdgeInsets.only(
                                                             bottom: ScreenUtil().setHeight(6)
                                                         ),
-                                                        decoration: likeCondition,
+                                                        decoration: isLiked ? likeChat(context) : unlikeChat(context),
                                                     ),
                                                     Container(
-                                                        width: ScreenUtil().setWidth(40),
                                                         child:
                                                         Text(
-                                                            "2,500",
+                                                            likeCount.toString(),
                                                             textAlign: TextAlign.center,
                                                             style: TextStyle(
                                                                 height: 1,
@@ -179,8 +200,12 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                         ),
                                         onTap:(){
                                             setState(() {
-                                                likeCondition == likeChat(context) ? likeCondition = unlikeChat(context) : likeCondition = likeChat(context);
+                                                isLiked = !isLiked;
                                             });
+
+                                            isLiked
+                                                ? _likeChat()
+                                                : _unLikeChat();
                                         }
                                     )
                                 ],
@@ -219,24 +244,26 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                             )
                                         ),
                                     ),
-                                    InkWell(
-                                        child: Container(
-                                            width: ScreenUtil().setWidth(28),
-                                            height: ScreenUtil().setHeight(28),
-                                            decoration: BoxDecoration(
-                                                image: DecorationImage(
-                                                    image:AssetImage("assets/images/icon/iconSetting.png")
-                                                ),
-                                            )
-                                        ),
-                                        onTap: () {
-                                            Navigator.push(context,
-                                                MaterialPageRoute(builder: (context) {
-                                                    return ChatroomSettingPage(chatIdx: 0);
-                                                })
-                                            );
-                                        },
-                                    )
+                                    Constant.USER_IDX == chatInfo.createUser.userIdx
+                                        ? InkWell(
+                                            child: Container(
+                                                width: ScreenUtil().setWidth(28),
+                                                height: ScreenUtil().setHeight(28),
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                        image:AssetImage("assets/images/icon/iconSetting.png")
+                                                    ),
+                                                )
+                                            ),
+                                            onTap: () {
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(builder: (context) {
+                                                        return ChatroomSettingPage(chatIdx: 0);
+                                                    })
+                                                );
+                                            },
+                                        )
+                                        : Container()
                                 ],
                             ),
                         )
@@ -245,4 +272,30 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             )
         );
     }
+
+
+    @override
+    BoxDecoration unlikeChat(BuildContext context) {
+        return BoxDecoration(
+            color: Color.fromRGBO(153, 153, 153, 1),
+            image: DecorationImage(
+                image:AssetImage("assets/images/icon/iconLike.png")
+            ),
+            shape: BoxShape.circle
+        );
+
+    }
+
+    @override
+    BoxDecoration likeChat(BuildContext context) {
+        return BoxDecoration(
+            color: Color.fromRGBO(240, 93, 72, 1),
+            image: DecorationImage(
+                image:AssetImage("assets/images/icon/iconLike.png")
+            ),
+            shape: BoxShape.circle
+        );
+
+    }
+
 }

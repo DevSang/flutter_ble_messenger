@@ -1,20 +1,28 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
+import 'dart:developer' as developer;
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:geolocator/geolocator.dart';
+import 'package:hwa_beacon/hwa_beacon.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
+
 import 'package:Hwa/pages/chatroom_page.dart';
 import 'package:Hwa/pages/parts/loading.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
 import 'package:Hwa/pages/trend_page.dart';
+
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HwaTab extends StatefulWidget {
   @override
@@ -22,37 +30,48 @@ class HwaTab extends StatefulWidget {
 }
 
 class _HwaTabState extends State<HwaTab> {
-    Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
-
     SharedPreferences prefs;
-
-
     List<ChatListItem> chatList = <ChatListItem>[];
     ChatInfo chatInfo;
-    Position _currentPosition;
-    String _currentAddress = '위치 검색중..';
     double sameSize;
     TextEditingController _textFieldController;
-
     bool isLoading;
 
-    List<int> testGetChatList;
+    // GPS 관련
+    Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
+    Position _currentPosition;
+    String _currentAddress = '위치 검색중..';
+
+    // BLE 관련
+    final _beacons = <Beacon>[];
+    final StreamController<BluetoothState> streamController = StreamController();
+    StreamSubscription<BluetoothState> _streamBluetooth;
+    StreamSubscription<RangingResult> _streamRanging;
+    StreamSubscription<MonitoringResult> _streamMonitoring;
+    String _platformVersion = 'Unknown';
+    BeaconStatus _beaconStatus;
+    AuthorizationStatus _authorizationStatus;
+    BluetoothState _bluetoothState;
+    bool _ranging = false;
+    bool _monitoring = false;
 
     @override
     void initState() {
         super.initState();
+        // BLE Scanning API 초기화
+        HwaBeacon().initializeScanning();
+        // BLE Status 초기화
+        _initBleStatus();
+
         isLoading = false;
-
-        // TODO: 주변 채팅 리스트 받아오기
-    //    _getChatListIdx();
-    //    _getChatList();
-
         sameSize  = GetSameSize().main();
         _textFieldController = TextEditingController(text: '스타벅스 강남R점');
 
         // 현재 위치 검색
         _getCurrentLocation();
 
+        // TODO: 주변 채팅 리스트 받아오기
+        _getChatList();
     }
 
     /*
@@ -93,16 +112,6 @@ class _HwaTabState extends State<HwaTab> {
 	    }
     }
 
-    /*
-    * @author : hs
-    * @date : 2019-12-28
-    * @description : 주변 채팅 리스트 Idxs TODO: 추후 BLE 연동
-    */
-    void _getChatListIdx() {
-        setState(() {
-            testGetChatList = [1,15,46,12,52];
-        });
-    }
 
     /*
     * @author : hs
@@ -110,7 +119,8 @@ class _HwaTabState extends State<HwaTab> {
     * @description : 채팅 리스트 API 요청
     */
     void _getChatList() {
-        testGetChatList.forEach((itemId) => _getChatItem(itemId));
+//        testGetChatList.forEach((itemId) => _getChatItem(itemId));
+        _getChatItem(18);
     }
 
     /*
@@ -307,6 +317,64 @@ class _HwaTabState extends State<HwaTab> {
                 ]
             )
         );
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : BLE Status Initialize
+    */
+    Future<void> _initBleStatus() async {
+        String platformVersion;
+        try {
+            platformVersion = await HwaBeacon().getPlatformVersion();
+        } on PlatformException {
+            platformVersion = 'Failed to get platform version.';
+        }
+
+        BeaconStatus st;
+        st = await HwaBeacon().checkTxSupported();
+
+        AuthorizationStatus ast;
+        ast = await HwaBeacon().getAuthorizationStatus();
+
+        BluetoothState bst = await HwaBeacon().getBluetoothState();
+
+        if (!mounted) return;
+
+        setState(() {
+            _platformVersion = platformVersion;
+            _beaconStatus = st;
+            _authorizationStatus = ast;
+            _bluetoothState = bst;
+        });
+
+        _scanBLE();
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : BLE Scan
+    */
+    void _scanBLE() {
+        setState(() {
+            _streamRanging = HwaBeacon()
+                .subscribeRangingHwa(test: true)
+                .listen((RangingResult result) {
+                if (result != null && result.beacons.isNotEmpty && mounted) {
+                    setState(() {
+                        _beacons.clear();
+                        result.beacons.forEach((beacon) {
+                            developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
+                            print("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
+                            _beacons.add(beacon);
+                        });
+                    });
+                }
+            });
+            HwaBeacon().startRanging();
+        });
     }
 
     @override
