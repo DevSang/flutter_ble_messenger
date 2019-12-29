@@ -119,13 +119,16 @@ class ChatScreenState extends State<ChatroomPage> {
         getMessageList();
     }
 
-    @override
-    BoxDecoration startAd(BuildContext context) {
-        setState(() {
-            HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
-            print('##BLE START!!!');
-        });
+    void checkAd() async {
+        bool advertising = await HwaBeacon().isAdvertising();
 
+        if (advertising)
+            await HwaBeacon().stopAdvertising();
+        else
+            await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+    }
+
+    BoxDecoration startAd(BuildContext context) {
         return BoxDecoration(
             color: Color.fromRGBO(77, 96, 191, 1),
             image: DecorationImage(
@@ -136,13 +139,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
     }
 
-    @override
     BoxDecoration stopAd(BuildContext context) {
-        setState(() {
-            HwaBeacon().stopAdvertising();
-            print('##BLE STOP!!!');
-        });
-
         return BoxDecoration(
             color: Color.fromRGBO(153, 153, 153, 1),
             image: DecorationImage(
@@ -153,9 +150,24 @@ class ChatScreenState extends State<ChatroomPage> {
 
     }
 
+    void advertiseChange() async {
+        if (advertising) {
+            await HwaBeacon().stopAdvertising();
+            print('##BLE STOP!!!');
+        } else {
+            await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+            print('##BLE START!!!');
+        }
+
+        setState(() {
+            advertising = !advertising;
+        });
+    }
+
     @override
     void dispose() {
         HwaBeacon().stopAdvertising();
+        HwaBeacon().close();
 
         s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
         s.disconnect();
@@ -379,9 +391,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                 decoration: advertising ? startAd(context) : stopAd(context)
                             ),
                             onTap:(){
-                                setState(() {
-                                    advertising = !advertising;
-                                });
+                                advertiseChange();
                             }
                         )
                         : Container()

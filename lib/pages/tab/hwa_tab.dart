@@ -342,10 +342,8 @@ class _HwaTabState extends State<HwaTab> {
                     print("Scaning!!! " + result.toString());
                 if (result != null && result.beacons.isNotEmpty && mounted) {
                     setState(() {
-                        _beacons.clear();
                         result.beacons.forEach((beacon) {
                             developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-                            _beacons.add(beacon);
                             if (!chatIdxList.contains(beacon.roomId))  {
                                 _getChatItem(beacon.roomId);
                             }
