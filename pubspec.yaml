@@ -33,6 +33,7 @@ dependencies:
   hwa_beacon:
     git:
       url: https://github.com/leejaku17/hwa_beacon
+  flutter_facebook_login: 3.0.0
 
 
 #  flutter_kakao_login:

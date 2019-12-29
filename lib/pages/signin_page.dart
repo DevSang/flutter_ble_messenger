@@ -6,6 +6,9 @@ import 'package:flutter/services.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
 import 'package:Hwa/utility/red_toast.dart';
+//import 'package:flutter_kakao_login/flutter_kakao_login.dart';
+import 'package:kakao_flutter_sdk/auth.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 //로그인 page
 class SignInPage extends StatefulWidget {
@@ -25,6 +28,50 @@ class _SignInPageState extends State<SignInPage> {
   void initState() {
     super.initState();
   }
+
+//  void kakaoLogin() async {
+//	  FlutterKakaoLogin kakaoSignIn = new FlutterKakaoLogin();
+//	  final KakaoLoginResult result = await kakaoSignIn.logIn();
+//	  switch (result.status) {
+//		  case KakaoLoginStatus.loggedIn:
+//			  print('LoggedIn by the user.\n'
+//					  '- UserID is ${result.account.userID}\n'
+//					  '- UserEmail is ${result.account.userEmail} ');
+//			  break;
+//		  case KakaoLoginStatus.loggedOut:
+//			  print('LoggedOut by the user.');
+//			  break;
+//		  case KakaoLoginStatus.error:
+//			  print('This is Kakao error message : ${result.errorMessage}');
+//			  break;
+//	  }
+//
+//  }
+
+	void kakaoLogin() async {
+		String authCode = await AuthCodeClient.instance.requestWithTalk();
+
+		print("success;");
+		print("authCode $authCode");
+
+	}
+
+	void facebookLogin() async {
+		final facebookLogin = FacebookLogin();
+		final result = await facebookLogin.logIn(["email"]);
+
+		switch (result.status) {
+			case FacebookLoginStatus.loggedIn:
+				print("# facebookLogin" + result.accessToken.token);
+				break;
+			case FacebookLoginStatus.cancelledByUser:
+				print("# facebookLogin cancelledByUser");
+				break;
+			case FacebookLoginStatus.error:
+				print("# facebookLogin" + result.errorMessage);
+				break;
+		}
+	}
 
   @override
   Widget build(BuildContext context) {
@@ -361,7 +408,10 @@ class _SignInPageState extends State<SignInPage> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           InkWell(
-              child: Image.asset('assets/images/sns/snsIconKakao.png')
+              child: Image.asset('assets/images/sns/snsIconKakao.png'),
+	          onTap: (){
+		          kakaoLogin();
+	          },
           ),
 
           InkWell(
@@ -370,7 +420,10 @@ class _SignInPageState extends State<SignInPage> {
               )
           ),
           InkWell(
-              child: Image.asset('assets/images/sns/snsIconFacebook.png')
+              child: Image.asset('assets/images/sns/snsIconFacebook.png'),
+	          onTap: (){
+              	facebookLogin();
+	          },
           ),
           InkWell(
               child: Text("Facebook", style: TextStyle(
