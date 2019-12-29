@@ -33,7 +33,7 @@ class _HwaTabState extends State<HwaTab> {
 
     List<ChatListItem> chatList = <ChatListItem>[];
     Position _currentPosition;
-    String _currentAddress;
+    String _currentAddress = '위치 검색중..';
     double sameSize;
     int count;
     TextEditingController _textFieldController;
@@ -70,7 +70,11 @@ class _HwaTabState extends State<HwaTab> {
 
 	    if(geolocationStatus == GeolocationStatus.denied || geolocationStatus == GeolocationStatus.disabled){
 		    print("# GeolocationPermission denied. " + geolocationStatus.toString());
-		    // TODO 화면에 GPS 켜달라고 피드백
+		    // TODO 화면에 GPS 켜달라고 피드백, 디자인 적용
+		    setState(() {
+			    _currentAddress = '위치정보 권한이 필요합니다.';
+		    });
+
 	    }else{
 	    	print("# getCurrentPosition");
 		    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
@@ -79,9 +83,22 @@ class _HwaTabState extends State<HwaTab> {
 
 		    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
 
-		    // TODO 화면에 위치 표시
+		    if(placemark != null && placemark.length > 0){
+			    Placemark p = placemark[0];
+
+			    // TODO 삭제
+			    print(p.toJson().toString());
+
+			    // TODO 디자인 적용
+			    setState(() {
+				    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
+			    });
+		    }
+
+
 		    placemark.forEach((p){
 			    print('# placemark : ' + p.toJson().toString());
+
 		    });
 	    }
     }
@@ -348,8 +365,7 @@ class _HwaTabState extends State<HwaTab> {
           ),
           Container(
             child: Text(
-//              '$_currentAddress' ,
-              "위치정보가 없습니다.",
+              '$_currentAddress' ,
               style: TextStyle(
                 height: 1,
                 fontFamily: "NotoSans",
