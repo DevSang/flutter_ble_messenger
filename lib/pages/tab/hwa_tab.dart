@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:developer' as developer;
 
+import 'package:Hwa/constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,6 +33,7 @@ class HwaTab extends StatefulWidget {
 class _HwaTabState extends State<HwaTab> {
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
+    List<int> chatIdxList = <int>[];
     ChatInfo chatInfo;
     double sameSize;
     TextEditingController _textFieldController;
@@ -45,33 +47,36 @@ class _HwaTabState extends State<HwaTab> {
     // BLE 관련
     final _beacons = <Beacon>[];
     final StreamController<BluetoothState> streamController = StreamController();
-    StreamSubscription<BluetoothState> _streamBluetooth;
-    StreamSubscription<RangingResult> _streamRanging;
-    StreamSubscription<MonitoringResult> _streamMonitoring;
-    String _platformVersion = 'Unknown';
-    BeaconStatus _beaconStatus;
-    AuthorizationStatus _authorizationStatus;
-    BluetoothState _bluetoothState;
-    bool _ranging = false;
-    bool _monitoring = false;
 
     @override
     void initState() {
         super.initState();
-        // BLE Scanning API 초기화
-        HwaBeacon().initializeScanning();
-        // BLE Status 초기화
-        _initBleStatus();
+        _initState();
 
         isLoading = false;
         sameSize  = GetSameSize().main();
         _textFieldController = TextEditingController(text: '스타벅스 강남R점');
+    }
+
+    void _initState() async {
+        await Constant.setUserIdx();
+
+        // BLE Scanning API 초기화
+        HwaBeacon().initializeScanning();
+        // BLE Scan start
+        _scanBLE();
 
         // 현재 위치 검색
         _getCurrentLocation();
 
         // TODO: 주변 채팅 리스트 받아오기
         _getChatList();
+    }
+
+    @override
+    void dispose() {
+        super.dispose();
+        HwaBeacon().stopRanging();
     }
 
     /*
@@ -120,7 +125,7 @@ class _HwaTabState extends State<HwaTab> {
     */
     void _getChatList() {
 //        testGetChatList.forEach((itemId) => _getChatItem(itemId));
-        _getChatItem(18);
+//        _getChatItem(18);
     }
 
     /*
@@ -140,6 +145,7 @@ class _HwaTabState extends State<HwaTab> {
             // 채팅 리스트에 추가
             setState(() {
                 chatList.insert(0, chatInfo);
+                chatIdxList.insert(0, chatInfo.chatIdx);
             });
 
         } catch (e) {
@@ -165,9 +171,9 @@ class _HwaTabState extends State<HwaTab> {
             int createdChatIdx = jsonParse['danhwaRoom']['roomIdx'];
 
             // 채팅 리스트에 추가
-            setState(() {
-                _getChatItem(createdChatIdx);
-            });
+//            setState(() {
+//                _getChatItem(createdChatIdx);
+//            });
 
             // 단화방 입장
              _enterChat(jsonParse);
@@ -191,7 +197,11 @@ class _HwaTabState extends State<HwaTab> {
 
             setState(() {
                 isLoading = false;
+                HwaBeacon().stopRanging();
+                chatList.clear();
+                chatIdxList.clear();
             });
+
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
@@ -322,53 +332,21 @@ class _HwaTabState extends State<HwaTab> {
     /*
      * @author : hs
      * @date : 2019-12-29
-     * @description : BLE Status Initialize
-    */
-    Future<void> _initBleStatus() async {
-        String platformVersion;
-        try {
-            platformVersion = await HwaBeacon().getPlatformVersion();
-        } on PlatformException {
-            platformVersion = 'Failed to get platform version.';
-        }
-
-        BeaconStatus st;
-        st = await HwaBeacon().checkTxSupported();
-
-        AuthorizationStatus ast;
-        ast = await HwaBeacon().getAuthorizationStatus();
-
-        BluetoothState bst = await HwaBeacon().getBluetoothState();
-
-        if (!mounted) return;
-
-        setState(() {
-            _platformVersion = platformVersion;
-            _beaconStatus = st;
-            _authorizationStatus = ast;
-            _bluetoothState = bst;
-        });
-
-        _scanBLE();
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-29
      * @description : BLE Scan
     */
     void _scanBLE() {
         setState(() {
-            _streamRanging = HwaBeacon()
-                .subscribeRangingHwa(test: true)
+            HwaBeacon()
+                .subscribeRangingHwa()
                 .listen((RangingResult result) {
+                    print("Scaning!!! " + result.toString());
                 if (result != null && result.beacons.isNotEmpty && mounted) {
                     setState(() {
-                        _beacons.clear();
                         result.beacons.forEach((beacon) {
                             developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-                            print("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-                            _beacons.add(beacon);
+                            if (!chatIdxList.contains(beacon.roomId))  {
+                                _getChatItem(beacon.roomId);
+                            }
                         });
                     });
                 }

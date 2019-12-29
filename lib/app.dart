@@ -28,9 +28,6 @@ class _MainPageState extends State<MainPage> {
     void initState() {
         clearLocalStorageForTest();
 
-        //Constant init
-        Constant.setUserIdx();
-
         //Check local store and call init api
 
 
