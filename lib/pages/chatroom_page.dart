@@ -90,6 +90,7 @@ class ChatScreenState extends State<ChatroomPage> {
     // BLE 관련
     bool _activateBeacon = false;
     int _ttl = 1;
+    bool advertising;
 
     @override
     void initState() {
@@ -106,7 +107,7 @@ class ChatScreenState extends State<ChatroomPage> {
         isShowMenu = false;
         imageUrl = '';
 
-        adCondition = startAd(context);
+        advertising = true;
 
         isFocused = false;
         openedNf = true;
@@ -121,7 +122,7 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     BoxDecoration startAd(BuildContext context) {
         setState(() {
-            HwaBeacon().startAdvertising(0x333333, _ttl, test: true);
+            HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl, test: true);
             print('##BLE START!!!');
         });
 
@@ -154,6 +155,10 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     void dispose() {
+        setState(() {
+            HwaBeacon().stopAdvertising();
+        });
+
         s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
         s.disconnect();
         super.dispose();
@@ -373,11 +378,11 @@ class ChatScreenState extends State<ChatroomPage> {
                                 margin: EdgeInsets.only(right: ScreenUtil().setWidth(5)),
                                 width: ScreenUtil().setWidth(27),
                                 height: ScreenUtil().setHeight(27),
-                                decoration: adCondition
+                                decoration: advertising ? startAd(context) : stopAd(context)
                             ),
                             onTap:(){
                                 setState(() {
-                                    adCondition == startAd(context) ? adCondition = stopAd(context) : adCondition = startAd(context);
+                                    advertising = !advertising;
                                 });
                             }
                         )
