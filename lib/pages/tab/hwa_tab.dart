@@ -76,8 +76,8 @@ class _HwaTabState extends State<HwaTab> {
 
     @override
     void dispose() {
-        HwaBeacon().stopRanging();
         super.dispose();
+        HwaBeacon().stopRanging();
     }
 
     /*
@@ -171,9 +171,9 @@ class _HwaTabState extends State<HwaTab> {
             int createdChatIdx = jsonParse['danhwaRoom']['roomIdx'];
 
             // 채팅 리스트에 추가
-            setState(() {
-                _getChatItem(createdChatIdx);
-            });
+//            setState(() {
+//                _getChatItem(createdChatIdx);
+//            });
 
             // 단화방 입장
              _enterChat(jsonParse);
@@ -197,7 +197,9 @@ class _HwaTabState extends State<HwaTab> {
 
             setState(() {
                 isLoading = false;
+                HwaBeacon().stopRanging();
             });
+
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {

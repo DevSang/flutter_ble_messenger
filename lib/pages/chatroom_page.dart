@@ -155,9 +155,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     void dispose() {
-        setState(() {
-            HwaBeacon().stopAdvertising();
-        });
+        HwaBeacon().stopAdvertising();
 
         s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
         s.disconnect();
