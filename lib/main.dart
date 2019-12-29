@@ -12,9 +12,11 @@ import 'package:Hwa/pages/notice_page.dart';
 import 'package:Hwa/pages/notice_write_page.dart';
 import 'package:Hwa/pages/notice_detail_page.dart';
 
+//import 'package:kakao_flutter_sdk/auth.dart';
 
 
 Future main() async {
+//	KakaoContext.clientId = "a3676c7b7fcfdedf54043bb8618fcb80";
     WidgetsFlutterBinding.ensureInitialized();
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);

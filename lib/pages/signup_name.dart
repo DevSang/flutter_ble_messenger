@@ -1,20 +1,32 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:Hwa/app.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:Hwa/pages/signup_page.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:Hwa/utility/red_toast.dart';
 
 class SignUpNamePage extends StatefulWidget{
-  @override
-  _SignUpNamePageState createState() => _SignUpNamePageState();
+    final String socialId;
+    final String socialType;
+    final String accessToken;
+    SignUpNamePage({Key key,this.socialId, this.socialType, this.accessToken}) : super(key: key);
+
+    @override
+    _SignUpNamePageState createState() => _SignUpNamePageState(socialId: socialId, socialType: socialType, accessToken:accessToken);
 }
 
 class _SignUpNamePageState extends State<SignUpNamePage>{
+    //Parameters
+    final String socialId;
+    final String socialType;
+    final String accessToken;
+
+    _SignUpNamePageState({Key key, this.socialId, this.socialType, this.accessToken});
+
     bool availNick;
     final TextEditingController _regNameController =  TextEditingController();
 
@@ -158,39 +170,46 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
     );
   }
 
-// 시작하기 연결
-  registerFinish(BuildContext context) async {
-    SharedPreferences loginPref = await SharedPreferences.getInstance();
-    print("phone number :: " + phoneRegController.text);
-    String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
+    // 시작하기 연결
+    registerFinish(BuildContext context) async {
+        SharedPreferences loginPref = await SharedPreferences.getInstance();
+        print("phone number :: " + phoneRegController.text);
+        String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
+        print("##socailType" + socialType.toString());
+        print("##accessToken" + accessToken.toString());
+        print("##socialId" + socialId.toString());
 
-    final response = await http.post(url,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: jsonEncode({
-          "phone_number": phoneRegController.text,
-          "nickname": _regNameController.text
-        })
-    );
+        final response = await http.post(url,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonEncode({
+                "phone_number": phoneRegController.text,
+                "nickname": _regNameController.text,
+                "social_cd": socialType,
+                "social_id": socialId,
+                "token": accessToken
+            })
+        );
 
-    var data = jsonDecode(response.body)['data'];
+        var data = jsonDecode(response.body);
+        var message =data['message'];
 
-    if (response.statusCode == 200) {
-      print("#회원가입에 성공하였습니다.");
-      print("signup info:" + response.body);
-      var token = data['token'];
-      var userIdx = data['userInfo']['idx'];
+        if (response.statusCode == 200) {
+            print("#회원가입에 성공하였습니다.");
+            print("signup info:" + response.body);
+            var token = data['data']['token'];
+            var userIdx = data['data']['userInfo']['idx'];
 
-      loginPref.setString('token', token);
-      loginPref.setString('userIdx', userIdx.toString());
+            loginPref.setString('token', token);
+            loginPref.setString('userIdx', userIdx.toString());
 
-      Navigator.pushNamed(context, '/main');
-    } else {
-      print('failed：${response.statusCode}');
+            RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+            Navigator.pushNamed(context, '/main');
+        } else {
+            print('failed：${response.statusCode}');
+        }
     }
-  }
-
 }
 
 

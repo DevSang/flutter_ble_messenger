@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:flutter_kakao_login/flutter_kakao_login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 /*
  * @project : HWA - Mobile
@@ -22,26 +23,6 @@ enum SocialType {
 
 class SocialSign {
 //    FlutterKakaoLogin kakaoSignIn = new FlutterKakaoLogin();
-
-    /*
-    * @author : sh
-    * @date : 2019-12-29
-    * @description : Social signin, signup total funtion
-    */
-    socialLogin ({@required SocialType signinType}){
-        switch (signinType) {
-            case SocialType.kakao: kakaoSign();
-                break;
-
-            case SocialType.facebook:
-                return;
-                break;
-            case SocialType.google:
-                return;
-                break;
-        }
-    }
-
     /*
     * @author : sh
     * @date : 2019-12-29
@@ -72,4 +53,12 @@ class SocialSign {
 //                break;
 //        }
     }
+
+
+    /*
+    * @author : sh
+    * @date : 2019-12-29
+    * @description : Social signin, signup about Google
+    */
+
 }

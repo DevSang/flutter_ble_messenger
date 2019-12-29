@@ -8,7 +8,10 @@ import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
 import 'package:Hwa/utility/red_toast.dart';
 //import 'package:flutter_kakao_login/flutter_kakao_login.dart';
+//import 'package:kakao_flutter_sdk/auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:Hwa/pages/signup_page.dart';
 
 //로그인 page
 class SignInPage extends StatefulWidget {
@@ -24,10 +27,37 @@ class _SignInPageState extends State<SignInPage> {
 
     String phone_number, auth_number;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+    GoogleSignInAccount _currentUser;
+    String _contactText;
+
+    GoogleSignIn _googleSignIn = GoogleSignIn(
+        scopes: <String>[
+            'email',
+            'https://www.googleapis.com/auth/contacts.readonly',
+        ],
+    );
+
+    @override
+    void initState() {
+        super.initState();
+        _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+            setState(() {
+                _currentUser = account;
+            });
+            if (_currentUser != null) {
+                print("#Google current user : " + _currentUser.toString());
+            }
+        });
+    }
+
+    Future<void> googleSignin() async {
+        try {
+            print("#Google Signin");
+            return await _googleSignIn.signIn();
+        } catch (error) {
+            print(error);
+        }
+    }
 
 //  void kakaoLogin() async {
 //	  FlutterKakaoLogin kakaoSignIn = new FlutterKakaoLogin();
@@ -54,7 +84,45 @@ class _SignInPageState extends State<SignInPage> {
 
 		switch (result.status) {
 			case FacebookLoginStatus.loggedIn:
+
 				print("# facebookLogin" + result.accessToken.token);
+                final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${result.accessToken.token}');
+                final profile = json.decode(graphResponse.body);
+
+                String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
+                final response = await http.post(url,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: jsonEncode({
+                        "login_type" : "facebook",
+                        "token" : result.accessToken.token.toString()
+                    })
+                );
+
+                var data = jsonDecode(response.body);
+                var message = data['message'].toString();
+
+                if (response.statusCode == 200) {
+                    print("#로그인에 성공하였습니다.");
+                    print("#로그인정보 :" + response.body);
+                    RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+                    pushTokenRequest();
+                    Navigator.pushNamed(context, '/main');
+
+                } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
+                    RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
+                    print('${response.statusCode}');
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                            return SignUpPage(socialId: profile['id'].toString(),socialType: "facebook", accessToken: result.accessToken.token.toString());
+                        })
+                    );
+                } else {
+                    print('${response.statusCode}');
+                    RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+                }
 				break;
 			case FacebookLoginStatus.cancelledByUser:
 				print("# facebookLogin cancelledByUser");
@@ -315,7 +383,8 @@ class _SignInPageState extends State<SignInPage> {
                 final response = await http.post(url,
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'},
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
                     body: jsonEncode({
                         "phone_number": _phoneController.text,
                         "auth_number": _authCodeController.text
@@ -401,34 +470,49 @@ class _SignInPageState extends State<SignInPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          InkWell(
-              child: Image.asset('assets/images/sns/snsIconKakao.png'),
-	          onTap: (){
-	          },
-          ),
+            RaisedButton(
+                child: Row(
+                    children: <Widget>[
+                        InkWell(
+                            child: Image.asset('assets/images/sns/snsIconKakao.png'),
+                        ),
+                        InkWell(
+                            child: Text("Kakao", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                        ),
+                    ],
+                ),
+                onPressed: () {
 
-          InkWell(
-              child: Text("Kakao", style: TextStyle(
-                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'),
-              )
-          ),
-          InkWell(
-              child: Image.asset('assets/images/sns/snsIconFacebook.png'),
-	          onTap: (){
-              	facebookLogin();
-	          },
-          ),
-          InkWell(
-              child: Text("Facebook", style: TextStyle(
-                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-          ),
-          InkWell(
-              child: Image.asset('assets/images/sns/snsIconGoogle.png')
-          ),
-          InkWell(
-              child: Text("Google", style: TextStyle(
-                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-          ),
+                },
+            ),
+            RaisedButton(
+                child: Row(
+                    children: <Widget>[
+                        InkWell(
+                            child: Image.asset('assets/images/sns/snsIconFacebook.png'),
+                        ),
+                        InkWell(
+                            child: Text("Facebook", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                        ),
+                    ],
+                ),
+                onPressed: () {
+                    facebookLogin();
+                },
+            ),
+            RaisedButton(
+                child: Row(
+                    children: <Widget>[
+                        InkWell(
+                            child: Image.asset('assets/images/sns/snsIconGoogle.png'),
+                        ),
+                        InkWell(
+                            child: Text("Google", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                        ),
+                    ],
+                ),
+                onPressed:googleSignin,
+            ),
         ],
       ),
     );

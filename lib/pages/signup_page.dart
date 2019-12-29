@@ -4,29 +4,41 @@ import 'package:Hwa/utility/red_toast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:Hwa/pages/signup_name.dart';
 
 final TextEditingController phoneRegController = new TextEditingController();
 
 //register page
 class SignUpPage extends StatefulWidget {
+    final String socialId;
+    final String socialType;
+    final String accessToken;
+    SignUpPage({Key key,this.socialId, this.socialType, this.accessToken}) : super(key: key);
 
-  @override
-  _SignUpPageState createState() => _SignUpPageState();
-  }
+
+    @override
+        _SignUpPageState createState() => _SignUpPageState(socialId: socialId, socialType: socialType, accessToken:accessToken);
+    }
 
 class _SignUpPageState extends State<SignUpPage>{
+    //Parameters
+    final String socialId;
+    final String socialType;
+    final String accessToken;
+
+    _SignUpPageState({Key key, this.socialId, this.socialType, this.accessToken});
+
     FocusNode myFocusNode;
     final TextEditingController _regAuthCodeController = new TextEditingController();
     bool lengthConfirm;
 
 
     @override
-  void initState() {
-    super.initState();
-    lengthConfirm = false;
-  }
+    void initState() {
+        super.initState();
+        lengthConfirm = false;
+    }
 
   @override
   Widget build(BuildContext context){
@@ -154,7 +166,10 @@ class _SignUpPageState extends State<SignUpPage>{
                     'Content-Type':'application/json'
                 },
                 body: jsonEncode({
-                    "phone_number": phoneRegController.text
+                    "phone_number": phoneRegController.text,
+                    "social_cd": socialType,
+                    "social_id": socialId,
+                    "token": accessToken
                 })
             ).then((http.Response response) {
                 print("signup :: " + response.body);
@@ -179,7 +194,7 @@ class _SignUpPageState extends State<SignUpPage>{
     /*
     * @author : sh
     * @date : 2019-12-28
-    * @description : 인증번호 입력후 다음누르면
+    * @description : 인증번호 입력필드
     */
     Widget _regAuthCodeText(){
         return Container(
@@ -299,7 +314,11 @@ class _SignUpPageState extends State<SignUpPage>{
                 String phoneNum = data['auth_number'];
 
                 if (response.statusCode == 200) {
-                    Navigator.pushNamed(context, '/register2');
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                            return SignUpNamePage(socialId: socialId, socialType: socialType, accessToken: accessToken);
+                        })
+                    );
                     RedToast.toast("인증이 완료 되었습니다.", ToastGravity.TOP);
                 } else {
                     RedToast.toast("인증이 실패하였습니다. 인증번호를 확인해주세요.", ToastGravity.TOP);
