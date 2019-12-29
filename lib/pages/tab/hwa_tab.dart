@@ -207,7 +207,9 @@ class _HwaTabState extends State<HwaTab> {
                 MaterialPageRoute(builder: (context) {
                     return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount);
                 })
-            );
+            ).then((onValue) {
+                _scanBLE();
+            });
 
             isLoading = false;
         } catch (e) {
