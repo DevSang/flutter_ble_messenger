@@ -33,6 +33,7 @@ class HwaTab extends StatefulWidget {
 class _HwaTabState extends State<HwaTab> {
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
+    List<int> chatIdxList = <int>[];
     ChatInfo chatInfo;
     double sameSize;
     TextEditingController _textFieldController;
@@ -153,6 +154,7 @@ class _HwaTabState extends State<HwaTab> {
             // 채팅 리스트에 추가
             setState(() {
                 chatList.insert(0, chatInfo);
+                chatIdxList.insert(0, chatInfo.chatIdx);
             });
 
         } catch (e) {
@@ -392,7 +394,9 @@ class _HwaTabState extends State<HwaTab> {
                         result.beacons.forEach((beacon) {
                             developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
                             _beacons.add(beacon);
-                            _getChatItem(beacon.roomId);
+                            if (!chatIdxList.contains(beacon.roomId))  {
+                                _getChatItem(beacon.roomId);
+                            }
                         });
                     });
                 }
