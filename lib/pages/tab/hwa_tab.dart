@@ -26,33 +26,77 @@ class HwaTab extends StatefulWidget {
 }
 
 class _HwaTabState extends State<HwaTab> {
-  final Geolocator geolocator = Geolocator()..forceAndroidLocationManager;
-  SharedPreferences prefs;
+    Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
 
-  List<ChatListItem> chatList = <ChatListItem>[];
-  Position _currentPosition;
-  String _currentAddress;
-  double sameSize;
-  int count;
-  TextEditingController _textFieldController;
+    SharedPreferences prefs;
 
-  bool isLoading;
 
-  List<int> testGetChatList;
+    List<ChatListItem> chatList = <ChatListItem>[];
+    Position _currentPosition;
+    String _currentAddress = '위치 검색중..';
+    double sameSize;
+    int count;
+    TextEditingController _textFieldController;
 
-  @override
-  void initState() {
-    super.initState();
-    // TODO: 주변 채팅 리스트 받아오기
-//    _getChatListIdx();
-//    _getChatList();
+    bool isLoading;
 
-    sameSize  = GetSameSize().main();
-    count = 0;
-    _textFieldController = TextEditingController(text: '스타벅스 강남R점' + count.toString());
+    List<int> testGetChatList;
 
-    isLoading = false;
-  }
+    @override
+    void initState() {
+        super.initState();
+        // TODO: 주변 채팅 리스트 받아오기
+    //    _getChatListIdx();
+    //    _getChatList();
+
+        sameSize  = GetSameSize().main();
+        count = 0;
+        _textFieldController = TextEditingController(text: '스타벅스 강남R점' + count.toString());
+
+        isLoading = false;
+
+        // 현재 위치 검색
+        _getCurrentLocation();
+
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-29
+     * @description : 위치정보 검색
+     */
+    _getCurrentLocation() async {
+    	print("# start get location.");
+	    GeolocationStatus geolocationStatus  = await geolocator.checkGeolocationPermissionStatus();
+
+	    if(geolocationStatus == GeolocationStatus.denied || geolocationStatus == GeolocationStatus.disabled){
+		    print("# GeolocationPermission denied. " + geolocationStatus.toString());
+		    // TODO 화면에 GPS 켜달라고 피드백, 디자인 적용
+		    setState(() {
+			    _currentAddress = '위치정보 권한이 필요합니다.';
+		    });
+
+	    }else{
+	    	print("# getCurrentPosition");
+		    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+
+		    print(position.toString());
+
+		    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
+
+		    if(placemark != null && placemark.length > 0){
+			    Placemark p = placemark[0];
+
+			    // TODO 삭제
+			    print(p.toJson().toString());
+
+			    // TODO 디자인 적용
+			    setState(() {
+				    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
+			    });
+		    }
+	    }
+    }
 
   /*
    * @author : hs
@@ -316,8 +360,7 @@ class _HwaTabState extends State<HwaTab> {
           ),
           Container(
             child: Text(
-//              '$_currentAddress' ,
-              "위치정보가 없습니다.",
+              '$_currentAddress' ,
               style: TextStyle(
                 height: 1,
                 fontFamily: "NotoSans",
@@ -495,20 +538,6 @@ class _HwaTabState extends State<HwaTab> {
           context, MaterialPageRoute(builder: (context) => ChatroomPage(chatIdx: chatListItem.chatIdx))
       ),
     );
-  }
-
-  _getCurrentLocation() {
-    geolocator
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
-        .then((Position position) {
-      setState(() {
-        _currentPosition = position;
-      });
-
-      _getAddressFromLatLng();
-    }).catchError((e) {
-      print(e);
-    });
   }
 
   _getAddressFromLatLng() async {
