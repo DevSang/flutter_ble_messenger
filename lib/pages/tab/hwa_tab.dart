@@ -35,7 +35,6 @@ class _HwaTabState extends State<HwaTab> {
     Position _currentPosition;
     String _currentAddress = '위치 검색중..';
     double sameSize;
-    int count;
     TextEditingController _textFieldController;
 
     bool isLoading;
@@ -50,8 +49,7 @@ class _HwaTabState extends State<HwaTab> {
     //    _getChatList();
 
         sameSize  = GetSameSize().main();
-        count = 0;
-        _textFieldController = TextEditingController(text: '스타벅스 강남R점' + count.toString());
+        _textFieldController = TextEditingController(text: '스타벅스 강남R점');
 
         isLoading = false;
 

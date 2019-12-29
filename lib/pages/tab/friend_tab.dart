@@ -24,7 +24,7 @@ class FriendTab extends StatefulWidget {
 }
 
 class _FriendTabState extends State<FriendTab> {
-  final List<FriendInfo> friendList = Constant.FRIEND_LIST;
+  List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
   List<String> strList = [];
   List<Widget> normalList = [];
   TextEditingController searchController = TextEditingController();
@@ -45,6 +45,7 @@ class _FriendTabState extends State<FriendTab> {
 //    }
 
 //    friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
+
       //TODO: 추후 적용
       filterList();
       searchController.addListener(() {
