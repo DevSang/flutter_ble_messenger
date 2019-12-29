@@ -24,14 +24,9 @@ class _SignInPageState extends State<SignInPage> {
   @override
   void initState() {
     super.initState();
-    this.checkAuthentication();
   }
 
-  checkAuthentication() async {
-    Navigator.pushReplacementNamed(context, '/home');
-  }
-
-    @override
+  @override
   Widget build(BuildContext context) {
 
         return Scaffold(

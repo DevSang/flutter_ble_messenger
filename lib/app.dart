@@ -27,10 +27,13 @@ class _MainPageState extends State<MainPage> {
     @override
     void initState() {
 //        clearLocalStorageForTest();
+
         //Constant init
         Constant.setUserIdx();
+
         //Check local store and call init api
-        callInitApi();
+
+
         //get Firebase push token
         firebaseCloudMessaging_Listeners();
 
@@ -61,7 +64,12 @@ class _MainPageState extends State<MainPage> {
     */
     callInitApi () async {
         await store.onReady;
-        getFriendList();
+
+        String token = sharedPreferences.getString("token");
+        if(token != '' && token != null){
+            getFriendList();
+        }
+
     }
 
     /*
