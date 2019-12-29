@@ -4,10 +4,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/social_signin.dart';
 import 'dart:convert';
 import 'package:Hwa/utility/red_toast.dart';
 //import 'package:flutter_kakao_login/flutter_kakao_login.dart';
-import 'package:kakao_flutter_sdk/auth.dart';
+//import 'package:kakao_flutter_sdk/auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 //로그인 page
 class SignInPage extends StatefulWidget {
@@ -20,13 +22,57 @@ class _SignInPageState extends State<SignInPage> {
     final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
     SharedPreferences spf;
     FocusNode contextFocus;
-
     String phone_number, auth_number;
 
-  @override
-  void initState() {
-    super.initState();
-  }
+    GoogleSignInAccount _currentUser;
+    String _contactText;
+
+    GoogleSignIn _googleSignIn = GoogleSignIn(
+        scopes: <String>[
+            'email',
+            'https://www.googleapis.com/auth/contacts.readonly',
+        ],
+    );
+
+    @override
+    void initState() {
+        super.initState();
+        _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+            setState(() {
+                _currentUser = account;
+            });
+            if (_currentUser != null) {
+                print("#Google current user : " + _currentUser.toString());
+            }
+        });
+    }
+
+    Future<void> googleSignin() async {
+        try {
+            print("#Google Signin");
+            return await _googleSignIn.signIn();
+        } catch (error) {
+            print(error);
+        }
+    }
+
+    String _pickFirstNamedContact(Map<String, dynamic> data) {
+        final List<dynamic> connections = data['connections'];
+        final Map<String, dynamic> contact = connections?.firstWhere(
+                (dynamic contact) => contact['names'] != null,
+            orElse: () => null,
+        );
+        if (contact != null) {
+            final Map<String, dynamic> name = contact['names'].firstWhere(
+                    (dynamic name) => name['displayName'] != null,
+                orElse: () => null,
+            );
+            if (name != null) {
+                return name['displayName'];
+            }
+        }
+        return null;
+    }
 
 //  void kakaoLogin() async {
 //	  FlutterKakaoLogin kakaoSignIn = new FlutterKakaoLogin();
@@ -47,13 +93,13 @@ class _SignInPageState extends State<SignInPage> {
 //
 //  }
 
-	void kakaoLogin() async {
-		String authCode = await AuthCodeClient.instance.requestWithTalk();
-
-		print("success;");
-		print("authCode $authCode");
-
-	}
+//	void kakaoLogin() async {
+//		String authCode = await AuthCodeClient.instance.requestWithTalk();
+//
+//		print("success;");
+//		print("authCode $authCode");
+//
+//	}
 
   @override
   Widget build(BuildContext context) {
@@ -389,32 +435,49 @@ class _SignInPageState extends State<SignInPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
-          InkWell(
-              child: Image.asset('assets/images/sns/snsIconKakao.png'),
-	          onTap: (){
-		          kakaoLogin();
-	          },
-          ),
+            RaisedButton(
+                child: Row(
+                    children: <Widget>[
+                        InkWell(
+                            child: Image.asset('assets/images/sns/snsIconKakao.png'),
+                        ),
+                        InkWell(
+                            child: Text("Kakao", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                        ),
+                    ],
+                ),
+                onPressed: () {
 
-          InkWell(
-              child: Text("Kakao", style: TextStyle(
-                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'),
-              )
-          ),
-          InkWell(
-              child: Image.asset('assets/images/sns/snsIconFacebook.png')
-          ),
-          InkWell(
-              child: Text("Facebook", style: TextStyle(
-                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-          ),
-          InkWell(
-              child: Image.asset('assets/images/sns/snsIconGoogle.png')
-          ),
-          InkWell(
-              child: Text("Google", style: TextStyle(
-                  color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-          ),
+                },
+            ),
+            RaisedButton(
+                child: Row(
+                    children: <Widget>[
+                        InkWell(
+                            child: Image.asset('assets/images/sns/snsIconFacebook.png'),
+                        ),
+                        InkWell(
+                            child: Text("Facebook", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                        ),
+                    ],
+                ),
+                onPressed: () {
+
+                },
+            ),
+            RaisedButton(
+                child: Row(
+                    children: <Widget>[
+                        InkWell(
+                            child: Image.asset('assets/images/sns/snsIconGoogle.png'),
+                        ),
+                        InkWell(
+                            child: Text("Google", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                        ),
+                    ],
+                ),
+                onPressed:googleSignin,
+            ),
         ],
       ),
     );
