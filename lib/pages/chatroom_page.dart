@@ -122,7 +122,7 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     BoxDecoration startAd(BuildContext context) {
         setState(() {
-            HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl, test: true);
+            HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
             print('##BLE START!!!');
         });
 
