@@ -120,7 +120,7 @@ class _HwaTabState extends State<HwaTab> {
     */
     void _getChatList() {
 //        testGetChatList.forEach((itemId) => _getChatItem(itemId));
-        _getChatItem(18);
+//        _getChatItem(18);
     }
 
     /*
