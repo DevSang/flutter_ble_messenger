@@ -394,7 +394,6 @@ class ChatScreenState extends State<ChatroomPage> {
                         fontSize: ScreenUtil.getInstance().setSp(16)
                     ),
                 ),
-                brightness: Brightness.light,
                 leading: new IconButton(
                     icon: new Image.asset('assets/images/icon/navIconPrev.png'),
                     onPressed: (){
@@ -425,6 +424,7 @@ class ChatScreenState extends State<ChatroomPage> {
                 centerTitle: true,
                 elevation: 0,
                 backgroundColor: Colors.white,
+                brightness: Brightness.light,
             ),
             endDrawer: SafeArea(
                 child: new ChatSideMenu(chatInfo: chatInfo)

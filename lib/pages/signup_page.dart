@@ -5,6 +5,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 final TextEditingController phoneRegController = new TextEditingController();
 
@@ -18,6 +19,14 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage>{
     FocusNode myFocusNode;
     final TextEditingController _regAuthCodeController = new TextEditingController();
+    bool lengthConfirm;
+
+
+    @override
+  void initState() {
+    super.initState();
+    lengthConfirm = false;
+  }
 
   @override
   Widget build(BuildContext context){
@@ -27,6 +36,15 @@ class _SignUpPageState extends State<SignUpPage>{
                 FocusScope.of(context).requestFocus(new FocusNode());
             },
             child: new Container(
+                decoration: BoxDecoration(
+                    border: Border(
+                        top: BorderSide(
+                            width: ScreenUtil().setWidth(0.5),
+                            color: Color.fromRGBO(178, 178, 178, 0.8)
+                        )
+                    )
+                ),
+
                 child: ListView(
                     children: <Widget>[
                         _regPhoneTextField(),
@@ -188,7 +206,15 @@ class _SignUpPageState extends State<SignUpPage>{
                 focusNode: myFocusNode,
                 maxLength: 6,
                 onChanged: (regAuthCode) {
-                    print(regAuthCode);
+                    if(regAuthCode.length == 6 && !lengthConfirm) {
+                        setState(() {
+                            lengthConfirm = true;
+                        });
+                    } else if (regAuthCode.length != 6 && lengthConfirm){
+                        setState(() {
+                            lengthConfirm = false;
+                        });
+                    }
                 },
                 onFieldSubmitted: (regAuthCode) {
                     print('회원가입 인증코드 입력 :$regAuthCode');
@@ -223,6 +249,8 @@ class _SignUpPageState extends State<SignUpPage>{
     * @description : 다음 버튼
     */
     Widget _regNextButton(){
+        var color = lengthConfirm ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
+
         return Container(
             width: MediaQuery.of(context).size.width,
             height: 50.0,
@@ -232,10 +260,15 @@ class _SignUpPageState extends State<SignUpPage>{
                 onPressed:(){
                     registerNext();
                 },
-                color: Colors.black38,
+                color: color,
                 elevation: 0.0,
-                child: Text("다음", style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans')),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+                child: Text(
+                    "다음",
+                    style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans')
+                ),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5.0)
+                ),
             ),
         );
     }
