@@ -7,7 +7,6 @@ import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
 import 'package:Hwa/utility/red_toast.dart';
 //import 'package:flutter_kakao_login/flutter_kakao_login.dart';
-import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 //로그인 page
@@ -47,14 +46,6 @@ class _SignInPageState extends State<SignInPage> {
 //	  }
 //
 //  }
-
-	void kakaoLogin() async {
-		String authCode = await AuthCodeClient.instance.requestWithTalk();
-
-		print("success;");
-		print("authCode $authCode");
-
-	}
 
 	void facebookLogin() async {
 		final facebookLogin = FacebookLogin();
@@ -410,7 +401,6 @@ class _SignInPageState extends State<SignInPage> {
           InkWell(
               child: Image.asset('assets/images/sns/snsIconKakao.png'),
 	          onTap: (){
-		          kakaoLogin();
 	          },
           ),
 
