@@ -360,12 +360,7 @@ class _HwaTabState extends State<HwaTab> {
         return Scaffold(
             appBar: TabAppBar(
                 title: '주변 단화방',
-
-                /// AppBar Row 내 요소 하단 정렬을 위한 높이 처리
-                leftChild: Container(
-                    height: 0
-                ),
-                rightChild: Row(
+                leftChild: Row(
                     children: <Widget>[
                         Container(
                             width: sameSize * 22,

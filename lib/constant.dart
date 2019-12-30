@@ -30,6 +30,6 @@ class Constant {
 
     /// 유저 정보 관련 변수 (추후 변경)
     static final String NICK = "HWA";
-    static final String PROFILE_IMG = "assets/images/icon/photoProfileDefault.png";
+    static final String PROFILE_IMG = "assets/images/icon/profile.png";
     static final String PHONE_NUM = "010-1234-5678";
 }

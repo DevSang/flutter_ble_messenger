@@ -8,10 +8,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
 
+/*
+ * @project : HWA - Mobile
+ * @author : hs
+ * @date : 2019-12-30
+ * @description : Custom App Bar
+ */
 class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
     final String title;
     final Widget leftChild;
-    final Widget rightChild;
     double sameSize;
 
     // 로그아웃 key/value 지우기 위함
@@ -20,9 +25,8 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     @override
     final Size preferredSize;
-    TabAppBar({@required this.title, this.leftChild, this.rightChild})
+    TabAppBar({@required this.title, this.leftChild})
         : preferredSize = Size(375, 84);
-
 
     /*
     * @author : hs
@@ -39,7 +43,6 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
         return;
     }
 
-
     Widget build(BuildContext context) {
         sameSize  = GetSameSize().main();
 
@@ -48,9 +51,9 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: SafeArea(
                 child: Container(
                     width: ScreenUtil().setWidth(375),
-                    height: ScreenUtil().setHeight(64),
-                    padding: EdgeInsets.symmetric(
-                        horizontal: ScreenUtil().setWidth(16),
+                    height: ScreenUtil().setHeight(61.5),
+                    padding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(16),
                     ),
                     decoration: BoxDecoration(
                         color: Colors.white,
@@ -66,52 +69,19 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                             Container(
+                                height: ScreenUtil().setHeight(56.5),
                                 child: Row(
                                     children: <Widget>[
-                                        Container(
-                                            width: sameSize*38,
-                                            height: sameSize*38,
-                                            decoration: BoxDecoration(
-                                                borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(19)),
-                                                border: Border.all(
-                                                    width: ScreenUtil().setWidth(1),
-                                                    color: Color.fromRGBO(0, 0, 0, 0.05)
-                                                )
-                                            ),
-                                            child: InkWell(
-                                                child: ClipRRect(
-                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(19)),
-                                                    child: Image.asset(
-                                                        Constant.PROFILE_IMG,
-                                                        width: ScreenUtil().setWidth(38),
-                                                        height: ScreenUtil().setHeight(38),
-                                                        fit: BoxFit.fill,
-                                                    )
-                                                ),
-                                                onTap: () {
-                                                    logOut().then((value) {
-                                                        Navigator.push(context,
-                                                            MaterialPageRoute(builder: (context) {
-                                                                return SignInPage();
-                                                            })
-                                                        );
-                                                    });
-                                                },
-                                            )
-                                        ),
                                         Row(
                                             crossAxisAlignment: CrossAxisAlignment.end,
                                             children: <Widget>[
                                                 Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: ScreenUtil().setWidth(12.5),
-                                                    ),
                                                     child: Text(
                                                         title,
                                                         style: TextStyle(
                                                             height: 1,
                                                             fontFamily: "NotoSans",
-                                                            fontWeight: FontWeight.w500,
+                                                            fontWeight: FontWeight.w600,
                                                             fontSize: ScreenUtil(allowFontScaling: true).setSp(20),
                                                             color: Color.fromRGBO(39, 39, 39, 1),
                                                             letterSpacing: ScreenUtil().setWidth(-0.5),
@@ -125,7 +95,65 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 )
                             ),
                             Container(
-                                child: rightChild
+                                width: ScreenUtil().setHeight(60.5),
+                                height: ScreenUtil().setHeight(56.5),
+                                padding: EdgeInsets.only(
+                                    left: ScreenUtil().setWidth(8),
+                                    right: ScreenUtil().setWidth(8),
+                                    top: ScreenUtil().setHeight(8),
+                                    bottom: ScreenUtil().setHeight(8.5),
+                                ),
+                                margin: EdgeInsets.only(
+                                    right: ScreenUtil().setWidth(7.5),
+                                ),
+                                child: InkWell(
+                                    child: Stack(
+                                        children: <Widget>[
+                                            Positioned(
+                                                bottom: 0,
+                                                right: 0,
+                                                child: Container(
+                                                    width: ScreenUtil().setHeight(38),
+                                                    height: ScreenUtil().setHeight(38),
+                                                    decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                            image:AssetImage(Constant.PROFILE_IMG),
+                                                            fit: BoxFit.cover
+                                                        ),
+                                                        shape: BoxShape.circle
+                                                    )
+                                                ),
+                                            ),
+                                            Positioned(
+                                                bottom: 0,
+                                                left: 0,
+                                                child: GestureDetector(
+                                                    child: Container(
+                                                        width: ScreenUtil().setHeight(21.5),
+                                                        height: ScreenUtil().setHeight(21.5),
+                                                        decoration: BoxDecoration(
+                                                            color: Colors.white,
+                                                            image: DecorationImage(
+                                                                image:AssetImage("assets/images/icon/setIcon.png"),
+                                                                fit: BoxFit.cover
+                                                            ),
+                                                            shape: BoxShape.circle,
+                                                        )
+                                                    )
+                                                )
+                                            ),
+                                        ],
+                                    ),
+                                    onTap: () {
+                                        logOut().then((value) {
+                                            Navigator.push(context,
+                                                MaterialPageRoute(builder: (context) {
+                                                    return SignInPage();
+                                                })
+                                            );
+                                        });
+                                    },
+                                )
                             ),
                         ],
                     )
