@@ -43,9 +43,9 @@ class CallApi {
 
     static logRequest(String prefixUrl, method, header, url, data){
         print("#Request Url : " + url.toString());
-        print("#Method : " + method.toString());
-        print("#Headers : " + header.toString());
-        print("#Data : " + data.toString());
+//        print("#Method : " + method.toString());
+//        print("#Headers : " + header.toString());
+//        print("#Data : " + data.toString());
     }
 
     static setResponse(http.Response response){

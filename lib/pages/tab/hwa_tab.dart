@@ -45,6 +45,12 @@ class _HwaTabState extends State<HwaTab> {
     TextEditingController _textFieldController;
     bool isLoading;
 
+    // 채팅방이 아래 시간 이상 AD를 받지 못하면 리스트에서 삭제 (ms)
+    int chatItemRemoveTime = 3000;
+
+    // 채팅방 삭제 타이머
+    Timer chatItemRemoveTimer;
+
     // GPS 관련
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     Position _currentPosition;
@@ -90,33 +96,7 @@ class _HwaTabState extends State<HwaTab> {
     void dispose() {
 	    super.dispose();
 	    HwaBeacon().stopRanging();
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-29
-     * @description : BLE Scan
-    */
-    void _scanBLE() async {
-
-    	// 비콘 listen 위한 Stream 설정
-	    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
-	    	// TODO 삭제
-		    developer.log("Scaning!!! " + result.toString());
-		    if (result != null && result.beacons.isNotEmpty && mounted) {
-			    setState(() {
-				    result.beacons.forEach((beacon) {
-					    developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-					    if (!chatIdxList.contains(beacon.roomId))  {
-						    _setChatItem(beacon.roomId);
-					    }
-				    });
-			    });
-		    }
-	    });
-
-	    // 스캔(비콘 Listen) 시작
-	    HwaBeacon().startRanging();
+	    stopOldChatRemoveTimer();
     }
 
     /*
@@ -125,8 +105,8 @@ class _HwaTabState extends State<HwaTab> {
      * @description : 위치정보 검색
      */
     _getCurrentLocation() async {
-    	developer.log("# start get location.");
-    	//현재 위치정보 권한 체크
+	    developer.log("# start get location.");
+	    // 현재 위치정보 권한 체크
 	    GeolocationStatus geolocationStatus  = await geolocator.checkGeolocationPermissionStatus();
 
 	    if(geolocationStatus == GeolocationStatus.denied || geolocationStatus == GeolocationStatus.disabled){
@@ -136,12 +116,14 @@ class _HwaTabState extends State<HwaTab> {
 			    _currentAddress = '위치정보 권한이 필요합니다.';
 		    });
 	    }else{
-	    	developer.log("# getCurrentPosition");
+		    developer.log("# getCurrentPosition");
+		    // 현재 위도 경도 찾기
 		    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
 		    // TODO 삭제
 		    developer.log(position.toString());
 
+		    // 위도, 경도로 주소지 찾기
 		    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
 
 		    if(placemark != null && placemark.length > 0){
@@ -159,28 +141,111 @@ class _HwaTabState extends State<HwaTab> {
     }
 
     /*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : BLE Scan
+    */
+    void _scanBLE() async {
+    	// 오래된 채팅방 삭제 타이머 시작
+	    startOldChatRemoveTimer();
+
+    	// 비콘 listen 위한 Stream 설정
+	    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
+	    	// TODO 삭제
+		    //developer.log("Scaning!!! " + result.toString());
+		    if (result != null && result.beacons.isNotEmpty && mounted) {
+			    setState(() {
+				    result.beacons.forEach((beacon) {
+					    developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
+					    developer.log("# chatIdxList : " + chatIdxList.toString());
+
+					    if (!chatIdxList.contains(beacon.roomId))  {
+						    _setChatItem(beacon.roomId);
+					    }else {
+					    	//해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
+						    for(ChatListItem chatItem in chatList){
+							    if(chatItem.chatIdx == beacon.roomId){
+								    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
+								    break;
+							    }
+						    }
+					    }
+				    });
+			    });
+		    }
+	    });
+
+	    // 스캔(비콘 Listen) 시작
+	    HwaBeacon().startRanging();
+    }
+
+    /*
     * @author : hs
     * @date : 2019-12-28
     * @description : 채팅 리스트 받아오기 API 호출
     */
     void _setChatItem(int chatIdx) async {
-        try {
-            String uri = "/danhwa/room?roomIdx=" + chatIdx.toString();
+	    try {
+		    String uri = "/danhwa/room?roomIdx=" + chatIdx.toString();
 
-            final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
+		    final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
 
-            Map<String, dynamic> jsonParse = json.decode(response.body);
-            ChatListItem chatInfo = new ChatListItem.fromJSON(jsonParse);
+		    Map<String, dynamic> jsonParse = json.decode(response.body);
+		    ChatListItem chatItem = new ChatListItem.fromJSON(jsonParse);
+		    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
 
-            // 채팅 리스트에 추가
-            setState(() {
-                chatList.insert(0, chatInfo);
-                chatIdxList.insert(0, chatInfo.chatIdx);
-            });
+		    // 채팅 리스트에 추가
+		    setState(() {
+			    chatList.insert(0, chatItem);
+			    chatIdxList.insert(0, chatItem.chatIdx);
+		    });
 
-        } catch (e) {
-            developer.log("#### Error :: "+ e.toString());
-        }
+	    } catch (e) {
+		    developer.log("#### Error :: "+ e.toString());
+	    }
+    }
+
+	/*
+	 * @author : hk
+	 * @date : 2019-12-30
+	 * @description : 채팅방 삭제 타이머 동작 시작 - 1.5초마다 동작
+	 */
+    void startOldChatRemoveTimer(){
+	    if(chatItemRemoveTimer != null && chatItemRemoveTimer.isActive) chatItemRemoveTimer.cancel();
+
+        chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: 1500), (timer) {
+            deleteOldChat();
+        });
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 채팅방 삭제 타이머 동작 멈춤
+     */
+    void stopOldChatRemoveTimer(){
+	    chatItemRemoveTimer.cancel();
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 채팅방 리스트에서 기준 시간 이상 AD를 받지 못한 아이템 삭제
+     */
+    void deleteOldChat(){
+    	setState(() {
+		    int current = new DateTime.now().millisecondsSinceEpoch;
+		    if(chatList != null){
+			    chatList.retainWhere((chat){
+				    if(current - chat.adReceiveTs > chatItemRemoveTime){
+					    chatIdxList.remove(chat.chatIdx);
+					    return false;
+				    }else{
+					    return true;
+				    }
+			    });
+		    }
+    	});
     }
 
     /*
@@ -201,7 +266,7 @@ class _HwaTabState extends State<HwaTab> {
             int createdChatIdx = jsonParse['danhwaRoom']['roomIdx'];
 
             // 단화방 입장
-             _enterChat(jsonParse);
+            _enterChat(jsonParse);
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
@@ -223,6 +288,7 @@ class _HwaTabState extends State<HwaTab> {
             setState(() {
                 isLoading = false;
                 HwaBeacon().stopRanging();
+                stopOldChatRemoveTimer();
                 chatList.clear();
                 chatIdxList.clear();
             });
