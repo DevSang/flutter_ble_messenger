@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:collection';
 
 import 'package:Hwa/data/models/chat_join_info.dart';
+import 'package:Hwa/pages/parts/loading.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -361,13 +362,21 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     void popPage() async {
+        setState(() {
+            isLoading = true;
+        });
+
 	    await HwaBeacon().stopAdvertising();
+
+        setState(() {
+            isLoading = false;
+        });
+
 	    Navigator.of(context).pop();
     }
 
     @override
     Widget build(BuildContext context) {
-
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
         return new Scaffold(
             appBar: new AppBar(
@@ -452,7 +461,7 @@ class ChatScreenState extends State<ChatroomPage> {
                             openedNf ? buildNoticeOpen() : buildNotice(),
 
                             // Loading
-                            buildLoading()
+                            isLoading ? Loading() : Container()
                         ],
                     ),
                     onWillPop: onBackPress,
@@ -461,19 +470,6 @@ class ChatScreenState extends State<ChatroomPage> {
                     FocusScope.of(context).requestFocus(focusNode);
                 },
             )
-        );
-    }
-
-    Widget buildLoading() {
-        return Positioned(
-            child: isLoading
-                ? Container(
-                child: Center(
-                    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                ),
-                color: Colors.white.withOpacity(0.8),
-            )
-                : Container(),
         );
     }
 
