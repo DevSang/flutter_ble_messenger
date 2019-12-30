@@ -622,11 +622,12 @@ class _HwaTabState extends State<HwaTab> {
                     titleText= "블루투스 권한이 필요합니다.";
                     subTitle="설정 > 앱 > 앱 권한";
                     buttonText="설정으로 이동 >";
-                    buttonClick = HwaBeacon.
+                    buttonClick = HwaBeacon().openApplicationSettings;
                 } else {
                     titleText= "블루투스가 꺼져있습니다.";
                     subTitle="설정 > 블루투스 켜기";
                     buttonText="설정으로 이동 >";
+                    buttonClick = HwaBeacon().openApplicationSettings;
                 }
             } else {
                 mainBackImg = "assets/images/background/noLocationBackgroundImg.png";
@@ -634,10 +635,12 @@ class _HwaTabState extends State<HwaTab> {
                     titleText= "위치 접근 권한이 필요합니다.";
                     subTitle="설정 > 앱 > 앱 권한";
                     buttonText="설정으로 이동 >";
+                    buttonClick = HwaBeacon().requestAuthorization;
                 } else {
                     titleText= "GPS가 꺼져있습니다.";
                     subTitle="설정 > GPS 켜기";
                     buttonText="설정으로 이동 >";
+                    buttonClick = HwaBeacon().openLocationSettings;
                 }
             }
             return Column(
