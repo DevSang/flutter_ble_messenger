@@ -130,8 +130,10 @@ flutter:
     - assets/images/icon/tabIconHwaActive.png
     - assets/images/icon/gpsIconConnected.png
     - assets/images/icon/bluetoothIconConnected.png
+    - assets/images/icon/bluetoothIconUnconnected.png
     - assets/images/icon/thumbnailUnset1.png
     - assets/images/icon/iconRefresh.png
+    - assets/images/icon/gpsIconUnconnected.png
     - assets/images/background/noRoomBackgroundImg.png
     - assets/images/background/noBleBackgroundImg.png
     - assets/images/background/noLocationBackgroundImg.png

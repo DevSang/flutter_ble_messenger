@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'dart:io' show Platform;
 import 'dart:developer' as developer;
 import 'dart:ui';
@@ -561,6 +562,138 @@ class _HwaTabState extends State<HwaTab> {
         );
     }
 
+    Widget setScreen () {
+        if(isLoading){
+            return Loading();
+        } else if(chatList.length != 0) {
+            return Stack(
+                children: <Widget>[
+                    Positioned(
+                        bottom: ScreenUtil().setHeight(74.5),
+                        right: 0,
+                        child: Image.asset(
+                            "assets/images/background/commonBackgroundImg.png"),
+                    ),
+                    Container(
+                        child: Column(
+                            children: <Widget>[
+                                // 위치 정보 영역
+                                getLocation(),
+                                // 채팅 리스트
+                                buildChatList(),
+                            ],
+                        )
+                    )
+                ]
+            );
+        } else {
+            bool notAllowedBLE = !isAllowedBLE;
+            bool notAllowedLoc = (!notAllowedBLE && !isAllowedGPS);
+            bool noRoomFlag = (isAllowedBLE && isAllowedGPS && chatList.length == 0);
+
+            String mainBackImg = "";
+            String titleText = "";
+            String subTitle = "";
+            String buttonText = "";
+            if(noRoomFlag){
+                mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
+                titleText= "현재 위치 단화방이 없습니다.";
+                subTitle="원하는 방을 만들어 보실래요?";
+                buttonText="방만들기 >";
+            }
+            else if(notAllowedBLE) {
+                mainBackImg = "assets/images/background/noBleBackgroundImg.png";
+                if(!isAuthBLE) {
+                    titleText= "블루투스 권한이 필요합니다.";
+                    subTitle="설정 > 앱 > 앱 권한";
+                    buttonText="설정으로 이동 >";
+                } else {
+                    titleText= "블루투스가 꺼져있습니다.";
+                    subTitle="설정 > 블루투스 켜기";
+                    buttonText="설정으로 이동 >";
+                }
+            } else {
+                mainBackImg = "assets/images/background/noLocationBackgroundImg.png";
+                if(!isAuthGPS) {
+                    titleText= "위치 접근 권한이 필요합니다.";
+                    subTitle="설정 > 앱 > 앱 권한";
+                    buttonText="설정으로 이동 >";
+                } else {
+                    titleText= "GPS가 꺼져있습니다.";
+                    subTitle="설정 > GPS 켜기";
+                    buttonText="설정으로 이동 >";
+                }
+            }
+            return Column(
+                children: <Widget>[
+                    Container(
+                        child: Column(
+                            children: <Widget>[
+                                // 위치 정보 영역
+                                getLocation(),
+                            ],
+                        )
+                    ),
+                    Container(
+                        margin:EdgeInsets.only(
+                            top: 11 + ScreenUtil().setHeight(35.5),
+                            bottom: ScreenUtil().setHeight(35.5),
+                        ),
+                        child: Image.asset(mainBackImg,
+                            width: ScreenUtil().setWidth(375),
+                        )
+                    ),
+
+                    Container(
+                        child:Text(titleText,
+                            style: TextStyle(
+                                fontFamily: 'NotoSans',
+                                color: Color(0xff272727),
+                                fontSize: ScreenUtil().setSp(20),
+                                fontWeight: FontWeight.w600,
+                                fontStyle: FontStyle.normal,
+                                letterSpacing: ScreenUtil().setWidth(-1),
+                            )
+                        )
+                    ),
+                    Container(
+                        margin: EdgeInsets.only(
+                            top:ScreenUtil().setHeight(10),
+                            bottom:ScreenUtil().setHeight(6),
+                        ),
+                        child: Text(subTitle,
+                            style: TextStyle(
+                                fontFamily: 'NotoSansCJKkr',
+                                color: Color(0xff6b6b6b),
+                                fontSize: ScreenUtil().setSp(20),
+                                fontWeight: FontWeight.w400,
+                                fontStyle: FontStyle.normal,
+                                letterSpacing: ScreenUtil().setWidth(-1),
+                            )
+                        )
+                    ),
+                    Container(
+                        width: ScreenUtil().setWidth(319),
+                        height: 44.0,
+                        margin: EdgeInsets.only(top: 10),
+                        padding: EdgeInsets.symmetric(horizontal: 15.0),
+                        child: RaisedButton(
+                            onPressed: (){
+                                HwaBeacon().openLocationSettings();
+                            },
+                            color: Color.fromRGBO(77, 96, 191, 1),
+                            elevation: 0.0,
+                            child: Text(buttonText, style: TextStyle(color: Colors.white)),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0)
+                            )
+                        )
+                    )
+                ],
+            );
+        }
+    }
+
     @override
     Widget build(BuildContext context) {
         return Scaffold(
@@ -602,26 +735,8 @@ class _HwaTabState extends State<HwaTab> {
                     ],
                 ),
             ),
-            body: Stack(
-                children: <Widget>[
-                    Positioned(
-                        bottom: 74.5,
-                        right: 0,
-                        child: Image.asset("assets/images/background/commonBackgroundImg.png"),
-                    ),
-                    Container(
-                        child: Column(
-                            children: <Widget>[
-                                // 위치 정보 영역
-                                getLocation(),
-                                // 채팅 리스트
-                                buildChatList(),
-                            ],
-                        ),
-                    ),
-                    isLoading ? Loading() : new Container()
-                ],
-            )
+            body: setScreen()
+
         );
     }
 
@@ -640,7 +755,9 @@ class _HwaTabState extends State<HwaTab> {
                                 Container(
                                     width: sameSize * 22,
                                     height: sameSize * 22,
-                                    child: Image.asset('assets/images/icon/bluetoothIconConnected.png')
+                                    child: isAllowedBLE ?
+                                        Image.asset('assets/images/icon/bluetoothIconConnected.png')
+                                        : Image.asset('assets/images/icon/bluetoothIconUnconnected.png')
                                 ),
                                 Container(
                                     margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(8)),
@@ -660,8 +777,7 @@ class _HwaTabState extends State<HwaTab> {
                                                 13),
                                             color: Color.fromRGBO(
                                                 107, 107, 107, 1),
-                                            letterSpacing: ScreenUtil()
-                                                .setWidth(-0.33),
+                                            letterSpacing: ScreenUtil().setWidth(-0.33),
                                         ),
                                     ),
                                 )
