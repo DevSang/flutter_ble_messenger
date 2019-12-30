@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:developer' as developer;
+import 'dart:ui';
 
 import 'package:Hwa/constant.dart';
 import 'package:flutter/cupertino.dart';
@@ -78,7 +79,6 @@ class _HwaTabState extends State<HwaTab> {
     void initState() {
         super.initState();
         _initState();
-
         isLoading = false;
         sameSize  = GetSameSize().main();
     }
@@ -565,7 +565,7 @@ class _HwaTabState extends State<HwaTab> {
     Widget build(BuildContext context) {
         return Scaffold(
             appBar: TabAppBar(
-                title: '주변 단화방',
+                title: "단화방",
                 leftChild: Row(
                     children: <Widget>[
                         Container(
@@ -574,8 +574,7 @@ class _HwaTabState extends State<HwaTab> {
                             margin: EdgeInsets.only(left: 16),
 
                             child: InkWell(
-                                child: Image.asset(
-                                    'assets/images/icon/navIconHot.png'),
+                                child: Image.asset('assets/images/icon/navIconHot.png'),
                                 onTap: () =>
                                     Navigator.push(
                                         context, MaterialPageRoute(
@@ -605,18 +604,12 @@ class _HwaTabState extends State<HwaTab> {
             ),
             body: Stack(
                 children: <Widget>[
+                    Positioned(
+                        bottom: 74.5,
+                        right: 0,
+                        child: Image.asset("assets/images/background/commonBackgroundImg.png"),
+                    ),
                     Container(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: ScreenUtil().setWidth(16),
-                        ),
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(210, 217, 250, 1),
-                            image: DecorationImage(
-                                image: AssetImage(
-                                    "assets/images/background/bgMap.png"),
-                                fit: BoxFit.cover,
-                            ),
-                        ),
                         child: Column(
                             children: <Widget>[
                                 // 위치 정보 영역
@@ -635,32 +628,25 @@ class _HwaTabState extends State<HwaTab> {
     Widget getLocation() {
         return Container(
             height: ScreenUtil().setHeight(22),
-            margin: EdgeInsets.only(
-                top: ScreenUtil().setHeight(21),
-                bottom: ScreenUtil().setHeight(18),
-            ),
+            margin: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(21)),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                     Container(
+                        margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16)),
                         height: ScreenUtil().setHeight(22),
                         child: Row(
                             children: <Widget>[
                                 Container(
-                                    margin: EdgeInsets.only(
-                                        left: ScreenUtil().setWidth(8),
-                                        right: ScreenUtil().setWidth(4.5),
-                                    ),
                                     width: sameSize * 22,
                                     height: sameSize * 22,
-                                    decoration: BoxDecoration(
-                                        color: Color.fromRGBO(107, 107, 107, 1),
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                                'assets/images/icon/iconPin.png')
-                                        ),
-                                        shape: BoxShape.circle
-                                    ),
+                                    child: Image.asset('assets/images/icon/bluetoothIconConnected.png')
+                                ),
+                                Container(
+                                    margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(8)),
+                                    width: sameSize * 22,
+                                    height: sameSize * 22,
+                                    child: Image.asset('assets/images/icon/gpsIconConnected.png')
                                 ),
                                 Container(
                                     child: Text(
@@ -683,18 +669,28 @@ class _HwaTabState extends State<HwaTab> {
                         )
                     ),
                     Container(
-                        child: Text(
-                            '$_currentAddress',
-                            style: TextStyle(
-                                height: 1,
-                                fontFamily: "NotoSans",
-                                fontWeight: FontWeight.w400,
-                                fontSize: ScreenUtil(allowFontScaling: true)
-                                    .setSp(15),
-                                color: Color.fromRGBO(39, 39, 39, 1),
-                                letterSpacing: ScreenUtil().setWidth(-0.75),
-                            ),
-                        ),
+                        margin: EdgeInsets.only(right:ScreenUtil().setWidth(16)),
+                        child:
+                        Row(
+                            children: <Widget>[
+                                Container(
+                                    margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
+                                    child: Image.asset('assets/images/icon/iconRefresh.png'),
+                                ),
+                                Text(
+                                    '$_currentAddress',
+                                    style: TextStyle(
+                                        height: 1,
+                                        fontFamily: "NotoSans",
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: ScreenUtil(allowFontScaling: true)
+                                            .setSp(15),
+                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                        letterSpacing: ScreenUtil().setWidth(-0.75),
+                                    ),
+                                ),
+                            ]
+                        )
                     ),
                 ],
             ),
@@ -720,10 +716,8 @@ class _HwaTabState extends State<HwaTab> {
                 width: ScreenUtil().setWidth(343),
                 margin: EdgeInsets.only(
                     bottom: ScreenUtil().setHeight(10),
-                ),
-                padding: EdgeInsets.symmetric(
-                    horizontal: ScreenUtil().setWidth(14),
-                    vertical: ScreenUtil().setWidth(16),
+                    left:ScreenUtil().setHeight(16),
+                    right:ScreenUtil().setHeight(16),
                 ),
                 decoration: BoxDecoration(
                     color: Colors.white,
@@ -746,7 +740,7 @@ class _HwaTabState extends State<HwaTab> {
                             width: sameSize * 50,
                             height: sameSize * 50,
                             margin: EdgeInsets.only(
-                                right: ScreenUtil().setWidth(15),
+                                left: ScreenUtil().setWidth(13.2),
                             ),
                             child: ClipRRect(
                                 borderRadius: new BorderRadius.circular(
@@ -763,17 +757,16 @@ class _HwaTabState extends State<HwaTab> {
                         ),
                         // 단화방 정보
                         Container(
-                            width: ScreenUtil().setWidth(250),
+                            width: ScreenUtil().setWidth(260),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-
                                     /// 정보, 뱃지
                                     Container(
                                         height: ScreenUtil().setHeight(22),
                                         margin: EdgeInsets.only(
-                                            top: ScreenUtil().setHeight(1),
-                                            bottom: ScreenUtil().setHeight(10),
+                                            left: ScreenUtil().setHeight(14.1),
+                                            top: ScreenUtil().setHeight(17),
                                         ),
                                         child: Row(
                                             mainAxisAlignment: MainAxisAlignment
@@ -782,27 +775,24 @@ class _HwaTabState extends State<HwaTab> {
                                                 .end,
                                             children: <Widget>[
                                                 Container(
+                                                    height:ScreenUtil().setHeight(23.5),
                                                     constraints: BoxConstraints(
-                                                        maxWidth: ScreenUtil()
-                                                            .setWidth(190)
+                                                        maxWidth: ScreenUtil().setWidth(190)
                                                     ),
-                                                    child: Text(
-                                                        chatListItem.title,
-                                                        style: TextStyle(
-                                                            height: 1,
-                                                            fontFamily: "NotoSans",
-                                                            fontWeight: FontWeight
-                                                                .w500,
-                                                            fontSize: ScreenUtil(
-                                                                allowFontScaling: true)
-                                                                .setSp(16),
-                                                            color: Color
-                                                                .fromRGBO(
-                                                                39, 39, 39, 1),
-                                                            letterSpacing: ScreenUtil()
-                                                                .setWidth(-0.8),
+                                                    child: Align(
+                                                        alignment: Alignment.centerLeft,
+                                                        child: Text(
+                                                            chatListItem.title,
+                                                            style: TextStyle(
+                                                                height: 1,
+                                                                fontFamily: "NotoSans",
+                                                                fontWeight: FontWeight.w500,
+                                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                                color: Color.fromRGBO(39, 39, 39, 1),
+                                                                letterSpacing: ScreenUtil().setWidth(-0.8),
+                                                            ),
                                                         ),
-                                                    ),
+                                                    )
                                                 ),
                                                 // TODO : 인기 정책 변경
                                                 (chatListItem.score ?? 0) > 10
@@ -815,6 +805,11 @@ class _HwaTabState extends State<HwaTab> {
                                     /// 인원 수, 시간
                                     Container(
                                         height: ScreenUtil().setHeight(13),
+                                        width: ScreenUtil().setWidth(260),
+                                        margin: EdgeInsets.only(
+                                            left:ScreenUtil().setWidth(14),
+                                            top:ScreenUtil().setHeight(6.8),
+                                        ),
                                         child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: <Widget>[
@@ -847,30 +842,15 @@ class _HwaTabState extends State<HwaTab> {
                                                     )
                                                 ),
                                                 Container(
-                                                    margin: EdgeInsets.only(
-                                                        right: ScreenUtil()
-                                                            .setWidth(5),
-                                                    ),
                                                     child: Text(
-                                                        GetTimeDifference
-                                                            .timeDifference(
-                                                            chatListItem.lastMsg
-                                                                .chatTime),
+                                                        GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime),
                                                         style: TextStyle(
                                                             height: 1,
                                                             fontFamily: "NotoSans",
-                                                            fontWeight: FontWeight
-                                                                .w400,
-                                                            fontSize: ScreenUtil(
-                                                                allowFontScaling: true)
-                                                                .setSp(13),
-                                                            color: Color
-                                                                .fromRGBO(
-                                                                107, 107, 107,
-                                                                1),
-                                                            letterSpacing: ScreenUtil()
-                                                                .setWidth(
-                                                                -0.33),
+                                                            fontWeight: FontWeight.w400,
+                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                            color: Color.fromRGBO(107, 107, 107, 1),
+                                                            letterSpacing: ScreenUtil().setWidth(-0.33),
                                                         ),
                                                     ),
                                                 ),
