@@ -565,9 +565,8 @@ class _HwaTabState extends State<HwaTab> {
     }
 
     Widget setScreen () {
-        if(isLoading){
-            return Loading();
-        } else if(chatList.length != 0) {
+
+        if(chatList.length != 0) {
             return Stack(
                 children: <Widget>[
                     Positioned(
@@ -588,25 +587,23 @@ class _HwaTabState extends State<HwaTab> {
                     )
                 ]
             );
-        } else {
+        } else if (chatList.length == 0) {
             bool notAllowedBLE = !isAllowedBLE;
             bool notAllowedLoc = (!notAllowedBLE && !isAllowedGPS);
             bool noRoomFlag = (isAllowedBLE && isAllowedGPS && chatList.length == 0);
 
-            String mainBackImg = "";
-            String titleText = "";
-            String subTitle = "";
-            String buttonText = "";
-            Function buttonClick;
+            String mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
+            String titleText = "현재 위치 단화방이 없습니다.";
+            String subTitle = "원하는 방을 만들어 보실래요?";
+            String buttonText = "방만들기 >";
+            Function buttonClick = Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
                 titleText= "현재 위치 단화방이 없습니다.";
                 subTitle="원하는 방을 만들어 보실래요?";
                 buttonText="방만들기 >";
                 buttonClick =  Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
-
-            }
-            else if(notAllowedBLE) {
+            } else if(notAllowedBLE) {
                 mainBackImg = "assets/images/background/noBleBackgroundImg.png";
                 if(!isAuthBLE) {
                     titleText= "블루투스 권한이 필요합니다.";
@@ -688,7 +685,7 @@ class _HwaTabState extends State<HwaTab> {
                         padding: EdgeInsets.symmetric(horizontal: 15.0),
                         child: RaisedButton(
                             onPressed: (){
-                                buttonClick;
+                                buttonClick(context);
                             },
                             color: Color.fromRGBO(77, 96, 191, 1),
                             elevation: 0.0,
@@ -700,6 +697,8 @@ class _HwaTabState extends State<HwaTab> {
                     )
                 ],
             );
+        } else {
+            return Loading();
         }
     }
 
@@ -745,7 +744,6 @@ class _HwaTabState extends State<HwaTab> {
                 ),
             ),
             body: setScreen()
-
         );
     }
 

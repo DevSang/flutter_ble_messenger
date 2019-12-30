@@ -21,14 +21,14 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-            <key>CLIENT_ID</key>
-            <string>560232493191-jpriv1u5kplknuqgns4ac81eph29g3ea.apps.googleusercontent.com</string>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.560232493191-jpriv1u5kplknuqgns4ac81eph29g3ea</string>
 			</array>
+			<key>CLIENT_ID</key>
+			<string>560232493191-jpriv1u5kplknuqgns4ac81eph29g3ea.apps.googleusercontent.com</string>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
