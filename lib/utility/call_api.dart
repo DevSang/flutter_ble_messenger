@@ -44,10 +44,10 @@ class CallApi {
     }
 
     static logRequest(String prefixUrl, method, header, url, data){
-        developer.log("# Request Url : " + url.toString());
-        developer.log("# Method : " + method.toString());
-        developer.log("# Headers : " + header.toString());
-        developer.log("# Data : " + data.toString());
+        print("#Request Url : " + url.toString());
+//        print("#Method : " + method.toString());
+//        print("#Headers : " + header.toString());
+//        print("#Data : " + data.toString());
     }
 
     static setResponse(http.Response response){

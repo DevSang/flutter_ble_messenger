@@ -10,6 +10,7 @@ class ChatListItem {
     double score;               // 랭킹 점수
     ChatMessage lastMsg;		// 마지막 메시지
     ChatCountUser userCount;	// 참여 사용자 수
+    int adReceiveTs;	        // AD 받아서 chatList에 넣은 시간
 
     ChatListItem({
         this.chatIdx,
@@ -35,4 +36,15 @@ class ChatListItem {
             userCount : new ChatCountUser.fromJSON(jsonData['userCount'])
         );
     }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : ChatListItem 의 같음 여부 체크 위해 재정의
+     */
+    @override
+    bool operator ==(Object other) => other is ChatListItem && other.chatIdx == chatIdx;
+
+    @override
+    int get hashCode => chatIdx.hashCode;
 }

@@ -70,8 +70,7 @@ class _ChatTabState extends State<ChatTab> {
           title: '참여했던 단화방',
           leftChild: Container(
               height: 0
-          ),
-          rightChild: Container(),
+          )
         ),
         body: Container(
           padding: EdgeInsets.symmetric(
