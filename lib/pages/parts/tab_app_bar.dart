@@ -73,7 +73,11 @@ class TabAppBarState extends State<TabAppBar> {
         userInfo = jsonDecode(SPF.getString('userInfo'));
     }
 
-
+    /*
+    * @author : sh
+    * @date : 2019-12-30
+    * @description : top app bar위
+    */
     Widget build(BuildContext context) {
         sameSize  = GetSameSize().main();
         setUserInfo();
