@@ -66,10 +66,41 @@ class _SignInPageState extends State<SignInPage> {
      * @date : 2019-12-30
      * @description : google signin function
      */
-    Future<void> googleSignin() async {
+    void googleSignin() async {
         try {
-            developer.log("#Google Signin");
-            return await _googleSignIn.signIn();
+            developer.log("# Google Signin");
+//            var result = await _googleSignIn.signIn();
+//            final http.Response response = await http.get(
+//                'https://people.googleapis.com/v1/people/me/connections'
+//                    '?requestMask.includeField=person.names',
+//                headers: await _currentUser.authHeaders,
+//            );
+
+            _googleSignIn.signIn().then((result){
+                result.authentication.then((googleKey){
+                    print(googleKey.accessToken);
+                    print(googleKey.idToken);
+                    print(_googleSignIn.currentUser.displayName);
+                }).catchError((err){
+                    print('inner error');
+                });
+            }).catchError((err){
+                print('error occured');
+            });
+
+//            String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
+//            final response = await http.post(url,
+//                headers: {
+//                    'Content-Type': 'application/json',
+//                    'X-Requested-With': 'XMLHttpRequest'
+//                },
+//                body: jsonEncode({
+//                    "login_type" : "facebook",
+//                    "token" : result.accessToken.token.toString()
+//                })
+//            );
+
+
         } catch (error) {
             developer.log(error);
         }
@@ -81,7 +112,8 @@ class _SignInPageState extends State<SignInPage> {
      * @description : facebook signin function
      */
 	void facebookLogin() async {
-		final facebookLogin = FacebookLogin();
+        developer.log("# Facebook Signin");
+        final facebookLogin = FacebookLogin();
 		final result = await facebookLogin.logIn(["email"]);
 
 		switch (result.status) {
