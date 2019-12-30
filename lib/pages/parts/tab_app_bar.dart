@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
 
 import '../profile_page.dart';
+import '../profile_page.dart';
 
 /*
  * @project : HWA - Mobile
@@ -152,7 +153,7 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
                                         logOut().then((value) {
                                             Navigator.push(context,
                                                 MaterialPageRoute(builder: (context) {
-                                                    return SignInPage();
+                                                    return ProfilePage();
                                                 })
                                             );
                                         });
