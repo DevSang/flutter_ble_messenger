@@ -484,7 +484,6 @@ class _HwaTabState extends State<HwaTab> {
                             children: <Widget>[
                                 // 위치 정보 영역
                                 getLocation(),
-
                                 // 채팅 리스트
                                 buildChatList(),
                             ],
