@@ -27,9 +27,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
 }
   @override
   Widget build(BuildContext context) {
-      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-          statusBarColor: Colors.white
-      ));
+//      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+//          statusBarColor: Colors.white
+//      ));
 
     return Scaffold(
       body: list[_currentIndex],

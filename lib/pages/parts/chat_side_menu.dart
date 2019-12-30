@@ -1,7 +1,12 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/data/models/chat_join_info.dart';
+import 'package:Hwa/pages/bottom_navigation.dart';
+import 'package:Hwa/pages/tab/hwa_tab.dart';
+import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,33 +31,59 @@ class ChatSideMenu extends StatefulWidget {
     final ChatInfo chatInfo;
     bool isLiked;
     int likeCount;
-    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount});
+    final List<ChatJoinInfo> chatJoinInfoList;
+    final StompClient sc;
+    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.sc});
 
     @override
-    State createState() => new ChatSideMenuState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount);
+    State createState() => new ChatSideMenuState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: chatJoinInfoList);
 }
 
 
 class ChatSideMenuState extends State<ChatSideMenu> {
-    ChatSideMenuState({Key key, @required this.chatInfo, this.isLiked, this.likeCount});
+    ChatSideMenuState({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList});
 
     final ChatInfo chatInfo;
     bool isLiked;
     int likeCount;
-    // 현재 채팅 참여유저 TODO: 추후 맵핑
-    List<ChatUserInfo> userInfoListBLE = new SetUserData().main();// 현재 채팅 참여유저 TODO: 추후 맵핑
-    List<ChatUserInfo> userInfoListOnline = new SetUserDataOnline().main();// 현재 채팅 참여유저 TODO: 추후 맵핑
-    List<ChatUserInfo> userInfoListView = new SetUserDataView().main();
+    final List<ChatJoinInfo> chatJoinInfoList;
+
+    List<ChatJoinInfo> userInfoListBle = <ChatJoinInfo>[];
+    List<ChatJoinInfo> userInfoListBleOut = <ChatJoinInfo>[];
+    List<ChatJoinInfo> userInfoListBleOnline  = <ChatJoinInfo>[];
 
 
     @override
     void initState() {
         super.initState();
-        print(chatInfo.userCount.bleJoin.toString());
-        print(chatInfo.userCount.bleOut.toString());
-        print(chatInfo.userCount.online.toString());
-        print(chatInfo.userCount.total.toString());
+
+        _getChatJoinInfo();
     }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-30
+     * @description : 단화방 정보 받아오기
+    */
+    void _getChatJoinInfo() {
+        print("***"+chatJoinInfoList.length.toString());
+        if (chatJoinInfoList != null && chatJoinInfoList.length > 0) {
+            for(var chatJoinInfo in chatJoinInfoList) {
+                print("***"+chatJoinInfo.joinType);
+
+                switch(chatJoinInfo.joinType) {
+                    case "BLE_JOIN": userInfoListBle.add(chatJoinInfo);
+                        break;
+                    case "BLE_OUT": userInfoListBleOut.add(chatJoinInfo);
+                        break;
+                    case "BLE_ONLIN": userInfoListBleOnline.add(chatJoinInfo);
+                        break;
+                }
+            }
+            setState(() { });
+        }
+    }
+
 
     /*
      * @author : hs
@@ -95,6 +126,33 @@ class ChatSideMenuState extends State<ChatSideMenu> {
 
         } catch (e) {
             print("#### Error :: "+ e.toString());
+        }
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-31
+     * @description : 단화방 나가기
+    */
+    void quitChat() async {
+
+        try {
+            /// 참여 타입 수정
+            String uri = "/danhwa/out?roomIdx=" + chatInfo.chatIdx.toString();
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+            developer.log("quit" + response.body);
+
+            widget.sc.disconnect();
+
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+                    return BottomNavigation();
+                })
+            );
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
         }
     }
 
@@ -218,9 +276,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                         Flexible(
                             child: ListView(
                                 children: <Widget>[
-                                    ChatUserList(userInfoList: userInfoListBLE, hostIdx: chatInfo.createUserIdx),
-                                    ChatUserList(userInfoList: userInfoListOnline, hostIdx: chatInfo.createUserIdx),
-                                    ChatUserList(userInfoList: userInfoListView, hostIdx: chatInfo.createUserIdx),
+                                    ChatUserList(userInfoList: userInfoListBle, joinType: "BLE_JOIN", hostIdx: chatInfo.createUserIdx),
+                                    ChatUserList(userInfoList: userInfoListBleOut, joinType: "BLE_OUT", hostIdx: chatInfo.createUserIdx),
+                                    ChatUserList(userInfoList: userInfoListBleOnline, joinType: "BLE_ONLINE", hostIdx: chatInfo.createUserIdx),
                                 ],
                             ),
                         ),
@@ -247,6 +305,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                 ),
                                             )
                                         ),
+                                        onTap: () {
+                                            quitChat();
+                                        },
                                     ),
                                     Constant.USER_IDX == chatInfo.createUser.userIdx
                                         ? InkWell(

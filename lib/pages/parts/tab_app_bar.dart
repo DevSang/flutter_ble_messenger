@@ -94,9 +94,6 @@ class TabAppBarState extends State<TabAppBar> {
                 child: Container(
                     width: ScreenUtil().setWidth(375),
                     height: ScreenUtil().setHeight(61.5),
-                    padding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(16),
-                    ),
                     decoration: BoxDecoration(
                         color: Colors.white,
                         boxShadow: [
@@ -112,6 +109,9 @@ class TabAppBarState extends State<TabAppBar> {
                         children: <Widget>[
                             Container(
                                 height: ScreenUtil().setHeight(56.5),
+                                margin: EdgeInsets.only(
+                                    left: ScreenUtil().setWidth(16),
+                                ),
                                 child: Row(
                                     children: <Widget>[
                                         Row(
@@ -122,8 +122,8 @@ class TabAppBarState extends State<TabAppBar> {
                                                         title,
                                                         style: TextStyle(
                                                             height: 1,
-                                                            fontFamily: "NotoSans",
-                                                            fontWeight: FontWeight.w600,
+                                                            fontFamily: "NotoSansKR-Bold",
+                                                            fontWeight: FontWeight.w800,
                                                             fontSize: ScreenUtil(allowFontScaling: true).setSp(20),
                                                             color: Color.fromRGBO(39, 39, 39, 1),
                                                             letterSpacing: ScreenUtil().setWidth(-0.5),

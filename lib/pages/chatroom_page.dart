@@ -3,8 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:collection';
 
-import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart';
+import 'package:Hwa/data/models/chat_join_info.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,19 +40,22 @@ class ChatroomPage extends StatefulWidget {
     final ChatInfo chatInfo;
     final bool isLiked;
     final int likeCount;
-    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount}) : super(key: key);
+    final List<ChatJoinInfo> joinInfo;
+
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo}) : super(key: key);
 
 
     @override
-    State createState() => new ChatScreenState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount);
+    State createState() => new ChatScreenState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: joinInfo);
 }
 
 class ChatScreenState extends State<ChatroomPage> {
     final ChatInfo chatInfo;
     final bool isLiked;
     final int likeCount;
+    final List<ChatJoinInfo> joinInfo;
 
-    ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount});
+    ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo});
 
     SharedPreferences prefs;
 
@@ -121,9 +123,25 @@ class ChatScreenState extends State<ChatroomPage> {
         inputLineCount = 1;
         _inputHeight = 36;
 
+        print("***************" + joinInfo.length.toString());
+
         getMessageList();
     }
 
+    @override
+    void dispose() {
+        HwaBeacon().stopAdvertising();
+
+        s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
+        s.disconnect();
+        super.dispose();
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-30
+     * @description : 입장 시 기존 Advertising Stop
+    */
     void checkAd() async {
         bool advertising = await HwaBeacon().isAdvertising();
 
@@ -135,28 +153,11 @@ class ChatScreenState extends State<ChatroomPage> {
             await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
     }
 
-    BoxDecoration startAd(BuildContext context) {
-        return BoxDecoration(
-            color: Color.fromRGBO(77, 96, 191, 1),
-            image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconUnlock.png")
-            ),
-            shape: BoxShape.circle
-        );
-
-    }
-
-    BoxDecoration stopAd(BuildContext context) {
-        return BoxDecoration(
-            color: Color.fromRGBO(153, 153, 153, 1),
-            image: DecorationImage(
-                image:AssetImage("assets/images/icon/iconLock.png")
-            ),
-            shape: BoxShape.circle
-        );
-
-    }
-
+    /*
+     * @author : hs
+     * @date : 2019-12-30
+     * @description : Advertising Stop/Start
+    */
     void advertiseChange() async {
         if (advertising) {
             await HwaBeacon().stopAdvertising();
@@ -171,15 +172,11 @@ class ChatScreenState extends State<ChatroomPage> {
         });
     }
 
-    @override
-    void dispose() {
-        HwaBeacon().stopAdvertising();
-
-        s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
-        s.disconnect();
-        super.dispose();
-    }
-
+    /*
+     * @author : hs
+     * @date : 2019-12-30
+     * @description : Focus 감지에 따른 화면
+    */
     void onFocusChange() {
         if (focusNode.hasFocus) {
             // Hide sticker when keyboard appear
@@ -417,7 +414,7 @@ class ChatScreenState extends State<ChatroomPage> {
                 brightness: Brightness.light,
             ),
             endDrawer: SafeArea(
-                child: new ChatSideMenu(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount)
+                child: new ChatSideMenu(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s)
             ),
             body: GestureDetector(
                 child: WillPopScope(
@@ -475,6 +472,28 @@ class ChatScreenState extends State<ChatroomPage> {
             )
                 : Container(),
         );
+    }
+
+    BoxDecoration startAd(BuildContext context) {
+        return BoxDecoration(
+            color: Color.fromRGBO(77, 96, 191, 1),
+            image: DecorationImage(
+                image:AssetImage("assets/images/icon/iconUnlock.png")
+            ),
+            shape: BoxShape.circle
+        );
+
+    }
+
+    BoxDecoration stopAd(BuildContext context) {
+        return BoxDecoration(
+            color: Color.fromRGBO(153, 153, 153, 1),
+            image: DecorationImage(
+                image:AssetImage("assets/images/icon/iconLock.png")
+            ),
+            shape: BoxShape.circle
+        );
+
     }
 
     Widget buildNotice() {
