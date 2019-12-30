@@ -6,7 +6,6 @@ import 'dart:developer' as developer;
 import 'package:Hwa/constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:geolocator/geolocator.dart';
@@ -25,6 +24,13 @@ import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 
+
+/*
+ * @project : HWA - Mobile
+ * @author : hk
+ * @date : 2019-12-30
+ * @description : HWA 메인 Tab 화면
+ */
 class HwaTab extends StatefulWidget {
   @override
   _HwaTabState createState() => _HwaTabState();
@@ -44,9 +50,6 @@ class _HwaTabState extends State<HwaTab> {
     Position _currentPosition;
     String _currentAddress = '위치 검색중..';
 
-    // BLE 관련
-    final _beacons = <Beacon>[];
-    final StreamController<BluetoothState> streamController = StreamController();
 
     @override
     void initState() {
@@ -55,29 +58,65 @@ class _HwaTabState extends State<HwaTab> {
 
         isLoading = false;
         sameSize  = GetSameSize().main();
-        _textFieldController = TextEditingController(text: '스타벅스 강남R점');
+        _textFieldController = TextEditingController(text: '');
     }
 
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 내부 초기화 함수. BLE Scan 시작, 현재 내 위치 검색
+     */
     void _initState() async {
         await Constant.setUserIdx();
 
         // BLE Scanning API 초기화
         await HwaBeacon().initializeScanning();
-        print("finish initialize");
+        developer.log("# HwaBeacon. finish initialize");
+
+        // 비콘 송수신 가능 체크
+        // TODO BLE, GPS 상태 종합하여 화면 UI 설정
+        BeaconStatus status = await HwaBeacon().checkTxSupported();
+
+        developer.log("## status : " + status.toString());
+
         // BLE Scan start
         _scanBLE();
 
         // 현재 위치 검색
         _getCurrentLocation();
-
-        // TODO: 주변 채팅 리스트 받아오기
-        _getChatList();
     }
 
     @override
     void dispose() {
-        super.dispose();
-        HwaBeacon().stopRanging();
+	    super.dispose();
+	    HwaBeacon().stopRanging();
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : BLE Scan
+    */
+    void _scanBLE() async {
+
+    	// 비콘 listen 위한 Stream 설정
+	    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
+	    	// TODO 삭제
+		    developer.log("Scaning!!! " + result.toString());
+		    if (result != null && result.beacons.isNotEmpty && mounted) {
+			    setState(() {
+				    result.beacons.forEach((beacon) {
+					    developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
+					    if (!chatIdxList.contains(beacon.roomId))  {
+						    _setChatItem(beacon.roomId);
+					    }
+				    });
+			    });
+		    }
+	    });
+
+	    // 스캔(비콘 Listen) 시작
+	    HwaBeacon().startRanging();
     }
 
     /*
@@ -86,21 +125,22 @@ class _HwaTabState extends State<HwaTab> {
      * @description : 위치정보 검색
      */
     _getCurrentLocation() async {
-    	print("# start get location.");
+    	developer.log("# start get location.");
+    	//현재 위치정보 권한 체크
 	    GeolocationStatus geolocationStatus  = await geolocator.checkGeolocationPermissionStatus();
 
 	    if(geolocationStatus == GeolocationStatus.denied || geolocationStatus == GeolocationStatus.disabled){
-		    print("# GeolocationPermission denied. " + geolocationStatus.toString());
+		    developer.log("# GeolocationPermission denied. " + geolocationStatus.toString());
 		    // TODO 화면에 GPS 켜달라고 피드백, 디자인 적용
 		    setState(() {
 			    _currentAddress = '위치정보 권한이 필요합니다.';
 		    });
-
 	    }else{
-	    	print("# getCurrentPosition");
+	    	developer.log("# getCurrentPosition");
 		    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
-		    print(position.toString());
+		    // TODO 삭제
+		    developer.log(position.toString());
 
 		    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
 
@@ -108,7 +148,7 @@ class _HwaTabState extends State<HwaTab> {
 			    Placemark p = placemark[0];
 
 			    // TODO 삭제
-			    print(p.toJson().toString());
+			    developer.log(p.toJson().toString());
 
 			    // TODO 디자인 적용
 			    setState(() {
@@ -118,23 +158,12 @@ class _HwaTabState extends State<HwaTab> {
 	    }
     }
 
-
-    /*
-    * @author : hs
-    * @date : 2019-12-28
-    * @description : 채팅 리스트 API 요청
-    */
-    void _getChatList() {
-//        testGetChatList.forEach((itemId) => _getChatItem(itemId));
-//        _getChatItem(18);
-    }
-
     /*
     * @author : hs
     * @date : 2019-12-28
     * @description : 채팅 리스트 받아오기 API 호출
     */
-    void _getChatItem(int chatIdx) async {
+    void _setChatItem(int chatIdx) async {
         try {
             String uri = "/danhwa/room?roomIdx=" + chatIdx.toString();
 
@@ -150,7 +179,7 @@ class _HwaTabState extends State<HwaTab> {
             });
 
         } catch (e) {
-            print("#### Error :: "+ e.toString());
+            developer.log("#### Error :: "+ e.toString());
         }
     }
 
@@ -171,16 +200,11 @@ class _HwaTabState extends State<HwaTab> {
             Map<String, dynamic> jsonParse = json.decode(response.body);
             int createdChatIdx = jsonParse['danhwaRoom']['roomIdx'];
 
-            // 채팅 리스트에 추가
-//            setState(() {
-//                _getChatItem(createdChatIdx);
-//            });
-
             // 단화방 입장
              _enterChat(jsonParse);
 
         } catch (e) {
-            print("#### Error :: "+ e.toString());
+            developer.log("#### Error :: "+ e.toString());
         }
     }
 
@@ -203,7 +227,6 @@ class _HwaTabState extends State<HwaTab> {
                 chatIdxList.clear();
             });
 
-
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
                     return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount);
@@ -214,7 +237,7 @@ class _HwaTabState extends State<HwaTab> {
 
             isLoading = false;
         } catch (e) {
-            print("#### Error :: "+ e.toString());
+            developer.log("#### Error :: "+ e.toString());
         }
     }
 
@@ -238,7 +261,7 @@ class _HwaTabState extends State<HwaTab> {
             _enterChat(jsonParse);
 
         } catch (e) {
-            print("#### Error :: "+ e.toString());
+            developer.log("#### Error :: "+ e.toString());
         }
     }
 
@@ -330,34 +353,6 @@ class _HwaTabState extends State<HwaTab> {
                 ]
             )
         );
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-29
-     * @description : BLE Scan
-    */
-    void _scanBLE() async {
-
-        HwaBeacon().initializeScanning();
-
-        HwaBeacon()
-            .subscribeRangingHwa()
-            .listen((RangingResult result) {
-            print("Scaning!!! " + result.toString());
-            if (result != null && result.beacons.isNotEmpty && mounted) {
-                setState(() {
-                    result.beacons.forEach((beacon) {
-                        developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-                        if (!chatIdxList.contains(beacon.roomId))  {
-                            _getChatItem(beacon.roomId);
-                        }
-                    });
-                });
-            }
-        });
-
-        HwaBeacon().startRanging();
     }
 
     @override
@@ -701,7 +696,7 @@ class _HwaTabState extends State<HwaTab> {
                 _currentAddress = "${place.locality}, ${place.postalCode}";
             });
         } catch (e) {
-            print(e);
+            developer.log(e);
         }
     }
 
