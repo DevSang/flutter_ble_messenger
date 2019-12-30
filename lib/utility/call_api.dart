@@ -1,11 +1,13 @@
-import 'dart:io';
+import 'dart:developer' as developer;
+import 'dart:convert';
 
-import 'package:Hwa/constant.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:Hwa/constant.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -42,21 +44,21 @@ class CallApi {
     }
 
     static logRequest(String prefixUrl, method, header, url, data){
-        print("#Request Url : " + url.toString());
-        print("#Method : " + method.toString());
-        print("#Headers : " + header.toString());
-        print("#Data : " + data.toString());
+        developer.log("# Request Url : " + url.toString());
+        developer.log("# Method : " + method.toString());
+        developer.log("# Headers : " + header.toString());
+        developer.log("# Data : " + data.toString());
     }
 
     static setResponse(http.Response response){
-        print("#response : " + response.toString());
+        developer.log("# Response : " + response.toString());
         var statusCode = response.statusCode.toString();
 
         if(statusCode.indexOf("20") > -1) {
-            print("#Request result : " + response.body.toString());
+            developer.log("# Request result : " + response.body.toString());
             return response;
         } else {
-            print("#[Error] Status Code :" + statusCode);
+            developer.log("# [Error] Status Code :" + statusCode);
             return null;
         }
     }
@@ -99,7 +101,7 @@ class CallApi {
             case "HTTP_METHOD.delete": return await http.delete(prefixUrl + url, headers: headers);
             break;
 
-            default: { print("Invalid choice http call method"); }
+            default: { developer.log("# Invalid choice http call method"); }
             break;
         }
     }

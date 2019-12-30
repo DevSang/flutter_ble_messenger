@@ -1,25 +1,31 @@
+import 'dart:convert';
+import 'dart:developer' as developer;
+
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:Hwa/utility/red_toast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import 'package:Hwa/pages/signup_name.dart';
+import 'package:Hwa/utility/red_toast.dart';
 
-
-final TextEditingController phoneRegController = new TextEditingController();
 
 /*
  * @project : HWA - Mobile
  * @author : sh
  * @date : 2019-12-30
- * @description : Signup page 
+ * @description : Signup page
  *                  - 휴대폰 번호 입력 및 인증 문자 요청
  *                  - 인증문자 입력 후 signup_name.page로 이동
  *                  - 번호로 가입한 사용자가 Social로 로그인 시도 하면 인증 문자 요청하면 바로 mainpage로 이동
  */
+
+//signup_name page phonenumber 공통 controller
+final TextEditingController phoneRegController = new TextEditingController();
+
 class SignUpPage extends StatefulWidget {
+    //Parameters
     final String socialId;
     final String socialType;
     final String accessToken;
@@ -34,9 +40,9 @@ class _SignUpPageState extends State<SignUpPage>{
     final String socialId;
     final String socialType;
     final String accessToken;
-
     _SignUpPageState({Key key, this.socialId, this.socialType, this.accessToken});
 
+    //local var
     FocusNode myFocusNode;
     final TextEditingController _regAuthCodeController = new TextEditingController();
     bool lengthConfirm;
@@ -55,10 +61,11 @@ class _SignUpPageState extends State<SignUpPage>{
      */
     registerCodeRequest() async {
         if(phoneRegController.text == ''){
+            developer.log("# Phone number is empty.");
             RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
         } else {
             FocusScope.of(context).requestFocus(new FocusNode());
-            print("phone number :: " +  phoneRegController.text);
+            developer.log("# Phone number : " +  phoneRegController.text);
             String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
             final response = await http.post(url,
                 headers: {
@@ -71,22 +78,23 @@ class _SignUpPageState extends State<SignUpPage>{
                     "token": accessToken
                 })
             ).then((http.Response response) {
-                print("signup :: " + response.body);
+                developer.log("# Auth code request success.");
+                developer.log("# response : " + response.body);
+
                 var data = jsonDecode(response.body);
-                String phoneNum = data['phone_number'];
                 if (response.statusCode == 200 || response.statusCode == 202) {
                     RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
-                    print(phoneNum);
+                    developer.log("# Code request success");
                 } else {
                     if(data['message'].indexOf('이미 사용중인 전화번호입니다') > -1){
                         RedToast.toast("이미 사용중인 전화번호입니다.", ToastGravity.TOP);
+                        developer.log("# Already used phone number");
                     } else {
                         RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
-                        print('failed：${response.statusCode}');
+                        developer.log('# Request failed ： ${response.statusCode}');
                     }
                 }
             });
-
         }
     }
 
@@ -97,11 +105,13 @@ class _SignUpPageState extends State<SignUpPage>{
      */
     registerNext() async {
         if(_regAuthCodeController.text == ''){
+            developer.log("# Auth code is empty.");
             RedToast.toast("인증번호를 입력해주세요.", ToastGravity.TOP);
         } else {
-            print("register authcode :: " +  _regAuthCodeController.text);
+            developer.log("# Auth code : " +  _regAuthCodeController.text);
+
             String url = "https://api.hwaya.net/api/v2/auth/A02-SignUpSmsAuth";
-            final response = await http.post(url,
+            await http.post(url,
                 headers: {
                     'Content-Type':'application/json',
                     'X-Requested-With': 'XMLHttpRequest'
@@ -111,11 +121,16 @@ class _SignUpPageState extends State<SignUpPage>{
                     "auth_number": _regAuthCodeController.text
                 })
             ).then((http.Response response) {
-                print("register authcode  :: " + response.body);
+                developer.log("# Check auth code request success.");
+                developer.log("# response : " + response.body);
+
                 var data = jsonDecode(response.body);
                 String phoneNum = data['auth_number'];
 
                 if (response.statusCode == 200) {
+                    developer.log("# Confirm auth code success.");
+                    developer.log("# Confirm auth code success.");
+
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                             return SignUpNamePage(socialId: socialId, socialType: socialType, accessToken: accessToken);
@@ -124,7 +139,7 @@ class _SignUpPageState extends State<SignUpPage>{
                     RedToast.toast("인증이 완료 되었습니다.", ToastGravity.TOP);
                 } else {
                     RedToast.toast("인증이 실패하였습니다. 인증번호를 확인해주세요.", ToastGravity.TOP);
-                    print('failed：${response.statusCode}');
+                    developer.log('failed：${response.statusCode}');
                 }
             });
         }
@@ -133,7 +148,7 @@ class _SignUpPageState extends State<SignUpPage>{
     /*
      * @author : sh
      * @date : 2019-12-28
-     * @description : 전체 틀잡는 위젯
+     * @description : 빌드 위젯
      */
     @override
     Widget build(BuildContext context){
@@ -211,10 +226,10 @@ class _SignUpPageState extends State<SignUpPage>{
             child: TextFormField(
                 maxLength: 11,
                 onChanged: (regPhoneNum) {
-                    print(regPhoneNum);
+                    developer.log(regPhoneNum);
                 },
                 onFieldSubmitted: (regPhoneNum) {
-                    print('회원가입 전화번호  :$regPhoneNum');
+                    developer.log('회원가입 전화번호  :$regPhoneNum');
                 },
                 keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[
@@ -297,7 +312,7 @@ class _SignUpPageState extends State<SignUpPage>{
                     }
                 },
                 onFieldSubmitted: (regAuthCode) {
-                    print('회원가입 인증코드 입력 :$regAuthCode');
+                    developer.log('회원가입 인증코드 입력 :$regAuthCode');
                 },
                 keyboardType: TextInputType.number,
                 inputFormatters: <TextInputFormatter>[

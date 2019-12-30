@@ -1,35 +1,42 @@
-import 'package:Hwa/constant.dart';
+import 'dart:convert';
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
-import 'package:Hwa/utility/call_api.dart';
-import 'dart:convert';
-import 'package:Hwa/utility/red_toast.dart';
-//import 'package:flutter_kakao_login/flutter_kakao_login.dart';
-//import 'package:kakao_flutter_sdk/auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:Hwa/pages/signup_page.dart';
 
-//로그인 page
+import 'package:Hwa/pages/signup_page.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/red_toast.dart';
+
+
+/*
+ * @project : HWA - Mobile
+ * @author : sh
+ * @date : 2019-12-29
+ * @description : Sign in page
+ *                  - 인증문자 요청 및 social signin
+ */
 class SignInPage extends StatefulWidget {
-  @override
-  _SignInPageState createState() => _SignInPageState();
+    @override
+    _SignInPageState createState() => _SignInPageState();
 }
 
 class _SignInPageState extends State<SignInPage> {
+    final TextEditingController _authCodeController = TextEditingController();
+    final TextEditingController _phoneController = TextEditingController();
+    SharedPreferences SPF;
     bool _isLoading = false;
-    final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
-    SharedPreferences spf;
     FocusNode contextFocus;
-
     String phone_number, auth_number;
+    bool lengthConfirm;
 
+    //Social signin
     GoogleSignInAccount _currentUser;
-    String _contactText;
-
     GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: <String>[
             'email',
@@ -40,52 +47,44 @@ class _SignInPageState extends State<SignInPage> {
     @override
     void initState() {
         super.initState();
+        lengthConfirm = false;
+
+        //Google사용자 status listner
         _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
             setState(() {
                 _currentUser = account;
             });
             if (_currentUser != null) {
-                print("#Google current user : " + _currentUser.toString());
+                developer.log("# Google current user : " + _currentUser.toString());
             }
         });
     }
 
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : google signin function
+     */
     Future<void> googleSignin() async {
         try {
-            print("#Google Signin");
+            developer.log("#Google Signin");
             return await _googleSignIn.signIn();
         } catch (error) {
-            print(error);
+            developer.log(error);
         }
     }
 
-//  void kakaoLogin() async {
-//	  FlutterKakaoLogin kakaoSignIn = new FlutterKakaoLogin();
-//	  final KakaoLoginResult result = await kakaoSignIn.logIn();
-//	  switch (result.status) {
-//		  case KakaoLoginStatus.loggedIn:
-//			  print('LoggedIn by the user.\n'
-//					  '- UserID is ${result.account.userID}\n'
-//					  '- UserEmail is ${result.account.userEmail} ');
-//			  break;
-//		  case KakaoLoginStatus.loggedOut:
-//			  print('LoggedOut by the user.');
-//			  break;
-//		  case KakaoLoginStatus.error:
-//			  print('This is Kakao error message : ${result.errorMessage}');
-//			  break;
-//	  }
-//
-//  }
-
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : facebook signin function
+     */
 	void facebookLogin() async {
 		final facebookLogin = FacebookLogin();
 		final result = await facebookLogin.logIn(["email"]);
 
 		switch (result.status) {
 			case FacebookLoginStatus.loggedIn:
-
-				print("# facebookLogin" + result.accessToken.token);
                 final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${result.accessToken.token}');
                 final profile = json.decode(graphResponse.body);
 
@@ -105,169 +104,48 @@ class _SignInPageState extends State<SignInPage> {
                 var message = data['message'].toString();
 
                 if (response.statusCode == 200) {
-                    print("#로그인에 성공하였습니다.");
-                    print("#로그인정보 :" + response.body);
+                    developer.log("# 로그인에 성공하였습니다.");
+                    developer.log("# 로그인정보 :" + response.body);
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
                     pushTokenRequest();
                     Navigator.pushNamed(context, '/main');
 
                 } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
+                    developer.log('# New user');
                     RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
-                    print('${response.statusCode}');
+
+                    developer.log('# [Navigator] SignInPage -> SignUpPage');
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                             return SignUpPage(socialId: profile['id'].toString(),socialType: "facebook", accessToken: result.accessToken.token.toString());
                         })
                     );
                 } else {
-                    print('${response.statusCode}');
+                    developer.log('#Request failed：${response.statusCode}');
                     RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
                 }
 				break;
 			case FacebookLoginStatus.cancelledByUser:
-				print("# facebookLogin cancelledByUser");
+				developer.log("# facebookLogin cancelledByUser");
 				break;
 			case FacebookLoginStatus.error:
-				print("# facebookLogin" + result.errorMessage);
+				developer.log("# facebookLogin" + result.errorMessage);
 				break;
 		}
 	}
 
-  @override
-  Widget build(BuildContext context) {
-
-        return Scaffold(
-      body: new GestureDetector(
-        onTap: (){
-          FocusScope.of(context).requestFocus(new FocusNode());
-        },
-        child: new Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage("assets/images/background/bgGradeLogin.png"),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: _isLoading
-              ? Center(child: CircularProgressIndicator())
-              : ListView(
-            children: <Widget>[
-              _loginMainImage(),
-              _loginInputText(),
-              _loginInputCodeField(),
-              _SignInButton(),
-              _loginText(),
-              _socialLogin(),
-              _registerSection(context),
-            ],
-          ),
-        ),
-      ),
-      appBar: AppBar(
-          centerTitle: true,
-          brightness: Brightness.light,
-          backgroundColor: Colors.white,
-          elevation: 0.0,
-          title: Text("HWA 로그인",
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontFamily: 'NotoSans'),
-          ),
-      ),
-    );
-  }
-
-
-  Widget _loginMainImage() {
-    return Container(
-        height: 203,
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Image.asset(
-                'assets/images/login/visualImageLogin.png',
-                width: 241,
-                height: 263,
-                fit: BoxFit.cover,
-                alignment: Alignment(0, -1),
-              )
-            ]
-        )
-    );
-  }
-
-  final TextEditingController _authCodeController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-
-  Widget _loginInputText() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-      child: Row(
-        children: <Widget>[
-          Flexible(
-            child:
-              TextFormField(
-                maxLength: 11,
-                onChanged: (loginAuthCode) {
-                  print(loginAuthCode);
-                },
-                onFieldSubmitted: (loginAuthCode) {
-                  print('login phone number 입력 :$loginAuthCode');
-                },
-                keyboardType: TextInputType.number,
-                inputFormatters: <TextInputFormatter>[
-                  WhitelistingTextInputFormatter.digitsOnly
-                ],
-                controller: _phoneController,
-                cursorColor: Colors.black,
-                style: TextStyle(color: Colors.black, fontFamily: 'NotoSans'),
-                decoration:
-                  InputDecoration(
-                    suffixIcon:
-                    Container(
-                      margin: EdgeInsets.only(right:5),
-                      child: RaisedButton(
-                          focusNode: contextFocus,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: Text("인증문자 받기",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'NotoSans'
-                            ),
-                          ),
-                          color: Color.fromRGBO(77, 96, 191, 1),
-                          onPressed: () {
-                            loginCodeRequest();
-                          }
-                      )
-                    ),
-                    counterText: "",
-                    hintText: "휴대폰 번호 (-없이 숫자만 입력)",
-                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide(
-                      ),
-                    ),
-                    fillColor: Colors.grey[200],
-                    filled: true,
-                  )
-              ),
-          ),
-        ],
-      ),
-    );
-  }
-
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Auth code request function
+     */
     loginCodeRequest() async {
         if(_phoneController.text == '' ){
+            developer.log("# Phone number is empty.");
             RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
         } else {
             FocusScope.of(context).requestFocus(new FocusNode());
-            print("phone number :: " + _phoneController.text);
+            developer.log("# Requerst phone number : " + _phoneController.text);
             String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
 
             Map requestData = {
@@ -282,103 +160,33 @@ class _SignInPageState extends State<SignInPage> {
             );
 
             if (response.statusCode == 200 || response.statusCode == 202) {
-                print("#Auth code requset info :" + response.body);
-                print("#인증문자 요청에 성공하였습니다.");
-                loginToastMsg("인증문자를 요청하였습니다");
+                developer.log("# Auth code requset info :" + response.body);
+                developer.log("# 인증문자 요청에 성공하였습니다.");
+                RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
             } else {
                 if(response.statusCode == 406){
+                    developer.log("# This is not a HWA user.");
                     RedToast.toast("가입 되어있지 않은 번호입니다. 번호를 다시 확인해주세요.",ToastGravity.TOP);
                 } else {
+                    developer.log('# Request failed：${response.statusCode}');
                     RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
                 }
-                print('failed：${response.statusCode}');
             }
         }
     }
 
-  loginToastMsg(String message) {
-    return Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIos: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white);
-  }
-
-  Widget _loginInputCodeField() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
-      child: Column(
-        children: <Widget>[
-          TextFormField(
-              maxLength: 6,
-              onChanged: (loginAuthCode) {
-                print(loginAuthCode);
-              },
-              onFieldSubmitted: (loginAuthCode) {
-                print('login authcode 입력 :$loginAuthCode');
-              },
-              keyboardType: TextInputType.number,
-              inputFormatters: <TextInputFormatter>[
-                WhitelistingTextInputFormatter.digitsOnly
-              ],
-              controller: _authCodeController,
-              cursorColor: Colors.black,
-              obscureText: true,
-              style: TextStyle(color: Colors.black, fontFamily: "NotoSans"),
-              decoration: InputDecoration(
-                counterText: "",
-                hintText: "인증번호",
-                hintStyle: TextStyle(color: Colors.black38, fontSize:15),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(
-                  ),
-                ),
-                fillColor: Colors.grey[200],
-                filled: true,
-              )
-          ),
-        ],
-      ),
-    );
-  }
-
-  _getAndSaveToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String token = await authCodeLoginRequest();
-    await prefs.setString('jwt', token);
-  }
-
-  Widget _SignInButton() {
-    return Container(
-      width: MediaQuery
-          .of(context)
-          .size
-          .width,
-      height: 50.0,
-      padding: EdgeInsets.symmetric(horizontal: 15.0),
-//      color: Color.fromRGBO(204, 204, 204, 1),
-      child: RaisedButton(
-        onPressed: () {
-//          _getAndSaveToken();
-          authCodeLoginRequest();
-        },
-        child: Text("Sign In", style: TextStyle(
-            color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      ),
-    );
-  }
-
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Confirm auth code function
+     */
     authCodeLoginRequest() async {
-        SharedPreferences loginPref = await SharedPreferences.getInstance();
         try {
             if(_authCodeController.text == ''){
+                developer.log("# Auth code is empty.");
                 RedToast.toast("인증번호를 입력해주세요.", ToastGravity.TOP);
             } else {
-                print("auth number :: " + _authCodeController.text);
+                developer.log("# Auth number : " + _authCodeController.text);
                 String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
                 final response = await http.post(url,
                     headers: {
@@ -394,154 +202,374 @@ class _SignInPageState extends State<SignInPage> {
                 var data = jsonDecode(response.body)['data'];
 
                 if (response.statusCode == 200) {
-                    print("#로그인에 성공하였습니다.");
-                    print("#로그인정보 :" + response.body);
+                    developer.log("# 로그인에 성공하였습니다.");
+                    developer.log("# 로그인정보 :" + response.body);
 
                     var token = data['token'];
                     var userIdx = data['userInfo']['idx'];
 
-                    loginPref.setString('token', token.toString());
-                    loginPref.setString('userIdx', userIdx.toString());
+                    SPF.setString('token', token.toString());
+                    SPF.setString('userIdx', userIdx.toString());
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
                     pushTokenRequest();
                     Navigator.pushNamed(context, '/main');
                 } else {
                     RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
-                    print('failed：${response.statusCode}');
+                    developer.log('#Request failed：${response.statusCode}');
                 }
             }
         } catch (e) {
-            showError(e);
+            developer.log('#Request failed：${e}');
         }
     }
 
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Save push token function
+     */
     pushTokenRequest() async {
-        spf = await SharedPreferences.getInstance();
-        var userIdx = spf.getString("userIdx");
-        var pushToken = spf.getString("pushToken");
+        SPF = await SharedPreferences.getInstance();
+
+        var pushToken = SPF.getString("pushToken");
         try {
             String url = "/api/v2/user/push_token?push_token=" + pushToken;
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
             if(response != null){
-                print("#Push token 저장에 성공하였습니다.");
+                developer.log("# Push token 저장에 성공하였습니다.");
             } else {
-                print("#서버요청에 실패하였습니다");
+                developer.log('#Request failed：${response.statusCode}');
             }
         } catch (e) {
-            showError(e);
+            developer.log('#Request failed：${e}');
         }
     }
 
-  showError(String errMessage) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error'),
-            content: Text(errMessage),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Ok'),
-                onPressed: () {
-                  Navigator.of(context).pop();
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : 빌드 위젯
+     */
+    @override
+    Widget build(BuildContext context) {
+        return Scaffold(
+            body: new GestureDetector(
+                onTap: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
                 },
-              )
-            ],
-          );
-        });
-  }
-
-  Widget _loginText() {
-    return Container(
-        margin: EdgeInsets.only(top: 20, bottom: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            Text("Or Sign in with", style: TextStyle(
-                color: Colors.black, fontSize: 15, fontFamily: 'NotoSans'))
-          ],
-        )
-    );
-  }
-
-  Widget _socialLogin() {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-            RaisedButton(
-                child: Row(
-                    children: <Widget>[
-                        InkWell(
-                            child: Image.asset('assets/images/sns/snsIconKakao.png'),
+                child: new Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage("assets/images/background/bgGradeLogin.png"),
+                            fit: BoxFit.cover,
                         ),
-                        InkWell(
-                            child: Text("Kakao", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-                        ),
-                    ],
+                    ),
+                    child: _isLoading
+                        ? Center(child: CircularProgressIndicator())
+                        : ListView(
+                        children: <Widget>[
+                            _loginMainImage(),
+                            _loginInputText(),
+                            _loginInputCodeField(),
+                            _SignInButton(),
+                            _signinText(),
+                            _socialSignin(),
+                            _registerSection(context),
+                        ],
+                    ),
                 ),
+            ),
+            appBar: AppBar(
+                centerTitle: true,
+                brightness: Brightness.light,
+                backgroundColor: Colors.white,
+                elevation: 0.0,
+                title: Text("HWA 로그인",
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontFamily: 'NotoSans'),
+                ),
+            ),
+        );
+    }
+
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : 이미지 위젯
+     */
+    Widget _loginMainImage() {
+        return Container(
+            height: 203,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                    Image.asset(
+                        'assets/images/login/visualImageLogin.png',
+                        width: 241,
+                        height: 263,
+                        fit: BoxFit.cover,
+                        alignment: Alignment(0, -1),
+                    )
+                ]
+            )
+        );
+    }
+
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Phone number textfield widget
+     */
+    Widget _loginInputText() {
+        return Container(
+            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+            child: Row(
+                children: <Widget>[
+                    Flexible(
+                        child:
+                        TextFormField(
+                            maxLength: 11,
+                            onChanged: (loginAuthCode) {
+                                developer.log(loginAuthCode);
+                            },
+                            onFieldSubmitted: (loginAuthCode) {
+                                developer.log('login phone number 입력 :$loginAuthCode');
+                            },
+                            keyboardType: TextInputType.number,
+                            inputFormatters: <TextInputFormatter>[
+                                WhitelistingTextInputFormatter.digitsOnly
+                            ],
+                            controller: _phoneController,
+                            cursorColor: Colors.black,
+                            style: TextStyle(color: Colors.black, fontFamily: 'NotoSans'),
+                            decoration:
+                            InputDecoration(
+                                suffixIcon:
+                                Container(
+                                    margin: EdgeInsets.only(right:5),
+                                    child: RaisedButton(
+                                        focusNode: contextFocus,
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8.0),
+                                        ),
+                                        child: Text("인증문자 받기",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'NotoSans'
+                                            ),
+                                        ),
+                                        color: Color.fromRGBO(77, 96, 191, 1),
+                                        onPressed: () {
+                                            loginCodeRequest();
+                                        }
+                                    )
+                                ),
+                                counterText: "",
+                                hintText: "휴대폰 번호 (-없이 숫자만 입력)",
+                                hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    borderSide: BorderSide(
+                                    ),
+                                ),
+                                fillColor: Colors.grey[200],
+                                filled: true,
+                            )
+                        ),
+                    ),
+                ],
+            ),
+        );
+    }
+
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Auth code textfield widget
+     */
+    Widget _loginInputCodeField() {
+        return Container(
+            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+            child: Column(
+                children: <Widget>[
+                    TextFormField(
+                        maxLength: 6,
+                        onChanged: (regAuthCode) {
+                            if(regAuthCode.length == 6 && !lengthConfirm) {
+                                setState(() {
+                                    lengthConfirm = true;
+                                });
+                            } else if (regAuthCode.length != 6 && lengthConfirm){
+                                setState(() {
+                                    lengthConfirm = false;
+                                });
+                            }
+                        },
+                        onFieldSubmitted: (loginAuthCode) {
+                            developer.log('login authcode 입력 :$loginAuthCode');
+                        },
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                            WhitelistingTextInputFormatter.digitsOnly
+                        ],
+                        controller: _authCodeController,
+                        cursorColor: Colors.black,
+                        obscureText: true,
+                        style: TextStyle(color: Colors.black, fontFamily: "NotoSans"),
+                        decoration: InputDecoration(
+                            counterText: "",
+                            hintText: "인증번호",
+                            hintStyle: TextStyle(color: Colors.black38, fontSize:15),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                borderSide: BorderSide(),
+                            ),
+                            fillColor: Colors.grey[200],
+                            filled: true,
+                        )
+                    ),
+                ],
+            ),
+        );
+    }
+
+
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Signin button widget
+     */
+    Widget _SignInButton() {
+        var color = lengthConfirm ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
+        return Container(
+            width: MediaQuery.of(context).size.width,
+            height: 50.0,
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            color: Colors.white,
+            child: RaisedButton(
                 onPressed: () {
-
+                    authCodeLoginRequest();
                 },
-            ),
-            RaisedButton(
-                child: Row(
-                    children: <Widget>[
-                        InkWell(
-                            child: Image.asset('assets/images/sns/snsIconFacebook.png'),
-                        ),
-                        InkWell(
-                            child: Text("Facebook", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-                        ),
-                    ],
+                color: color,
+                child: Text("Sign In", style: TextStyle(
+                    color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')
                 ),
-                onPressed: () {
-                    facebookLogin();
-                },
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
             ),
-            RaisedButton(
-                child: Row(
-                    children: <Widget>[
-                        InkWell(
-                            child: Image.asset('assets/images/sns/snsIconGoogle.png'),
+        );
+    }
+
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Signin button widget
+     */
+    Widget _signinText() {
+        return Container(
+            margin: EdgeInsets.only(top: 20, bottom: 10),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                    Text("Or Sign in with", style: TextStyle(
+                    color: Colors.black, fontSize: 15, fontFamily: 'NotoSans'))
+                ],
+            )
+        );
+    }
+
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Social Signin widget
+     */
+    Widget _socialSignin() {
+        return Container(
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                    RaisedButton(
+                        child: Row(
+                            children: <Widget>[
+                                InkWell(
+                                    child: Image.asset('assets/images/sns/snsIconKakao.png'),
+                                ),
+                                InkWell(
+                                    child: Text("Kakao", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                                ),
+                            ],
                         ),
-                        InkWell(
-                            child: Text("Google", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                        onPressed: () {
+
+                        },
+                    ),
+                    RaisedButton(
+                        child: Row(
+                            children: <Widget>[
+                                InkWell(
+                                    child: Image.asset('assets/images/sns/snsIconFacebook.png'),
+                                ),
+                                InkWell(
+                                    child: Text("Facebook", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                                ),
+                            ],
                         ),
-                    ],
-                ),
-                onPressed:googleSignin,
+                        onPressed: () {
+                            facebookLogin();
+                        },
+                    ),
+                    RaisedButton(
+                        child: Row(
+                            children: <Widget>[
+                                InkWell(
+                                    child: Image.asset('assets/images/sns/snsIconGoogle.png'),
+                                ),
+                                InkWell(
+                                    child: Text("Google", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
+                                ),
+                            ],
+                        ),
+                        onPressed:googleSignin,
+                    ),
+                ],
             ),
-        ],
-      ),
-    );
-  }
+        );
+    }
 
 
-  Widget _registerSection(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(top: 40, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          InkWell(
-              child: Text("New Here? ", style: TextStyle(
-                  color: Colors.black, fontSize: 15, fontFamily: 'NotoSans'))
-          ),
-          InkWell(
-            child: Text("Sign Up", style: TextStyle(color: Colors.black,
-                fontSize: 15,
-                fontFamily: 'NotoSans',
-                fontWeight: FontWeight.bold)),
-            onTap: () {
-              Navigator.pushNamed(context, '/register');
-            },
-          )
-        ],
-      ),
-    );
-  }
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Signup button widget
+     */
+    Widget _registerSection(BuildContext context) {
+        return Container(
+            margin: EdgeInsets.only(top: 40, bottom: 20),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                    InkWell(
+                        child: Text(
+                            "New Here? ",
+                            style: TextStyle(
+                                color: Colors.black, fontSize: 15, fontFamily: 'NotoSans')
+                        )
+                    ),
+                    InkWell(
+                        child: Text("Sign Up", style: TextStyle(color: Colors.black,
+                        fontSize: 15,
+                        fontFamily: 'NotoSans',
+                        fontWeight: FontWeight.bold)),
+                        onTap: () {
+                            Navigator.pushNamed(context, '/register');
+                        },
+                    )
+                ],
+            ),
+        );
+    }
 }
 
 
