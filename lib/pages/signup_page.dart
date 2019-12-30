@@ -30,19 +30,21 @@ class SignUpPage extends StatefulWidget {
     //Parameters
     final String socialId;
     final String socialType;
+    final String profileURL;
     final String accessToken;
-    SignUpPage({Key key,this.socialId, this.socialType, this.accessToken}) : super(key: key);
+    SignUpPage({Key key,this.socialId,this.profileURL, this.socialType, this.accessToken}) : super(key: key);
 
     @override
-        _SignUpPageState createState() => _SignUpPageState(socialId: socialId, socialType: socialType, accessToken:accessToken);
+        _SignUpPageState createState() => _SignUpPageState(socialId: socialId,profileURL: profileURL, socialType: socialType, accessToken:accessToken);
     }
 
 class _SignUpPageState extends State<SignUpPage>{
     //Parameters
     final String socialId;
     final String socialType;
+    final String profileURL;
     final String accessToken;
-    _SignUpPageState({Key key, this.socialId, this.socialType, this.accessToken});
+    _SignUpPageState({Key key, this.socialId, this.profileURL, this.socialType, this.accessToken});
 
     //local var
     SharedPreferences SPF;
@@ -96,7 +98,7 @@ class _SignUpPageState extends State<SignUpPage>{
                         developer.log("# Confirm auth code success.");
                         developer.log("# Already exist user.");
 
-                        SetUserInfo.set(data['data']['userInfo'],"");
+                        SetUserInfo.set(data['data']['userInfo'],profileURL);
 
                         var token = data['data']['token'];
                         var userIdx = data['data']['userInfo']['idx'];
@@ -158,11 +160,10 @@ class _SignUpPageState extends State<SignUpPage>{
                 if (response.statusCode == 200) {
                     developer.log("# Confirm auth code success.");
 
-
                     developer.log('# [Navigator] SignInPage -> SignUpNamePage');
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                            return SignUpNamePage(socialId: socialId, socialType: socialType, accessToken: accessToken);
+                            return SignUpNamePage(socialId: socialId,profileURL:profileURL, socialType: socialType, accessToken: accessToken);
                         })
                     );
 

@@ -24,19 +24,21 @@ class SignUpNamePage extends StatefulWidget{
     //Parameters var
     final String socialId;
     final String socialType;
+    final String profileURL;
     final String accessToken;
-    SignUpNamePage({Key key,this.socialId, this.socialType, this.accessToken}) : super(key: key);
+    SignUpNamePage({Key key,this.socialId, this.socialType, this.accessToken, this.profileURL}) : super(key: key);
 
     @override
-    _SignUpNamePageState createState() => _SignUpNamePageState(socialId: socialId, socialType: socialType, accessToken:accessToken);
+    _SignUpNamePageState createState() => _SignUpNamePageState(socialId: socialId, profileURL: profileURL, socialType: socialType, accessToken:accessToken);
 }
 
 class _SignUpNamePageState extends State<SignUpNamePage>{
     //Parameters var
     final String socialId;
     final String socialType;
+    final String profileURL;
     final String accessToken;
-    _SignUpNamePageState({Key key, this.socialId, this.socialType, this.accessToken});
+    _SignUpNamePageState({Key key, this.socialId, this.socialType,this.profileURL, this.accessToken});
 
     //local var
     bool availNick;
@@ -99,7 +101,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         if (response.statusCode == 200) {
             developer.log("# 회원가입에 성공하였습니다.");
             developer.log("# Response : " + response.body);
-            SetUserInfo.set(data['data']['userInfo'],"");
+            SetUserInfo.set(data['data']['userInfo'],profileURL);
 
             var token = data['data']['token'];
             var userIdx = data['data']['userInfo']['idx'];

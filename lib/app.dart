@@ -50,6 +50,7 @@ class _MainPageState extends State<MainPage> {
     clearLocalStorageForTest () async {
         await store.onReady;
         sharedPreferences.remove('token');
+        sharedPreferences.remove('userIdx');
         store.delete("friendList");
         store.delete("test");
     }
