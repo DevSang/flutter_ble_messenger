@@ -109,7 +109,6 @@ class _SignInPageState extends State<SignInPage> {
                     developer.log("# 로그인정보 :" + response.body);
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
 
-                    SetUserInfo.set(data['data']['userInfo'], profile['picture']['data']['url']);
                     pushTokenRequest();
 
                     developer.log('# [Navigator] SignInPage -> MainPage');
@@ -122,7 +121,7 @@ class _SignInPageState extends State<SignInPage> {
                     developer.log('# [Navigator] SignInPage -> SignUpPage');
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                            return SignUpPage(socialId: profile['id'].toString(),socialType: "facebook", accessToken: result.accessToken.token.toString());
+                            return SignUpPage(socialId: profile['id'].toString(), profileURL: profile['picture']['data']['url'].toString(), socialType: "facebook", accessToken: result.accessToken.token.toString());
                         })
                     );
                 } else {

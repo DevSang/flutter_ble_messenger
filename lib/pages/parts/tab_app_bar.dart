@@ -1,15 +1,16 @@
-import 'package:Hwa/constant.dart';
-import 'package:Hwa/pages/signin_page.dart';
-import 'package:Hwa/utility/get_same_size.dart';
+import 'dart:convert';
+
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
 
 import '../profile_page.dart';
-import '../profile_page.dart';
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/pages/signin_page.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/data/models/UserInfo.dart';
 
 /*
  * @project : HWA - Mobile
@@ -17,9 +18,24 @@ import '../profile_page.dart';
  * @date : 2019-12-30
  * @description : Custom App Bar
  */
-class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
+class TabAppBar extends StatefulWidget implements PreferredSizeWidget {
     final String title;
     final Widget leftChild;
+
+    @override
+    final Size preferredSize;
+    TabAppBar({@required this.title, this.leftChild})
+        : preferredSize = Size(375, 84);
+
+    @override
+    TabAppBarState createState() => TabAppBarState(title: title, leftChild: leftChild);
+}
+
+class TabAppBarState extends State<TabAppBar> {
+    final String title;
+    final Widget leftChild;
+    SharedPreferences SPF;
+    Map userInfo;
     double sameSize;
 
     // 로그아웃 key/value 지우기 위함
@@ -28,7 +44,7 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     @override
     final Size preferredSize;
-    TabAppBar({@required this.title, this.leftChild})
+    TabAppBarState({@required this.title, this.leftChild})
         : preferredSize = Size(375, 84);
 
 
@@ -47,10 +63,20 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
         return;
     }
 
+    /*
+    * @author : sh
+    * @date : 2019-12-30
+    * @description : Set user info
+    */
+    void setUserInfo () async {
+        SharedPreferences SPF = await SharedPreferences.getInstance();
+        userInfo = jsonDecode(SPF.getString('userInfo'));
+    }
+
 
     Widget build(BuildContext context) {
         sameSize  = GetSameSize().main();
-
+        setUserInfo();
         return PreferredSize(
             preferredSize: preferredSize,
             child: SafeArea(
@@ -122,7 +148,10 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
                                                     height: ScreenUtil().setHeight(38),
                                                     decoration: BoxDecoration(
                                                         image: DecorationImage(
-                                                            image:AssetImage(Constant.PROFILE_IMG),
+                                                            image: userInfo['profileURL'] != null
+                                                                    ? NetworkImage(userInfo['profileURL'])
+                                                                    : Image.asset(Constant.PROFILE_IMG)
+                                                            ,
                                                             fit: BoxFit.cover
                                                         ),
                                                         shape: BoxShape.circle
