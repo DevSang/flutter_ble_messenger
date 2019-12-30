@@ -52,7 +52,9 @@ class ChatMessageElementsState extends State<ChatMessageList> {
      * @description : 마지막 보낸 메세지 여부
     */
     bool checkMessage(int index) {
-        if ((index > 0 && messageList != null && messageList[index - 1].senderIdx != Constant.USER_IDX) || index == 0) {
+        if ((index > 0 && messageList != null && messageList[index - 1].senderIdx != Constant.USER_IDX)
+            || index == 0
+            || (index > 0 && messageList != null && messageList[index - 1].chatType != "TEXT") ) {
             return true;
         } else {
             return false;
