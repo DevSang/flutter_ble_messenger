@@ -1,12 +1,12 @@
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/friend_info.dart';
+import 'package:Hwa/pages/parts/set_friend_data.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:alphabet_list_scroll_view/alphabet_list_scroll_view.dart';
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 
 /*
@@ -29,26 +29,36 @@ class FriendTab extends StatefulWidget {
 }
 
 class _FriendTabState extends State<FriendTab> {
-    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
-    List<String> strList = [];
-    List<Widget> normalList = [];
-    List<Widget> favouriteList = [];
+//    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
+    List<FriendInfo> originList = SetFriendsData().main();              // 원본 친구 리스트
+    List<FriendInfo> friendList = [];                                   // 화면에 보이는 친구 리스트 (검색 용도)
+    List<FriendInfo> requestList = [                                    // 요청 리스트
+        FriendInfo(
+            userIdx: 4,
+            nickname: "화영",
+            phone_number: "010-1432-7653",
+            profile_picture_idx: null,
+            business_card_idx: null,
+            user_status: "",
+        )
+    ];
+
     TextEditingController searchController = TextEditingController();
     double sameSize;
+
     ScrollController _scrollController;
-
-
 
     @override
     void initState() {
         _scrollController = new ScrollController()..addListener(_sc);
         sameSize = GetSameSize().main();
+
+        friendList.addAll(originList);
         friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
 
         //TODO: 추후 적용
-        filterList();
         searchController.addListener(() {
-            filterList();
+            searchFriends();
         });
 
         super.initState();
@@ -71,49 +81,22 @@ class _FriendTabState extends State<FriendTab> {
     /*
      * @author : hs
      * @date : 2019-12-30
-     * @description : 친구 리스트
+     * @description : 친구 리스트 검색
     */
-    filterList() {
+    void searchFriends() {
         List<FriendInfo> constList = [];
-        constList.addAll(friendList);
+        constList.addAll(originList);
 
-        normalList = [];
-        strList = [];
-        if (searchController.text.isNotEmpty) {
-            constList.retainWhere((user) =>
-                user.nickname.toLowerCase().contains(
-                    searchController.text.toLowerCase()));
-        }
-        constList.forEach((user) {
-            normalList.add(
-                Slidable(
-                    actionPane: SlidableDrawerActionPane(),
-                    actionExtentRatio: 0.25,
-                    secondaryActions: <Widget>[
-                        IconSlideAction(
-                            iconWidget: Icon(Icons.star),
-                            onTap: () {},
-                        ),
-                        IconSlideAction(
-                            iconWidget: Icon(Icons.more_horiz),
-                            onTap: () {},
-                        ),
-                    ],
-                    child: ListTile(
-                        leading: CircleAvatar(
-                            backgroundImage:
-                            NetworkImage("http://placeimg.com/200/200/people"),
-                        ),
-                        title: Text(user.nickname),
-                    ),
-                ),
-            );
-            strList.add(user.nickname);
-        });
+        friendList.clear();
+
+        constList.retainWhere(
+                (user) => user.nickname.toLowerCase().contains(
+                searchController.text.toLowerCase()
+            )
+        );
 
         setState(() {
-            strList;
-            normalList;
+            friendList.addAll(constList);
         });
     }
 
@@ -122,6 +105,7 @@ class _FriendTabState extends State<FriendTab> {
         return MaterialApp(
             debugShowCheckedModeBanner: false,
             home: Scaffold(
+                backgroundColor: Colors.white,
                 appBar: TabAppBar(
                     title: '단화 친구',
                     leftChild: Container(
@@ -160,51 +144,257 @@ class _FriendTabState extends State<FriendTab> {
                         )
                     ),
                 ),
-                body: AlphabetListScrollView(
-                    strList: strList,
-                    highlightTextStyle: TextStyle(
-                        color: Colors.yellow,
-                    ),
-                    showPreview: false,
-                    itemBuilder: (context, index) {
-                        return normalList[index];
-                    },
-                    indexedHeight: (i) {
-                        return 62;
-                    },
-                    keyboardUsage: true,
-                    headerWidgetList: <AlphabetScrollListHeader>[
-                        AlphabetScrollListHeader(
-                            widgetList: [
-                                Padding(
-                                    padding: const EdgeInsets.all(16.0),
-                                    child: TextFormField(
-                                        controller: searchController,
-                                        decoration: InputDecoration(
-                                            fillColor: Color.fromRGBO(0, 0, 0, 0.06),
-                                            border: OutlineInputBorder(),
-                                            suffix: Icon(
-                                                Icons.search,
-                                                color: Colors.grey,
-                                            ),
-                                            labelText: "Search",
-                                        ),
-                                    ),
-                                )
-                            ],
-                            icon: Icon(Icons.search),
-                            indexedHeaderHeight: (index) => 80
-                        ),
-                        //                  AlphabetScrollListHeader(
-                        //                      widgetList: favoriteList,
-                        //                      icon: Icon(Icons.star),
-                        //                      indexedHeaderHeight: (index) {
-                        //                          return 80;
-                        //                      }
-                        //                      ),
-                    ],
-                ),
+                body: buildBody(),
+                resizeToAvoidBottomPadding: false,
             )
         );
     }
+
+    Widget buildBody() {
+        return Column(
+            children: <Widget>[
+                // 친구 검색
+                buildSearch(),
+
+                Flexible(
+                    child: ListView(
+                        children: <Widget>[
+                            // 친구 요청리스트
+                            buildFriendList('친구 요청', requestList, false),
+
+                            // 친구 리스트
+                            buildFriendList('친구 목록', friendList, true)
+                        ],
+                    ),
+                ),
+            ],
+        );
+    }
+
+    Widget buildSearch() {
+        return Container(
+            width: ScreenUtil().setWidth(343),
+            height: ScreenUtil().setHeight(36),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(ScreenUtil().setHeight(18)),
+                color: Color.fromRGBO(0, 0, 0, 0.06),
+            ),
+            margin: EdgeInsets.symmetric(
+                horizontal: ScreenUtil().setWidth(16.0),
+                vertical: ScreenUtil().setHeight(6),
+            ),
+            child: TextFormField(
+                controller: searchController,
+                maxLines: 1,
+                style: TextStyle(
+                    fontFamily: "NotoSans",
+                    fontWeight: FontWeight.w500,
+                    fontSize: ScreenUtil().setSp(15),
+                    letterSpacing: ScreenUtil().setWidth(-0.75),
+                    color: Color.fromRGBO(39, 39, 39, 1),
+                ),
+                decoration: InputDecoration(
+                    contentPadding: EdgeInsets.fromLTRB(
+                        ScreenUtil().setWidth(7),
+                        ScreenUtil().setHeight(11),
+                        ScreenUtil().setWidth(13),
+                        ScreenUtil().setHeight(11)
+                    ),
+                    border: InputBorder.none,
+                    prefixIcon: Icon(
+                        Icons.search,
+                        color: Color.fromRGBO(39, 39, 39, 0.5),
+                    ),
+                    hintText: "검색",
+                    hintStyle: TextStyle(
+                        fontFamily: "NotoSans",
+                        fontWeight: FontWeight.w500,
+                        fontSize: ScreenUtil().setSp(15),
+                        letterSpacing: ScreenUtil().setWidth(-0.75),
+                        color: Color.fromRGBO(39, 39, 39, 0.4),
+                    ),
+                ),
+            ),
+        );
+    }
+
+    Widget buildFriendList(String title, List<FriendInfo> friendInfoList, bool isFriend) {
+        return Container(
+            child: Column(
+                children: <Widget>[
+                    Container(
+                        width: ScreenUtil().setWidth(375),
+                        height: ScreenUtil().setHeight(25),
+                        decoration: BoxDecoration(
+                            color: Color.fromRGBO(214, 214, 214, 1),
+                        ),
+                        child: Padding(
+                            padding: EdgeInsets.only(
+                                top: ScreenUtil().setHeight(6.5),
+                                bottom: ScreenUtil().setHeight(6.5),
+                                left: ScreenUtil().setWidth(16),
+                            ),
+                            child: Text(
+                                title,
+                                style: TextStyle(
+                                    height: 1.2,
+                                    fontFamily: "NotoSans",
+                                    fontWeight: FontWeight.w400,
+                                    fontSize: ScreenUtil().setSp(13),
+                                    letterSpacing: ScreenUtil().setWidth(-0.65),
+                                    color: Color.fromRGBO(39, 39, 39, 1),
+                                ),
+                            )
+                        )
+                    ),
+                    ListView.builder(
+                        physics: new NeverScrollableScrollPhysics(),
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        itemCount: friendInfoList.length,
+
+                        itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], isFriend, index == friendInfoList.length - 1)
+                    )
+                ],
+            ),
+        );
+    }
+
+
+    Widget buildFriendItem(FriendInfo friendInfo, bool isFriend, bool isLast) {
+        return Container(
+            width: ScreenUtil().setWidth(375),
+            height: ScreenUtil().setHeight(62),
+            padding: EdgeInsets.only(
+                left: ScreenUtil().setWidth(16)
+            ),
+            decoration: BoxDecoration(
+                color: Colors.white,
+            ),
+            child: Row(
+                children: <Widget>[
+                    // 유저 이미지
+                    Container(
+                        width: sameSize * 50,
+                        height: sameSize * 50,
+                        margin: EdgeInsets.only(
+                            top: ScreenUtil().setHeight(6),
+                            bottom: ScreenUtil().setHeight(6),
+                        ),
+                        child: ClipRRect(
+                            borderRadius: new BorderRadius.circular(
+                                ScreenUtil().setWidth(10)
+                            ),
+                            child:
+                            Image.asset(
+                                "assets/images/icon/profile.png",
+                                width: ScreenUtil().setWidth(50),
+                                height: ScreenUtil().setWidth(50),
+                                fit: BoxFit.cover,
+                            ),
+                        )
+                    ),
+                    // 유저 정보
+                    Container(
+                        width: ScreenUtil().setWidth(293),
+                        height: isLast ? ScreenUtil().setHeight(61) : ScreenUtil().setHeight(62),
+                        padding: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(13.5),
+                        ),
+                        decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                                    width: isLast ? 0 : sameSize,
+                                    color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                                )
+                            )
+                        ),
+                        child: Row(
+                            mainAxisAlignment: !isFriend ? MainAxisAlignment.start : MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                                Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                        friendInfo.nickname,
+                                        style: TextStyle(
+                                            height: 1,
+                                            fontFamily: "NotoSans",
+                                            fontWeight: FontWeight
+                                                .w500,
+                                            fontSize: ScreenUtil(
+                                                allowFontScaling: true)
+                                                .setSp(16),
+                                            color: Color
+                                                .fromRGBO(
+                                                39, 39, 39, 1),
+                                            letterSpacing: ScreenUtil()
+                                                .setWidth(-0.8),
+                                        ),
+                                    )
+                                ),
+                                !isFriend
+                                    ? Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                            friendBtn(0),
+                                            friendBtn(1),
+                                            Container()
+                                        ],
+                                    )
+                                    : contactIcon
+                            ],
+                        ),
+                    )
+                ],
+            )
+        );
+    }
+
+    Widget friendBtn(int index) {
+        Color tabColor = index == 0 ? Color.fromRGBO(158, 158, 158, 1) : Color.fromRGBO(77, 96, 191, 1);
+        Color textColor = index == 0 ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(77, 96, 191, 1);
+
+        return new Container(
+            width: ScreenUtil().setWidth(58),
+            height: ScreenUtil().setWidth(32),
+            margin: EdgeInsets.only(
+                left: index == 0 ? ScreenUtil().setWidth(10) : ScreenUtil().setWidth(8),
+            ),
+            decoration: BoxDecoration(
+                border: Border.all(
+                    width: ScreenUtil().setWidth(1),
+                    color: tabColor,
+                ),
+                borderRadius: BorderRadius.all(
+                    Radius.circular(ScreenUtil().setHeight(16))
+                )
+            ),
+            child: Center (
+                child: Text(
+                    index == 0 ? '삭제' : '수락',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        height: 1,
+                        fontFamily: "NotoSans",
+                        fontWeight: FontWeight.w500,
+                        fontSize: ScreenUtil().setSp(14),
+                        color: textColor
+                    ),
+                ),
+            ),
+        );
+    }
+
+    Widget contactIcon = new Container(
+        width: ScreenUtil().setWidth(20),
+        height: ScreenUtil().setHeight(20),
+        margin: EdgeInsets.only(
+            right: ScreenUtil().setWidth(10),
+        ),
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image:AssetImage("assets/images/icon/iconAddress.png")
+            ),
+        )
+    );
 }
