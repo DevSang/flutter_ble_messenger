@@ -13,7 +13,7 @@
 pubspec.lock
 **/ios/Flutter/flutter_export_environment.sh
 .flutter-plugins-dependencies
-android/app/app.impl
+android/app/app.iml
 
 ### Flutter ###
 # Flutter/Dart/Pub related
