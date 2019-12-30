@@ -60,7 +60,7 @@ class TabAppBarState extends State<TabAppBar> {
     * @description : 임시 로그아웃
     */
     Future<void> logOut() async {
-        prefs = await SharedPreferences.getInstance();
+        SPF = await SharedPreferences.getInstance();
         await store.onReady;
         prefs.remove('token');
         store.delete("friendList");
@@ -190,13 +190,11 @@ class TabAppBarState extends State<TabAppBar> {
                                         ],
                                     ),
                                     onTap: () {
-                                        logOut().then((value) {
-                                            Navigator.push(context,
-                                                MaterialPageRoute(builder: (context) {
-                                                    return ProfilePage();
-                                                })
-                                            );
-                                        });
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (context) {
+                                                return ProfilePage();
+                                            })
+                                        );
                                     },
                                 )
                             ),

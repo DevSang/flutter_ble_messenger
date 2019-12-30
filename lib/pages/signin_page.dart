@@ -69,18 +69,15 @@ class _SignInPageState extends State<SignInPage> {
     void googleSignin() async {
         try {
             developer.log("# Google Signin");
-//            var result = await _googleSignIn.signIn();
-//            final http.Response response = await http.get(
-//                'https://people.googleapis.com/v1/people/me/connections'
-//                    '?requestMask.includeField=person.names',
-//                headers: await _currentUser.authHeaders,
-//            );
-
             _googleSignIn.signIn().then((result){
-                result.authentication.then((googleKey){
-                    print(googleKey.accessToken);
-                    print(googleKey.idToken);
-                    print(_googleSignIn.currentUser.displayName);
+                result.authentication.then((googleKey) async {
+                    String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
+                    socialSigninAfterProcess(
+                        "google",
+                        googleKey.accessToken.toString(),
+                        _googleSignIn.currentUser.id.toString(),
+                        _googleSignIn.currentUser.photoUrl.toString()
+                    );
                 }).catchError((err){
                     print('inner error');
                 });
@@ -88,17 +85,6 @@ class _SignInPageState extends State<SignInPage> {
                 print('error occured');
             });
 
-//            String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
-//            final response = await http.post(url,
-//                headers: {
-//                    'Content-Type': 'application/json',
-//                    'X-Requested-With': 'XMLHttpRequest'
-//                },
-//                body: jsonEncode({
-//                    "login_type" : "facebook",
-//                    "token" : result.accessToken.token.toString()
-//                })
-//            );
 
 
         } catch (error) {
@@ -121,45 +107,13 @@ class _SignInPageState extends State<SignInPage> {
                 final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture&access_token=${result.accessToken.token}');
                 final profile = json.decode(graphResponse.body);
                 developer.log(profile.toString());
-
-                String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
-                final response = await http.post(url,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: jsonEncode({
-                        "login_type" : "facebook",
-                        "token" : result.accessToken.token.toString()
-                    })
+                socialSigninAfterProcess(
+                    "facebook",
+                    result.accessToken.token.toString(),
+                    profile['id'].toString(),
+                    profile['picture']['data']['url'].toString()
                 );
 
-                var data = jsonDecode(response.body);
-                var message = data['message'].toString();
-                if (response.statusCode == 200) {
-                    developer.log("# 로그인에 성공하였습니다.");
-                    developer.log("# 로그인정보 :" + response.body);
-                    RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
-
-                    pushTokenRequest();
-
-                    developer.log('# [Navigator] SignInPage -> MainPage');
-                    Navigator.pushNamed(context, '/main');
-
-                } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
-                    developer.log('# New user');
-                    RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
-
-                    developer.log('# [Navigator] SignInPage -> SignUpPage');
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                            return SignUpPage(socialId: profile['id'].toString(), profileURL: profile['picture']['data']['url'].toString(), socialType: "facebook", accessToken: result.accessToken.token.toString());
-                        })
-                    );
-                } else {
-                    developer.log('#Request failed：${response.statusCode}');
-                    RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
-                }
 				break;
 			case FacebookLoginStatus.cancelledByUser:
 				developer.log("# facebookLogin cancelledByUser");
@@ -169,6 +123,55 @@ class _SignInPageState extends State<SignInPage> {
 				break;
 		}
 	}
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Social signin 이후 처리
+     */
+    socialSigninAfterProcess (String loginType, accessToken, profileId, photoUrl) async {
+        String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
+        final response = await http.post(url,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: jsonEncode({
+                "login_type" : loginType,
+                "token" : accessToken
+            })
+        );
+
+        var data = jsonDecode(response.body);
+        var message = data['message'].toString();
+        if (response.statusCode == 200) {
+            developer.log("# 로그인에 성공하였습니다.");
+            developer.log("# 로그인정보 :" + response.body);
+            RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+
+            pushTokenRequest();
+
+            developer.log('# [Navigator] SignInPage -> MainPage');
+            Navigator.pushNamed(context, '/main');
+
+        } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
+            developer.log('# New user');
+            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
+
+            developer.log('# [Navigator] SignInPage -> SignUpPage');
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+                    return SignUpPage(
+                        socialId:profileId,
+                        profileURL: photoUrl,
+                        socialType: loginType,
+                        accessToken: accessToken);
+                })
+            );
+        } else {
+            developer.log('#Request failed：${response.statusCode}');
+            RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+        }
+    }
 
     /*
      * @author : sh
