@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
+import 'package:Hwa/data/models/chat_join_info.dart';
 
 import 'package:Hwa/pages/chatroom_page.dart';
 import 'package:Hwa/pages/parts/loading.dart';
@@ -405,10 +406,9 @@ class _HwaTabState extends State<HwaTab> {
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
             Map<String, dynamic> jsonParse = json.decode(response.body);
-            int createdChatIdx = jsonParse['danhwaRoom']['roomIdx'];
 
             // 단화방 입장
-            _enterChat(jsonParse);
+            _enterChat(jsonParse, true);
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
@@ -420,12 +420,23 @@ class _HwaTabState extends State<HwaTab> {
        * @date : 2019-12-28
        * @description : 단화방 입장 파라미터 처리
       */
-    void _enterChat(Map<String, dynamic> chatInfoJson) async {
+    void _enterChat(Map<String, dynamic> chatInfoJson, bool isCreated) async {
+        List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
 
         try {
             ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
             bool isLiked = chatInfoJson['isLiked'];
             int likeCount = chatInfoJson['danhwaLikeCount'];
+
+            if (!isCreated) {
+                try {
+                    for (var joinInfo in chatInfoJson['joinList']) {
+                        chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
+                    }
+                } catch (e) {
+                    developer.log("#### Error :: "+ e.toString());
+                }
+            }
 
             setState(() {
                 isLoading = false;
@@ -438,7 +449,7 @@ class _HwaTabState extends State<HwaTab> {
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
-                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount);
+                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo);
                 })
             ).then((onValue) {
                 _scanBLE();
@@ -449,6 +460,7 @@ class _HwaTabState extends State<HwaTab> {
             developer.log("#### Error :: "+ e.toString());
         }
     }
+
 
     /*
      * @author : hs
@@ -467,7 +479,7 @@ class _HwaTabState extends State<HwaTab> {
 
             Map<String, dynamic> jsonParse = json.decode(response.body);
             // 단화방 입장
-            _enterChat(jsonParse);
+            _enterChat(jsonParse, false);
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());

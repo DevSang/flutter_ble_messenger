@@ -1,4 +1,5 @@
 import 'package:Hwa/package/fullPhoto.dart';
+import 'package:Hwa/utility/call_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_message.dart';
@@ -28,6 +29,8 @@ class ChatMessageElementsState extends State<ChatMessageList> {
 
     int clickedMessage;
 
+    Map<String, String> header;
+
     @override
     Widget build(BuildContext context) {
         return Flexible(
@@ -44,6 +47,17 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                 itemBuilder: (BuildContext context, int index) => buildChatMessage(index, messageList[index]),
             )
         );
+    }
+
+    @override
+    void initState() {
+    	super.initState();
+	    getHeader();
+    }
+
+    void getHeader() async {
+	    Map<String, String> map = await CallApi.setHeader();
+	    header = map;
     }
 
     /*
@@ -362,7 +376,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                         Text(
-                            chatMessage.senderIdx.toString(),
+                            chatMessage.nickName.toString(),
                             style: TextStyle(
                                 fontFamily: "NotoSans",
                                 fontWeight: FontWeight.w600,
@@ -406,7 +420,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                         Text(
-                            chatMessage.senderIdx.toString() + "님이 단화방을 떠났습니다.",
+                            chatMessage.nickName.toString() + "님이 단화방을 떠났습니다.",
                             style: TextStyle(
                                 fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
                                 color: Colors.white
@@ -437,16 +451,16 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                         child: Container(
                             child: ClipRRect(
                                 borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
-                                child: Image.asset(
-//                                chatMessage.message,
-                                    "assets/images/splash.png",
-                                    width: ScreenUtil().setWidth(230),
+                                child: Image.network(
+		                                chatMessage.message,
+                                        width: ScreenUtil().setWidth(230),
+		                                headers: header
                                 )
                             ),
                         ),
                         onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: "assets/images/splash.png")));
+                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: chatMessage.message)));
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
@@ -511,7 +525,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                                         children: <Widget>[
                                                             Container(
                                                                 child: Text(
-                                                                    chatMessage.senderIdx.toString(),
+                                                                    chatMessage.nickName.toString(),
                                                                     style: TextStyle(
                                                                         fontFamily: "NotoSans",
                                                                         fontWeight: FontWeight.w600,
