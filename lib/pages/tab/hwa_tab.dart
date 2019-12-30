@@ -42,7 +42,7 @@ class _HwaTabState extends State<HwaTab> {
     List<int> chatIdxList = <int>[];
     ChatInfo chatInfo;
     double sameSize;
-    TextEditingController _textFieldController;
+    TextEditingController _textFieldController = TextEditingController();
     bool isLoading;
 
     // 채팅방이 아래 시간 이상 AD를 받지 못하면 리스트에서 삭제 (ms)
@@ -95,7 +95,6 @@ class _HwaTabState extends State<HwaTab> {
         await HwaBeacon().initializeScanning();
 
         checkGpsBleAndStartService();
-        _textFieldController = TextEditingController(text: '단화방 이름을 입력해주세요.');
     }
 
     @override
@@ -433,7 +432,7 @@ class _HwaTabState extends State<HwaTab> {
                 stopOldChatRemoveTimer();
                 chatList.clear();
                 chatIdxList.clear();
-                _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '단화방 이름을 입력해주세요.';
+                _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
             });
 
             Navigator.push(context,
@@ -491,7 +490,7 @@ class _HwaTabState extends State<HwaTab> {
                     decoration: InputDecoration(
 
                         /// GPS 연동
-                        hintText: _textFieldController.text
+                        hintText: _currentAddress ?? '단화방 이름을 입력해주세요.'
                     ),
                 ),
                 actions: <Widget>[
@@ -531,6 +530,11 @@ class _HwaTabState extends State<HwaTab> {
                 ),
                 content: TextField(
                     controller: _textFieldController,
+                    decoration: InputDecoration(
+
+                        /// GPS 연동
+                        hintText: _currentAddress ?? '단화방 이름을 입력해주세요.'
+                    ),
                 ),
                 actions: <Widget>[
                     new FlatButton(
