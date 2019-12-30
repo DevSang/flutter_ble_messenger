@@ -8,6 +8,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
 
+import '../profile_page.dart';
+
 /*
  * @project : HWA - Mobile
  * @author : hs
@@ -28,6 +30,7 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
     TabAppBar({@required this.title, this.leftChild})
         : preferredSize = Size(375, 84);
 
+
     /*
     * @author : hs
     * @date : 2019-12-28
@@ -42,6 +45,7 @@ class TabAppBar extends StatelessWidget implements PreferredSizeWidget {
 
         return;
     }
+
 
     Widget build(BuildContext context) {
         sameSize  = GetSameSize().main();
