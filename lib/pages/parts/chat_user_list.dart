@@ -1,4 +1,6 @@
 //pub module
+import 'package:Hwa/data/models/chat_join_info.dart';
+import 'package:Hwa/package/fullPhoto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:configurable_expansion_tile/configurable_expansion_tile.dart';
@@ -9,20 +11,27 @@ import 'package:image_picker/image_picker.dart';
 //import module
 import 'package:Hwa/data/models/chat_user_info.dart';
 import 'package:Hwa/utility/cached_image_utility.dart';
+import 'package:Hwa/utility/get_same_size.dart';
 
 import 'package:Hwa/constant.dart';
 
 class ChatUserList extends StatefulWidget {
-    final List<ChatUserInfo> userInfoList;
+    final List<ChatJoinInfo> userInfoList;
+    final String joinType;
     final int hostIdx;
 
-    ChatUserList({Key key, @required this.userInfoList, this.hostIdx}) : super(key: key);
+    ChatUserList({Key key, @required this.userInfoList, this.joinType, this.hostIdx}) : super(key: key);
 
     @override
     State createState() => new ChatUserListState();
 }
 
-
+/*
+ * @project : HWA - Mobile
+ * @author : hs
+ * @date : 2019-12-30
+ * @description : 단화방 유저 리스트
+ */
 class ChatUserListState extends State<ChatUserList> {
     // 현재 채팅 Advertising condition
     bool openedList;
@@ -31,19 +40,14 @@ class ChatUserListState extends State<ChatUserList> {
     Future<File> profileImageFile;
     Image imageFromPreferences;
 
-    Future setUserProfileImage (ImageSource source, ChatUserInfo userInfo) {
-//        CachedImageUtility.saveImageToPreferences(CachedImageUtility.base64String(profileImageFile.readAsBytesSync()));
-
-        setState(() {
-            userInfo.profileImg =  ImagePicker.pickImage(source: source);
-        });
-    }
+    double sameSize;
 
 
     @override
     void initState() {
         super.initState();
         openedList = true;
+        sameSize = GetSameSize().main();
     }
 
     @override
@@ -78,10 +82,10 @@ class ChatUserListState extends State<ChatUserList> {
                                       child: Row(
                                           children: <Widget>[
                                               Text(
-                                                  widget.userInfoList[0].partType == "BLE"
+                                                  widget.joinType == "BLE_JOIN"
                                                       ? "내 주변 사람"
                                                       : (
-                                                      widget.userInfoList[0].partType == "Online"
+                                                      widget.joinType == "BLE_OUT"
                                                           ? "온라인 유저"
                                                           : "관전 유저"
                                                   ),
@@ -138,7 +142,7 @@ class ChatUserListState extends State<ChatUserList> {
                                    shrinkWrap: true,
                                    itemCount: widget.userInfoList.length,
                                    itemBuilder: (BuildContext context, int index){
-                                       return BuildUserInfo(hostIdx: widget.hostIdx, userInfo: widget.userInfoList[index], setUserProfileImage: setUserProfileImage);
+                                       return BuildUserInfo(hostIdx: widget.hostIdx, userInfo: widget.userInfoList[index]);
                                    }
                                ),
                           )
@@ -152,10 +156,10 @@ class ChatUserListState extends State<ChatUserList> {
 
 class BuildUserInfo extends StatelessWidget {
     final int hostIdx;
-    final ChatUserInfo userInfo;
-    final Function setUserProfileImage;
+    final ChatJoinInfo userInfo;
+    double sameSize = GetSameSize().main();
 
-    BuildUserInfo({Key key, @required this.hostIdx, this.userInfo, this.setUserProfileImage});
+    BuildUserInfo({Key key, @required this.hostIdx, this.userInfo});
 
     @override
     Widget build(BuildContext context) {
@@ -180,7 +184,7 @@ class BuildUserInfo extends StatelessWidget {
                                                 child: ClipRRect(
                                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
                                                     child: Image.asset(
-                                                        "assets/images/profile_img.png",
+                                                        "assets/images/icon/profile.png",
                                                         width: ScreenUtil().setWidth(40),
                                                         height: ScreenUtil().setWidth(40),
                                                     )
@@ -191,7 +195,7 @@ class BuildUserInfo extends StatelessWidget {
                                                     left: ScreenUtil().setWidth(10.5)
                                                 ),
                                                 child: Text(
-                                                    userInfo.nick,
+                                                    userInfo.userIdx.toString(),
                                                     style: TextStyle(
                                                         height: 1,
                                                         fontSize: ScreenUtil().setSp(13),
@@ -203,8 +207,8 @@ class BuildUserInfo extends StatelessWidget {
                                         ],
                                     ),
                                 ),
-                                // 연락처 아이콘
-                                userInfo.existContact ? contactIcon : new Container()
+                                // TODO: 연락처 아이콘
+//                                userInfo.existContact ? contactIcon : new Container()
                             ],
                         )
                     ),
@@ -276,7 +280,7 @@ class BuildUserInfo extends StatelessWidget {
         )
     );
 
-    void _showModalSheet(BuildContext context, ChatUserInfo userInfo) {
+    void _showModalSheet(BuildContext context, ChatJoinInfo userInfo) {
         showModalBottomSheet(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -316,15 +320,18 @@ class BuildUserInfo extends StatelessWidget {
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image:AssetImage(
-                                                        userInfo.businessCard != ""
-                                                        ? "assets/images/icon/iconViewCard.png"
-                                                        : "")
+                                                    "assets/images/icon/iconViewCard.png"
+                                                        // TODO: 명함 맵핑
+//                                                        userInfo.businessCard != ""
+//                                                        ? "assets/images/icon/iconViewCard.png"
+//                                                        : ""
+                                                    )
                                                 )
                                             )
                                         ),
                                         Container(
                                             child: Text(
-                                                userInfo.nick,
+                                                userInfo.userIdx.toString(),
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     height: 1,
@@ -355,7 +362,7 @@ class BuildUserInfo extends StatelessWidget {
                                 height: ScreenUtil().setHeight(246),
                                 child: Column(
                                     children: <Widget>[
-                                        GestureDetector(
+                                        InkWell(
                                             child: Container(
                                                 width: ScreenUtil().setWidth(90),
                                                 height: ScreenUtil().setWidth(90),
@@ -363,23 +370,23 @@ class BuildUserInfo extends StatelessWidget {
                                                     top: ScreenUtil().setHeight(16),
                                                     bottom: ScreenUtil().setHeight(13),
                                                 ),
-                                                child: ClipRRect(
-                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(35)),
-                                                    child:
-                                                        Image.asset(
-                                                            "assets/images/profile_img.png",
-                                                            width: ScreenUtil().setWidth(40),
-                                                            height: ScreenUtil().setWidth(40),
-                                                        ),
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                        image: new AssetImage("assets/images/icon/profile.png"),
+                                                        fit: BoxFit.cover
+                                                    ),
+                                                    shape: BoxShape.circle
                                                 )
                                             ),onTap: () {
-                                                setUserProfileImage(ImageSource.gallery, userInfo);
+                                                FullPhoto(url: "assets/images/icon/profile.png");
                                             },
                                         ),
                                         Container(
                                             height: ScreenUtil().setHeight(12),
                                             child: Text(
-                                                userInfo.userIntro,
+                                                // TODO: 인삿말 맵핑
+//                                                userInfo.userIntro,
+                                            '안녕하세요! ' + userInfo.userIdx.toString() + "입니다! :)",
                                                 style: TextStyle(
                                                     height: 1,
                                                     fontSize: ScreenUtil().setSp(13),
@@ -390,9 +397,8 @@ class BuildUserInfo extends StatelessWidget {
                                         ),
                                         Container(
                                             width: ScreenUtil().setWidth(359),
-                                            padding: EdgeInsets.only(
-                                                left: ScreenUtil().setWidth(8),
-                                                right: ScreenUtil().setWidth(8),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: ScreenUtil().setWidth(8)
                                             ),
                                             margin: EdgeInsets.only(
                                                 top: ScreenUtil().setHeight(21),
@@ -400,10 +406,12 @@ class BuildUserInfo extends StatelessWidget {
                                             child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children: <Widget>[
-                                                    userInfo.addFriend
-                                                        ? userFunc("assets/images/icon/iconRequest.png", "친구 요청", null)
-                                                        : Container()
-                                                    ,
+                                                    // TODO: 친구추가 맵핑
+//                                                    userInfo.addFriend
+//                                                        ? userFunc("assets/images/icon/iconRequest.png", "친구 요청", null)
+//                                                        : Container()
+//                                                    ,
+                                                    userFunc("assets/images/icon/iconRequest.png", "친구 요청", null),
                                                     userFunc("assets/images/icon/iconDirectChat.png", "1:1 채팅", null),
                                                     userFunc("assets/images/icon/iconBlock.png", "차단하기", null),
                                                     hostIdx  == Constant.USER_IDX
@@ -424,7 +432,7 @@ class BuildUserInfo extends StatelessWidget {
 
     Widget userFunc(String iconSrc, String title,Function fn) {
         return new Container(
-            width: ScreenUtil().setWidth(89.75),
+            width: ScreenUtil().setWidth(85.75),
             child: Column(
                 children: <Widget>[
                     GestureDetector(
@@ -432,8 +440,8 @@ class BuildUserInfo extends StatelessWidget {
                             margin: EdgeInsets.only(
                                 bottom: ScreenUtil().setHeight(9),
                             ),
-                            width: ScreenUtil().setWidth(50),
-                            height: ScreenUtil().setHeight(50),
+                            width: sameSize*50,
+                            height: sameSize*50,
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(210, 217, 250, 1),
                                 image: DecorationImage(

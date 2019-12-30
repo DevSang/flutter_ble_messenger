@@ -362,7 +362,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                         Text(
-                            chatMessage.senderIdx.toString(),
+                            chatMessage.nickName.toString(),
                             style: TextStyle(
                                 fontFamily: "NotoSans",
                                 fontWeight: FontWeight.w600,
@@ -406,7 +406,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                         Text(
-                            chatMessage.senderIdx.toString() + "님이 단화방을 떠났습니다.",
+                            chatMessage.nickName.toString() + "님이 단화방을 떠났습니다.",
                             style: TextStyle(
                                 fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
                                 color: Colors.white
@@ -511,7 +511,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                                         children: <Widget>[
                                                             Container(
                                                                 child: Text(
-                                                                    chatMessage.senderIdx.toString(),
+                                                                    chatMessage.nickName.toString(),
                                                                     style: TextStyle(
                                                                         fontFamily: "NotoSans",
                                                                         fontWeight: FontWeight.w600,
