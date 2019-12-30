@@ -67,7 +67,6 @@ class _HwaTabState extends State<HwaTab> {
 
         isLoading = false;
         sameSize  = GetSameSize().main();
-        _textFieldController = TextEditingController(text: '');
     }
 
     /*
@@ -138,6 +137,7 @@ class _HwaTabState extends State<HwaTab> {
 			    // TODO 디자인 적용
 			    setState(() {
 				    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
+                    _textFieldController = TextEditingController(text: '$_currentAddress');
 			    });
 		    }
 	    }
