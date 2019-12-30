@@ -360,6 +360,10 @@ class ChatScreenState extends State<ChatroomPage> {
             });
     }
 
+    void popPage() async {
+	    await HwaBeacon().stopAdvertising();
+	    Navigator.of(context).pop();
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -382,8 +386,7 @@ class ChatScreenState extends State<ChatroomPage> {
                 leading: new IconButton(
                     icon: new Image.asset('assets/images/icon/navIconPrev.png'),
                     onPressed: (){
-                        HwaBeacon().stopAdvertising();
-                        Navigator.of(context).pop();
+                        popPage();
                     }
                 ),
                 actions:[
