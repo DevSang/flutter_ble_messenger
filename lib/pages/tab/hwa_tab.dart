@@ -595,11 +595,14 @@ class _HwaTabState extends State<HwaTab> {
             String titleText = "";
             String subTitle = "";
             String buttonText = "";
+            Function buttonClick;
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
                 titleText= "현재 위치 단화방이 없습니다.";
                 subTitle="원하는 방을 만들어 보실래요?";
                 buttonText="방만들기 >";
+                buttonClick =  Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
+
             }
             else if(notAllowedBLE) {
                 mainBackImg = "assets/images/background/noBleBackgroundImg.png";
@@ -607,6 +610,7 @@ class _HwaTabState extends State<HwaTab> {
                     titleText= "블루투스 권한이 필요합니다.";
                     subTitle="설정 > 앱 > 앱 권한";
                     buttonText="설정으로 이동 >";
+                    buttonClick = HwaBeacon.
                 } else {
                     titleText= "블루투스가 꺼져있습니다.";
                     subTitle="설정 > 블루투스 켜기";
@@ -679,7 +683,7 @@ class _HwaTabState extends State<HwaTab> {
                         padding: EdgeInsets.symmetric(horizontal: 15.0),
                         child: RaisedButton(
                             onPressed: (){
-                                HwaBeacon().openLocationSettings();
+                                buttonClick;
                             },
                             color: Color.fromRGBO(77, 96, 191, 1),
                             elevation: 0.0,
@@ -727,8 +731,8 @@ class _HwaTabState extends State<HwaTab> {
                                         _displayAndroidDialog(context)
                                     } else
                                         if (Platform.isIOS) {
-                                            _displayIosDialog(context)
-                                        }
+                                        _displayIosDialog(context)
+                                    }
                                 },
                             )
                         ),
