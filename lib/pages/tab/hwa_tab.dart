@@ -46,7 +46,10 @@ class _HwaTabState extends State<HwaTab> {
     bool isLoading;
 
     // 채팅방이 아래 시간 이상 AD를 받지 못하면 리스트에서 삭제 (ms)
-    int chatItemRemoveTime = 3000;
+    int chatItemRemoveTime = 4000;
+
+    // AD 없는 채팅방 삭제 타이머 반복 시간 (ms)
+    int chatItemRemoveTimerDelay = 2000;
 
     // 채팅방 삭제 타이머
     Timer chatItemRemoveTimer;
@@ -156,8 +159,8 @@ class _HwaTabState extends State<HwaTab> {
 		    if (result != null && result.beacons.isNotEmpty && mounted) {
 			    setState(() {
 				    result.beacons.forEach((beacon) {
-					    developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-					    developer.log("# chatIdxList : " + chatIdxList.toString());
+//					    developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
+//					    developer.log("# chatIdxList : " + chatIdxList.toString());
 
 					    if (!chatIdxList.contains(beacon.roomId))  {
 						    _setChatItem(beacon.roomId);
@@ -213,7 +216,7 @@ class _HwaTabState extends State<HwaTab> {
     void startOldChatRemoveTimer(){
 	    if(chatItemRemoveTimer != null && chatItemRemoveTimer.isActive) chatItemRemoveTimer.cancel();
 
-        chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: 1500), (timer) {
+        chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: chatItemRemoveTimerDelay), (timer) {
             deleteOldChat();
         });
     }
@@ -431,7 +434,8 @@ class _HwaTabState extends State<HwaTab> {
                         Container(
                             width: sameSize * 22,
                             height: sameSize * 22,
-                            margin: EdgeInsets.only(right: 16),
+                            margin: EdgeInsets.only(left: 16),
+
                             child: InkWell(
                                 child: Image.asset(
                                     'assets/images/icon/navIconHot.png'),
@@ -442,6 +446,7 @@ class _HwaTabState extends State<HwaTab> {
                             )
                         ),
                         Container(
+                            margin: EdgeInsets.only(left: 16),
                             width: sameSize * 22,
                             height: sameSize * 22,
                             child: InkWell(

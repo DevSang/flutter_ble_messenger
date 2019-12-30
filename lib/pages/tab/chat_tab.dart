@@ -76,13 +76,6 @@ class _ChatTabState extends State<ChatTab> {
           padding: EdgeInsets.symmetric(
             horizontal: ScreenUtil().setWidth(16),
           ),
-          decoration: BoxDecoration(
-            color: Color.fromRGBO(210, 217, 250, 1),
-            image: DecorationImage(
-              image: AssetImage("assets/images/background/bgMap.png"),
-              fit: BoxFit.cover,
-            ),
-          ),
           child: Column(
             children: <Widget>[
               // 채팅 리스트

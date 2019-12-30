@@ -6,9 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/pages/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
+import 'package:Hwa/utility/set_user_info.dart';
 
 
 /*
@@ -43,6 +45,7 @@ class _SignUpPageState extends State<SignUpPage>{
     _SignUpPageState({Key key, this.socialId, this.socialType, this.accessToken});
 
     //local var
+    SharedPreferences SPF;
     FocusNode myFocusNode;
     final TextEditingController _regAuthCodeController = new TextEditingController();
     bool lengthConfirm;
@@ -60,6 +63,7 @@ class _SignUpPageState extends State<SignUpPage>{
      * @description : 인증 문자 요청
      */
     registerCodeRequest() async {
+        SPF = await SharedPreferences.getInstance();
         if(phoneRegController.text == ''){
             developer.log("# Phone number is empty.");
             RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
@@ -83,8 +87,31 @@ class _SignUpPageState extends State<SignUpPage>{
 
                 var data = jsonDecode(response.body);
                 if (response.statusCode == 200 || response.statusCode == 202) {
-                    RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
-                    developer.log("# Code request success");
+
+                    if(data['message'] != null){
+                        RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
+                        developer.log("# Code request success");
+                    ///이미 가입된 사용자면
+                    } else {
+                        developer.log("# Confirm auth code success.");
+                        developer.log("# Already exist user.");
+
+                        SetUserInfo.set(data['data']['userInfo'],"");
+
+                        var token = data['data']['token'];
+                        var userIdx = data['data']['userInfo']['idx'];
+
+                        developer.log("# [SPF SAVE] token : " + token);
+                        developer.log("# [SPF SAVE] userIdx : " + userIdx.toString());
+
+                        SPF.setString('token', token);
+                        SPF.setString('userIdx', userIdx.toString());
+
+                        developer.log('# [Navigator] SignUpPage -> MainPage');
+                        RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
+                        RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+                        Navigator.pushNamed(context, '/main');
+                    }
                 } else {
                     if(data['message'].indexOf('이미 사용중인 전화번호입니다') > -1){
                         RedToast.toast("이미 사용중인 전화번호입니다.", ToastGravity.TOP);
@@ -104,6 +131,8 @@ class _SignUpPageState extends State<SignUpPage>{
      * @description : 인증번호 입력후 다음누르면
      */
     registerNext() async {
+        SPF = await SharedPreferences.getInstance();
+
         if(_regAuthCodeController.text == ''){
             developer.log("# Auth code is empty.");
             RedToast.toast("인증번호를 입력해주세요.", ToastGravity.TOP);
@@ -121,21 +150,23 @@ class _SignUpPageState extends State<SignUpPage>{
                     "auth_number": _regAuthCodeController.text
                 })
             ).then((http.Response response) {
-                developer.log("# Check auth code request success.");
+                developer.log("# Confirm auth code request success.");
                 developer.log("# response : " + response.body);
 
                 var data = jsonDecode(response.body);
-                String phoneNum = data['auth_number'];
 
                 if (response.statusCode == 200) {
                     developer.log("# Confirm auth code success.");
-                    developer.log("# Confirm auth code success.");
 
+
+                    developer.log('# [Navigator] SignInPage -> SignUpNamePage');
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
                             return SignUpNamePage(socialId: socialId, socialType: socialType, accessToken: accessToken);
                         })
                     );
+
+
                     RedToast.toast("인증이 완료 되었습니다.", ToastGravity.TOP);
                 } else {
                     RedToast.toast("인증이 실패하였습니다. 인증번호를 확인해주세요.", ToastGravity.TOP);
