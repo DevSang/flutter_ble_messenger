@@ -7,6 +7,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State <ProfilePage>{
+  bool isSwitched = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,8 +30,8 @@ class _ProfilePageState extends State <ProfilePage>{
         children: <Widget>[
           _profileImageSection(context),
           _profileSetting(context),
-          _appSetting(),
-          _accountSetting()
+          _appSetting(context),
+          _accountSetting(context)
     ],
       ),
     );
@@ -146,14 +148,127 @@ Widget _profileSetting(BuildContext context){
   );
 }
 
-Widget _appSetting(){
+Widget _appSetting(BuildContext context){
   return Container(
+    child: Stack(
+      children: <Widget>[
+    Column(
+    children: <Widget>[
+    Container(
+    padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+    width: MediaQuery.of(context).size.width,
+    height: 30.0,
+    decoration: BoxDecoration(
+      color: Color.fromRGBO(214, 214, 214, 1),
+    ),
+    child: Text("앱 설정",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
+  ),
+
+      Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+          width: MediaQuery.of(context).size.width,
+          height: 50.0,
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(255, 255, 255, 1),
+          ),
+          child: Row(
+            children: <Widget>[
+              Text("푸쉬 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+
+            ],
+          )
+      ),
+
+
+
+      Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+          width: MediaQuery.of(context).size.width,
+          height: 50.0,
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(255, 255, 255, 1),
+          ),
+          child: Row(
+            children: <Widget>[
+              Text("친구 허용 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+
+            ],
+          )
+      ),
+
+
+    ]
+    )
+      ],
+    ),
 
   );
 }
 
-Widget _accountSetting(){
+Widget _accountSetting(BuildContext context){
   return Container(
+
+    child: Stack(
+      children: <Widget>[
+        Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                width: MediaQuery.of(context).size.width,
+                height: 30.0,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(214, 214, 214, 1),
+                ),
+                child: Text("계정",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
+              ),
+
+
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                  width: MediaQuery.of(context).size.width,
+                  height: 50.0,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+                      )
+                    ],
+                  )
+              ),
+
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                  width: MediaQuery.of(context).size.width,
+                  height: 50.0,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                  ),
+                  child: Row(
+                    children: <Widget>[
+
+                      InkWell(
+                        child: Text("탈퇴하기", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+                      )
+
+
+
+
+                    ],
+                  )
+              ),
+
+            ]
+        )
+
+
+
+      ],
+
+
+    ),
+
 
   );
 }

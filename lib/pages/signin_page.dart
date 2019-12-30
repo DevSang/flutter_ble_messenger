@@ -499,7 +499,8 @@ class _SignInPageState extends State<SignInPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                     RaisedButton(
-                        child: Row(
+                      color: Colors.white,
+                      child: Row(
                             children: <Widget>[
                                 InkWell(
                                     child: Image.asset('assets/images/sns/snsIconKakao.png'),
@@ -514,6 +515,7 @@ class _SignInPageState extends State<SignInPage> {
                         },
                     ),
                     RaisedButton(
+                      color: Colors.white,
                         child: Row(
                             children: <Widget>[
                                 InkWell(
@@ -529,7 +531,8 @@ class _SignInPageState extends State<SignInPage> {
                         },
                     ),
                     RaisedButton(
-                        child: Row(
+                      color: Colors.white,
+                      child: Row(
                             children: <Widget>[
                                 InkWell(
                                     child: Image.asset('assets/images/sns/snsIconGoogle.png'),
