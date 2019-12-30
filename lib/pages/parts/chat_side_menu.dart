@@ -16,7 +16,6 @@ import 'package:Hwa/pages/parts/set_user_data_online.dart';
 import 'package:Hwa/pages/parts/set_user_data_view.dart';
 import 'package:Hwa/pages/chatroom_setting.dart';
 
-//TODO: Host 여부에 따른 Setting, Liked에 따른 하트 아이콘
 /*
  * @project : HWA - Mobile
  * @author : hs
@@ -45,9 +44,14 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     List<ChatUserInfo> userInfoListOnline = new SetUserDataOnline().main();// 현재 채팅 참여유저 TODO: 추후 맵핑
     List<ChatUserInfo> userInfoListView = new SetUserDataView().main();
 
+
     @override
     void initState() {
         super.initState();
+        print(chatInfo.userCount.bleJoin.toString());
+        print(chatInfo.userCount.bleOut.toString());
+        print(chatInfo.userCount.online.toString());
+        print(chatInfo.userCount.total.toString());
     }
 
     /*

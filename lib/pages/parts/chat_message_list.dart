@@ -52,7 +52,9 @@ class ChatMessageElementsState extends State<ChatMessageList> {
      * @description : 마지막 보낸 메세지 여부
     */
     bool checkMessage(int index) {
-        if ((index > 0 && messageList != null && messageList[index - 1].senderIdx != Constant.USER_IDX) || index == 0) {
+        if ((index > 0 && messageList != null && messageList[index - 1].senderIdx != Constant.USER_IDX)
+            || index == 0
+            || (index > 0 && messageList != null && messageList[index - 1].chatType != "TEXT") ) {
             return true;
         } else {
             return false;
@@ -92,11 +94,11 @@ class ChatMessageElementsState extends State<ChatMessageList> {
 
     // 받은 메세지 레이아웃 (프로필이미지, 이름, 시간)
     Widget receivedLayout(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage) {
-
         return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
                 thumbnail(chatMessage.nickName),
+
                 Expanded(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -147,7 +149,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
 
     // 받은 메세지 유저 프로필 이미지
     Widget thumbnail(String nickName) {
-        new Container(
+        return new Container(
             margin: EdgeInsets.only(
                 right: ScreenUtil.getInstance().setWidth(7)),
             child: CircleAvatar(
@@ -156,6 +158,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
             )
         );
     }
+
     // 메세지 시간 레이아웃
     Widget msgTime(int chatTime, bool receivedMsg) {
         return Container(
@@ -183,7 +186,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
 
     // 받은 메세지 말풍선 스타일
     Widget receivedText(int chatIndex, ChatMessage chatMessage) {
-        bool isSelected = clickedMessage == chatIndex
+       bool isSelected = clickedMessage == chatIndex
                             ? true
                             : false;
         return Column(
@@ -216,7 +219,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                     ),
                     child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
+                        children: <Widget>[
                             GestureDetector(
                                 child: Container(
                                     constraints: BoxConstraints(maxWidth: 230),
@@ -254,6 +257,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                     });
                                 },
                             ),
+
                             msgTime(chatMessage.chatTime, true)
                         ],
                     )
