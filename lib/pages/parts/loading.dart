@@ -10,7 +10,7 @@ class Loading extends StatelessWidget {
             right: ScreenUtil().setWidth(0),
             child: Container(
                 width: ScreenUtil().setWidth(375),
-                height: ScreenUtil().setHeight(530),
+                height: ScreenUtil().setHeight(540),
                 color: Color.fromRGBO(255, 255, 255, 0.2),
                 child: Align(
                     child:
