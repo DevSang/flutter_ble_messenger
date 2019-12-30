@@ -51,13 +51,27 @@ class _HwaTabState extends State<HwaTab> {
     // AD 없는 채팅방 삭제 타이머 반복 시간 (ms)
     int chatItemRemoveTimerDelay = 2000;
 
-    // 채팅방 삭제 타이머
-    Timer chatItemRemoveTimer;
+    // GPS, BLE 권한 들어왔는지 체크 타이머 반복 시간 (ms)
+    int permitTimerDelay = 1500;
+
+    // 채팅방 삭제, GPS 권한 있는지 체크, BLE 권한 체크 타이머
+    Timer _chatItemRemoveTimer;
+    Timer _gpsTimer;
+    Timer _bleTimer;
 
     // GPS 관련
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     Position _currentPosition;
     String _currentAddress = '위치 검색중..';
+
+    // 사용자 GPS, BLE 권한 관련
+    bool isAllowedGPS = false;
+    bool isAuthGPS = false;
+
+    bool isAllowedBLE = false;
+    bool isAuthBLE = false;
+
+    bool isBeaconSupport = false;
 
 
     @override
@@ -80,26 +94,58 @@ class _HwaTabState extends State<HwaTab> {
 
         // BLE Scanning API 초기화
         await HwaBeacon().initializeScanning();
-        developer.log("# HwaBeacon. finish initialize");
 
-        // 비콘 송수신 가능 체크
-        // TODO BLE, GPS 상태 종합하여 화면 UI 설정
-        BeaconStatus status = await HwaBeacon().checkTxSupported();
-
-        developer.log("## status : " + status.toString());
-
-        // BLE Scan start
-        _scanBLE();
-
-        // 현재 위치 검색
-        _getCurrentLocation();
+        checkGpsBleAndStartService();
     }
 
     @override
     void dispose() {
 	    super.dispose();
 	    HwaBeacon().stopRanging();
-	    stopOldChatRemoveTimer();
+
+	    // 모든 타이머 정지
+	    stopAllTimer();
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : GPS와 BLE의 권한을 체크. 권한이 있으면 서비스 시작, 권한 없으면 권한 들어올때까지 타이머 돌며 listen
+     */
+    void checkGpsBleAndStartService() async {
+	    bool gpsStatus = await checkGPS();
+	    if(gpsStatus) startGpsService();
+	    else {
+		    _gpsTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
+			    bool gpsStatus = await checkGPS();
+			    if(gpsStatus) {
+				    startGpsService();
+				    timer.cancel();
+			    }
+		    });
+	    }
+
+	    bool bleStatus = await checkBLE();
+	    if(bleStatus) startBleService();
+	    else {
+		    _bleTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
+			    bool bleStatus = await checkBLE();
+			    if(bleStatus) {
+				    startBleService();
+				    timer.cancel();
+			    }
+		    });
+	    }
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 현재 위치 서비스 자체 기능 on/off, HWA APP의 위치 서비스 권한 리턴
+     */
+    Future<GeolocationStatus> getGeolocationStatus() async {
+	    GeolocationStatus geolocationStatus  = await geolocator.checkGeolocationPermissionStatus();
+	    return geolocationStatus;
     }
 
     /*
@@ -108,38 +154,19 @@ class _HwaTabState extends State<HwaTab> {
      * @description : 위치정보 검색
      */
     _getCurrentLocation() async {
-	    developer.log("# start get location.");
-	    // 현재 위치정보 권한 체크
-	    GeolocationStatus geolocationStatus  = await geolocator.checkGeolocationPermissionStatus();
+	    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
+	    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
-	    if(geolocationStatus == GeolocationStatus.denied || geolocationStatus == GeolocationStatus.disabled){
-		    developer.log("# GeolocationPermission denied. " + geolocationStatus.toString());
-		    // TODO 화면에 GPS 켜달라고 피드백, 디자인 적용
+	    // 위도, 경도로 주소지 찾기
+	    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
+
+	    if(placemark != null && placemark.length > 0){
+		    Placemark p = placemark[0];
+
+		    // TODO 디자인 적용
 		    setState(() {
-			    _currentAddress = '위치정보 권한이 필요합니다.';
+			    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
 		    });
-	    }else{
-		    developer.log("# getCurrentPosition");
-		    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
-		    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-
-		    // TODO 삭제
-		    developer.log(position.toString());
-
-		    // 위도, 경도로 주소지 찾기
-		    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
-
-		    if(placemark != null && placemark.length > 0){
-			    Placemark p = placemark[0];
-
-			    // TODO 삭제
-			    developer.log(p.toJson().toString());
-
-			    // TODO 디자인 적용
-			    setState(() {
-				    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
-			    });
-		    }
 	    }
     }
 
@@ -154,26 +181,19 @@ class _HwaTabState extends State<HwaTab> {
 
     	// 비콘 listen 위한 Stream 설정
 	    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
-	    	// TODO 삭제
-		    //developer.log("Scaning!!! " + result.toString());
 		    if (result != null && result.beacons.isNotEmpty && mounted) {
-			    setState(() {
-				    result.beacons.forEach((beacon) {
-//					    developer.log("RoomID = ${beacon.roomId}, TTL = ${beacon.ttl}, maj=${beacon.major}, min=${beacon.minor}");
-//					    developer.log("# chatIdxList : " + chatIdxList.toString());
-
-					    if (!chatIdxList.contains(beacon.roomId))  {
-						    _setChatItem(beacon.roomId);
-					    }else {
-					    	//해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
-						    for(ChatListItem chatItem in chatList){
-							    if(chatItem.chatIdx == beacon.roomId){
-								    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
-								    break;
-							    }
+			    result.beacons.forEach((beacon) {
+				    if (!chatIdxList.contains(beacon.roomId))  {
+					    _setChatItem(beacon.roomId);
+				    }else {
+				        //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
+					    for(ChatListItem chatItem in chatList){
+						    if(chatItem.chatIdx == beacon.roomId){
+							    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
+							    break;
 						    }
 					    }
-				    });
+				    }
 			    });
 		    }
 	    });
@@ -208,15 +228,121 @@ class _HwaTabState extends State<HwaTab> {
 	    }
     }
 
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 타이머가 존재, 활성화 중이면 비활성화 시키기
+     */
+    timerActiveCheckAndCancel(Timer timer){
+	    if(timer != null && timer.isActive) timer.cancel();
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 타이머가 존재하지 않고, 시작되어 있지 않으면 시작
+     */
+    timerActiveCheckAndStart(Timer timer, func){
+	    if(timer == null || !timer.isActive) timer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async {
+		    func();
+	    });
+    }
+
+    Future<bool> checkGPS() async {
+	    developer.log("# GPS checkGps.");
+
+	    // Location 서비스 켜져있는지 확인
+	    bool isLocationAllowed = await HwaBeacon().checkLocationService();
+	    developer.log("## HwaBeacon checkLocationService : " + isLocationAllowed.toString());
+
+	    if (Platform.isAndroid) {
+		    // 안드로이드 위치 서비스 처리
+		    if(isLocationAllowed == false) {
+			    isAllowedGPS = false;
+			    developer.log("# 위치서비스 자체가 꺼져있음!");
+
+			    return false;
+		    }else{
+			    isAllowedGPS = true;
+			    // 위치 서비스 사용 권한
+			    AuthorizationStatus authLocation = await HwaBeacon().getAuthorizationStatus();
+
+			    if(authLocation.isAndroid){
+				    isAuthGPS = true;
+				    developer.log("# 위치서비스, 위치 권한 켜져있음!, Location search Start!");
+
+				    return true;
+			    } else{
+				    developer.log("# 위치서비스 켜있지만, 위치 권한이 없음!");
+				    return false;
+			    }
+		    }
+
+	    } else if (Platform.isIOS) {
+		    // iOS 위치서비스 처리
+		    developer.log("# is iOS!!!");
+
+		    return false;
+	    } else {
+	    	return false;
+	    }
+    }
+
+    void startGpsService(){
+	    developer.log("# start GpsService!");
+
+	    // 위치 서비스, 권한 모두 있으므로 내 위치 탐색을 시작함
+	    _getCurrentLocation();
+    }
+
+    Future<bool> checkBLE() async {
+	    // Bluetooth 상태 확인
+	    BluetoothState bs = await HwaBeacon().getBluetoothState();
+	    developer.log("## HwaBeacon getBluetoothState : " + bs.toString());
+
+	    if (Platform.isAndroid) {
+		    // Android BLE 처리
+		    if(bs.value == 'STATE_ON'){
+			    isAllowedBLE = true;
+			    isAuthBLE = true;
+
+			    developer.log("# 블루투스 켜져있음!");
+			    BeaconStatus isBS = await HwaBeacon().checkTxSupported();
+
+			    if(isBS != BeaconStatus.SUPPORTED){
+				    developer.log("# 블루투스 켜져있으나 비콘 송수신을 지원하지 않음!");
+				    return false;
+			    }else{
+				    return true;
+			    }
+		    }else{
+			    developer.log("# 블루투스 꺼져있음!");
+			    return false;
+		    }
+
+	    } else if (Platform.isIOS) {
+		    // iOS BLE 처리
+		    developer.log("# is iOS!!!");
+		    return false;
+	    } else {
+	    	return false;
+	    }
+    }
+
+    void startBleService(){
+	    developer.log("# start BleService!");
+	    _scanBLE();
+    }
+
 	/*
 	 * @author : hk
 	 * @date : 2019-12-30
 	 * @description : 채팅방 삭제 타이머 동작 시작 - 1.5초마다 동작
 	 */
     void startOldChatRemoveTimer(){
-	    if(chatItemRemoveTimer != null && chatItemRemoveTimer.isActive) chatItemRemoveTimer.cancel();
+	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
 
-        chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: chatItemRemoveTimerDelay), (timer) {
+	    _chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: chatItemRemoveTimerDelay), (timer) {
             deleteOldChat();
         });
     }
@@ -227,7 +353,18 @@ class _HwaTabState extends State<HwaTab> {
      * @description : 채팅방 삭제 타이머 동작 멈춤
      */
     void stopOldChatRemoveTimer(){
-	    chatItemRemoveTimer.cancel();
+	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 현재 페이지에 있는 모든 타이머 스톱
+     */
+    void stopAllTimer(){
+	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
+	    timerActiveCheckAndCancel(_gpsTimer);
+	    timerActiveCheckAndCancel(_bleTimer);
     }
 
     /*
