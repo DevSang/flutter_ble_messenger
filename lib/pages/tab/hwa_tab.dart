@@ -117,7 +117,7 @@ class _HwaTabState extends State<HwaTab> {
 		    });
 	    }else{
 		    developer.log("# getCurrentPosition");
-		    // 현재 위도 경도 찾기
+		    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
 		    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
 		    // TODO 삭제
