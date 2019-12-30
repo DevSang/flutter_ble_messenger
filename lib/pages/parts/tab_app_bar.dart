@@ -47,6 +47,12 @@ class TabAppBarState extends State<TabAppBar> {
     TabAppBarState({@required this.title, this.leftChild})
         : preferredSize = Size(375, 84);
 
+    @override
+    void initState() {
+        super.initState();
+
+        setUserInfo();
+    }
 
     /*
     * @author : hs
@@ -70,13 +76,14 @@ class TabAppBarState extends State<TabAppBar> {
     */
     void setUserInfo () async {
         SharedPreferences SPF = await SharedPreferences.getInstance();
-        userInfo = jsonDecode(SPF.getString('userInfo'));
+        setState(() {
+            userInfo = jsonDecode(SPF.getString('userInfo'));
+        });
     }
 
 
     Widget build(BuildContext context) {
         sameSize  = GetSameSize().main();
-        setUserInfo();
         return PreferredSize(
             preferredSize: preferredSize,
             child: SafeArea(
@@ -148,9 +155,9 @@ class TabAppBarState extends State<TabAppBar> {
                                                     height: ScreenUtil().setHeight(38),
                                                     decoration: BoxDecoration(
                                                         image: DecorationImage(
-                                                            image: userInfo['profileURL'] != null
+                                                            image: (userInfo != null && userInfo['profileURL'] != null && userInfo['profileURL'].toString() != "")
                                                                     ? NetworkImage(userInfo['profileURL'])
-                                                                    : Image.asset(Constant.PROFILE_IMG)
+                                                                    : new AssetImage(Constant.PROFILE_IMG)
                                                             ,
                                                             fit: BoxFit.cover
                                                         ),
