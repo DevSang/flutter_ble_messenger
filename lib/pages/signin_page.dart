@@ -108,6 +108,7 @@ class _SignInPageState extends State<SignInPage> {
                     developer.log("# 로그인정보 :" + response.body);
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
                     pushTokenRequest();
+                    developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
 
                 } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
@@ -213,6 +214,7 @@ class _SignInPageState extends State<SignInPage> {
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
                     pushTokenRequest();
+                    developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
                 } else {
                     RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
@@ -563,6 +565,7 @@ class _SignInPageState extends State<SignInPage> {
                         fontFamily: 'NotoSans',
                         fontWeight: FontWeight.bold)),
                         onTap: () {
+                            developer.log('# [Navigator] SignInPage -> SignUpPage');
                             Navigator.pushNamed(context, '/register');
                         },
                     )
