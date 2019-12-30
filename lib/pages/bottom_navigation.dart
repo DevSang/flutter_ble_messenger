@@ -33,9 +33,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
 
     return Scaffold(
       body: list[_currentIndex],
-      bottomNavigationBar: SizedBox(
-          height: ScreenUtil().setHeight(49),
-          child: Theme(
+      bottomNavigationBar: Theme(
               data: Theme.of(context).copyWith(
                   // sets the background color of the `BottomNavigationBar`
                   canvasColor: Color.fromRGBO(248, 248, 248, 1)
@@ -60,7 +58,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   type: BottomNavigationBarType.fixed,
                   items: [
                       BottomNavigationBarItem(
-                          icon: _currentIndex == 0 ? Image.asset('assets/images/icon/tabIconHwaActive.png') : Image.asset('assets/images/icon/tabIconHwa.png'),
+                          icon: _currentIndex == 0
+                              ? Image.asset('assets/images/icon/tabIconHwaActive.png')
+                              : Image.asset('assets/images/icon/tabIconHwa.png'),
                           title: Text ('HWA')
                       ),
                       BottomNavigationBarItem(
@@ -78,7 +78,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   ]
               ),
           )
-      )
-    );
+      );
   }
 }

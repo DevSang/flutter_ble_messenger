@@ -6,8 +6,6 @@ import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/package/fullPhoto.dart';
 
-const String name = "hwa";
-
 /*
  * @project : HWA - Mobile
  * @author : hs
@@ -98,13 +96,13 @@ class ChatMessageElementsState extends State<ChatMessageList> {
         return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-                thumbnail,
+                thumbnail(chatMessage.nickName),
                 Expanded(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                             Text(
-                                name,
+                                chatMessage.nickName,
                                 style: TextStyle(
                                     fontFamily: "NotoSans",
                                     fontWeight: FontWeight.w400,
@@ -148,14 +146,16 @@ class ChatMessageElementsState extends State<ChatMessageList> {
     }
 
     // 받은 메세지 유저 프로필 이미지
-    Widget thumbnail = new Container(
-        margin: EdgeInsets.only(right: ScreenUtil.getInstance().setWidth(7)),
-        child: CircleAvatar(
-            child: Text(name[0]),
+    Widget thumbnail(String nickName) {
+        new Container(
+            margin: EdgeInsets.only(
+                right: ScreenUtil.getInstance().setWidth(7)),
+            child: CircleAvatar(
+                child: Text(nickName[0]),
 
-        )
-    );
-
+            )
+        );
+    }
     // 메세지 시간 레이아웃
     Widget msgTime(int chatTime, bool receivedMsg) {
         return Container(

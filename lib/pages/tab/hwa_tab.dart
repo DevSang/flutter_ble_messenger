@@ -95,6 +95,7 @@ class _HwaTabState extends State<HwaTab> {
         await HwaBeacon().initializeScanning();
 
         checkGpsBleAndStartService();
+        _textFieldController = TextEditingController(text: '단화방 이름을 입력해주세요.');
     }
 
     @override
@@ -165,7 +166,7 @@ class _HwaTabState extends State<HwaTab> {
 		    // TODO 디자인 적용
 		    setState(() {
 			    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
-			    _textFieldController = TextEditingController(text: '$_currentAddress');
+			    _textFieldController.text = '$_currentAddress';
 
 		    });
 	    }
@@ -432,6 +433,7 @@ class _HwaTabState extends State<HwaTab> {
                 stopOldChatRemoveTimer();
                 chatList.clear();
                 chatIdxList.clear();
+                _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '단화방 이름을 입력해주세요.';
             });
 
             Navigator.push(context,
@@ -508,8 +510,6 @@ class _HwaTabState extends State<HwaTab> {
                             setState(() {
                                 isLoading = true;
                             });
-
-                            _textFieldController.clear();
                         },
                     )
                 ]
@@ -531,11 +531,6 @@ class _HwaTabState extends State<HwaTab> {
                 ),
                 content: TextField(
                     controller: _textFieldController,
-                    decoration: InputDecoration(
-
-                        /// GPS 연동
-                        hintText: _textFieldController.text
-                    ),
                 ),
                 actions: <Widget>[
                     new FlatButton(

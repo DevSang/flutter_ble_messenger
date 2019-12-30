@@ -221,6 +221,7 @@ class ChatScreenState extends State<ChatroomPage> {
             chatType: message.chatType,
             roomIdx: message.roomIdx,
             senderIdx: message.senderIdx,
+            nickName: message.nickName,
             message: message.message,
             chatTime: message.chatTime,
         );
