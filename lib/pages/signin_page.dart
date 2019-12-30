@@ -182,6 +182,8 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Confirm auth code function
      */
     authCodeLoginRequest() async {
+        SPF = await SharedPreferences.getInstance();
+
         try {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
