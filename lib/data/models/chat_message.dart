@@ -21,7 +21,7 @@ class ChatMessage {
             senderIdx : json['senderIdx'],
             nickName : json['nickname'] ?? "닉네임 없음",
             message : json['message'],
-            userCountObj : new ChatCountUser.fromJSON(json['userCountObj']  ?? {"type":"TALK","roomIdx":1,"msgIdx":18,"senderIdx":100,"nickname":null,"message":"ㅇㅇ","userCountObj":null,"createTs":1577515882850}),
+            userCountObj : json['userCountObj'] != null ? new ChatCountUser.fromJSON(json['userCountObj']) : null,
             chatTime : json['createTs']
         );
     }
