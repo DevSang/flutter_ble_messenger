@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/pages/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
+import 'package:Hwa/utility/set_user_info.dart';
 
 
 /*
@@ -96,8 +97,10 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         var message =data['message'];
 
         if (response.statusCode == 200) {
-            developer.log("#회원가입에 성공하였습니다.");
-            developer.log("signup info:" + response.body);
+            developer.log("# 회원가입에 성공하였습니다.");
+            developer.log("# Response : " + response.body);
+            SetUserInfo.set(data['data']['userInfo'],"");
+
             var token = data['data']['token'];
             var userIdx = data['data']['userInfo']['idx'];
 

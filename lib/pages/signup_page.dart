@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/pages/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
+import 'package:Hwa/utility/set_user_info.dart';
 
 
 /*
@@ -87,10 +88,15 @@ class _SignUpPageState extends State<SignUpPage>{
                 var data = jsonDecode(response.body);
                 if (response.statusCode == 200 || response.statusCode == 202) {
 
-                    //이미 가입된 사용자면
-                    if(data['data']['token'] != null){
+                    if(data['message'] != null){
+                        RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
+                        developer.log("# Code request success");
+                    ///이미 가입된 사용자면
+                    } else {
                         developer.log("# Confirm auth code success.");
                         developer.log("# Already exist user.");
+
+                        SetUserInfo.set(data['data']['userInfo'],"");
 
                         var token = data['data']['token'];
                         var userIdx = data['data']['userInfo']['idx'];
@@ -105,9 +111,6 @@ class _SignUpPageState extends State<SignUpPage>{
                         RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
                         RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
                         Navigator.pushNamed(context, '/main');
-                    } else {
-                        RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
-                        developer.log("# Code request success");
                     }
                 } else {
                     if(data['message'].indexOf('이미 사용중인 전화번호입니다') > -1){
