@@ -172,11 +172,11 @@ class _MainPageState extends State<MainPage> {
 
     @override
     Widget build(BuildContext context) {
-        SystemChrome.setSystemUIOverlayStyle(
-            SystemUiOverlayStyle.dark.copyWith(
-                statusBarColor: Colors.black,
-            )
-        );
+//        SystemChrome.setSystemUIOverlayStyle(
+//            SystemUiOverlayStyle.dark.copyWith(
+//                statusBarColor: Colors.black,
+//            )
+//        );
 
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
 
