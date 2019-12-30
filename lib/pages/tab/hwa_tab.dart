@@ -434,7 +434,8 @@ class _HwaTabState extends State<HwaTab> {
                         Container(
                             width: sameSize * 22,
                             height: sameSize * 22,
-                            margin: EdgeInsets.only(right: 16),
+                            margin: EdgeInsets.only(left: 16),
+
                             child: InkWell(
                                 child: Image.asset(
                                     'assets/images/icon/navIconHot.png'),
@@ -445,6 +446,7 @@ class _HwaTabState extends State<HwaTab> {
                             )
                         ),
                         Container(
+                            margin: EdgeInsets.only(left: 16),
                             width: sameSize * 22,
                             height: sameSize * 22,
                             child: InkWell(
