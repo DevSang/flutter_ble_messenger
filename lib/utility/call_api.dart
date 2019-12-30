@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
 
 import 'package:Hwa/constant.dart';
 
@@ -25,10 +26,10 @@ enum HTTP_METHOD {
 }
 
 class CallApi {
-    static setHeader() async {
+    static Future<Map<String, String>> setHeader() async {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         var token = prefs.getString('token').toString();
-        var header = {
+        Map<String, String> header = {
             'Content-Type': 'application/json',
             'X-Authorization': 'Bearer ' + token
         };
@@ -61,6 +62,33 @@ class CallApi {
             developer.log("# [Error] Status Code :" + statusCode);
             return null;
         }
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : 파일업로드 API, TODO 아직 채팅방 이미지만 테스트 되어있음
+     */
+    static Future<Response> fileUploadCall({@required String url, @required String filePath, Map<String, dynamic> paramMap, String fileParameterName}) async {
+	    String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
+
+	    SharedPreferences prefs = await SharedPreferences.getInstance();
+	    var token = prefs.getString('token').toString();
+
+	    Response response;
+	    Dio dio = new Dio();
+	    dio.options.headers['X-Authorization'] = 'Bearer ' + token;
+	    dio.options.headers['Content-Type'] = "multipart/form-data";
+
+	    paramMap = paramMap ?? Map<String, dynamic>();
+	    fileParameterName = fileParameterName ?? "file";
+	    paramMap[fileParameterName] = await MultipartFile.fromFile(filePath, filename: fileName);
+
+	    var formData = FormData.fromMap(paramMap);
+
+	    response = await dio.post(Constant.API_SERVER_HTTP + url, data: formData);
+
+	    return response;
     }
 
     static commonApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {

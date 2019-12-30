@@ -3,6 +3,9 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:collection';
 
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,6 +26,8 @@ import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/pages/notice_page.dart';
 import 'package:Hwa/pages/parts/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chat_message_list.dart';
+
+import 'package:dio/dio.dart';
 
 
 
@@ -251,15 +256,18 @@ class ChatScreenState extends State<ChatroomPage> {
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
         if (imageFile != null) {
-            print(imageFile.path);
-//            setState(() {
-//                isLoading = false;
-//            });
 
-//            uploadFile();
+        	// 파일 이외의 추가 파라미터 셋팅
+	        Map<String, dynamic> param = {
+	        	"chat_idx" : chatInfo.chatIdx
+	        };
 
-            /// FileUpload 사진
-            onSendMessage(imageFile.path, 1);
+	        // 파일 업로드 API 호출
+	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param);
+
+	        if(response.statusCode == 200){
+		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString(), 1);
+	        }
         }
     }
 
@@ -272,13 +280,10 @@ class ChatScreenState extends State<ChatroomPage> {
         imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
         if (imageFile != null) {
             print(imageFile.path);
-//            setState(() {
-//                isLoading = false;
-//            });
 
-//            uploadFile();
-            /// FileUpload 사진
-            onSendMessage(imageFile, 1);
+            //onSendMessage(imageFile, 1);
+
+
         }
     }
     /*
