@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+
 class ProfilePage extends StatefulWidget {
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State <ProfilePage>{
+  bool isSwitched = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,29 +28,33 @@ class _ProfilePageState extends State <ProfilePage>{
       ),
       body: Column(
         children: <Widget>[
-          _ProfileImageSection(context)
-        ],
+          _profileImageSection(context),
+          _profileSetting(context),
+          _appSetting(context),
+          _accountSetting(context)
+    ],
       ),
     );
   }
 }
 
-Widget _ProfileImageSection(BuildContext context){
+Widget _profileImageSection(BuildContext context){
  return Container(
+
+   padding: EdgeInsets.only(top: 50.0),
     width: MediaQuery.of(context).size.width,
     height: 200,
     decoration: BoxDecoration(
-      color: Color.fromRGBO(214, 214, 214, 1),
+      color: Color.fromRGBO(178, 178, 178, 1),
     ),
     child: Stack(children: <Widget>[
       Row(
-
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Container(
-            width: 140.0,
-            height: 140.0,
+            width: 100.0,
+            height: 100.0,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 image: DecorationImage(
@@ -56,7 +63,7 @@ Widget _ProfileImageSection(BuildContext context){
                   fit: BoxFit.cover,
                 )
             ),
-            padding: EdgeInsets.only(top: 100.0, left: 80.0),
+            padding: EdgeInsets.only(top: 60.0, left: 50.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -71,8 +78,197 @@ Widget _ProfileImageSection(BuildContext context){
               ],
             ),
           ),
+
         ],
       )
     ],),
+  );
+}
+
+Widget _profileSetting(BuildContext context){
+  return Container(
+    child: Stack(
+      children: <Widget>[
+        Column(
+    children: <Widget>[
+    Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+          width: MediaQuery.of(context).size.width,
+          height: 30.0,
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(214, 214, 214, 1),
+          ),
+          child: Text("프로필",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
+        ),
+        Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+          width: MediaQuery.of(context).size.width,
+          height: 50.0,
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(255, 255, 255, 1),
+          ),
+          child: Row(
+            children: <Widget>[
+    Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+
+  InkWell(
+          child: Text("강희근", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+    )
+  ],
+  )
+        ),
+
+      Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+          width: MediaQuery.of(context).size.width,
+          height: 50.0,
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(255, 255, 255, 1),
+          ),
+          child: Row(
+            children: <Widget>[
+              Text("한 줄 소개", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+
+              InkWell(
+                child: Text("안녕하세요 강희근입니다.", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+              )
+            ],
+          )
+      ),
+
+//작업중
+
+  ]
+  ),
+
+
+    ],),
+
+
+  );
+}
+
+Widget _appSetting(BuildContext context){
+  return Container(
+    child: Stack(
+      children: <Widget>[
+    Column(
+    children: <Widget>[
+    Container(
+    padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+    width: MediaQuery.of(context).size.width,
+    height: 30.0,
+    decoration: BoxDecoration(
+      color: Color.fromRGBO(214, 214, 214, 1),
+    ),
+    child: Text("앱 설정",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
+  ),
+
+      Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+          width: MediaQuery.of(context).size.width,
+          height: 50.0,
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(255, 255, 255, 1),
+          ),
+          child: Row(
+            children: <Widget>[
+              Text("푸쉬 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+
+            ],
+          )
+      ),
+
+
+
+      Container(
+          padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+          width: MediaQuery.of(context).size.width,
+          height: 50.0,
+          decoration: BoxDecoration(
+            color: Color.fromRGBO(255, 255, 255, 1),
+          ),
+          child: Row(
+            children: <Widget>[
+              Text("친구 허용 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+
+            ],
+          )
+      ),
+
+
+    ]
+    )
+      ],
+    ),
+
+  );
+}
+
+Widget _accountSetting(BuildContext context){
+  return Container(
+
+    child: Stack(
+      children: <Widget>[
+        Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                width: MediaQuery.of(context).size.width,
+                height: 30.0,
+                decoration: BoxDecoration(
+                  color: Color.fromRGBO(214, 214, 214, 1),
+                ),
+                child: Text("계정",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
+              ),
+
+
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                  width: MediaQuery.of(context).size.width,
+                  height: 50.0,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+                      )
+                    ],
+                  )
+              ),
+
+              Container(
+                  padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                  width: MediaQuery.of(context).size.width,
+                  height: 50.0,
+                  decoration: BoxDecoration(
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                  ),
+                  child: Row(
+                    children: <Widget>[
+
+                      InkWell(
+                        child: Text("탈퇴하기", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+                      )
+
+
+
+
+                    ],
+                  )
+              ),
+
+            ]
+        )
+
+
+
+      ],
+
+
+    ),
+
+
   );
 }

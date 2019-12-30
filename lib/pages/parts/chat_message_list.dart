@@ -219,7 +219,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                         children: [
                             GestureDetector(
                                 child: Container(
-                                    constraints: BoxConstraints(maxWidth: 115),
+                                    constraints: BoxConstraints(maxWidth: 230),
                                     padding: EdgeInsets.only(
                                         top: ScreenUtil().setHeight(10.5),
                                         bottom: ScreenUtil().setHeight(10.5),
@@ -231,8 +231,9 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                         style: TextStyle(
                                             fontFamily: "NotoSans",
                                             fontWeight: FontWeight.w500,
-                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
-                                            color: Color.fromRGBO(39, 39, 39, 0.96)
+                                            fontSize: ScreenUtil().setSp(15),
+                                            color: Color.fromRGBO(39, 39, 39, 0.96),
+                                            height: 1.14
                                         )
                                     ),
                                     decoration: BoxDecoration(
@@ -299,7 +300,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                     children: <Widget>[
                                         msgTime(chatMessage.chatTime, false),
                                         Container(
-                                            constraints: BoxConstraints(maxWidth: 115),
+                                            constraints: BoxConstraints(maxWidth: 230),
                                             padding: EdgeInsets.only(
                                                 top: ScreenUtil().setHeight(10.5),
                                                 bottom: ScreenUtil().setHeight(10.5),
@@ -311,6 +312,9 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                                 style: TextStyle(
                                                     fontFamily: "NotoSans",
                                                     fontWeight: FontWeight.w500,
+                                                    fontSize: ScreenUtil().setSp(15),
+                                                    color: Color.fromRGBO(39, 39, 39, 0.96),
+                                                    height: 1.14
                                                 ),
                                             ),
                                             decoration: BoxDecoration(

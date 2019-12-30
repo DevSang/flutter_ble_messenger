@@ -12,6 +12,7 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:Hwa/pages/signup_page.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/red_toast.dart';
+import 'package:Hwa/utility/set_user_info.dart';
 
 
 /*
@@ -85,8 +86,9 @@ class _SignInPageState extends State<SignInPage> {
 
 		switch (result.status) {
 			case FacebookLoginStatus.loggedIn:
-                final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email&access_token=${result.accessToken.token}');
+                final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture&access_token=${result.accessToken.token}');
                 final profile = json.decode(graphResponse.body);
+                developer.log(profile.toString());
 
                 String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
                 final response = await http.post(url,
@@ -102,12 +104,13 @@ class _SignInPageState extends State<SignInPage> {
 
                 var data = jsonDecode(response.body);
                 var message = data['message'].toString();
-
                 if (response.statusCode == 200) {
                     developer.log("# 로그인에 성공하였습니다.");
                     developer.log("# 로그인정보 :" + response.body);
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+
                     pushTokenRequest();
+
                     developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
 
@@ -118,7 +121,7 @@ class _SignInPageState extends State<SignInPage> {
                     developer.log('# [Navigator] SignInPage -> SignUpPage');
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) {
-                            return SignUpPage(socialId: profile['id'].toString(),socialType: "facebook", accessToken: result.accessToken.token.toString());
+                            return SignUpPage(socialId: profile['id'].toString(), profileURL: profile['picture']['data']['url'].toString(), socialType: "facebook", accessToken: result.accessToken.token.toString());
                         })
                     );
                 } else {
@@ -207,6 +210,7 @@ class _SignInPageState extends State<SignInPage> {
                 if (response.statusCode == 200) {
                     developer.log("# 로그인에 성공하였습니다.");
                     developer.log("# 로그인정보 :" + response.body);
+                    SetUserInfo.set(data['userInfo'], "");
 
                     var token = data['token'];
                     var userIdx = data['userInfo']['idx'];
@@ -495,7 +499,8 @@ class _SignInPageState extends State<SignInPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                     RaisedButton(
-                        child: Row(
+                      color: Colors.white,
+                      child: Row(
                             children: <Widget>[
                                 InkWell(
                                     child: Image.asset('assets/images/sns/snsIconKakao.png'),
@@ -510,6 +515,7 @@ class _SignInPageState extends State<SignInPage> {
                         },
                     ),
                     RaisedButton(
+                      color: Colors.white,
                         child: Row(
                             children: <Widget>[
                                 InkWell(
@@ -525,7 +531,8 @@ class _SignInPageState extends State<SignInPage> {
                         },
                     ),
                     RaisedButton(
-                        child: Row(
+                      color: Colors.white,
+                      child: Row(
                             children: <Widget>[
                                 InkWell(
                                     child: Image.asset('assets/images/sns/snsIconGoogle.png'),
