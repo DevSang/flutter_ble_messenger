@@ -75,6 +75,7 @@ class _HwaTabState extends State<HwaTab> {
     bool isAuthBLE = true;
 
     bool isBeaconSupport = false;
+    
 
     @override
     void initState() {
@@ -265,6 +266,11 @@ class _HwaTabState extends State<HwaTab> {
 	    }
     }
 
+    /*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : GPS 찾아서 주소 셋팅
+     */
     void startGpsService() async {
 	    developer.log("# start GpsService!");
 
@@ -277,7 +283,6 @@ class _HwaTabState extends State<HwaTab> {
 	    if(placemark != null && placemark.length > 0){
 		    Placemark p = placemark[0];
 
-		    // TODO 디자인 적용
 		    setState(() {
 			    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
 			    _textFieldController.text = '$_currentAddress';
@@ -286,6 +291,11 @@ class _HwaTabState extends State<HwaTab> {
 	    }
     }
 
+    /*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : 현재 블루투스 사용 가능 여부 체크
+     */
     Future<bool> checkBLE() async {
 	    // Bluetooth 상태 확인
 	    BluetoothState bs = await HwaBeacon().getBluetoothState();
@@ -323,6 +333,11 @@ class _HwaTabState extends State<HwaTab> {
 	    }
     }
 
+    /*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : 블루투스 서비스 시작. Scan start
+     */
     void startBleService(){
 	    developer.log("# start BleService!");
 	    _scanBLE();
@@ -443,7 +458,7 @@ class _HwaTabState extends State<HwaTab> {
                     return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "HwaTab");
                 })
             ).then((onValue) {
-                _scanBLE();
+                startBleService();
             });
 
             isLoading = false;
@@ -640,13 +655,13 @@ class _HwaTabState extends State<HwaTab> {
             );
         } else if (chatList.length == 0) {
             bool noRoomFlag = (isAllowedBLE && isAllowedGPS && isAuthBLE && isAuthGPS && chatList.length == 0);
-            print("####################################");
-            print("##noRoomFlag : " + noRoomFlag.toString());
-            print("##isAuthBLE : " + isAuthBLE.toString());
-            print("##isAllowedBLE : " + isAllowedBLE.toString());
-            print("##isAuthGPS : " + isAuthGPS.toString());
-            print("##isAllowedGPS : " + isAllowedGPS.toString());
-            print("####################################");
+//            print("####################################");
+//            print("##noRoomFlag : " + noRoomFlag.toString());
+//            print("##isAuthBLE : " + isAuthBLE.toString());
+//            print("##isAllowedBLE : " + isAllowedBLE.toString());
+//            print("##isAuthGPS : " + isAuthGPS.toString());
+//            print("##isAllowedGPS : " + isAllowedGPS.toString());
+//            print("####################################");
 
 //            print("##chatList.length == 0 : " + (chatList.length == 0).toString());
 //            print("##notAllowedBLE : " + notAllowedBLE.toString());
@@ -838,27 +853,32 @@ class _HwaTabState extends State<HwaTab> {
                     ),
                     Container(
                         margin: EdgeInsets.only(right:ScreenUtil().setWidth(16)),
-                        child:
-                        Row(
-                            children: <Widget>[
-                                Container(
-                                    margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
-                                    child: Image.asset('assets/images/icon/iconRefresh.png'),
-                                ),
-                                Text(
-                                    '$_currentAddress',
-                                    style: TextStyle(
-                                        height: 1,
-                                        fontFamily: "NotoSans",
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: ScreenUtil(allowFontScaling: true)
-                                            .setSp(15),
-                                        color: Color.fromRGBO(39, 39, 39, 1),
-                                        letterSpacing: ScreenUtil().setWidth(-0.75),
-                                    ),
-                                ),
-                            ]
-                        )
+	                    child: InkWell(
+	                        child:
+		                        Row(
+		                            children: <Widget>[
+		                                Container(
+				                                child: Image.asset('assets/images/icon/iconRefresh.png'),
+			                                margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
+		                                ),
+		                                Text(
+		                                    '$_currentAddress',
+		                                    style: TextStyle(
+		                                        height: 1,
+		                                        fontFamily: "NotoSans",
+		                                        fontWeight: FontWeight.w400,
+		                                        fontSize: ScreenUtil(allowFontScaling: true)
+		                                            .setSp(15),
+		                                        color: Color.fromRGBO(39, 39, 39, 1),
+		                                        letterSpacing: ScreenUtil().setWidth(-0.75),
+		                                    ),
+		                                ),
+		                            ]
+		                        ),
+						    onTap: () => {
+							    startGpsService()
+						    },
+					    ),
                     ),
                 ],
             ),
