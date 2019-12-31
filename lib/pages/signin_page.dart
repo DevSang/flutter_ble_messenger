@@ -368,7 +368,7 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _loginInputText() {
         return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: Row(
                 children: <Widget>[
                     Flexible(
@@ -533,9 +533,10 @@ class _SignInPageState extends State<SignInPage> {
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                    RaisedButton(
-                      color: Colors.white,
-                      child: Row(
+            RaisedButton(
+                        elevation: 0,
+                        color: Colors.white,
+                        child: Row(
                             children: <Widget>[
                                 InkWell(
                                     child: Image.asset('assets/images/sns/snsIconKakao.png'),
@@ -551,6 +552,7 @@ class _SignInPageState extends State<SignInPage> {
                     ),
                     RaisedButton(
                       color: Colors.white,
+                        elevation: 0,
                         child: Row(
                             children: <Widget>[
                                 InkWell(
@@ -566,7 +568,8 @@ class _SignInPageState extends State<SignInPage> {
                         },
                     ),
                     RaisedButton(
-                      color: Colors.white,
+                        elevation: 0,
+                        color: Colors.white,
                       child: Row(
                             children: <Widget>[
                                 InkWell(
