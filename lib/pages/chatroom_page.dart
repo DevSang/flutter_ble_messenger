@@ -259,7 +259,9 @@ class ChatScreenState extends State<ChatroomPage> {
 	        };
 
 	        // 파일 업로드 API 호출
-	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param);
+	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
+		        print("$sent : $total");
+	        });
 
 	        if(response.statusCode == 200){
 		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?type=SMALL&file_idx=" + response.data["data"].toString(), 1);
@@ -281,7 +283,9 @@ class ChatScreenState extends State<ChatroomPage> {
             };
 
             // 파일 업로드 API 호출
-            Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param);
+            Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
+	            print("$sent : $total");
+            });
 
             if(response.statusCode == 200){
             	// 썸네일 URI 전송
