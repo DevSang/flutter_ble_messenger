@@ -161,15 +161,13 @@ class ChatScreenState extends State<ChatroomPage> {
     void advertiseChange() async {
         if (advertising) {
             await HwaBeacon().stopAdvertising();
+            setState(() {advertising = false;});
             print('##BLE STOP!!!');
         } else {
             await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+            setState(() {advertising = true;});
             print('##BLE START!!!');
         }
-
-        setState(() {
-            advertising = !advertising;
-        });
     }
 
     /*
@@ -361,6 +359,7 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     void popPage() async {
+	    advertising = false;
 	    await HwaBeacon().stopAdvertising();
 	    Navigator.of(context).pop();
     }
