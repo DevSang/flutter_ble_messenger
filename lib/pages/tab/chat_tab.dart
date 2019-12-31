@@ -104,7 +104,7 @@ class _ChatTabState extends State<ChatTab> {
 
             Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return ChatroomPage(
-                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, isFromMain: false
                 );
             }));
 

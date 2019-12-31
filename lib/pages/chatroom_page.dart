@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'dart:collection';
 
 import 'package:Hwa/data/models/chat_join_info.dart';
+import 'package:Hwa/pages/parts/loading.dart';
+import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,8 +43,9 @@ class ChatroomPage extends StatefulWidget {
     final bool isLiked;
     final int likeCount;
     final List<ChatJoinInfo> joinInfo;
+    final bool isFromMain;
 
-    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo}) : super(key: key);
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.isFromMain}) : super(key: key);
 
 
     @override
@@ -161,15 +164,13 @@ class ChatScreenState extends State<ChatroomPage> {
     void advertiseChange() async {
         if (advertising) {
             await HwaBeacon().stopAdvertising();
+            setState(() {advertising = false;});
             print('##BLE STOP!!!');
         } else {
             await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+            setState(() {advertising = true;});
             print('##BLE START!!!');
         }
-
-        setState(() {
-            advertising = !advertising;
-        });
     }
 
     /*
@@ -217,7 +218,7 @@ class ChatScreenState extends State<ChatroomPage> {
     void messageReceieved(HashMap data) {
         message = new ChatMessage.fromJSON(json.decode(data['contents']));
 
-        print("received!!!!!!!"+json.decode(data['contents']).toString());
+        developer.log("# messageReceieved : " + json.decode(data['contents']).toString());
 
         ChatMessage cmb = ChatMessage(
             chatType: message.chatType,
@@ -232,8 +233,6 @@ class ChatScreenState extends State<ChatroomPage> {
             messageList.insert(0, cmb);
             isReceived = true;
         });
-
-
     }
 
     /*
@@ -263,7 +262,7 @@ class ChatScreenState extends State<ChatroomPage> {
 	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param);
 
 	        if(response.statusCode == 200){
-		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString(), 1);
+		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?type=SMALL&file_idx=" + response.data["data"].toString(), 1);
 	        }
         }
     }
@@ -276,11 +275,18 @@ class ChatScreenState extends State<ChatroomPage> {
     Future getCamera() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
         if (imageFile != null) {
-            print(imageFile.path);
+            // 파일 이외의 추가 파라미터 셋팅
+            Map<String, dynamic> param = {
+	            "chat_idx" : chatInfo.chatIdx
+            };
 
-            //onSendMessage(imageFile, 1);
+            // 파일 업로드 API 호출
+            Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param);
 
-
+            if(response.statusCode == 200){
+            	// 썸네일 URI 전송
+	            onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?type=SMALL&file_idx=" + response.data["data"].toString(), 1);
+            }
         }
     }
     /*
@@ -361,7 +367,17 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     void popPage() async {
+        setState(() {
+            isLoading = true;
+        });
+
+	    advertising = false;
 	    await HwaBeacon().stopAdvertising();
+
+        setState(() {
+            isLoading = false;
+        });
+
 	    Navigator.of(context).pop();
     }
 
@@ -417,7 +433,9 @@ class ChatScreenState extends State<ChatroomPage> {
                 brightness: Brightness.light,
             ),
             endDrawer: SafeArea(
-                child: new ChatSideMenu(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s)
+                child: new ChatSideMenu(
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s, isFromMain: widget.isFromMain
+                )
             ),
             body: GestureDetector(
                 child: WillPopScope(
@@ -452,7 +470,7 @@ class ChatScreenState extends State<ChatroomPage> {
                             openedNf ? buildNoticeOpen() : buildNotice(),
 
                             // Loading
-                            buildLoading()
+                            isLoading ? Loading() : Container()
                         ],
                     ),
                     onWillPop: onBackPress,
@@ -461,19 +479,6 @@ class ChatScreenState extends State<ChatroomPage> {
                     FocusScope.of(context).requestFocus(focusNode);
                 },
             )
-        );
-    }
-
-    Widget buildLoading() {
-        return Positioned(
-            child: isLoading
-                ? Container(
-                child: Center(
-                    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                ),
-                color: Colors.white.withOpacity(0.8),
-            )
-                : Container(),
         );
     }
 

@@ -440,7 +440,7 @@ class _HwaTabState extends State<HwaTab> {
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
-                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo);
+                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, isFromMain: true);
                 })
             ).then((onValue) {
                 _scanBLE();
@@ -609,15 +609,13 @@ class _HwaTabState extends State<HwaTab> {
             String mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
             String titleText = "현재 위치 단화방이 없습니다.";
             String subTitle = "원하는 방을 만들어 보실래요?";
-            String buttonText = "방만들기 >";
+            String buttonText = "방 만들기";
             Function buttonClick = Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
             if(noRoomFlag){
-                checkGPS();
-                checkBLE();
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
                 titleText= "현재 위치 단화방이 없습니다.";
                 subTitle="원하는 방을 만들어 보실래요?";
-                buttonText="방만들기 >";
+                buttonText="방 만들기";
                 buttonClick =  Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
             } else if(!isAuthBLE) {
                 mainBackImg = "assets/images/background/noBleBackgroundImg.png";
@@ -642,10 +640,11 @@ class _HwaTabState extends State<HwaTab> {
                 if(!isAllowedGPS) {
                     titleText= "GPS가 꺼져있습니다.";
                     subTitle="설정 > GPS 켜기";
-                    buttonText="설정으로 이동 >";
+                    buttonText="설정으로 이동";
                     buttonClick = HwaBeacon().openLocationSettings;
                 }
             }
+
             return Column(
                 children: <Widget>[
                     Container(
@@ -685,7 +684,7 @@ class _HwaTabState extends State<HwaTab> {
                         ),
                         child: Text(subTitle,
                             style: TextStyle(
-                                fontFamily: 'NotoSansCJKkr',
+                                fontFamily: 'NotoSans',
                                 color: Color(0xff6b6b6b),
                                 fontSize: ScreenUtil().setSp(20),
                                 fontWeight: FontWeight.w400,
@@ -705,7 +704,34 @@ class _HwaTabState extends State<HwaTab> {
                             },
                             color: Color.fromRGBO(77, 96, 191, 1),
                             elevation: 0.0,
-                            child: Text(buttonText, style: TextStyle(color: Colors.white)),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                    Text(
+                                        buttonText,
+                                        style: TextStyle(
+                                            fontFamily: 'NotoSans',
+                                            color: Colors.white,
+                                            fontSize: ScreenUtil().setSp(16),
+                                            fontWeight: FontWeight.w500,
+                                            letterSpacing: ScreenUtil().setWidth(-0.8),
+                                        )
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(
+                                            left: 12
+                                        ),
+                                        width: ScreenUtil().setWidth(9),
+                                        height: ScreenUtil().setHeight(15),
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image:AssetImage("assets/images/icon/iconMoreWhite.png"),
+                                                fit: BoxFit.cover
+                                            ),
+                                        ),
+                                    )
+                                ],
+                            ),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5.0)
                             )

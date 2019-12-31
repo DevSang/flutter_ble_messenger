@@ -5,6 +5,7 @@ import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
+import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
@@ -33,7 +34,8 @@ class ChatSideMenu extends StatefulWidget {
     int likeCount;
     final List<ChatJoinInfo> chatJoinInfoList;
     final StompClient sc;
-    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.sc});
+    final bool isFromMain;
+    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.sc, this.isFromMain});
 
     @override
     State createState() => new ChatSideMenuState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: chatJoinInfoList);
@@ -51,6 +53,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     List<ChatJoinInfo> userInfoListBle = <ChatJoinInfo>[];
     List<ChatJoinInfo> userInfoListBleOut = <ChatJoinInfo>[];
     List<ChatJoinInfo> userInfoListBleOnline  = <ChatJoinInfo>[];
+
 
 
     @override
@@ -147,7 +150,16 @@ class ChatSideMenuState extends State<ChatSideMenu> {
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
-                    return BottomNavigation();
+                    int activeTab;
+
+                    if (widget.isFromMain) {
+                        activeTab = 0;
+                    }
+                    else {
+                        activeTab = 2;
+                    }
+
+                    return BottomNavigation(activeIndex: activeTab);
                 })
             );
 

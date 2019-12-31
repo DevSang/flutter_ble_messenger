@@ -55,7 +55,6 @@ class _FriendTabState extends State<FriendTab> {
         friendList.addAll(originList);
         friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
 
-        //TODO: 추후 적용
         searchController.addListener(() {
             searchFriends();
         });

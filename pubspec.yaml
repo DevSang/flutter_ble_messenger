@@ -101,6 +101,7 @@ flutter:
     - assets/images/icon/iconLikeCount.png
     - assets/images/icon/iconMasterBadge.png
     - assets/images/icon/iconMore.png
+    - assets/images/icon/iconMoreWhite.png
     - assets/images/icon/iconPin.png
     - assets/images/icon/iconRequest.png
     - assets/images/icon/iconRequestCalling.png
@@ -114,6 +115,7 @@ flutter:
     - assets/images/icon/iconSetting.png
     - assets/images/icon/navIconHot.png
     - assets/images/icon/navIconClose.png
+    - assets/images/icon/navIconDown.png
     - assets/images/icon/navIconNew.png
     - assets/images/icon/navIconPrev.png
     - assets/images/icon/navIconMenu.png
