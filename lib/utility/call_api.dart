@@ -69,7 +69,7 @@ class CallApi {
      * @date : 2019-12-31
      * @description : 파일업로드 API, TODO 아직 채팅방 이미지만 테스트 되어있음
      */
-    static Future<Response> fileUploadCall({@required String url, @required String filePath, Map<String, dynamic> paramMap, String fileParameterName}) async {
+    static Future<Response> fileUploadCall({@required String url, @required String filePath, Map<String, dynamic> paramMap, String fileParameterName, Function onSendProgress}) async {
 	    String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
 
 	    SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -86,7 +86,7 @@ class CallApi {
 
 	    var formData = FormData.fromMap(paramMap);
 
-	    response = await dio.post(Constant.API_SERVER_HTTP + url, data: formData);
+	    response = await dio.post(Constant.API_SERVER_HTTP + url, data: formData, onSendProgress: onSendProgress ?? (){});
 
 	    return response;
     }
