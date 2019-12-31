@@ -605,7 +605,8 @@ class _HwaTabState extends State<HwaTab> {
                     ],
                 ),
             ),
-            body: setScreen()
+            body: setScreen(),
+            resizeToAvoidBottomPadding: false,
         );
     }
 
