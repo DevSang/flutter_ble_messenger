@@ -26,17 +26,17 @@ class ChatListItem {
     factory ChatListItem.fromJSON (Map<String, dynamic> jsonData) {
         return ChatListItem (
             chatIdx : jsonData['roomIdx'],
-            chatImg : jsonData['roomImg'] ?? "assets/images/icon/thumbnailUnset1.png",
+            chatImg : jsonData['roomImg'],
             title : jsonData['title'] ?? "단화방 제목입니다.",
             lat : jsonData['lat'],
             lon : jsonData['lon'],
-            score : jsonData['score'] ?? 0,
+            score : jsonData['score'],
             lastMsg : new ChatMessage.fromJSON(jsonData['lastMsg']
                 ?? {"type":null, "roomIdx":null, "msgIdx":null, "senderIdx":null, "nickname":null, "message":null, "userCountObj":null, "createTs": null}),
-            userCount : new ChatCountUser.fromJSON(jsonData['userCount'])
+            userCount : new ChatCountUser.fromJSON(jsonData['userCount']
+                ?? {"roomIdx":null, "bleJoin":null, "bleOut":null, "online":null, "totalCount":null})
         );
     }
-
     /*
      * @author : hk
      * @date : 2019-12-30

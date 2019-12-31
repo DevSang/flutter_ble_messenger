@@ -17,7 +17,6 @@ class RedToast{
             toastLength: Toast.LENGTH_LONG,
             gravity: direction,
             timeInSecForIos: 2,
-            backgroundColor: Colors.red,
             textColor: Colors.white
         );
     }

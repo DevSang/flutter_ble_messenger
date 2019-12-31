@@ -43,9 +43,9 @@ class ChatroomPage extends StatefulWidget {
     final bool isLiked;
     final int likeCount;
     final List<ChatJoinInfo> joinInfo;
-    final bool isFromMain;
+    final String from;      // HwaTab, ChatTab, Trend
 
-    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.isFromMain}) : super(key: key);
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.from}) : super(key: key);
 
 
     @override
@@ -438,7 +438,7 @@ class ChatScreenState extends State<ChatroomPage> {
             ),
             endDrawer: SafeArea(
                 child: new ChatSideMenu(
-                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s, isFromMain: widget.isFromMain
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s, from: widget.from
                 )
             ),
             body: GestureDetector(

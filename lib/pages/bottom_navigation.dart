@@ -19,7 +19,6 @@ class BottomNavigation extends StatefulWidget {
 class _BottomNavigationState extends State<BottomNavigation> {
   final List<Widget> list = <Widget>[];
   int _currentIndex;
-  final GlobalKey<_BottomNavigationState> bottomNav = new GlobalKey<_BottomNavigationState>();
 
   @override
   void initState() {

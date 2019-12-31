@@ -1,3 +1,9 @@
+import 'dart:convert';
+
+import 'package:Hwa/data/models/chat_list_item.dart';
+import 'package:Hwa/pages/parts/loading.dart';
+import 'package:Hwa/service/get_time_difference.dart';
+import 'package:Hwa/utility/call_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,14 +17,59 @@ class TrendPage extends StatefulWidget {
 class _TrendPageState extends State<TrendPage> {
   bool showSearch;
   double sameSize;
+  bool isLoading;
 
-  List<int> chatIndex = [298,56,24,8,10,298,12,2];
+  List<ChatListItem> trendChatList = <ChatListItem>[];
+  List<ChatListItem> topTrendChatList = <ChatListItem>[];
 
   @override
   void initState() {
     super.initState();
     showSearch = false;
     sameSize = GetSameSize().main();
+    isLoading = false;
+    _getChatList();
+  }
+
+  /*
+    * @author : hs
+    * @date : 2019-12-28
+    * @description : 채팅 리스트 받아오기 API 호출
+    */
+  void _getChatList() async {
+      setState(() {
+          isLoading = true;
+      });
+
+      try {
+          String uri = "/danhwa/trend";
+
+          final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
+          ChatListItem chatInfo;
+          Map<String, dynamic> jsonParse;
+          List<dynamic> jsonParseList = json.decode(response.body);
+
+          for (var index = jsonParseList.length; index > 0; index--) {
+
+              print(index.toString() + "##############" + jsonParseList[index - 1].toString());
+              chatInfo = new ChatListItem.fromJSON(jsonParseList[index - 1]);
+
+              if (topTrendChatList.length < 2) {
+                  // 채팅 리스트에 추가
+                  topTrendChatList.add(chatInfo);
+              } else {
+                  // 채팅 리스트에 추가
+                  trendChatList.add(chatInfo);
+              }
+          }
+
+          setState(() {
+              isLoading = false;
+          });
+
+      } catch (e) {
+          print("#### Error :: " + e.toString());
+      }
   }
 
   @override
@@ -84,6 +135,7 @@ class _TrendPageState extends State<TrendPage> {
                         chatList()
                     ],
                 ),
+                isLoading ? Loading() : new Container()
             ],
         ),
         backgroundColor: Color.fromRGBO(255, 255, 255, 1),
@@ -230,16 +282,16 @@ class _TrendPageState extends State<TrendPage> {
             child: Row(
                 children: <Widget>[
                     // 1위
-                    topChatItem(true),
+                    topTrendChatList.length > 0 ? topChatItem(topTrendChatList[0], true) : Container(),
 
                     // 2위
-                    topChatItem(false)
+                    topTrendChatList.length > 1 ? topChatItem(topTrendChatList[1], false) : Container()
                 ],
             )
         );
     }
 
-    Widget topChatItem(bool isFirst) {
+    Widget topChatItem(ChatListItem trendChatInfo, bool isFirst) {
         return Container(
             width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5) + sameSize*8,
             height: ScreenUtil().setHeight(190) + sameSize*8,
@@ -280,6 +332,17 @@ class _TrendPageState extends State<TrendPage> {
                                 Container(
                                     width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5),
                                     height: ScreenUtil().setHeight(110),
+                                    decoration: BoxDecoration(
+                                        color: trendChatInfo.chatImg != null ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(0, 0, 0, 0.1)
+                                        ,
+                                        borderRadius: isFirst
+                                            ? BorderRadius.only(
+                                            topLeft: Radius.circular(ScreenUtil().setWidth(8)),
+                                            topRight: Radius.circular(ScreenUtil().setWidth(8))
+                                        )
+                                            : BorderRadius.circular(0)
+                                        ,
+                                    ),
                                     child: ClipRRect(
                                         borderRadius: isFirst
                                             ? BorderRadius.only(
@@ -290,7 +353,7 @@ class _TrendPageState extends State<TrendPage> {
                                         ,
                                         child:
                                         Image.asset(
-                                            "assets/images/icon/appIcon.jpg",
+                                            trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
                                             fit: BoxFit.scaleDown,
                                         ),
                                     ),
@@ -306,7 +369,7 @@ class _TrendPageState extends State<TrendPage> {
                                                 ),
                                                 child:
                                                 Text(
-                                                    '서초 인권 개선 시위',
+                                                    trendChatInfo.title,
                                                     textAlign: TextAlign.left,
                                                     style: TextStyle(
                                                         fontFamily: "NotoSans",
@@ -324,8 +387,8 @@ class _TrendPageState extends State<TrendPage> {
                                                 ),
                                                 child: Row(
                                                     children:<Widget>[
-                                                        getCount(true),
-                                                        getCount(false)
+                                                        getCount(trendChatInfo.userCount.total, true),
+                                                        getCount(120, false)
                                                     ]
                                                 ),
                                             )
@@ -371,7 +434,7 @@ class _TrendPageState extends State<TrendPage> {
         );
     }
 
-    Widget getCount(bool isViewCount) {
+    Widget getCount(int value, bool isViewCount) {
       return
       Container(
           width: ScreenUtil().setWidth(65),
@@ -397,7 +460,7 @@ class _TrendPageState extends State<TrendPage> {
                           left: ScreenUtil().setWidth(4.5),
                       ),
                       child: Text(
-                          '1,480',
+                          (value ?? 0).toString(),
                           style: TextStyle(
                               fontFamily: "NanumSquare",
                               fontWeight: FontWeight.w500,
@@ -417,14 +480,14 @@ class _TrendPageState extends State<TrendPage> {
             child: Flexible(
                 child: ListView.builder(
                     scrollDirection: Axis.vertical,
-                    itemCount: chatIndex.length,
-                    itemBuilder: (BuildContext context, int index) => buildChatItem(index)
+                    itemCount: trendChatList.length,
+                    itemBuilder: (BuildContext context, int index) => buildChatItem(trendChatList[index], index)
                 )
             )
         );
     }
 
-    Widget buildChatItem(int index) {
+    Widget buildChatItem(ChatListItem trendChatInfo, int index) {
         return InkWell(
             child: Container(
                 height: ScreenUtil().setHeight(81),
@@ -447,10 +510,6 @@ class _TrendPageState extends State<TrendPage> {
                                         width: sameSize * 50,
                                         height: sameSize * 50,
                                         decoration: BoxDecoration(
-                                            border: Border.all(
-                                                width: sameSize,
-                                                color: Color.fromRGBO(0, 0, 0, 0.05)
-                                            ),
                                             borderRadius: new BorderRadius.circular(
                                                 ScreenUtil().setWidth(10)
                                             ),
@@ -464,7 +523,7 @@ class _TrendPageState extends State<TrendPage> {
                                             ),
                                             child:
                                             Image.asset(
-                                                "assets/images/icon/appIcon.jpg",
+                                                trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
                                                 width: sameSize * 50,
                                                 height: sameSize * 50,
                                                 fit: BoxFit.cover,
@@ -531,7 +590,7 @@ class _TrendPageState extends State<TrendPage> {
                                                     child: Align(
                                                         alignment: Alignment.centerLeft,
                                                         child: Text(
-                                                            "스타벅스 강남R점",
+                                                            trendChatInfo.title,
                                                             style: TextStyle(
                                                                 height: 1,
                                                                 fontFamily: "NotoSans",
@@ -550,7 +609,7 @@ class _TrendPageState extends State<TrendPage> {
                                     /// 인원 수, 시간
                                     Container(
                                         width: ScreenUtil().setWidth(205),
-                                        height: ScreenUtil().setHeight(11),
+                                        height: ScreenUtil().setHeight(12),
                                         child: Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: <Widget>[
@@ -572,7 +631,7 @@ class _TrendPageState extends State<TrendPage> {
                                                     child: Row(
                                                         children: <Widget>[
                                                             Text(
-                                                                "56",
+                                                                (trendChatInfo.userCount.total ?? 0).toString(),
                                                                 style: TextStyle(
                                                                     height: 1,
                                                                     fontFamily: "NanumSquare",
@@ -598,8 +657,7 @@ class _TrendPageState extends State<TrendPage> {
                                                 ),
                                                 Container(
                                                     child: Text(
-//                                                        GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime),
-                                                        "23분 전",
+                                                        trendChatInfo.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(trendChatInfo.lastMsg.chatTime) : "메시지 없음",
                                                         style: TextStyle(
                                                             height: 1,
                                                             fontFamily: "NotoSans",

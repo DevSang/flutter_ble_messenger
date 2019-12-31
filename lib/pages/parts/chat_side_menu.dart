@@ -34,8 +34,8 @@ class ChatSideMenu extends StatefulWidget {
     int likeCount;
     final List<ChatJoinInfo> chatJoinInfoList;
     final StompClient sc;
-    final bool isFromMain;
-    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.sc, this.isFromMain});
+    final String from;
+    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.sc, this.from});
 
     @override
     State createState() => new ChatSideMenuState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: chatJoinInfoList);
@@ -152,7 +152,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                 MaterialPageRoute(builder: (context) {
                     int activeTab;
 
-                    if (widget.isFromMain) {
+                    if (widget.from == 'HwaTab') {
                         activeTab = 0;
                     }
                     else {
