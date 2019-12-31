@@ -162,15 +162,13 @@ class ChatScreenState extends State<ChatroomPage> {
     void advertiseChange() async {
         if (advertising) {
             await HwaBeacon().stopAdvertising();
+            setState(() {advertising = false;});
             print('##BLE STOP!!!');
         } else {
             await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+            setState(() {advertising = true;});
             print('##BLE START!!!');
         }
-
-        setState(() {
-            advertising = !advertising;
-        });
     }
 
     /*
@@ -366,6 +364,7 @@ class ChatScreenState extends State<ChatroomPage> {
             isLoading = true;
         });
 
+	    advertising = false;
 	    await HwaBeacon().stopAdvertising();
 
         setState(() {
@@ -377,6 +376,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     Widget build(BuildContext context) {
+
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
         return new Scaffold(
             appBar: new AppBar(
