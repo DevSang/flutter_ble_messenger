@@ -50,10 +50,16 @@ class _ProfilePageState extends State <ProfilePage>{
       ),
       body: Column(
         children: <Widget>[
+      Flexible(
+      child: ListView(
+          children: <Widget>[
           _profileImageSection(context),
           _profileSetting(context),
           _appSetting(context),
           _accountSetting(context)
+        ]
+    )
+      )
     ],
       ),
     );
@@ -254,7 +260,7 @@ class _ProfilePageState extends State <ProfilePage>{
                                   ),
                                   child: Row(
                                       children: <Widget>[
-                                          InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),)
+                                          InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")))
                                       ],
                                   ),
                               ),
