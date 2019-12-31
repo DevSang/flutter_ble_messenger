@@ -780,7 +780,9 @@ class _HwaTabState extends State<HwaTab> {
                                     margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(8)),
                                     width: sameSize * 22,
                                     height: sameSize * 22,
-                                    child: Image.asset('assets/images/icon/gpsIconConnected.png')
+                                    child: isAllowedGPS ?
+                                        Image.asset('assets/images/icon/gpsIconConnected.png')
+                                        :Image.asset('assets/images/icon/gpsIconUnconnected.png')
                                 ),
                                 Container(
                                     child: Text(
