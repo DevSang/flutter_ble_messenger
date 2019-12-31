@@ -139,21 +139,24 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Container(
-                                      child: Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                  Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
                                         fontWeight: FontWeight.w500,
                                       )),
+
+
+                                  Container(
+                                      child: Row(
+                                          children: <Widget>[
+                                            Text("강희근", style: TextStyle(fontSize: 15,fontFamily: "NotoSans", color: Color.fromRGBO(107, 107, 107, 1))),
+                                            IconButton(
+                                              icon: Image.asset("assets/images/icon/iconMore.png"),
+                                              onPressed: (){},
+                                            )
+                                          ]
+                                      )
                                   ),
 
-                                 Container(
-                                   margin: EdgeInsets.only(left: 200),
-                                   child: Text("강희근", style: TextStyle(fontSize: 15,fontFamily: "NotoSans", color: Color.fromRGBO(107, 107, 107, 1))),
-                                      ),
 
-                                  IconButton(
-                                    icon: Image.asset("assets/images/icon/iconMore.png"),
-                                    onPressed: (){},
-                                  )
                                   ],
                               )
                           ),
@@ -168,24 +171,24 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Container(
-                                     child: Text("한 줄 소개", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                     Text("한 줄 소개", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
                                         fontWeight: FontWeight.w500,
                                       )),
+                                  Container(
+                                      child: Row(
+                                          children: <Widget>[
+                                             InkWell(child: Text("안녕하세요 강희근입니다.", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(107, 107, 107, 1)))),
+                                            IconButton(
+                                              icon: Image.asset("assets/images/icon/iconMore.png"),
+                                              onPressed: (){},
+                                            )
+                                          ]
+                                      )
                                   ),
-                              Container(
-                                margin: EdgeInsets.only(left: 100),
-                                      child: InkWell(
-                                          child: Text("안녕하세요 강희근입니다.", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(107, 107, 107, 1))),
-                                      ),
-                              ),
-                                  IconButton(
-                                    icon: Image.asset("assets/images/icon/iconMore.png"),
-                                    onPressed: (){},
-                                  )
                                   ],
                               )
                           ),
+
 
                         Container(
                             padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
@@ -200,16 +203,22 @@ class _ProfilePageState extends State <ProfilePage>{
                                 Text("연락처", style: TextStyle(fontSize: 15,fontFamily: "NotoSans", color: Color.fromRGBO(39, 39, 39, 1),
                                   fontWeight: FontWeight.w500,
                                 )),
-                                InkWell(
-                                  child: Text("010-1234-5678", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(107, 107, 107, 1))),
+                                Container(
+                                    child: Row(
+                                        children: <Widget>[
+                                          InkWell(
+                                            child: Text("010-1234-5678", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(107, 107, 107, 1)))),
+                                          IconButton(
+                                            icon: Image.asset("assets/images/icon/iconMore.png"),
+                                            onPressed: (){},
+                                          )
+                                        ]
+                                    )
                                 ),
-                                IconButton(
-                                  icon: Image.asset("assets/images/icon/iconMore.png"),
-                                  onPressed: (){},
-                                )
                               ],
                             )
                         ),
+
 
                         Container(
                             padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
