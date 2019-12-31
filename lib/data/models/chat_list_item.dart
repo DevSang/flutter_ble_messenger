@@ -32,7 +32,7 @@ class ChatListItem {
             lon : jsonData['lon'],
             score : jsonData['score'] ?? 0,
             lastMsg : new ChatMessage.fromJSON(jsonData['lastMsg']
-                ?? {"type":"ENTER", "roomIdx":jsonData['roomIdx'], "msgIdx":null, "senderIdx":jsonData['createUserIdx'], "nickname":null, "message":"", "userCountObj":null, "createTs": jsonData['createTs']}),
+                ?? {"type":null, "roomIdx":null, "msgIdx":null, "senderIdx":null, "nickname":null, "message":null, "userCountObj":null, "createTs": null}),
             userCount : new ChatCountUser.fromJSON(jsonData['userCount'])
         );
     }

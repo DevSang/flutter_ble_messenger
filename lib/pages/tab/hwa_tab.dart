@@ -52,7 +52,7 @@ class _HwaTabState extends State<HwaTab> {
     int chatItemRemoveTime = 4000;
 
     // AD 없는 채팅방 삭제 타이머 반복 시간 (ms)
-    int chatItemRemoveTimerDelay = 2000;
+    int chatItemRemoveTimerDelay = 2500;
 
     // GPS, BLE 권한 들어왔는지 체크 타이머 반복 시간 (ms)
     int permitTimerDelay = 1500;

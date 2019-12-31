@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'dart:developer' as developer;
+
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
@@ -27,11 +29,11 @@ class _ChatTabState extends State<ChatTab> {
 
     @override
     void initState() {
-    super.initState();
-    _getChatList();
+	    super.initState();
+	    _getChatList();
 
-    sameSize = GetSameSize().main();
-    isLoading = false;
+	    sameSize = GetSameSize().main();
+	    isLoading = false;
     }
 
     /*
@@ -52,7 +54,7 @@ class _ChatTabState extends State<ChatTab> {
               jsonParse = info;
               chatInfo = new ChatListItem.fromJSON(jsonParse);
               // 채팅 리스트에 추가
-              chatList.insert(0, chatInfo);
+              chatList.add(chatInfo);
           }
 
           setState(() {});
@@ -266,7 +268,7 @@ class _ChatTabState extends State<ChatTab> {
                                                     right: ScreenUtil().setWidth(5),
                                                 ),
                                                 child: Text(
-                                                    GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime),
+	                                                chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : "메시지 없음",
                                                     style: TextStyle(
                                                         height: 1,
                                                         fontFamily: "NotoSans",
