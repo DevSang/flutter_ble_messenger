@@ -145,11 +145,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
 
             widget.sc.disconnect();
 
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) {
-                    return BottomNavigation();
-                })
-            );
+            Navigator.pop(context, true);
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
