@@ -58,8 +58,12 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                     ),
                 ),
                 elevation: 0.0,
-                leading: new Container(),
-                actions:[
+                leading: new IconButton(
+                    icon: new Image.asset('assets/images/icon/navIconClose.png'),
+                    onPressed: (){
+                        Navigator.of(context).pop();
+                    }
+                ),                actions:[
                     Builder(
                         builder: (context) =>
                             Row(

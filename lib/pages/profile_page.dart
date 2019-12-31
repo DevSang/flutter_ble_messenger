@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/utility/custom_switch.dart';
 
 
@@ -69,48 +70,56 @@ class _ProfilePageState extends State <ProfilePage>{
 
   Widget _profileImageSection(BuildContext context){
       return Container(
-
-          padding: EdgeInsets.only(top: 50.0),
-          width: MediaQuery.of(context).size.width,
-          height: 200,
+        width: ScreenUtil().setWidth(375),
+        height: ScreenUtil().setHeight(177),
           decoration: BoxDecoration(
               color: Color.fromRGBO(178, 178, 178, 1),
           ),
-          child: Stack(children: <Widget>[
-              Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                      Container(
-                          width: 100.0,
-                          height: 100.0,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                  image: ExactAssetImage(
-                                      'assets/images/logo.png'),
-                                  fit: BoxFit.cover,
-                              )
-                          ),
-                          padding: EdgeInsets.only(top: 60.0, left: 50.0),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                  CircleAvatar(
-                                      backgroundColor: Color.fromRGBO(77, 96, 191, 1),
-                                      radius: 25.0,
-                                      child: Icon(
-                                          Icons.camera_alt,
-                                          color: Colors.white,
-                                      ),
-                                  )
-                              ],
-                          ),
-                      ),
+        child: Stack(
+          children: <Widget>[
+            InkWell(
+              child: Center(
+                child: Container(
+                  width: ScreenUtil().setWidth(90),
+                  height: ScreenUtil().setHeight(90),
+                  margin: EdgeInsets.only(
+                    top: ScreenUtil().setHeight(41),
+                    bottom: ScreenUtil().setHeight(46),
+                  ),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/images/logo.png'),
+                      fit: BoxFit.cover
+                    )
+                  ),
 
-                  ],
-              )
-          ],),
+                ),
+              ),
+              onTap: () {
+              },
+            ),
+            Positioned(
+                bottom: ScreenUtil().setHeight(41),
+                left: ScreenUtil().setWidth(206),
+                child: InkWell(
+                    child: Container(
+                        width: ScreenUtil().setWidth(32),
+                        height: ScreenUtil().setHeight(32),
+                        decoration: BoxDecoration(
+                            color: Color.fromRGBO(77, 96, 191, 1),
+                            image: DecorationImage(
+                                image:AssetImage("assets/images/icon/iconAttachCamera.png")
+                            ),
+                            shape: BoxShape.circle
+                        )
+                    ),
+                    onTap:(){
+                    }
+                )
+            )
+          ],
+        ),
       );
   }
 
@@ -121,11 +130,11 @@ class _ProfilePageState extends State <ProfilePage>{
                   Column(
                       children: <Widget>[
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
                               width: MediaQuery.of(context).size.width,
                               height: 30.0,
                               decoration: BoxDecoration(
-                                  color: Color.fromRGBO(214, 214, 214, 1),
+                                color: Color.fromRGBO(214, 214, 214, 1),
                               ),
                               child: Text("프로필",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
                           ),
@@ -139,9 +148,17 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
+
+                                  Container(
+                                    child: Row(
+                                      children: <Widget>[
                                   Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
                                         fontWeight: FontWeight.w500,
-                                      )),
+                                      )
+                                  ),
+                                      ]
+                                    )
+                                  ),
 
 
                                   Container(
@@ -162,7 +179,7 @@ class _ProfilePageState extends State <ProfilePage>{
                           ),
 
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
@@ -191,7 +208,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
 
                         Container(
-                            padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                             width: MediaQuery.of(context).size.width,
                             height: 50.0,
                             decoration: BoxDecoration(
@@ -221,7 +238,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
 
                         Container(
-                            padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                             width: MediaQuery.of(context).size.width,
                             height: 50.0,
                             decoration: BoxDecoration(
@@ -260,7 +277,7 @@ class _ProfilePageState extends State <ProfilePage>{
                   Column(
                       children: <Widget>[
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
                               width: MediaQuery.of(context).size.width,
                               height: 30.0,
                               decoration: BoxDecoration(
@@ -270,7 +287,7 @@ class _ProfilePageState extends State <ProfilePage>{
                           ),
 
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
@@ -294,7 +311,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
 
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
@@ -333,7 +350,7 @@ class _ProfilePageState extends State <ProfilePage>{
                   Column(
                       children: <Widget>[
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
                               width: MediaQuery.of(context).size.width,
                               height: 30.0,
                               decoration: BoxDecoration(
@@ -344,7 +361,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
                           InkWell(
                               child:Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                                  padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
                                   width: MediaQuery.of(context).size.width,
                                   height: 50.0,
                                   decoration: BoxDecoration(
@@ -375,7 +392,8 @@ class _ProfilePageState extends State <ProfilePage>{
                           ),
 
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
+
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
