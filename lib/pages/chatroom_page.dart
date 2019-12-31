@@ -42,8 +42,9 @@ class ChatroomPage extends StatefulWidget {
     final bool isLiked;
     final int likeCount;
     final List<ChatJoinInfo> joinInfo;
+    final bool isFromMain;
 
-    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo}) : super(key: key);
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.isFromMain}) : super(key: key);
 
 
     @override
@@ -426,7 +427,9 @@ class ChatScreenState extends State<ChatroomPage> {
                 brightness: Brightness.light,
             ),
             endDrawer: SafeArea(
-                child: new ChatSideMenu(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s)
+                child: new ChatSideMenu(
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s, isFromMain: widget.isFromMain
+                )
             ),
             body: GestureDetector(
                 child: WillPopScope(

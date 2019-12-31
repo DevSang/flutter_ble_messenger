@@ -439,7 +439,7 @@ class _HwaTabState extends State<HwaTab> {
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
-                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo);
+                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, isFromMain: true);
                 })
             ).then((onValue) {
                 _scanBLE();
