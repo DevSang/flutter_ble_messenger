@@ -264,7 +264,7 @@ class ChatScreenState extends State<ChatroomPage> {
 	        });
 
 	        if(response.statusCode == 200){
-		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?type=SMALL&file_idx=" + response.data["data"].toString(), 1);
+		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
 	        }
         }
     }
@@ -289,7 +289,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
             if(response.statusCode == 200){
             	// 썸네일 URI 전송
-	            onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?type=SMALL&file_idx=" + response.data["data"].toString(), 1);
+	            onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
             }
         }
     }
