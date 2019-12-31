@@ -20,18 +20,18 @@ class NoticePage extends StatefulWidget {
     NoticePage({Key key, @required this.chatIdx}) :super(key: key);
 
     @override
-    State createState() => new NoticePageState();
+    State createState() =>  NoticePageState();
 }
 
 class NoticePageState extends State<NoticePage> {
-    List<ChatNoticeItem> chatNoticeList = new SetChatNoticeData().main();
+    List<ChatNoticeItem> chatNoticeList =  SetChatNoticeData().main();
 
     @override
     Widget build(BuildContext context) {
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
 
-        return new Scaffold(
-            appBar: new AppBar(
+        return Scaffold(
+            appBar: AppBar(
                 iconTheme: IconThemeData(
                     color: Color.fromRGBO(77, 96, 191, 1), //change your color here
                 ),
@@ -53,7 +53,7 @@ class NoticePageState extends State<NoticePage> {
                 actions:[
                     Builder(
                         builder: (context) => IconButton(
-                            icon: new Image.asset('assets/images/icon/navIconWrite.png'),
+                            icon:  Image.asset('assets/images/icon/navIconWrite.png'),
                             onPressed: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
@@ -73,7 +73,7 @@ class NoticePageState extends State<NoticePage> {
     }
 
     Widget noticeList() {
-        return new Container(
+        return  Container(
             decoration: BoxDecoration(
                 color: Color.fromRGBO(235, 235, 235, 1),
                 border: Border(
@@ -96,7 +96,7 @@ class NoticePageState extends State<NoticePage> {
     }
 
     Widget noticeHeader() {
-        return new Container(
+        return  Container(
             height: ScreenUtil().setHeight(80),
             padding: EdgeInsets.only(
                 top: ScreenUtil().setHeight(17),
@@ -180,7 +180,7 @@ class NoticePageState extends State<NoticePage> {
                                 right: ScreenUtil().setWidth(11.5)
                             ),
                             child: ClipRRect(
-                                borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(45)),
+                                borderRadius:  BorderRadius.circular(ScreenUtil().setWidth(45)),
                                 child: Image.asset(
                                     chatNoticeItem.userImg,
                                     width: ScreenUtil().setWidth(45),
