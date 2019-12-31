@@ -32,6 +32,7 @@ dependencies:
   sqlcool: ^4.2.0
   google_sign_in: ^4.1.1
   sticky_headers: ^0.1.8+1
+
 #  flutter_kakao_login: "^0.5.0"
 #  kakao_flutter_sdk: ^0.3.2
   dio: 3.0.8

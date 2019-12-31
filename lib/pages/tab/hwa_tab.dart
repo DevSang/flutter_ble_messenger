@@ -68,14 +68,13 @@ class _HwaTabState extends State<HwaTab> {
     String _currentAddress = '위치 검색중..';
 
     // 사용자 GPS, BLE 권한 관련
-    bool isAllowedGPS = false;
-    bool isAuthGPS = false;
+    bool isAllowedGPS = true;
+    bool isAuthGPS = true;
 
-    bool isAllowedBLE = false;
-    bool isAuthBLE = false;
+    bool isAllowedBLE = true;
+    bool isAuthBLE = true;
 
     bool isBeaconSupport = false;
-
 
     @override
     void initState() {
@@ -228,17 +227,15 @@ class _HwaTabState extends State<HwaTab> {
     }
 
     Future<bool> checkGPS() async {
-	    developer.log("# GPS checkGps.");
-
 	    // Location 서비스 켜져있는지 확인
 	    bool isLocationAllowed = await HwaBeacon().checkLocationService();
-	    developer.log("## HwaBeacon checkLocationService : " + isLocationAllowed.toString());
 
 	    if (Platform.isAndroid) {
 		    // 안드로이드 위치 서비스 처리
 		    if(isLocationAllowed == false) {
 			    isAllowedGPS = false;
-			    developer.log("# 위치서비스 자체가 꺼져있음!");
+                isAuthGPS = false;
+                developer.log("# 위치서비스 자체가 꺼져있음!");
 
 			    return false;
 		    }else{
@@ -252,6 +249,7 @@ class _HwaTabState extends State<HwaTab> {
 
 				    return true;
 			    } else{
+                    isAuthGPS = false;
 				    developer.log("# 위치서비스 켜있지만, 위치 권한이 없음!");
 				    return false;
 			    }
@@ -291,7 +289,6 @@ class _HwaTabState extends State<HwaTab> {
     Future<bool> checkBLE() async {
 	    // Bluetooth 상태 확인
 	    BluetoothState bs = await HwaBeacon().getBluetoothState();
-	    developer.log("## HwaBeacon getBluetoothState : " + bs.toString());
 
 	    if (Platform.isAndroid) {
 		    // Android BLE 처리
@@ -309,6 +306,10 @@ class _HwaTabState extends State<HwaTab> {
 				    return true;
 			    }
 		    }else{
+		        setState(() {
+                    isAllowedBLE = false;
+                    isAuthBLE = false;
+		        });
 			    developer.log("# 블루투스 꺼져있음!");
 			    return false;
 		    }
@@ -610,6 +611,11 @@ class _HwaTabState extends State<HwaTab> {
         );
     }
 
+    /*
+    * @author : sh
+    * @date : 2019-12-31
+    * @description : 메인페이지 상황별 페이지 반
+    */
     Widget setScreen () {
         if(chatList.length != 0) {
             return Stack(
@@ -633,9 +639,18 @@ class _HwaTabState extends State<HwaTab> {
                 ]
             );
         } else if (chatList.length == 0) {
-            bool notAllowedBLE = !isAllowedBLE;
-            bool notAllowedLoc = (!notAllowedBLE && !isAllowedGPS);
-            bool noRoomFlag = (isAllowedBLE && isAllowedGPS && chatList.length == 0);
+            bool noRoomFlag = (isAllowedBLE && isAllowedGPS && isAuthBLE && isAuthGPS && chatList.length == 0);
+            print("####################################");
+            print("##noRoomFlag : " + noRoomFlag.toString());
+            print("##isAuthBLE : " + isAuthBLE.toString());
+            print("##isAllowedBLE : " + isAllowedBLE.toString());
+            print("##isAuthGPS : " + isAuthGPS.toString());
+            print("##isAllowedGPS : " + isAllowedGPS.toString());
+            print("####################################");
+
+//            print("##chatList.length == 0 : " + (chatList.length == 0).toString());
+//            print("##notAllowedBLE : " + notAllowedBLE.toString());
+//            print("##notAllowedLoc : " + notAllowedLoc.toString());
 
             String mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
             String titleText = "현재 위치 단화방이 없습니다.";
@@ -648,27 +663,27 @@ class _HwaTabState extends State<HwaTab> {
                 subTitle="원하는 방을 만들어 보실래요?";
                 buttonText="방 만들기";
                 buttonClick =  Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
-            } else if(notAllowedBLE) {
+            } else if(!isAuthBLE) {
                 mainBackImg = "assets/images/background/noBleBackgroundImg.png";
-                if(!isAuthBLE) {
-                    titleText= "블루투스 권한이 필요합니다.";
-                    subTitle="설정 > 앱 > 앱 권한";
-                    buttonText="설정으로 이동";
-                    buttonClick = HwaBeacon().openApplicationSettings;
-                } else {
+                titleText= "블루투스 권한이 필요합니다.";
+                subTitle="설정 > 앱 > 앱 권한";
+                buttonText="설정으로 이동 >";
+                buttonClick = HwaBeacon().openBluetoothSettings;
+
+                if(!isAllowedBLE) {
                     titleText= "블루투스가 꺼져있습니다.";
                     subTitle="설정 > 블루투스 켜기";
-                    buttonText="설정으로 이동";
-                    buttonClick = HwaBeacon().openApplicationSettings;
+                    buttonText="설정으로 이동 >";
+                    buttonClick = HwaBeacon().openBluetoothSettings;
                 }
-            } else {
+            } else if(!isAuthGPS){
                 mainBackImg = "assets/images/background/noLocationBackgroundImg.png";
-                if(!isAuthGPS) {
-                    titleText= "위치 접근 권한이 필요합니다.";
-                    subTitle="설정 > 앱 > 앱 권한";
-                    buttonText="설정으로 이동";
-                    buttonClick = HwaBeacon().requestAuthorization;
-                } else {
+                titleText= "위치 접근 권한이 필요합니다.";
+                subTitle="설정 > 앱 > 앱 권한";
+                buttonText="설정으로 이동 >";
+                buttonClick = HwaBeacon().requestAuthorization;
+
+                if(!isAllowedGPS) {
                     titleText= "GPS가 꺼져있습니다.";
                     subTitle="설정 > GPS 켜기";
                     buttonText="설정으로 이동";
@@ -731,7 +746,7 @@ class _HwaTabState extends State<HwaTab> {
                         padding: EdgeInsets.symmetric(horizontal: 15.0),
                         child: RaisedButton(
                             onPressed: (){
-                                buttonClick(context);
+                                buttonClick();
                             },
                             color: Color.fromRGBO(77, 96, 191, 1),
                             elevation: 0.0,
@@ -850,17 +865,16 @@ class _HwaTabState extends State<HwaTab> {
         );
     }
 
-  Widget buildChatList() {
-    return Container(
-        child: Flexible(
-            child: ListView.builder(
-              itemCount: chatList.length,
+    Widget buildChatList() {
+        return Container(
+            child: Flexible(
+                child: ListView.builder(
+                  itemCount: chatList.length,
 
-              itemBuilder: (BuildContext context, int index) => buildChatItem(chatList[index])
+                  itemBuilder: (BuildContext context, int index) => buildChatItem(chatList[index]))
             )
-        )
-    );
-  }
+        );
+    }
 
     Widget buildChatItem(ChatListItem chatListItem) {
         return InkWell(

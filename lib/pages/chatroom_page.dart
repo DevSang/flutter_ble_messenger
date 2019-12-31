@@ -5,6 +5,7 @@ import 'dart:collection';
 
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/loading.dart';
+import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -217,7 +218,7 @@ class ChatScreenState extends State<ChatroomPage> {
     void messageReceieved(HashMap data) {
         message = new ChatMessage.fromJSON(json.decode(data['contents']));
 
-        print("received!!!!!!!"+json.decode(data['contents']).toString());
+        developer.log("# messageReceieved : " + json.decode(data['contents']).toString());
 
         ChatMessage cmb = ChatMessage(
             chatType: message.chatType,
@@ -232,8 +233,6 @@ class ChatScreenState extends State<ChatroomPage> {
             messageList.insert(0, cmb);
             isReceived = true;
         });
-
-
     }
 
     /*
@@ -260,10 +259,12 @@ class ChatScreenState extends State<ChatroomPage> {
 	        };
 
 	        // 파일 업로드 API 호출
-	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param);
+	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
+		        print("$sent : $total");
+	        });
 
 	        if(response.statusCode == 200){
-		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString(), 1);
+		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
 	        }
         }
     }
@@ -276,11 +277,20 @@ class ChatScreenState extends State<ChatroomPage> {
     Future getCamera() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
         if (imageFile != null) {
-            print(imageFile.path);
+            // 파일 이외의 추가 파라미터 셋팅
+            Map<String, dynamic> param = {
+	            "chat_idx" : chatInfo.chatIdx
+            };
 
-            //onSendMessage(imageFile, 1);
+            // 파일 업로드 API 호출
+            Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
+	            print("$sent : $total");
+            });
 
-
+            if(response.statusCode == 200){
+            	// 썸네일 URI 전송
+	            onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
+            }
         }
     }
     /*

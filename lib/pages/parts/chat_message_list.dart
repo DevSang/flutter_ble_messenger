@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/package/fullPhoto.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -58,6 +58,24 @@ class ChatMessageElementsState extends State<ChatMessageList> {
     void getHeader() async {
 	    Map<String, String> map = await CallApi.setHeader();
 	    header = map;
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : 썸네일 호출 파라미터 제거
+     */
+    String getOriginImgUri(String uri){
+    	String processedUrl;
+
+	    if(uri.contains("&")){
+		    String lastParam = uri.substring(uri.lastIndexOf("&"), uri.length);
+		    if("&type=SMALL" == lastParam) processedUrl = uri.substring(0, uri.lastIndexOf("&"));
+	    }else{
+		    processedUrl = uri;
+	    }
+
+	    return processedUrl;
     }
 
     /*
@@ -460,7 +478,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                         ),
                         onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: chatMessage.message)));
+                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header)));
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
@@ -583,7 +601,7 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                         ),
                         onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: chatMessage.message)));
+		                            context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header)));
                         },
                     ),
 
