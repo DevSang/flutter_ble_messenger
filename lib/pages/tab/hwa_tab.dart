@@ -150,30 +150,6 @@ class _HwaTabState extends State<HwaTab> {
     }
 
     /*
-     * @author : hk
-     * @date : 2019-12-29
-     * @description : 위치정보 검색
-     */
-    _getCurrentLocation() async {
-	    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
-	    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-
-	    // 위도, 경도로 주소지 찾기
-	    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
-
-	    if(placemark != null && placemark.length > 0){
-		    Placemark p = placemark[0];
-
-		    // TODO 디자인 적용
-		    setState(() {
-			    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
-			    _textFieldController.text = '$_currentAddress';
-
-		    });
-	    }
-    }
-
-    /*
      * @author : hs
      * @date : 2019-12-29
      * @description : BLE Scan
@@ -291,11 +267,25 @@ class _HwaTabState extends State<HwaTab> {
 	    }
     }
 
-    void startGpsService(){
+    void startGpsService() async {
 	    developer.log("# start GpsService!");
 
-	    // 위치 서비스, 권한 모두 있으므로 내 위치 탐색을 시작함
-	    _getCurrentLocation();
+	    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
+	    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+
+	    // 위도, 경도로 주소지 찾기
+	    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
+
+	    if(placemark != null && placemark.length > 0){
+		    Placemark p = placemark[0];
+
+		    // TODO 디자인 적용
+		    setState(() {
+			    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
+			    _textFieldController.text = '$_currentAddress';
+
+		    });
+	    }
     }
 
     Future<bool> checkBLE() async {
