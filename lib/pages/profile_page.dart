@@ -137,7 +137,8 @@ class _ProfilePageState extends State <ProfilePage>{
                                   color: Color.fromRGBO(255, 255, 255, 1),
                               ),
                               child: Row(
-                                  children: <Widget>[
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
                                       Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
 
                                       InkWell(
@@ -155,7 +156,8 @@ class _ProfilePageState extends State <ProfilePage>{
                                   color: Color.fromRGBO(255, 255, 255, 1),
                               ),
                               child: Row(
-                                  children: <Widget>[
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
                                       Text("한 줄 소개", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
 
                                       InkWell(
@@ -201,15 +203,14 @@ class _ProfilePageState extends State <ProfilePage>{
                                   color: Color.fromRGBO(255, 255, 255, 1),
                               ),
                               child: Row(
-                                  children: <Widget>[
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
                                       Text("푸쉬 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
-
-                                    CustomSwitch(
+                                  CustomSwitch(
                                       onChanged: _onSwitchChanged,
                                       value: true,
                                       activeColor: Color.fromRGBO(77, 96, 191, 1)
                                     )
-
                                   ],
                               )
                           ),
@@ -224,10 +225,10 @@ class _ProfilePageState extends State <ProfilePage>{
                                   color: Color.fromRGBO(255, 255, 255, 1),
                               ),
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
                                       Text("친구 허용 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
-
-                                    CustomSwitch(
+                                  CustomSwitch(
                                         onChanged: _onSwitchChanged,
                                         value: true,
                                         activeColor: Color.fromRGBO(77, 96, 191, 1)
@@ -235,13 +236,10 @@ class _ProfilePageState extends State <ProfilePage>{
                                   ],
                               )
                           ),
-
-
                       ]
                   )
               ],
           ),
-
       );
   }
 
@@ -275,8 +273,17 @@ class _ProfilePageState extends State <ProfilePage>{
                                       color: Color.fromRGBO(255, 255, 255, 1),
                                   ),
                                   child: Row(
-                                      children: <Widget>[
-                                          InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")))
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                          InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans"))),
+                                        IconButton(
+                                          icon: Image.asset("assets/images/icon/iconMore.png"),
+                                          onPressed: (){
+                                            logOut().then((value) {
+                                              Navigator.of(context).popUntil((route) => route.isFirst);
+                                            });
+                                          },
+                                        )
                                       ],
                                   ),
                               ),
@@ -295,11 +302,14 @@ class _ProfilePageState extends State <ProfilePage>{
                                   color: Color.fromRGBO(255, 255, 255, 1),
                               ),
                               child: Row(
-                                  children: <Widget>[
-
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
                                       InkWell(
-                                          child: Text("탈퇴하기", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
-                                      )
+                                          child: Text("탈퇴하기", style: TextStyle(fontSize: 15,fontFamily: "NotoSans"))),
+                                    IconButton(
+                                      icon: Image.asset("assets/images/icon/iconMore.png"),
+                                      onPressed: (){},
+                                    )
                                   ],
                               )
                           ),
