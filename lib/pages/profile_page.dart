@@ -139,6 +139,7 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Text("프로필",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
                           ),
                           Container(
+
                               padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
