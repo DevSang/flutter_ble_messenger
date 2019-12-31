@@ -44,8 +44,9 @@ class ChatroomPage extends StatefulWidget {
     final int likeCount;
     final List<ChatJoinInfo> joinInfo;
     final String from;      // HwaTab, ChatTab, Trend
+    final bool disable;
 
-    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.from}) : super(key: key);
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.from, this.disable}) : super(key: key);
 
 
     @override
@@ -66,6 +67,7 @@ class ChatScreenState extends State<ChatroomPage> {
     bool isLoading;
     bool isShowMenu;
     String imageUrl;
+    bool disable;
 
     // 채팅방 메세지 View 리스트
     final List<ChatMessage> messageList = <ChatMessage>[];
@@ -109,6 +111,8 @@ class ChatScreenState extends State<ChatroomPage> {
         /// Stomp 초기화
         connectStomp();
 
+        disable = widget.disable ?? false;
+        
         isReceived = false;
 
         focusNode.addListener(onFocusChange);
@@ -461,7 +465,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                         ChatMessageList(messageList: messageList),
 
                                         // Input content
-                                        buildInput(),
+                                        disable ? Container() : buildInput(),
 
                                         /// 하단 메뉴 서비스 추가 시 코드 교체
                                         // Menu

@@ -1,6 +1,10 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
+import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
+import 'package:Hwa/pages/chatroom_page.dart';
 import 'package:Hwa/pages/parts/loading.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
@@ -69,6 +73,69 @@ class _TrendPageState extends State<TrendPage> {
 
       } catch (e) {
           print("#### Error :: " + e.toString());
+      }
+  }
+
+  /*
+   * @author : hs
+   * @date : 2020-01-01
+   * @description : 단화방 조인
+  */
+  void _joinChat(int chatIdx) async {
+      setState(() {
+          isLoading = true;
+      });
+
+      try {
+          /// 참여 타입 수정
+          String uri = "/danhwa/join?roomIdx=" + chatIdx.toString() + "&type=ONLINE";
+          final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+          Map<String, dynamic> jsonParse = json.decode(response.body);
+
+          // 단화방 입장
+          _enterChat(jsonParse);
+
+      } catch (e) {
+          developer.log("#### Error :: "+ e.toString());
+      }
+  }
+
+  /*
+   * @author : hs
+   * @date : 2020-01-01
+   * @description : 단화방 입장
+  */
+  void _enterChat(Map<String, dynamic> chatInfoJson) {
+      List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
+
+      try {
+          ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
+          bool isLiked = chatInfoJson['isLiked'];
+          int likeCount = chatInfoJson['danhwaLikeCount'];
+          bool alreadyJoined = chatInfoJson['alreadyJoin'];
+
+          try {
+              for (var joinInfo in chatInfoJson['joinList']) {
+                  chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
+              }
+          } catch (e) {
+              developer.log("#### Error :: "+ e.toString());
+          }
+
+          setState(() {
+              isLoading = false;
+          });
+
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) {
+                  return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "Trend", disable: alreadyJoined);
+              })
+          );
+
+          isLoading = false;
+      } catch (e) {
+          developer.log("#### Error :: "+ e.toString());
       }
   }
 
@@ -713,7 +780,9 @@ class _TrendPageState extends State<TrendPage> {
                     ],
                 )
             ),
-            onTap: () {},
+            onTap: () {
+                _joinChat(trendChatInfo.chatIdx);
+            },
         );
     }
 }

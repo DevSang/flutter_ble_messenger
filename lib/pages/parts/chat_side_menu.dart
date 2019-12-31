@@ -290,7 +290,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                 children: <Widget>[
                                     ChatUserList(userInfoList: userInfoListBle, joinType: "BLE_JOIN", hostIdx: chatInfo.createUserIdx),
                                     ChatUserList(userInfoList: userInfoListBleOut, joinType: "BLE_OUT", hostIdx: chatInfo.createUserIdx),
-                                    ChatUserList(userInfoList: userInfoListBleOnline, joinType: "BLE_ONLINE", hostIdx: chatInfo.createUserIdx),
+                                    ChatUserList(userInfoList: userInfoListBleOnline, joinType: "ONLINE", hostIdx: chatInfo.createUserIdx),
                                 ],
                             ),
                         ),
