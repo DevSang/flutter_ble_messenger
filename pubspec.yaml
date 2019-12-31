@@ -75,6 +75,7 @@ flutter:
 
   assets:
     - assets/images/logo.png
+    - assets/images/loginLogo.png
     - assets/images/splash.png
     - assets/images/icon/appIcon.jpg
     - assets/images/icon/crown.png
@@ -144,7 +145,6 @@ flutter:
     - assets/images/profile_img.png
     - assets/images/businesscard.png
     - assets/images/bgGradeLogin.png
-    - assets/images/login/visualImageLogin.png
     - assets/images/sns/snsIconFacebook.png
     - assets/images/sns/snsIconGoogle.png
     - assets/images/sns/snsIconKakao.png

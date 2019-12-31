@@ -606,7 +606,7 @@ class _HwaTabState extends State<HwaTab> {
                     ],
                 ),
             ),
-            body: setScreen()
+            body: setScreen(context)
         );
     }
 
@@ -615,7 +615,7 @@ class _HwaTabState extends State<HwaTab> {
     * @date : 2019-12-31
     * @description : 메인페이지 상황별 페이지 반
     */
-    Widget setScreen () {
+    Widget setScreen (BuildContext context) {
         if(chatList.length != 0) {
             return Stack(
                 children: <Widget>[
@@ -656,6 +656,7 @@ class _HwaTabState extends State<HwaTab> {
             String subTitle = "원하는 방을 만들어 보실래요?";
             String buttonText = "방 만들기";
             Function buttonClick = Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
+            Function phoneSettingClick;
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
                 titleText= "현재 위치 단화방이 없습니다.";
@@ -667,26 +668,26 @@ class _HwaTabState extends State<HwaTab> {
                 titleText= "블루투스 권한이 필요합니다.";
                 subTitle="설정 > 앱 > 앱 권한";
                 buttonText="설정으로 이동 >";
-                buttonClick = HwaBeacon().openBluetoothSettings;
+                phoneSettingClick = HwaBeacon().openBluetoothSettings;
 
                 if(!isAllowedBLE) {
                     titleText= "블루투스가 꺼져있습니다.";
                     subTitle="설정 > 블루투스 켜기";
                     buttonText="설정으로 이동 >";
-                    buttonClick = HwaBeacon().openBluetoothSettings;
+                    phoneSettingClick = HwaBeacon().openBluetoothSettings;
                 }
             } else if(!isAuthGPS){
                 mainBackImg = "assets/images/background/noLocationBackgroundImg.png";
                 titleText= "위치 접근 권한이 필요합니다.";
                 subTitle="설정 > 앱 > 앱 권한";
                 buttonText="설정으로 이동 >";
-                buttonClick = HwaBeacon().requestAuthorization;
+                phoneSettingClick = HwaBeacon().requestAuthorization;
 
                 if(!isAllowedGPS) {
                     titleText= "GPS가 꺼져있습니다.";
                     subTitle="설정 > GPS 켜기";
                     buttonText="설정으로 이동";
-                    buttonClick = HwaBeacon().openLocationSettings;
+                    phoneSettingClick = HwaBeacon().openLocationSettings;
                 }
             }
 
@@ -744,8 +745,12 @@ class _HwaTabState extends State<HwaTab> {
                         margin: EdgeInsets.only(top: 10),
                         padding: EdgeInsets.symmetric(horizontal: 15.0),
                         child: RaisedButton(
-                            onPressed: (){
-                                buttonClick();
+                            onPressed: () {
+                                if(noRoomFlag) {
+                                    buttonClick(context);
+                                } else {
+                                    phoneSettingClick();
+                                }
                             },
                             color: Color.fromRGBO(77, 96, 191, 1),
                             elevation: 0.0,
