@@ -368,7 +368,7 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _loginInputText() {
         return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+            padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: Row(
                 children: <Widget>[
                     Flexible(
