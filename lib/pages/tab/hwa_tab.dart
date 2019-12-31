@@ -455,7 +455,7 @@ class _HwaTabState extends State<HwaTab> {
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
-                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, isFromMain: true);
+                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "HwaTab");
                 })
             ).then((onValue) {
                 startBleService();
@@ -671,31 +671,31 @@ class _HwaTabState extends State<HwaTab> {
             String titleText = "현재 위치 단화방이 없습니다.";
             String subTitle = "원하는 방을 만들어 보실래요?";
             String buttonText = "방 만들기";
-            Function buttonClick = Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
+            Function buttonClick = Platform.isAndroid ? _displayAndroidDialog : _displayIosDialog;
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
                 titleText= "현재 위치 단화방이 없습니다.";
                 subTitle="원하는 방을 만들어 보실래요?";
                 buttonText="방 만들기";
-                buttonClick =  Platform.isAndroid ? _displayAndroidDialog:_displayIosDialog;
+                buttonClick =  Platform.isAndroid ? _displayAndroidDialog : _displayIosDialog;
             } else if(!isAuthBLE) {
                 mainBackImg = "assets/images/background/noBleBackgroundImg.png";
                 titleText= "블루투스 권한이 필요합니다.";
                 subTitle="설정 > 앱 > 앱 권한";
-                buttonText="설정으로 이동 >";
+                buttonText="설정으로 이동";
                 buttonClick = HwaBeacon().openBluetoothSettings;
 
                 if(!isAllowedBLE) {
                     titleText= "블루투스가 꺼져있습니다.";
                     subTitle="설정 > 블루투스 켜기";
-                    buttonText="설정으로 이동 >";
+                    buttonText="설정으로 이동";
                     buttonClick = HwaBeacon().openBluetoothSettings;
                 }
             } else if(!isAuthGPS){
                 mainBackImg = "assets/images/background/noLocationBackgroundImg.png";
                 titleText= "위치 접근 권한이 필요합니다.";
                 subTitle="설정 > 앱 > 앱 권한";
-                buttonText="설정으로 이동 >";
+                buttonText="설정으로 이동";
                 buttonClick = HwaBeacon().requestAuthorization;
 
                 if(!isAllowedGPS) {
@@ -761,7 +761,7 @@ class _HwaTabState extends State<HwaTab> {
                         padding: EdgeInsets.symmetric(horizontal: 15.0),
                         child: RaisedButton(
                             onPressed: (){
-                                buttonClick();
+                                (buttonClick != _displayAndroidDialog && buttonClick != _displayIosDialog) ? buttonClick() : buttonClick(context);
                             },
                             color: Color.fromRGBO(77, 96, 191, 1),
                             elevation: 0.0,

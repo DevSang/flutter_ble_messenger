@@ -11,6 +11,7 @@ import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -106,7 +107,7 @@ class _ChatTabState extends State<ChatTab> {
 
             Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return ChatroomPage(
-                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, isFromMain: false
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "ChatTab"
                 );
             }));
 
@@ -120,9 +121,9 @@ class _ChatTabState extends State<ChatTab> {
     @override
     Widget build(BuildContext context) {
       return Scaffold(
-          backgroundColor: Color.fromRGBO(214, 214, 214, 1),
           appBar: TabAppBar(title: '참여했던 단화방', leftChild: Container(height: 0)),
           body: Container(
+              color: Color.fromRGBO(214, 214, 214, 1),
               padding: EdgeInsets.symmetric(
                   horizontal: ScreenUtil().setWidth(16),
               ),
@@ -186,7 +187,7 @@ class _ChatTabState extends State<ChatTab> {
                             borderRadius:
                                 new BorderRadius.circular(ScreenUtil().setWidth(10)),
                             child: Image.asset(
-                                chatListItem.chatImg,
+                                chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
                                 width: sameSize * 50,
                                 height: sameSize * 50,
                                 fit: BoxFit.cover,
