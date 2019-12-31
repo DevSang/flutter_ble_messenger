@@ -52,7 +52,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
 
     List<ChatJoinInfo> userInfoListBle = <ChatJoinInfo>[];
     List<ChatJoinInfo> userInfoListBleOut = <ChatJoinInfo>[];
-    List<ChatJoinInfo> userInfoListBleOnline  = <ChatJoinInfo>[];
+    List<ChatJoinInfo> userInfoListOnline  = <ChatJoinInfo>[];
 
 
 
@@ -69,17 +69,15 @@ class ChatSideMenuState extends State<ChatSideMenu> {
      * @description : 단화방 정보 받아오기
     */
     void _getChatJoinInfo() {
-        print("***"+chatJoinInfoList.length.toString());
         if (chatJoinInfoList != null && chatJoinInfoList.length > 0) {
             for(var chatJoinInfo in chatJoinInfoList) {
-                print("***"+chatJoinInfo.joinType);
 
                 switch(chatJoinInfo.joinType) {
                     case "BLE_JOIN": userInfoListBle.add(chatJoinInfo);
                         break;
                     case "BLE_OUT": userInfoListBleOut.add(chatJoinInfo);
                         break;
-                    case "BLE_ONLIN": userInfoListBleOnline.add(chatJoinInfo);
+                    case "ONLINE": userInfoListOnline.add(chatJoinInfo);
                         break;
                 }
             }
@@ -290,7 +288,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                 children: <Widget>[
                                     ChatUserList(userInfoList: userInfoListBle, joinType: "BLE_JOIN", hostIdx: chatInfo.createUserIdx),
                                     ChatUserList(userInfoList: userInfoListBleOut, joinType: "BLE_OUT", hostIdx: chatInfo.createUserIdx),
-                                    ChatUserList(userInfoList: userInfoListBleOnline, joinType: "ONLINE", hostIdx: chatInfo.createUserIdx),
+                                    ChatUserList(userInfoList: userInfoListOnline, joinType: "ONLINE", hostIdx: chatInfo.createUserIdx),
                                 ],
                             ),
                         ),

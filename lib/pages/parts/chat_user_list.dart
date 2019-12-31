@@ -195,7 +195,7 @@ class BuildUserInfo extends StatelessWidget {
                                                     left: ScreenUtil().setWidth(10.5)
                                                 ),
                                                 child: Text(
-                                                    userInfo.userIdx.toString(),
+                                                    userInfo.userNick,
                                                     style: TextStyle(
                                                         height: 1,
                                                         fontSize: ScreenUtil().setSp(13),
