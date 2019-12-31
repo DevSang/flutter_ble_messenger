@@ -112,7 +112,7 @@ class ChatScreenState extends State<ChatroomPage> {
         connectStomp();
 
         disable = widget.disable ?? false;
-        
+
         isReceived = false;
 
         focusNode.addListener(onFocusChange);

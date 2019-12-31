@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
+import 'package:Hwa/data/models/trend_chat_list_item.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
 import 'package:Hwa/pages/parts/loading.dart';
 import 'package:Hwa/service/get_time_difference.dart';
@@ -23,8 +24,8 @@ class _TrendPageState extends State<TrendPage> {
   double sameSize;
   bool isLoading;
 
-  List<ChatListItem> trendChatList = <ChatListItem>[];
-  List<ChatListItem> topTrendChatList = <ChatListItem>[];
+  List<TrendChatListItem> trendChatList = <TrendChatListItem>[];
+  List<TrendChatListItem> topTrendChatList = <TrendChatListItem>[];
 
   @override
   void initState() {
@@ -49,14 +50,14 @@ class _TrendPageState extends State<TrendPage> {
           String uri = "/danhwa/trend";
 
           final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
-          ChatListItem chatInfo;
+          TrendChatListItem chatInfo;
           Map<String, dynamic> jsonParse;
           List<dynamic> jsonParseList = json.decode(response.body);
 
           for (var index = jsonParseList.length; index > 0; index--) {
 
               print(index.toString() + "##############" + jsonParseList[index - 1].toString());
-              chatInfo = new ChatListItem.fromJSON(jsonParseList[index - 1]);
+              chatInfo = new TrendChatListItem.fromJSON(jsonParseList[index - 1]);
 
               if (topTrendChatList.length < 2) {
                   // 채팅 리스트에 추가
@@ -114,6 +115,11 @@ class _TrendPageState extends State<TrendPage> {
           bool isLiked = chatInfoJson['isLiked'];
           int likeCount = chatInfoJson['danhwaLikeCount'];
           bool alreadyJoined = chatInfoJson['alreadyJoin'];
+          String myJoinType;
+
+          if (alreadyJoined) {
+              myJoinType = chatInfoJson['myJoinType'];
+          }
 
           try {
               for (var joinInfo in chatInfoJson['joinList']) {
@@ -129,7 +135,7 @@ class _TrendPageState extends State<TrendPage> {
 
           Navigator.push(context,
               MaterialPageRoute(builder: (context) {
-                  return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "Trend", disable: alreadyJoined);
+                  return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "Trend", disable: (!alreadyJoined || myJoinType == "ONLINE"));
               })
           );
 
@@ -358,7 +364,7 @@ class _TrendPageState extends State<TrendPage> {
         );
     }
 
-    Widget topChatItem(ChatListItem trendChatInfo, bool isFirst) {
+    Widget topChatItem(TrendChatListItem trendChatInfo, bool isFirst) {
         return Container(
             width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5) + sameSize*8,
             height: ScreenUtil().setHeight(190) + sameSize*8,
@@ -455,7 +461,7 @@ class _TrendPageState extends State<TrendPage> {
                                                 child: Row(
                                                     children:<Widget>[
                                                         getCount(trendChatInfo.userCount.total, true),
-                                                        getCount(120, false)
+                                                        getCount(trendChatInfo.likeCount, false)
                                                     ]
                                                 ),
                                             )
@@ -527,7 +533,7 @@ class _TrendPageState extends State<TrendPage> {
                           left: ScreenUtil().setWidth(4.5),
                       ),
                       child: Text(
-                          (value ?? 0).toString(),
+                          value.toString(),
                           style: TextStyle(
                               fontFamily: "NanumSquare",
                               fontWeight: FontWeight.w500,
@@ -554,7 +560,7 @@ class _TrendPageState extends State<TrendPage> {
         );
     }
 
-    Widget buildChatItem(ChatListItem trendChatInfo, int index) {
+    Widget buildChatItem(TrendChatListItem trendChatInfo, int index) {
         return InkWell(
             child: Container(
                 height: ScreenUtil().setHeight(81),
@@ -764,7 +770,7 @@ class _TrendPageState extends State<TrendPage> {
                                     ),
                                     Container(
                                         child: Text(
-                                            index.toString(),
+                                            trendChatInfo.likeCount.toString(),
                                             style: TextStyle(
                                                 fontFamily: "NanumSquare",
                                                 fontWeight: FontWeight.w500,
