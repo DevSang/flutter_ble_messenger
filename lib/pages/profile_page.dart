@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
+import 'package:Hwa/utility/custom_switch.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -203,6 +204,12 @@ class _ProfilePageState extends State <ProfilePage>{
                                   children: <Widget>[
                                       Text("푸쉬 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
 
+                                    CustomSwitch(
+                                      onChanged: _onSwitchChanged,
+                                      value: true,
+                                      activeColor: Color.fromRGBO(77, 96, 191, 1)
+                                    )
+
                                   ],
                               )
                           ),
@@ -220,6 +227,11 @@ class _ProfilePageState extends State <ProfilePage>{
                                   children: <Widget>[
                                       Text("친구 허용 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
 
+                                    CustomSwitch(
+                                        onChanged: _onSwitchChanged,
+                                        value: true,
+                                        activeColor: Color.fromRGBO(77, 96, 191, 1)
+                                    )
                                   ],
                               )
                           ),
@@ -232,6 +244,10 @@ class _ProfilePageState extends State <ProfilePage>{
 
       );
   }
+
+  void _onSwitchChanged(bool value) {
+  }
+
 
   Widget _accountSetting(BuildContext context){
       return Container(
