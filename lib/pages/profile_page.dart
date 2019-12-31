@@ -139,20 +139,25 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Text("프로필",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
                           ),
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
+                              border: Border(
+                                  bottom: BorderSide(
+                                      width: ScreenUtil().setWidth(1),
+                                      color: Color.fromRGBO(39, 39, 39, 1)
+                                  )),
                                   color: Color.fromRGBO(255, 255, 255, 1),
                               ),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
 
+                                children: <Widget>[
                                   Container(
                                     child: Row(
-                                      children: <Widget>[
-                                  Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                        children: <Widget>[
+                                    Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
                                         fontWeight: FontWeight.w500,
                                       )
                                   ),
@@ -162,8 +167,10 @@ class _ProfilePageState extends State <ProfilePage>{
 
 
                                   Container(
+
                                       child: Row(
                                           children: <Widget>[
+
                                             Text("강희근", style: TextStyle(fontSize: 15,fontFamily: "NotoSans", color: Color.fromRGBO(107, 107, 107, 1))),
                                             IconButton(
                                               icon: Image.asset("assets/images/icon/iconMore.png"),
@@ -188,8 +195,12 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                     Text("한 줄 소개", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
-                                        fontWeight: FontWeight.w500,
+                                     Text("한 줄 소개", style: TextStyle(
+                                     height: 1,
+                                       letterSpacing: ScreenUtil.getInstance().setWidth(-0.75),
+                                       fontFamily: "NotoSans",
+                                       color: Color.fromRGBO(39, 39, 39, 1),
+                                       fontWeight: FontWeight.w500,
                                       )),
                                   Container(
                                       child: Row(
