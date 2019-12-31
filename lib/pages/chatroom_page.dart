@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:collection';
 
 import 'package:Hwa/data/models/chat_join_info.dart';
+import 'package:Hwa/pages/parts/loading.dart';
 import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
@@ -42,8 +43,9 @@ class ChatroomPage extends StatefulWidget {
     final bool isLiked;
     final int likeCount;
     final List<ChatJoinInfo> joinInfo;
+    final bool isFromMain;
 
-    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo}) : super(key: key);
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.isFromMain}) : super(key: key);
 
 
     @override
@@ -365,8 +367,17 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     void popPage() async {
+        setState(() {
+            isLoading = true;
+        });
+
 	    advertising = false;
 	    await HwaBeacon().stopAdvertising();
+
+        setState(() {
+            isLoading = false;
+        });
+
 	    Navigator.of(context).pop();
     }
 
@@ -422,7 +433,9 @@ class ChatScreenState extends State<ChatroomPage> {
                 brightness: Brightness.light,
             ),
             endDrawer: SafeArea(
-                child: new ChatSideMenu(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s)
+                child: new ChatSideMenu(
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s, isFromMain: widget.isFromMain
+                )
             ),
             body: GestureDetector(
                 child: WillPopScope(
@@ -457,7 +470,7 @@ class ChatScreenState extends State<ChatroomPage> {
                             openedNf ? buildNoticeOpen() : buildNotice(),
 
                             // Loading
-                            buildLoading()
+                            isLoading ? Loading() : Container()
                         ],
                     ),
                     onWillPop: onBackPress,
@@ -466,19 +479,6 @@ class ChatScreenState extends State<ChatroomPage> {
                     FocusScope.of(context).requestFocus(focusNode);
                 },
             )
-        );
-    }
-
-    Widget buildLoading() {
-        return Positioned(
-            child: isLoading
-                ? Container(
-                child: Center(
-                    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
-                ),
-                color: Colors.white.withOpacity(0.8),
-            )
-                : Container(),
         );
     }
 

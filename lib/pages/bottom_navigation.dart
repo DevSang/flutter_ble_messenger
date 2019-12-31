@@ -9,22 +9,33 @@ import 'package:Hwa/pages/tab/test_tab.dart';
 //바텀 네비게이션 바
 
 class BottomNavigation extends StatefulWidget {
+    final int activeIndex;
+    BottomNavigation({Key key,this.activeIndex}) : super(key: key);
+
   @override
   _BottomNavigationState createState() => new _BottomNavigationState();
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
   final List<Widget> list = <Widget>[];
-  int _currentIndex = 0;
+  int _currentIndex;
+  final GlobalKey<_BottomNavigationState> bottomNav = new GlobalKey<_BottomNavigationState>();
+
   @override
   void initState() {
+      _currentIndex = widget.activeIndex ?? 0;
+
     list
       ..add(HwaTab())
       ..add(FriendTab())
       ..add(ChatTab());
 
+
     super.initState();
 }
+
+
+
   @override
   Widget build(BuildContext context) {
 //      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -80,4 +91,5 @@ class _BottomNavigationState extends State<BottomNavigation> {
           )
       );
   }
+
 }

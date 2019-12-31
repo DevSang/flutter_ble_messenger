@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/utility/custom_switch.dart';
 
 
@@ -69,48 +70,56 @@ class _ProfilePageState extends State <ProfilePage>{
 
   Widget _profileImageSection(BuildContext context){
       return Container(
-
-          padding: EdgeInsets.only(top: 50.0),
-          width: MediaQuery.of(context).size.width,
-          height: 200,
+        width: ScreenUtil().setWidth(375),
+        height: ScreenUtil().setHeight(177),
           decoration: BoxDecoration(
               color: Color.fromRGBO(178, 178, 178, 1),
           ),
-          child: Stack(children: <Widget>[
-              Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                      Container(
-                          width: 100.0,
-                          height: 100.0,
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                  image: ExactAssetImage(
-                                      'assets/images/logo.png'),
-                                  fit: BoxFit.cover,
-                              )
-                          ),
-                          padding: EdgeInsets.only(top: 60.0, left: 50.0),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                  CircleAvatar(
-                                      backgroundColor: Color.fromRGBO(77, 96, 191, 1),
-                                      radius: 25.0,
-                                      child: Icon(
-                                          Icons.camera_alt,
-                                          color: Colors.white,
-                                      ),
-                                  )
-                              ],
-                          ),
-                      ),
+        child: Stack(
+          children: <Widget>[
+            InkWell(
+              child: Center(
+                child: Container(
+                  width: ScreenUtil().setWidth(90),
+                  height: ScreenUtil().setHeight(90),
+                  margin: EdgeInsets.only(
+                    top: ScreenUtil().setHeight(41),
+                    bottom: ScreenUtil().setHeight(46),
+                  ),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: ExactAssetImage('assets/images/logo.png'),
+                      fit: BoxFit.cover
+                    )
+                  ),
 
-                  ],
-              )
-          ],),
+                ),
+              ),
+              onTap: () {
+              },
+            ),
+            Positioned(
+                bottom: ScreenUtil().setHeight(41),
+                left: ScreenUtil().setWidth(206),
+                child: InkWell(
+                    child: Container(
+                        width: ScreenUtil().setWidth(32),
+                        height: ScreenUtil().setHeight(32),
+                        decoration: BoxDecoration(
+                            color: Color.fromRGBO(77, 96, 191, 1),
+                            image: DecorationImage(
+                                image:AssetImage("assets/images/icon/iconAttachCamera.png")
+                            ),
+                            shape: BoxShape.circle
+                        )
+                    ),
+                    onTap:(){
+                    }
+                )
+            )
+          ],
+        ),
       );
   }
 
@@ -121,11 +130,11 @@ class _ProfilePageState extends State <ProfilePage>{
                   Column(
                       children: <Widget>[
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
                               width: MediaQuery.of(context).size.width,
                               height: 30.0,
                               decoration: BoxDecoration(
-                                  color: Color.fromRGBO(214, 214, 214, 1),
+                                color: Color.fromRGBO(214, 214, 214, 1),
                               ),
                               child: Text("프로필",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
                           ),
@@ -139,17 +148,38 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                      Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
 
-                                      InkWell(
-                                          child: Text("강희근", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+                                  Container(
+                                    child: Row(
+                                      children: <Widget>[
+                                  Text("사용자 이름", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                        fontWeight: FontWeight.w500,
                                       )
+                                  ),
+                                      ]
+                                    )
+                                  ),
+
+
+                                  Container(
+                                      child: Row(
+                                          children: <Widget>[
+                                            Text("강희근", style: TextStyle(fontSize: 15,fontFamily: "NotoSans", color: Color.fromRGBO(107, 107, 107, 1))),
+                                            IconButton(
+                                              icon: Image.asset("assets/images/icon/iconMore.png"),
+                                              onPressed: (){},
+                                            )
+                                          ]
+                                      )
+                                  ),
+
+
                                   ],
                               )
                           ),
 
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
@@ -158,16 +188,77 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                      Text("한 줄 소개", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
-
-                                      InkWell(
-                                          child: Text("안녕하세요 강희근입니다.", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+                                     Text("한 줄 소개", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                        fontWeight: FontWeight.w500,
+                                      )),
+                                  Container(
+                                      child: Row(
+                                          children: <Widget>[
+                                             InkWell(child: Text("안녕하세요 강희근입니다.", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(107, 107, 107, 1)))),
+                                            IconButton(
+                                              icon: Image.asset("assets/images/icon/iconMore.png"),
+                                              onPressed: (){},
+                                            )
+                                          ]
                                       )
+                                  ),
                                   ],
                               )
                           ),
 
-//작업중
+
+                        Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                            width: MediaQuery.of(context).size.width,
+                            height: 50.0,
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(255, 255, 255, 1),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text("연락처", style: TextStyle(fontSize: 15,fontFamily: "NotoSans", color: Color.fromRGBO(39, 39, 39, 1),
+                                  fontWeight: FontWeight.w500,
+                                )),
+                                Container(
+                                    child: Row(
+                                        children: <Widget>[
+                                          InkWell(
+                                            child: Text("010-1234-5678", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(107, 107, 107, 1)))),
+                                          IconButton(
+                                            icon: Image.asset("assets/images/icon/iconMore.png"),
+                                            onPressed: (){},
+                                          )
+                                        ]
+                                    )
+                                ),
+                              ],
+                            )
+                        ),
+
+
+                        Container(
+                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                            width: MediaQuery.of(context).size.width,
+                            height: 50.0,
+                            decoration: BoxDecoration(
+                              color: Color.fromRGBO(255, 255, 255, 1),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text("명함 관리", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                  fontWeight: FontWeight.w500,
+                                )),
+
+                                IconButton(
+                                  icon: Image.asset("assets/images/icon/iconMore.png"),
+                                  onPressed: (){},
+                                )
+                              ],
+                            )
+                        ),
+
 
                       ]
                   ),
@@ -186,7 +277,7 @@ class _ProfilePageState extends State <ProfilePage>{
                   Column(
                       children: <Widget>[
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
                               width: MediaQuery.of(context).size.width,
                               height: 30.0,
                               decoration: BoxDecoration(
@@ -196,7 +287,7 @@ class _ProfilePageState extends State <ProfilePage>{
                           ),
 
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
@@ -205,7 +296,9 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                      Text("푸쉬 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+                                      Text("푸쉬 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                        fontWeight: FontWeight.w500,
+                                      )),
                                   CustomSwitch(
                                       onChanged: _onSwitchChanged,
                                       value: true,
@@ -218,7 +311,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
 
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
@@ -227,7 +320,9 @@ class _ProfilePageState extends State <ProfilePage>{
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
-                                      Text("친구 허용 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans")),
+                                      Text("친구 허용 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                        fontWeight: FontWeight.w500,
+                                      )),
                                   CustomSwitch(
                                         onChanged: _onSwitchChanged,
                                         value: true,
@@ -255,7 +350,7 @@ class _ProfilePageState extends State <ProfilePage>{
                   Column(
                       children: <Widget>[
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
                               width: MediaQuery.of(context).size.width,
                               height: 30.0,
                               decoration: BoxDecoration(
@@ -266,7 +361,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
                           InkWell(
                               child:Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                                  padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
                                   width: MediaQuery.of(context).size.width,
                                   height: 50.0,
                                   decoration: BoxDecoration(
@@ -275,7 +370,9 @@ class _ProfilePageState extends State <ProfilePage>{
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                          InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans"))),
+                                          InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                            fontWeight: FontWeight.w500,
+                                          ))),
                                         IconButton(
                                           icon: Image.asset("assets/images/icon/iconMore.png"),
                                           onPressed: (){
@@ -295,7 +392,8 @@ class _ProfilePageState extends State <ProfilePage>{
                           ),
 
                           Container(
-                              padding: EdgeInsets.symmetric(horizontal: 15.0,vertical: 10.0),
+                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
+
                               width: MediaQuery.of(context).size.width,
                               height: 50.0,
                               decoration: BoxDecoration(
@@ -305,7 +403,9 @@ class _ProfilePageState extends State <ProfilePage>{
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                       InkWell(
-                                          child: Text("탈퇴하기", style: TextStyle(fontSize: 15,fontFamily: "NotoSans"))),
+                                          child: Text("탈퇴하기", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
+                                            fontWeight: FontWeight.w500,
+                                          ))),
                                     IconButton(
                                       icon: Image.asset("assets/images/icon/iconMore.png"),
                                       onPressed: (){},
