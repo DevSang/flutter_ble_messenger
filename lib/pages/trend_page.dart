@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:Hwa/utility/get_same_size.dart';
@@ -10,6 +11,8 @@ class TrendPage extends StatefulWidget {
 class _TrendPageState extends State<TrendPage> {
   bool showSearch;
   double sameSize;
+
+  List<int> chatIndex = [298,56,24,8,10,298,12,2];
 
   @override
   void initState() {
@@ -23,7 +26,7 @@ class _TrendPageState extends State<TrendPage> {
     return Scaffold(
         appBar: AppBar(
             centerTitle: true,
-            backgroundColor: Colors.white,
+            backgroundColor: Color.fromRGBO(255, 255, 255, 1),
             title: Text(
               "실시간 단화 트랜드",
               style: TextStyle(
@@ -46,7 +49,9 @@ class _TrendPageState extends State<TrendPage> {
                     });
                 },
               )
-            ]),
+            ],
+            elevation: 0.0,
+        ),
         body: Stack(
             children: <Widget>[
                 Positioned(
@@ -66,23 +71,17 @@ class _TrendPageState extends State<TrendPage> {
                 Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                        Container(
-                            child: Column(
-                                children: <Widget>[
-                                    // 검색 영역
-                                    showSearch ? _searchTrend() : Container(),
+                        // 검색 영역
+                        showSearch ? _searchTrend() : Container(),
 
-                                    // 상단 탭 영역
-                                    trendHeader(),
+                        // 상단 탭 영역
+                        trendHeader(),
 
-                                    // 상단 Top2 영역
-                                    topChat(),
+                        // 상단 Top2 영역
+                        topChat(),
 
-                                    // 하단 단화 리스트
-                                    chatList()
-                                ],
-                            ),
-                        )
+                        // 하단 단화 리스트
+                        chatList()
                     ],
                 ),
             ],
@@ -415,24 +414,23 @@ class _TrendPageState extends State<TrendPage> {
 
     Widget chatList() {
         return Container(
-        //          child: Flexible(
-        //              child: ListView.builder(
-        //                  itemCount: 4,
-        //
-        //                  itemBuilder: (BuildContext context, int index) => buildChatItem()
-        //              )
-        //          )
-            child: buildChatItem()
+            child: Flexible(
+                child: ListView.builder(
+                    scrollDirection: Axis.vertical,
+                    itemCount: chatIndex.length,
+                    itemBuilder: (BuildContext context, int index) => buildChatItem(index)
+                )
+            )
         );
     }
 
-    Widget buildChatItem() {
+    Widget buildChatItem(int index) {
         return InkWell(
             child: Container(
                 height: ScreenUtil().setHeight(81),
                 width: ScreenUtil().setWidth(359),
                 margin: EdgeInsets.only(
-                    left:ScreenUtil().setHeight(16),
+                    left:ScreenUtil().setWidth(16),
                 ),
                 padding: EdgeInsets.symmetric(
                     vertical: (ScreenUtil().setHeight(81) - sameSize*50)/2
@@ -440,7 +438,7 @@ class _TrendPageState extends State<TrendPage> {
                 child: Row(
                     children: <Widget>[
                         Container(
-                            width: sameSize*75,
+                            width:  ScreenUtil().setWidth(89),
                             height: ScreenUtil().setHeight(81),
                             child: Stack(
                                 children: <Widget>[
@@ -458,7 +456,7 @@ class _TrendPageState extends State<TrendPage> {
                                             ),
                                         ),
                                         margin: EdgeInsets.only(
-                                            left: ScreenUtil().setWidth(13.2),
+                                            left: sameSize*25,
                                         ),
                                         child: ClipRRect(
                                             borderRadius: new BorderRadius.circular(
@@ -473,15 +471,43 @@ class _TrendPageState extends State<TrendPage> {
                                             ),
                                         )
                                     ),
+                                    Positioned(
+                                        top:  sameSize*10,
+                                        left: 0,
+                                        child: Container(
+                                            width: sameSize*29,
+                                            height: sameSize*29,
+                                            child: Center(
+                                                child: Text(
+                                                    (index + 3).toString(),
+                                                    style: TextStyle(
+                                                        fontFamily: "NanumSquare",
+                                                        fontWeight: FontWeight.w500,
+                                                        fontSize: ScreenUtil().setSp(13),
+                                                        letterSpacing: ScreenUtil().setWidth(-0.32),
+                                                        color: Color.fromRGBO(255, 255, 255, 1)
+                                                    ),
+                                                ),
+                                            ),
+                                            decoration: BoxDecoration(
+                                                color: Color.fromRGBO(77, 96, 191, 1),
+                                                borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setWidth(8))),
+                                                boxShadow: [
+                                                    new BoxShadow(
+                                                        color: Color.fromRGBO(39, 39, 39, 0.2),
+                                                        offset: new Offset(ScreenUtil().setWidth(0),ScreenUtil().setWidth(5)),
+                                                        blurRadius: ScreenUtil().setWidth(5)
+                                                    )
+                                                ]
+                                            ),
+                                        ),
+                                    )
                                 ],
                             )
                         ),
                         // 단화방 정보
                         Container(
                             width: ScreenUtil().setWidth(205),
-                            margin: EdgeInsets.only(
-                                left: ScreenUtil().setHeight(14.5),
-                            ),
                             padding: EdgeInsets.only(
                                 top: sameSize * 5,
                                 bottom: sameSize * 2,
@@ -584,14 +610,47 @@ class _TrendPageState extends State<TrendPage> {
                                                         ),
                                                     ),
                                                 ),
-                                                Container(
-
-                                                )
                                             ],
                                         )
                                     )
                                 ],
                             ),
+                        ),
+                        // 좋아요
+                        Container(
+                            width: ScreenUtil().setWidth(65),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                    Container(
+                                        width: sameSize*20,
+                                        height: sameSize*20,
+                                        margin: EdgeInsets.only(
+                                            bottom: sameSize*2.5
+                                        ),
+                                        decoration: BoxDecoration(
+                                            image: DecorationImage(
+                                                image:AssetImage(
+                                                    "assets/images/icon/iconLikeCount.png"
+                                                ),
+                                                fit: BoxFit.cover
+                                            ),
+                                        ),
+                                    ),
+                                    Container(
+                                        child: Text(
+                                            index.toString(),
+                                            style: TextStyle(
+                                                fontFamily: "NanumSquare",
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: ScreenUtil().setSp(13),
+                                                letterSpacing: ScreenUtil().setWidth(-0.32),
+                                                color: Color.fromRGBO(107, 107, 107, 1)
+                                            ),
+                                        ),
+                                    ),
+                                ],
+                            )
                         )
                     ],
                 )
