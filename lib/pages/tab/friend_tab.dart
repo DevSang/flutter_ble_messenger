@@ -331,7 +331,7 @@ class _FriendTabState extends State<FriendTab> {
                 children: <Widget>[
                     Container(
                         width: ScreenUtil().setWidth(375),
-                        height: ScreenUtil().setHeight(25),
+                        height: ScreenUtil().setHeight(32),
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(214, 214, 214, 1),
                         ),
@@ -344,7 +344,7 @@ class _FriendTabState extends State<FriendTab> {
                                 title,
                                 style: TextStyle(
                                     fontFamily: "NotoSans",
-                                    fontWeight: FontWeight.w400,
+                                    fontWeight: FontWeight.w600,
                                     fontSize: ScreenUtil().setSp(13),
                                     letterSpacing: ScreenUtil().setWidth(-0.65),
                                     color: Color.fromRGBO(39, 39, 39, 1),
@@ -352,14 +352,22 @@ class _FriendTabState extends State<FriendTab> {
                             )
                         )
                     ),
-                    ListView.builder(
-                        physics: new NeverScrollableScrollPhysics(),
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemCount: friendInfoList.length,
+                    friendInfoList.length > 0
+                        ? ListView.builder(
+                            physics: new NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: friendInfoList.length,
 
-                        itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], isFriend, index == friendInfoList.length - 1, index)
-                    )
+                            itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], isFriend, index == friendInfoList.length - 1, index)
+                        )
+                        : Container(
+                            height: ScreenUtil().setHeight(1),
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(255, 255, 255, 1),
+                            ),
+                        )
+
                 ],
             ),
         );
