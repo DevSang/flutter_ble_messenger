@@ -88,7 +88,6 @@ class _ChatTabState extends State<ChatTab> {
         });
 
         try {
-          /// 참여 타입 수정
             String uri =
               "/danhwa/roomDetail?roomIdx=" + chatIdx.toString();
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
@@ -114,8 +113,12 @@ class _ChatTabState extends State<ChatTab> {
             bool isLiked = chatInfoJson['isLiked'];
             int likeCount = chatInfoJson['danhwaLikeCount'];
 
+            for (var joinInfo in chatInfoJson['joinList']) {
+                chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
+            }
+
             setState(() {
-            isLoading = false;
+                isLoading = false;
             });
 
             Navigator.push(context, MaterialPageRoute(builder: (context) {
