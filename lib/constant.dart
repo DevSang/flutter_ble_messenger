@@ -11,6 +11,8 @@ class Constant {
     static String PROFILE_IMG_URI;
 
     static bool IS_CHANGE_PROFILE_IMG = false;
+    static bool APP_BAR_LOADING_COMPLETE = false;
+    static bool APP_BAR_LOADING_ERROR = false;
 
     static setUserIdx () async {
         var spf = await SharedPreferences.getInstance();
