@@ -12,26 +12,37 @@ class BottomNavigation extends StatefulWidget {
     final int activeIndex;
     BottomNavigation({Key key,this.activeIndex}) : super(key: key);
 
-  @override
-  _BottomNavigationState createState() => new _BottomNavigationState();
+    @override
+    _BottomNavigationState createState() => new _BottomNavigationState();
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  final List<Widget> list = <Widget>[];
-  int _currentIndex;
+    final List<Widget> list = <Widget>[];
+    int _currentIndex;
 
-  @override
-  void initState() {
-      _currentIndex = widget.activeIndex ?? 0;
+    @override
+    void initState() {
+        _currentIndex = widget.activeIndex ?? 0;
 
-    list
-      ..add(HwaTab())
-      ..add(FriendTab())
-      ..add(ChatTab());
+        list
+            ..add(HwaTab())
+            ..add(FriendTab())
+            ..add(new ChatTab( setCurrentIndex:setCurrentIndex));
 
 
-    super.initState();
-}
+        super.initState();
+    }
+
+    /*
+    * @author : sh
+    * @date : 2020-01-01
+    * @description : bottom navigation
+    */
+    setCurrentIndex(int index) {
+        setState(() {
+            _currentIndex = index;
+        });
+    }
 
 
 

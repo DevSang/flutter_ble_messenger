@@ -639,7 +639,7 @@ class _HwaTabState extends State<HwaTab> {
     /*
     * @author : sh
     * @date : 2019-12-31
-    * @description : 메인페이지 상황별 페이지 반
+    * @description : 메인페이지 상황별 페이지 반환
     */
     Widget setScreen () {
         if(chatList.length != 0) {
@@ -920,13 +920,15 @@ class _HwaTabState extends State<HwaTab> {
                     right:ScreenUtil().setHeight(16),
                 ),
                 decoration: BoxDecoration(
+                    color:Color.fromRGBO(250, 250, 250, 1),
                     borderRadius: BorderRadius.all(
                         Radius.circular(10.0)
                     ),
                     boxShadow: [
                         new BoxShadow(
                             color: Color.fromRGBO(0, 0, 0, 0.1),
-                            offset: new Offset(ScreenUtil().setWidth(0),
+                            offset: new Offset(
+                                ScreenUtil().setWidth(0),
                                 ScreenUtil().setWidth(5)),
                             blurRadius: ScreenUtil().setWidth(10)
                         )
@@ -947,7 +949,7 @@ class _HwaTabState extends State<HwaTab> {
                                 ),
                                 child:
                                 Image.asset(
-                                    chatListItem.chatImg,
+                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
                                     width: sameSize * 50,
                                     height: sameSize * 50,
                                     fit: BoxFit.cover,
