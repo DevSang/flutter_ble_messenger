@@ -21,7 +21,6 @@ class Constant {
 	    };
     }
 
-
     /// API 관련 변수
     static final String API_SERVER_HTTP = "https://api.hwaya.net";
 

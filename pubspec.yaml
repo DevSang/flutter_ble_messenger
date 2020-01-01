@@ -38,6 +38,7 @@ dependencies:
     lazy_load_scrollview: 1.0.1
     sticky_headers: ^0.1.8+1
     dio: 3.0.8
+    cached_network_image: 2.0.0
 
     #Add by SH
     kvsql: ^0.3.0
