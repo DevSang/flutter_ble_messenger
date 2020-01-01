@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/pages/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
-
+import 'package:Hwa/constant.dart';
 
 /*
  * @project : HWA - Mobile
@@ -108,6 +108,8 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
 
             loginPref.setString('token', token);
             loginPref.setString('userIdx', userIdx.toString());
+            Constant.setUserIdx();
+            Constant.setHeader();
 
             RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
             Navigator.pushNamed(context, '/main');

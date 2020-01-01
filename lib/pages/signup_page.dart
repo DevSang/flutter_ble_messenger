@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/pages/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
-
+import 'package:Hwa/constant.dart';
 
 /*
  * @project : HWA - Mobile
@@ -108,6 +108,8 @@ class _SignUpPageState extends State<SignUpPage>{
 
                         SPF.setString('token', token);
                         SPF.setString('userIdx', userIdx.toString());
+                        Constant.setUserIdx();
+                        Constant.setHeader();
 
                         developer.log('# [Navigator] SignUpPage -> MainPage');
                         RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
