@@ -14,6 +14,13 @@ pubspec.lock
 **/ios/Flutter/flutter_export_environment.sh
 .flutter-plugins-dependencies
 android/app/app.iml
+android/app/src/debug/debug.iml
+android/app/src/debug/gen/com/hsoft/hwa/**
+android/app/src/profile/profile.iml
+android/app/src/main/main.iml
+HWA_MOBILE.iml
+ios/Runner.xcodeproj/project.pbxproj
+
 
 ### Flutter ###
 # Flutter/Dart/Pub related
