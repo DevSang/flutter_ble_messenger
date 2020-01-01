@@ -50,9 +50,9 @@ class _ChatTabState extends State<ChatTab> {
     @override
     void initState() {
 	    super.initState();
+        isLoading = true;
 	    _getChatList();
 	    sameSize = GetSameSize().main();
-	    isLoading = false;
     }
 
     /*
@@ -75,7 +75,9 @@ class _ChatTabState extends State<ChatTab> {
                 chatList.add(chatInfo);
             }
 
-            setState(() {});
+            setState(() {
+                isLoading = false;
+            });
         } catch (e) {
             print("#### Error :: " + e.toString());
         }
@@ -192,7 +194,7 @@ class _ChatTabState extends State<ChatTab> {
                     )
                 ]
             );
-        } else if (chatList.length == 0) {
+        } else if (chatList.length == 0 && isLoading == false) {
             return SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Stack(

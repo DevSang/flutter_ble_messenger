@@ -331,7 +331,7 @@ class _FriendTabState extends State<FriendTab> {
                 children: <Widget>[
                     Container(
                         width: ScreenUtil().setWidth(375),
-                        height: ScreenUtil().setHeight(25),
+                        height: ScreenUtil().setHeight(30),
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(214, 214, 214, 1),
                         ),
@@ -342,9 +342,19 @@ class _FriendTabState extends State<FriendTab> {
                             alignment: Alignment.centerLeft,
                             child: Row(
                                 children: <Widget>[
-                                    title == '친구 목록' ?
-                                        Image.asset('assets/images/icon/iconMasterBadge.png')
-                                        : Image.asset('assets/images/icon/iconAttachMore.png')
+                                    Container(
+                                        width: sameSize*30,
+                                        margin: EdgeInsets.only(
+                                            right: ScreenUtil().setWidth(12)
+                                        ),
+                                        child: Image.asset(
+                                            title == '친구 목록'
+                                                ?'assets/images/icon/iconMasterBadge.png'
+                                                : 'assets/images/icon/iconAttachMore.png'
+                                                ,
+                                            fit: BoxFit.fitWidth,
+                                        )
+                                    )
                                     ,Text(
                                         title,
                                         style: TextStyle(

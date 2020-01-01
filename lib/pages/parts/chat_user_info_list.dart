@@ -108,7 +108,7 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
                                                     left: ScreenUtil().setWidth(10.5)
                                                 ),
                                                 child: Text(
-                                                    userInfo.userNick,
+                                                    userInfo.userNick ?? "",
                                                     style: TextStyle(
                                                         height: 1,
                                                         fontSize: ScreenUtil().setSp(13),

@@ -39,6 +39,10 @@ class MyApp extends StatelessWidget {
         DeviceOrientation.portraitDown,
     ]);
 
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+        statusBarColor: Color.fromRGBO(250, 250, 250, 1),
+    ));
+
 //    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
 //        statusBarColor: Colors.white
 //    ));

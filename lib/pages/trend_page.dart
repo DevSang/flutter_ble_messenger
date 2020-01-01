@@ -125,13 +125,19 @@ class _TrendPageState extends State<TrendPage> {
               myJoinType = chatInfoJson['myJoinType'];
           }
 
+          print(chatInfoJson);
+
+
           try {
               for (var joinInfo in chatInfoJson['joinList']) {
                   chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
+                  print("좀돼라*******" + joinInfo.toString());
               }
           } catch (e) {
               developer.log("#### Error :: "+ e.toString());
           }
+
+          print("wha  _____________"+chatInfoJson.toString());
 
           setState(() {
               isLoading = false;
