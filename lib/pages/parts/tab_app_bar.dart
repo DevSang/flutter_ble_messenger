@@ -53,7 +53,7 @@ class TabAppBarState extends State<TabAppBar> {
 
     void _initState() async {
 	    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER, errorListener: (){
-		    profileImg = AssetImage("assets/images/icon/profile.png");
+		    profileImg = getDefaultAssetProfileImg();
 	    });
     }
 
@@ -66,9 +66,18 @@ class TabAppBarState extends State<TabAppBar> {
 	    if(Constant.IS_CHANGE_PROFILE_IMG){
 		    profileImg.evict();
 		    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER, errorListener: (){
-			    profileImg = AssetImage("assets/images/icon/profile.png");
+			    profileImg = getDefaultAssetProfileImg();
 		    });
 	    }
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-02
+     * @description : 기본 프로파일 이미지 얻기
+     */
+    ImageProvider getDefaultAssetProfileImg(){
+    	return AssetImage("assets/images/icon/profile.png");
     }
 
     /*
