@@ -100,10 +100,10 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     */
     void saveSettingInfo() async {
         try {
-            String uri = "/danhwa/room";
+            String uri = "/danhwa/room/update";
 
             final response = await CallApi.messageApiCall(
-                method: HTTP_METHOD.patch,
+                method: HTTP_METHOD.post,
                 url: uri,
                 data: {
                     "roomIdx" : chatInfo.chatIdx,
