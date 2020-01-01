@@ -48,10 +48,10 @@ class _ProfilePageState extends State <ProfilePage>{
         isLoading = false;
 
         cachedNetworkImage = CachedNetworkImage(
-	        imageUrl: profileImgUri,
-	        placeholder: (context, url) => CircularProgressIndicator(),
-	        errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover),
-	        httpHeaders: Constant.HEADER
+            imageUrl: profileImgUri,
+            placeholder: (context, url) => CircularProgressIndicator(),
+            errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover),
+            httpHeaders: Constant.HEADER
         );
 
         getSettingInfo();

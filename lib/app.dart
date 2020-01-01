@@ -66,6 +66,7 @@ class _MainPageState extends State<MainPage> {
         String token = sharedPreferences.getString("token");
         if(token != '' && token != null){
             getFriendList();
+            getFriendRequestList();
         }
 
     }
@@ -89,7 +90,7 @@ class _MainPageState extends State<MainPage> {
 
                 friendInfoList.add(
                     FriendInfo(
-                        userIdx: friendInfo['userIdx'],
+                        user_idx: friendInfo['user_idx'],
                         nickname: friendInfo['nickname'],
                         phone_number: friendInfo['phone_number'],
                         profile_picture_idx: friendInfo['profile_picture_idx'],
@@ -98,14 +99,53 @@ class _MainPageState extends State<MainPage> {
                     )
                 );
             }
-
-            await store.put<List<dynamic>>("friendList",friendInfoList);
+            Constant.FRIEND_LIST = friendInfoList;
+//            await store.put<List<FriendInfo>>("friendList",friendInfoList);
         } else {
-            await store.put<List<dynamic>>("friendList",[]);
-        }
+            Constant.FRIEND_LIST = [];
 
-        Constant.FRIEND_LIST = friendInfoList;
+//            await store.put<List<FriendInfo>>("friendList",[]);
+        }
     }
+
+    /*
+    * @author : sh
+    * @date : 2019-12-28
+    * @description : 친구요청 목록
+    */
+    getFriendRequestList () async {
+        List<FriendInfo> friendRequestList = <FriendInfo>[];
+
+        String uri = "/api/v2/relation/request/all";
+        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
+
+        if(response.body != null){
+            List<dynamic> friendRequest = jsonDecode(response.body)['data'];
+
+            for(var i = 0; i < friendRequest.length; i++){
+                var friendInfo = friendRequest[i]['jb_request_user_data'];
+
+                friendRequestList.add(
+                    FriendInfo(
+                        user_idx: friendInfo['user_idx'],
+                        nickname: friendInfo['nickname'],
+                        phone_number: friendInfo['phone_number'],
+                        profile_picture_idx: friendInfo['profile_picture_idx'],
+                        business_card_idx: friendInfo['business_card_idx'],
+                        user_status: friendInfo['user_status']
+                    )
+                );
+            }
+            Constant.FRIEND_REQUEST_LIST = friendRequestList;
+
+//            await store.put<List<FriendInfo>>("friendRequestList",friendRequestList);
+        } else {
+            Constant.FRIEND_REQUEST_LIST = [];
+
+//            await store.put<List<FriendInfo>>("friendRequestList",[]);
+        }
+    }
+
     /*
     * @author : sh
     * @date : 2019-12-28

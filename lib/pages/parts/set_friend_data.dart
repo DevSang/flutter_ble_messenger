@@ -8,7 +8,7 @@ class SetFriendsData {
 
         friendInfoList = [
             FriendInfo(
-                userIdx: 1,
+                user_idx: 1,
                 nickname: "강희근",
                 phone_number: "010-1234-5678",
                 profile_picture_idx: null,
@@ -16,7 +16,7 @@ class SetFriendsData {
                 user_status: "",
             ),
             FriendInfo(
-                userIdx: 2,
+                user_idx: 2,
                 nickname: "나영희",
                 phone_number: "010-2156-4375",
                 profile_picture_idx: null,
@@ -24,7 +24,7 @@ class SetFriendsData {
                 user_status: "",
             ),
             FriendInfo(
-                userIdx: 3,
+                user_idx: 3,
                 nickname: "도수정",
                 phone_number: "010-7546-8763",
                 profile_picture_idx: null,

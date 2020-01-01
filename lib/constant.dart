@@ -5,6 +5,7 @@ class Constant {
     //App 관련 변수
     static int USER_IDX;
     static List<FriendInfo> FRIEND_LIST;
+    static List<FriendInfo> FRIEND_REQUEST_LIST;
     static Map<String, String> HEADER;
 
     static setUserIdx () async {
