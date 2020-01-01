@@ -1,3 +1,8 @@
+import 'package:Hwa/pages/parts/loading.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/custom_dialog.dart';
+import 'package:Hwa/utility/custom_switch.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_info.dart';
@@ -23,16 +28,96 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     final ChatInfo chatInfo;
     ChatInfo chatSettingUpdated = new ChatInfo();
 
+    List<String> chatMode = ["누구나 단화", "방장만 공지", "방장과 대화"];
+    List<String> inviteRange = ["좁게", "보통", "넓게"];
+
+    bool isLoading;
+
     @override
     void initState() {
         super.initState();
 
         chatSettingUpdated.chatImg = chatInfo.chatImg;
         chatSettingUpdated.title = chatInfo.title;
-//        chatSettingUpdated.intro = chatSetting.intro;
-//        chatSettingUpdated.isPublic = chatSetting.isPublic;
-//        chatSettingUpdated.inviteRange = chatSetting.inviteRange;
+        chatSettingUpdated.intro = chatInfo.intro;
+        chatSettingUpdated.isPublic = chatInfo.isPublic;
+        chatSettingUpdated.inviteRange = chatInfo.inviteRange;
         chatSettingUpdated.mode = chatInfo.mode;
+
+        isLoading = false;
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-02
+     * @description : get picker value
+    */
+    void getPickerValue(String setType) async {
+        print("??" + setType);
+        int selectedValue = await showModalBottomSheet<int>(
+            context: context,
+            builder: (BuildContext context) {
+                return setType == "mode"
+                    ? _buildBottomPicker(chatSettingUpdated.mode, setType)
+                    : _buildBottomPicker(chatSettingUpdated.inviteRange, setType);
+            },
+        );
+
+        if (selectedValue != null) {
+            setState(() {
+                if (setType == "mode") {
+                    chatSettingUpdated.mode = chatMode[selectedValue];
+                } else {
+                    chatSettingUpdated.inviteRange = selectedValue;
+                }
+            });
+        }
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-02
+     * @description : 설정 저장
+    */
+    void popNav() async {
+        setState(() {
+            isLoading = true;
+        });
+
+        await saveSettingInfo();
+
+        setState(() {
+            isLoading = false;
+        });
+
+        Navigator.of(context).pop();
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-01
+     * @description : 단화 설정 저장
+    */
+    void saveSettingInfo() async {
+        try {
+            String uri = "/danhwa/room/update";
+
+            final response = await CallApi.messageApiCall(
+                method: HTTP_METHOD.post,
+                url: uri,
+                data: {
+                    "roomIdx" : chatInfo.chatIdx,
+                    "title" : chatSettingUpdated.title,
+                    "intro" : chatSettingUpdated.intro,
+                    "isPublic"  : chatSettingUpdated.isPublic,
+                    "inviteRange" : chatSettingUpdated.inviteRange,
+                    "chatMode" : chatSettingUpdated.mode
+                }
+            );
+
+        } catch (e) {
+            print("#### Error :: " + e.toString());
+        }
     }
 
     Widget build(BuildContext context) {
@@ -80,8 +165,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                                 ),
                                             ),
                                             onTap: () {
-                                                // TODO 저장 API
-                                                Navigator.of(context).pop();
+                                                popNav();
                                             },
                                         )
                                     ),
@@ -97,16 +181,24 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     }
 
     Widget buildChatSetting() {
-        return Container(
-          child: Column(
-              children: <Widget>[
-                  buildChatImage(),
+        return
+            Stack(
+                children: <Widget>[
+                    Column(
+                        children: <Widget>[
+                            Flexible(
+                                child: ListView(
+                                    children: <Widget>[
+                                        buildChatImage(),
 
-                  new Expanded(
-                      child: buildChatSettingList()
-                  )
-              ],
-          ),
+                                        buildChatSettingList()
+                                    ]
+                                )
+                            )
+                        ],
+                    ),
+                    isLoading ? Loading() : Container()
+                ]
         );
     }
 
@@ -120,7 +212,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                     InkWell(
                         child: Center(
                             child: Container(
-                                width: ScreenUtil().setWidth(90),
+                                width: ScreenUtil().setHeight(90),
                                 height: ScreenUtil().setHeight(90),
                                 margin: EdgeInsets.only(
                                     top: ScreenUtil().setHeight(42),
@@ -175,16 +267,44 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
         return Container(
             child: Column(
                 children: <Widget>[
-                    buildTextItem('단화방 이름', chatSettingUpdated.title),
-//                    buildTextItem('단화방 소개', chatSettingUpdated.intro),
-//                    buildSwitchItem('온라인 공개', chatSettingUpdated.isPublic),
-//                    buildRangeItem('온라인 공개', chatSettingUpdated.inviteRange),
+
+                    buildTextItem(
+                        '단화방 이름',
+                        chatSettingUpdated.title,
+                        "Dialog"
+                    ),
+
+                    buildTextItem(
+                        '단화방 소개',
+                        chatSettingUpdated.intro  ?? "단화방을 소개해 보세요",
+                        "Dialog"
+                    ),
+
+                    buildSwitchItem(
+                        '온라인 공개',
+                        chatSettingUpdated.isPublic,
+                        (val) => {
+                            print(val)
+                        }
+                    ),
+
+                    buildTextItem(
+                        '초대 범위',
+                        inviteRange[chatSettingUpdated.inviteRange],
+                        "Selector"
+                    ),
+
+                    buildTextItem(
+                        '단화방 모드',
+                        chatSettingUpdated.mode,
+                        "Selector"
+                    ),
                 ],
             ),
         );
     }
 
-    Widget buildTextItem(String title, String value) {
+    Widget buildTextItem(String title, String value, String fn) {
         return Container(
             height: ScreenUtil().setHeight(49),
             padding: EdgeInsets.only(
@@ -213,7 +333,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                             letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
                         )
                     ),
-                    Container(
+                    InkWell(
                         child: Row(
                             children: <Widget>[
                                 Text(
@@ -239,13 +359,36 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                 )
                             ],
                         ),
+                        onTap: () {
+                            fn == "Dialog"
+                                ? showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) => CustomDialog(
+                                        title: title,
+                                        type: 1,
+                                        leftButtonText: "취소",
+                                        rightButtonText: "저장하기",
+                                        value: value
+                                    ),
+                                ).then((onValue) {
+                                    if (onValue != null) {
+                                        setState(() {
+                                            if (title == "단화방 이름")
+                                                chatSettingUpdated.title = onValue;
+                                            else if (title == "단화방 소개")
+                                                chatSettingUpdated.intro = onValue;
+                                        });
+                                    }
+                                })
+                                : getPickerValue(title == "단화방 모드" ? "mode" : "inviteRange");
+                        },
                     )
                 ],
             )
         );
     }
 
-    Widget buildSwitchItem(String title, bool value) {
+    Widget buildSwitchItem(String title, bool value, Function fn) {
         return Container(
             height: ScreenUtil().setHeight(49),
             padding: EdgeInsets.only(
@@ -274,17 +417,21 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                             letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
                         )
                     ),
-                    Expanded(
-                        child: SwitchListTile(
-                            contentPadding: EdgeInsets.symmetric(horizontal: 0),
-                            value: value,
-                            onChanged: (value) {
-                                print(value);
-                                setState(() {
-//                                    chatSettingUpdated.isPublic = value;
-                                });
-                            },
-                        ),
+                    CustomSwitch(
+                        onChanged: (val){
+                            fn(val);
+                        } ,
+                        value: value ?? true,
+                        inactiveColor: Color.fromRGBO(235, 235, 235, 1),
+                        activeColor: Color.fromRGBO(77, 96, 191, 1),
+                        shadow: BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.4),
+                            offset: new Offset(
+                                ScreenUtil().setWidth(0),
+                                ScreenUtil().setWidth(0)
+                            ),
+                            blurRadius: 2
+                        )
                     )
                 ],
             )
@@ -343,4 +490,96 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     Widget buildSelectItem(String title, int value) {
         return Container();
     }
+
+    Widget _buildBottomPicker(dynamic value, String setType) {
+        int _selectedItemIdx;
+        List<String> setTypeList;
+
+        print(setType);
+        print(value);
+
+        if (setType == "mode") {
+            switch(value) {
+                case "누구나 단화" : _selectedItemIdx = 0;
+                break;
+                case "방장만 공지" : _selectedItemIdx = 1;
+                break;
+                case "방장과 대화" :_selectedItemIdx = 2;
+                break;
+            }
+            setTypeList = chatMode;
+        } else {
+            _selectedItemIdx = value;
+            setTypeList = inviteRange;
+        }
+
+        FixedExtentScrollController scrollController = new FixedExtentScrollController(initialItem: _selectedItemIdx);
+
+        return new Container(
+            width: ScreenUtil().setWidth(375),
+            height: ScreenUtil().setHeight(210),
+            child: Column(
+                children: <Widget>[
+                    Container(
+                        height: ScreenUtil().setHeight(40),
+                        width: ScreenUtil().setWidth(375),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: ScreenUtil().setWidth(16),
+                        ),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: <Widget>[
+                                InkWell(
+                                    child: Text(
+                                        '확인',
+                                        style: TextStyle(
+                                            color: Color.fromRGBO(107, 107, 107, 1),
+                                            letterSpacing: ScreenUtil().setWidth(-0.75),
+                                            fontSize: ScreenUtil.getInstance().setSp(15),
+                                            fontFamily: "NotoSans",
+                                            fontWeight: FontWeight.w500
+                                        ),
+                                    ),
+                                    onTap: () {
+                                        Navigator.of(context).pop(_selectedItemIdx);
+                                    },
+                                )
+                            ],
+                        )
+                    ),
+                    Container(
+                        height: ScreenUtil().setHeight(170),
+                        width: ScreenUtil().setWidth(375),
+                        child: GestureDetector(
+                            // Blocks taps from propagating to the modal sheet and popping.
+                            child: new SafeArea(
+                                child: new CupertinoPicker(
+                                    scrollController: scrollController,
+                                    itemExtent: 50,
+                                    backgroundColor: CupertinoColors.white,
+                                    onSelectedItemChanged: (int index) {
+                                        setState(() {
+                                            _selectedItemIdx = index;
+                                        });
+                                    },
+                                    children: List<Widget>.generate(
+                                        setTypeList.length,
+                                        (int index) {
+                                            return Center(
+                                                child: new Text(
+                                                    setTypeList[index]
+                                                ),
+                                            );
+                                        }
+                                    ),
+
+                                ),
+                            ),
+                        )
+                    )
+                ],
+            ),
+        );
+    }
+
 }
