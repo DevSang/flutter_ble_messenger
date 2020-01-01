@@ -1033,7 +1033,7 @@ class _HwaTabState extends State<HwaTab> {
                                                 ),
                                                 Container(
                                                     child: Text(
-                                                        GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime),
+                                                        chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : '메시지 없음',
                                                         style: TextStyle(
                                                             height: 1,
                                                             fontFamily: "NotoSans",

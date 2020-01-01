@@ -391,8 +391,6 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     Widget build(BuildContext context) {
-
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
         return new Scaffold(
             appBar: new AppBar(
                 iconTheme: IconThemeData(
