@@ -300,6 +300,10 @@ class _SignInPageState extends State<SignInPage> {
      */
     @override
     Widget build(BuildContext context) {
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+            statusBarColor: Color.fromRGBO(250, 250, 250, 1)
+        ));
+
         return Scaffold(
             body: new GestureDetector(
                 onTap: (){

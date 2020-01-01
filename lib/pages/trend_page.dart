@@ -479,13 +479,14 @@ class _TrendPageState extends State<TrendPage> {
                                                     width: ScreenUtil().setWidth(151.5),
                                                     margin: EdgeInsets.symmetric(
                                                         horizontal: ScreenUtil().setWidth(15),
-                                                        vertical: ScreenUtil().setWidth(14.5),
+                                                        vertical: sameSize*14.5,
                                                     ),
                                                     child:
                                                     Text(
                                                         trendChatInfo.title.length > 15 ? trendChatInfo.title.substring(0, 15) + "..." : trendChatInfo.title,
                                                         textAlign: TextAlign.left,
                                                         style: TextStyle(
+                                                            height: 1,
                                                             fontFamily: "NotoSans",
                                                             fontWeight: FontWeight.w500,
                                                             fontSize: ScreenUtil().setSp(16),
@@ -560,9 +561,6 @@ class _TrendPageState extends State<TrendPage> {
               margin: EdgeInsets.only(
                   right: isViewCount ? ScreenUtil().setWidth(16.5) : ScreenUtil().setWidth(0)
               ),
-              padding: EdgeInsets.only(
-                  bottom: ScreenUtil().setHeight(4)
-              ),
               child: Row(
                   children: <Widget>[
                       Container(
@@ -588,6 +586,7 @@ class _TrendPageState extends State<TrendPage> {
                           child: Text(
                               isViewCount ? chatList[index].userCount.total.toString() : chatList[index].likeCount.toString(),
                               style: TextStyle(
+                                  height: 1,
                                   fontFamily: "NanumSquare",
                                   fontWeight: FontWeight.w500,
                                   fontSize: ScreenUtil().setSp(13),
