@@ -65,7 +65,7 @@ class _HwaTabState extends State<HwaTab> {
     // GPS 관련
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     Position _currentPosition;
-    String _currentAddress = '위치 검색중..';
+    String _currentAddress = '위치 검색 중..';
 
     // 사용자 GPS, BLE 권한 관련
     bool isAllowedGPS = true;
@@ -504,17 +504,18 @@ class _HwaTabState extends State<HwaTab> {
     void _displayIosDialog(BuildContext context) async {
         return showDialog(
             context: context,
-            child: new CupertinoAlertDialog(
-                title: Text(
-                    '단화 생성하기'
-                ),
-                content: TextField(
-                    keyboardType: TextInputType.multiline,
-                    controller: _textFieldController,
-                    decoration: InputDecoration(
-                        /// GPS 연동
-                        hintText: _currentAddress ?? '단화방 이름을 입력해주세요.'
-                    ),
+
+            builder: (BuildContext context) => new CupertinoAlertDialog(
+                title: new Text("단화 생성하기"),
+
+                content: new CupertinoTextField(
+                    prefix: const Padding(padding: EdgeInsets.symmetric(vertical:10)),
+                    placeholder: '단화방 이름을 입력해주세요.',
+                    controller: _textFieldController = TextEditingController(
+                            text: _currentAddress == '위치 검색 중..' ?
+                                ''
+                                : _currentAddress
+                        ),
                 ),
                 actions: <Widget>[
                     new FlatButton(
@@ -558,7 +559,9 @@ class _HwaTabState extends State<HwaTab> {
                         decoration: InputDecoration(
 
                             /// GPS 연동
-                            hintText: _currentAddress ?? '단화방 이름을 입력해주세요.'
+                            hintText: _currentAddress == '위치 검색 중..' ?
+                            '단화방 이름을 입력해주세요.'
+                            : _currentAddress
                         ),
                         maxLength: 15,
                     ),
