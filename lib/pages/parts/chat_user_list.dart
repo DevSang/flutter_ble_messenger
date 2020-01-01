@@ -1,22 +1,21 @@
 //pub module
-import 'package:Hwa/data/models/chat_join_info.dart';
-import 'package:Hwa/package/fullPhoto.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:configurable_expansion_tile/configurable_expansion_tile.dart';
 import 'dart:async';
 import 'dart:io';
-import 'package:image_picker/image_picker.dart';
 
 //import module
-import 'package:Hwa/data/models/chat_user_info.dart';
-import 'package:Hwa/utility/cached_image_utility.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/data/models/chat_join_info.dart';
+import 'package:Hwa/package/fullPhoto.dart';
+import 'package:Hwa/data/models/UserInfo.dart';
 
 class ChatUserList extends StatefulWidget {
     final List<ChatJoinInfo> userInfoList;
+
     final String joinType;
     final int hostIdx;
 
@@ -42,7 +41,6 @@ class ChatUserListState extends State<ChatUserList> {
 
     double sameSize;
 
-
     @override
     void initState() {
         super.initState();
@@ -50,6 +48,11 @@ class ChatUserListState extends State<ChatUserList> {
         sameSize = GetSameSize().main();
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-01
+    * @description : chat user list build 위젯
+    */
     @override
     Widget build(BuildContext context) {
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
@@ -183,8 +186,8 @@ class BuildUserInfo extends StatelessWidget {
                                             Container(
                                                 child: ClipRRect(
                                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                                    child: Image.asset(
-                                                        "assets/images/icon/profile.png",
+                                                    child: Image.network(
+                                                        Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=SMALL",
                                                         width: ScreenUtil().setWidth(40),
                                                         height: ScreenUtil().setWidth(40),
                                                     )
@@ -281,6 +284,7 @@ class BuildUserInfo extends StatelessWidget {
     );
 
     void _showModalSheet(BuildContext context, ChatJoinInfo userInfo) {
+
         showModalBottomSheet(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -291,7 +295,7 @@ class BuildUserInfo extends StatelessWidget {
             context: context,
             builder: (builder) {
                 return Container(
-                    height: ScreenUtil().setHeight(299),
+                    height: userInfo.userIdx == Constant.USER_IDX ? ScreenUtil().setHeight(200) : ScreenUtil().setHeight(299),
                     decoration: BoxDecoration(
                     ),
                     child: Column(
@@ -331,7 +335,7 @@ class BuildUserInfo extends StatelessWidget {
                                         ),
                                         Container(
                                             child: Text(
-                                                userInfo.userIdx.toString(),
+                                                userInfo.userNick.toString(),
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                     height: 1,
@@ -359,7 +363,7 @@ class BuildUserInfo extends StatelessWidget {
                                 )
                             ),
                             Container(
-                                height: ScreenUtil().setHeight(246),
+                                height: userInfo.userIdx == Constant.USER_IDX ? ScreenUtil().setHeight(148) : ScreenUtil().setHeight(246),
                                 child: Column(
                                     children: <Widget>[
                                         InkWell(
@@ -386,7 +390,7 @@ class BuildUserInfo extends StatelessWidget {
                                             child: Text(
                                                 // TODO: 인삿말 맵핑
 //                                                userInfo.userIntro,
-                                            '안녕하세요! ' + userInfo.userIdx.toString() + "입니다! :)",
+                                            '안녕하세요! ' + userInfo.userNick.toString() + "입니다! :)",
                                                 style: TextStyle(
                                                     height: 1,
                                                     fontSize: ScreenUtil().setSp(13),
@@ -395,7 +399,7 @@ class BuildUserInfo extends StatelessWidget {
                                                 ),
                                             )
                                         ),
-                                        Container(
+                                        userInfo.userIdx == Constant.USER_IDX ? Container() : Container(
                                             width: ScreenUtil().setWidth(359),
                                             padding: EdgeInsets.symmetric(
                                                 horizontal: ScreenUtil().setWidth(8)
@@ -405,19 +409,12 @@ class BuildUserInfo extends StatelessWidget {
                                             ),
                                             child: Row(
                                                 mainAxisAlignment: MainAxisAlignment.center,
-                                                children: <Widget>[
-                                                    // TODO: 친구추가 맵핑
-//                                                    userInfo.addFriend
-//                                                        ? userFunc("assets/images/icon/iconRequest.png", "친구 요청", null)
-//                                                        : Container()
-//                                                    ,
-                                                    userFunc("assets/images/icon/iconRequest.png", "친구 요청", null),
-                                                    userFunc("assets/images/icon/iconDirectChat.png", "1:1 채팅", null),
-                                                    userFunc("assets/images/icon/iconBlock.png", "차단하기", null),
-                                                    hostIdx  == Constant.USER_IDX
-                                                        ? userFunc("assets/images/icon/iconEject.png", "내보내기", null)
-                                                        : Container()
-                                                ],
+                                                children:  <Widget> [
+                                                        userFunc("assets/images/icon/iconRequest.png", "친구 요청", null),
+                                                        userFunc("assets/images/icon/iconDirectChat.png", "1:1 채팅", null),
+                                                        userFunc("assets/images/icon/iconBlock.png", "차단하기", null),
+                                                        hostIdx  == Constant.USER_IDX ? userFunc("assets/images/icon/iconEject.png", "내보내기", null) : Container()
+                                                    ]
                                             ),
                                         )
                                     ],

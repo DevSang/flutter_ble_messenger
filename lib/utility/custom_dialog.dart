@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomDialog extends StatelessWidget {
     final String title, leftButtonText, rightButtonText, hintText, value;
-    final int type;
+    final int type, maxLength;
     final Image image;
     final Function func;
     TextEditingController _textEditingController = TextEditingController();
@@ -19,6 +19,7 @@ class CustomDialog extends StatelessWidget {
         this.value,
         this.func,
         this.image,
+        this.maxLength
     });
 
     @override
@@ -138,7 +139,7 @@ class CustomDialog extends StatelessWidget {
                                                     ),
                                                 ),
                                                 onTap: () {
-                                                    func != null ? func() : Navigator.pop(context, _textEditingController.text);
+                                                    func != null ? func(_textEditingController.text) : Navigator.pop(context, _textEditingController.text);
                                                 },
                                             ),
                                         ],
@@ -198,25 +199,32 @@ class CustomDialog extends StatelessWidget {
                             autofocus: false,
                             onChanged: (String chat){},
                             inputFormatters:[
-                                LengthLimitingTextInputFormatter(18),
+                                LengthLimitingTextInputFormatter(maxLength ?? 18),
                             ]
                         ),
                     ),
                     // Button send message
-                    Container(
-                        width: ScreenUtil().setWidth(15),
-                        height: ScreenUtil().setWidth(15),
-                        margin: EdgeInsets.only(
-                            bottom: ScreenUtil().setHeight(11.5),
-                            top: ScreenUtil().setHeight(12)
-                        ),
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image:AssetImage('assets/images/icon/iconDeleteSmall.png')
+                    InkWell(
+                        child: Container(
+                            width: ScreenUtil().setHeight(15),
+                            height: ScreenUtil().setHeight(15),
+                            margin: EdgeInsets.only(
+                                bottom: ScreenUtil().setHeight(11.5),
+                                top: ScreenUtil().setHeight(12)
                             ),
-                            shape: BoxShape.circle
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image:AssetImage('assets/images/icon/iconDeleteSmall.png'),
+                                    fit: BoxFit.cover
+                                ),
+                                shape: BoxShape.circle
+                            ),
                         ),
-                    ),
+                        onTap: () {
+                            _textEditingController.clear();
+                        },
+                    )
+                    ,
                 ],
             )
         );
