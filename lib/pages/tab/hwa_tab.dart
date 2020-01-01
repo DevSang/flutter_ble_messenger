@@ -639,7 +639,7 @@ class _HwaTabState extends State<HwaTab> {
     /*
     * @author : sh
     * @date : 2019-12-31
-    * @description : 메인페이지 상황별 페이지 반
+    * @description : 메인페이지 상황별 페이지 반환
     */
     Widget setScreen () {
         if(chatList.length != 0) {

@@ -1,7 +1,12 @@
 import 'dart:convert';
 
 import 'dart:developer' as developer;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
@@ -10,17 +15,27 @@ import 'package:Hwa/pages/parts/tab_app_bar.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:Hwa/pages/bottom_navigation.dart';
 
+
+/*
+ * @project : HWA - Mobile
+ * @author : hk
+ * @date : 2019-12-30
+ * @description : Chat page
+ */
 class ChatTab extends StatefulWidget {
-  @override
-  _ChatTabState createState() => _ChatTabState();
+    final Function setCurrentIndex;
+    ChatTab({Key key, @required this.setCurrentIndex});
+
+    @override
+    _ChatTabState createState() => _ChatTabState(setCurrentIndex:setCurrentIndex);
 }
 
 class _ChatTabState extends State<ChatTab> {
+    _ChatTabState({Key key, @required this.setCurrentIndex});
+    final Function setCurrentIndex;
+
     double sameSize;
     SharedPreferences prefs;
 
@@ -32,7 +47,6 @@ class _ChatTabState extends State<ChatTab> {
     void initState() {
 	    super.initState();
 	    _getChatList();
-
 	    sameSize = GetSameSize().main();
 	    isLoading = false;
     }
@@ -43,25 +57,24 @@ class _ChatTabState extends State<ChatTab> {
     * @description : 채팅 리스트 받아오기 API 호출
     */
     void _getChatList() async {
-      try {
-          String uri = "/danhwa/list";
+        try {
+            String uri = "/danhwa/list";
 
-          final response =
-          await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
-          ChatListItem chatInfo;
-          Map<String, dynamic> jsonParse;
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
+            ChatListItem chatInfo;
+            Map<String, dynamic> jsonParse;
 
-          for (var info in json.decode(response.body)) {
-              jsonParse = info;
-              chatInfo = new ChatListItem.fromJSON(jsonParse);
-              // 채팅 리스트에 추가
-              chatList.add(chatInfo);
-          }
+            for (var info in json.decode(response.body)) {
+                jsonParse = info;
+                chatInfo = new ChatListItem.fromJSON(jsonParse);
+                // 채팅 리스트에 추가
+                chatList.add(chatInfo);
+            }
 
-          setState(() {});
-      } catch (e) {
-          print("#### Error :: " + e.toString());
-      }
+            setState(() {});
+        } catch (e) {
+            print("#### Error :: " + e.toString());
+        }
     }
 
     /*
@@ -118,25 +131,163 @@ class _ChatTabState extends State<ChatTab> {
         }
     }
 
+    /*
+     * @author : sh
+     * @date : 2020-01-01
+     * @description : Chat page build 위젯
+    */
     @override
     Widget build(BuildContext context) {
       return Scaffold(
           appBar: TabAppBar(title: '참여했던 단화방', leftChild: Container(height: 0)),
-          body: Container(
-              color: Color.fromRGBO(214, 214, 214, 1),
-              padding: EdgeInsets.symmetric(
-                  horizontal: ScreenUtil().setWidth(16),
-              ),
-              child: Column(
-                  children: <Widget>[
-                      // 채팅 리스트
-                      buildChatList(),
-                  ],
-              ),
-          )
+          body: setScreen()
+//          appBar: TabAppBar(title: '참여했던 단화방', leftChild: Container(height: 0)),
+//          body: Container(
+//              color: Color.fromRGBO(250, 250, 250, 1),
+//              padding: EdgeInsets.symmetric(
+//                  horizontal: ScreenUtil().setWidth(16),
+//              ),
+//              child: Column(
+//                  children: <Widget>[
+//                      // 채팅 리스트
+//                      buildChatList(),
+//                  ],
+//              ),
+//          )
       );
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-01
+    * @description : 참여했던 대화방 상황별 페이지 반환
+    */
+    Widget setScreen () {
+        if(chatList.length != 0) {
+            return Stack(
+                children: <Widget>[
+                    Positioned(
+                        bottom: ScreenUtil().setHeight(74.5),
+                        right: 0,
+                        child: Image.asset(
+                            "assets/images/background/commonBackgroundImg.png"),
+                    ),
+                    Container(
+                        child: Column(
+                            children: <Widget>[
+                                // 채팅 리스트
+                                buildChatList(),
+                            ],
+                        )
+                    )
+                ]
+            );
+        } else if (chatList.length == 0) {
+            return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Stack(
+                    children: <Widget>[
+                        Positioned(
+                            bottom: ScreenUtil().setHeight(50),
+                            child: Image.asset("assets/images/background/noChatackgroundImg.png")
+                        ),
+                        Container(
+                            height: ScreenUtil().setHeight(535),
+                            width: ScreenUtil().setWidth(375),
+                            child: Column(
+                                children: <Widget>[
+                                    Container(
+                                        margin: EdgeInsets.only(
+                                            top: ScreenUtil().setHeight(50+89)
+                                        ),
+                                        child:Text("참여했던 단화방이 없습니다.",
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSans',
+                                                color: Color(0xff272727),
+                                                fontSize: ScreenUtil().setSp(20),
+                                                fontWeight: FontWeight.w600,
+                                                fontStyle: FontStyle.normal,
+                                                letterSpacing: ScreenUtil().setWidth(-1),
+                                            )
+                                        )
+                                    ),
+                                    Container(
+                                        margin: EdgeInsets.only(
+                                            top:ScreenUtil().setHeight(10),
+                                            bottom:ScreenUtil().setHeight(6),
+                                        ),
+                                        child: Text("단화방에 참여해 보실래요?",
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSans',
+                                                color: Color(0xff6b6b6b),
+                                                fontSize: ScreenUtil().setSp(20),
+                                                fontWeight: FontWeight.w400,
+                                                fontStyle: FontStyle.normal,
+                                                letterSpacing: ScreenUtil().setWidth(-1),
+                                            )
+                                        )
+                                    ),
+                                    Container(
+                                        width: ScreenUtil().setWidth(319),
+                                        height: 44.0,
+                                        margin: EdgeInsets.only(top: 10),
+                                        padding: EdgeInsets.symmetric(horizontal: 15.0),
+                                        child: RaisedButton(
+                                            onPressed: (){
+                                                setCurrentIndex(0);
+                                            },
+                                            color: Color.fromRGBO(77, 96, 191, 1),
+                                            elevation: 0.0,
+                                            child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                    Text(
+                                                        "지금 단화방 탐색하기",
+                                                        style: TextStyle(
+                                                            fontFamily: 'NotoSans',
+                                                            color: Colors.white,
+                                                            fontSize: ScreenUtil().setSp(16),
+                                                            fontWeight: FontWeight.w500,
+                                                            letterSpacing: ScreenUtil().setWidth(-0.8),
+                                                        )
+                                                    ),
+                                                    Container(
+                                                        margin: EdgeInsets.only(
+                                                            left: 12
+                                                        ),
+                                                        width: ScreenUtil().setWidth(9),
+                                                        height: ScreenUtil().setHeight(15),
+                                                        decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                                image:AssetImage("assets/images/icon/iconMoreWhite.png"),
+                                                                fit: BoxFit.cover
+                                                            ),
+                                                        ),
+                                                    )
+                                                ],
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(5.0)
+                                            )
+                                        )
+                                    )
+                                ],
+                            )
+                        )
+                    ]
+                )
+            );
+        }
+//        else {
+//            return Loading();
+//        }
+    }
+
+    /*
+    * @author : sh
+    * @date : 2020-01-01
+    * @description : 채팅리스트 위젯
+    */
     Widget buildChatList() {
         return Container(
             child: Flexible(
@@ -149,6 +300,11 @@ class _ChatTabState extends State<ChatTab> {
         );
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-01
+    * @description : 채팅룸 위젯
+    */
     Widget buildChatItem(ChatListItem chatListItem, bool isLastItem) {
         return InkWell(
             child: Container(
