@@ -345,7 +345,7 @@ class _TrendPageState extends State<TrendPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
               headerTab(1),
-              headerTab(2)
+//              headerTab(2)
           ],
         )
     );
