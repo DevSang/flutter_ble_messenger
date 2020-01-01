@@ -28,6 +28,8 @@ import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 
+import 'package:cached_network_image/cached_network_image.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -974,13 +976,19 @@ class _HwaTabState extends State<HwaTab> {
                                     ScreenUtil().setWidth(10)
                                 ),
                                 child:
-                                Image.asset(
-                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-                                    width: sameSize * 50,
-                                    height: sameSize * 50,
-                                    fit: BoxFit.cover,
-                                ),
-                            )
+//	                                Image.asset(
+//	                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
+//	                                    width: sameSize * 50,
+//	                                    height: sameSize * 50,
+//	                                    fit: BoxFit.cover,
+//	                                ),
+		                            CachedNetworkImage(
+				                            imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
+				                            placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+				                            errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+				                            httpHeaders: Constant.HEADER, fit: BoxFit.fill
+		                            )
+	                            )
                         ),
                         // 단화방 정보
                         Container(
