@@ -33,6 +33,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
         super.initState();
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-01
+    * @description : bottom navigation
+    */
     setCurrentIndex(int index) {
         setState(() {
             _currentIndex = index;
