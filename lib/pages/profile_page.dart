@@ -162,6 +162,10 @@ class _ProfilePageState extends State <ProfilePage>{
 	    }
 
 	    if(imageFile != null){
+            setState(() {
+                isLoading = true;
+            });
+
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(url: "/api/v2/user/profile/image", filePath: imageFile.path, onSendProgress: (int sent, int total){
 			    print("$sent : $total");
@@ -178,6 +182,9 @@ class _ProfilePageState extends State <ProfilePage>{
 						    errorWidget: (context, url, error) => Icon(Icons.error),
 						    httpHeaders: Constant.HEADER
 				    );
+
+
+                    isLoading = false;
 			    });
 
 		    } else {

@@ -17,9 +17,6 @@ import 'package:configurable_expansion_tile/configurable_expansion_tile.dart';
 import 'package:Hwa/data/models/chat_user_info.dart';
 
 import 'package:Hwa/pages/parts/chat_user_list.dart';
-import 'package:Hwa/pages/parts/set_user_data.dart';
-import 'package:Hwa/pages/parts/set_user_data_online.dart';
-import 'package:Hwa/pages/parts/set_user_data_view.dart';
 import 'package:Hwa/pages/chatroom_setting.dart';
 
 /*
@@ -394,7 +391,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                             onTap: () {
                                                 Navigator.push(context,
                                                     MaterialPageRoute(builder: (context) {
-                                                        return ChatroomSettingPage(chatIdx: 0);
+                                                        return ChatroomSettingPage(chatInfo: chatInfo);
                                                     })
                                                 );
                                             },

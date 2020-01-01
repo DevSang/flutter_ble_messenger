@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_info.dart';
-import 'package:Hwa/pages/parts/set_chat_setting_data.dart';
 
 /*
  * @project : HWA - Mobile
@@ -10,31 +9,30 @@ import 'package:Hwa/pages/parts/set_chat_setting_data.dart';
  * @description : 채팅 설정 페이지
  */
 class ChatroomSettingPage extends StatefulWidget {
-    final int chatIdx;
+    final ChatInfo chatInfo;
 
-    ChatroomSettingPage({Key key, @required this.chatIdx}) : super(key: key);
+    ChatroomSettingPage({Key key, @required this.chatInfo}) : super(key: key);
 
     @override
-    State createState() => new ChatroomSettingPageState(chatIdx: chatIdx);
+    State createState() => new ChatroomSettingPageState(chatInfo: chatInfo);
 }
 
 class ChatroomSettingPageState extends State<ChatroomSettingPage> {
-    final int chatIdx;
-    ChatroomSettingPageState({Key key, @required this.chatIdx});
+    ChatroomSettingPageState({Key key, @required this.chatInfo});
 
-    ChatInfo chatSetting = new SetChatSettingData().main();
+    final ChatInfo chatInfo;
     ChatInfo chatSettingUpdated = new ChatInfo();
 
     @override
     void initState() {
         super.initState();
 
-        chatSettingUpdated.chatImg = chatSetting.chatImg;
-        chatSettingUpdated.title = chatSetting.title;
+        chatSettingUpdated.chatImg = chatInfo.chatImg;
+        chatSettingUpdated.title = chatInfo.title;
 //        chatSettingUpdated.intro = chatSetting.intro;
 //        chatSettingUpdated.isPublic = chatSetting.isPublic;
 //        chatSettingUpdated.inviteRange = chatSetting.inviteRange;
-        chatSettingUpdated.mode = chatSetting.mode;
+        chatSettingUpdated.mode = chatInfo.mode;
     }
 
     Widget build(BuildContext context) {
@@ -138,7 +136,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                 child: ClipRRect(
                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(22.5)),
                                     child: Image.asset(
-                                        chatSetting.chatImg,
+                                        chatInfo.chatImg,
                                         fit: BoxFit.cover,
                                     )
                                 ),
