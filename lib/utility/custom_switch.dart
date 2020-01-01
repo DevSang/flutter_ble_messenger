@@ -6,7 +6,8 @@ class CustomSwitch extends StatefulWidget {
   final bool value;
   final ValueChanged<bool> onChanged;
   final Color activeColor;
-  final Color inactiveColor = Colors.grey;
+  final Color inactiveColor;
+  final BoxShadow shadow;
 
 
   const CustomSwitch({
@@ -14,8 +15,8 @@ class CustomSwitch extends StatefulWidget {
     this.value,
     this.onChanged,
     this.activeColor,
-//    this.inactiveColor,
-
+    this.inactiveColor,
+    this.shadow
   })
       : super(key: key);
 
@@ -63,7 +64,12 @@ class _CustomSwitchState extends State<CustomSwitch>
                 borderRadius: BorderRadius.circular(20.0),
                 color: _circleAnimation.value == Alignment.centerLeft
                     ? widget.inactiveColor
-                    : widget.activeColor),
+                    : widget.activeColor
+                ,
+                boxShadow: [
+                    widget.shadow
+                ]
+            ),
             child: Padding(
               padding: const EdgeInsets.only(
                   top: 4.0, bottom: 4.0, right: 4.0, left: 4.0),
@@ -81,7 +87,11 @@ class _CustomSwitchState extends State<CustomSwitch>
                       width: 25.0,
                       height: 25.0,
                       decoration: BoxDecoration(
-                          shape: BoxShape.circle, color: Colors.white),
+                          shape: BoxShape.circle, color: Colors.white,
+                          boxShadow: [
+                          widget.shadow
+                          ]
+                      ),
                     ),
                   ),
                   _circleAnimation.value == Alignment.centerLeft

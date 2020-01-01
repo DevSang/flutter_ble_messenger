@@ -33,6 +33,14 @@ class _ProfilePageState extends State <ProfilePage>{
         return;
     }
 
+    /*
+     * @author : hs
+     * @date : 2020-01-01
+     * @description : Switch Change
+    */
+    void _onSwitchChanged(bool value) {
+    }
+
     @override
     Widget build(BuildContext context) {
         return new Scaffold(
@@ -97,21 +105,26 @@ class _ProfilePageState extends State <ProfilePage>{
                       InkWell(
                           child: Center(
                               child: Container(
-                                  width: sameSize*90,
-                                  height: sameSize*90,
+                                  width: ScreenUtil().setHeight(90),
+                                  height: ScreenUtil().setHeight(90),
                                   margin: EdgeInsets.only(
                                       top: ScreenUtil().setHeight(41),
                                       bottom: ScreenUtil().setHeight(46),
                                   ),
                                   decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
-                                          image: ExactAssetImage(
-                                              'assets/images/logo.png'),
-                                          fit: BoxFit.cover
+                                      border: Border.all(
+                                          width: ScreenUtil().setWidth(1),
+                                          color: Color.fromRGBO(0, 0, 0, 0.05)
+                                      ),
+                                      borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
+                                  ),
+                                  child: ClipRRect(
+                                      borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
+                                      child: Image.asset(
+                                          'assets/images/icon/thumbnailUnset1.png',
+                                          fit: BoxFit.cover,
                                       )
                                   ),
-
                               ),
                           ),
                           onTap: () {},
@@ -140,363 +153,200 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget _profileSetting(BuildContext context){
+    Widget _profileSetting(BuildContext context) {
         return Container(
-            child: Stack(
+            child: Column(
                 children: <Widget>[
-                    Column(
-                        children: <Widget>[
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 5.0
-                                ),
-                                width: MediaQuery.of(context).size.width,
-                                height: 30.0,
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(214, 214, 214, 1),
-                                ),
-                                child: Text("프로필", style: TextStyle(
-                                    fontSize: 14, fontFamily: "NotoSans")
-                                ),
-                            ),
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 15.0,
-                                    vertical: 10.0
-                                ),
-                                width: MediaQuery.of(context).size.width,
-                                height: 50.0,
-                                decoration: BoxDecoration(
-                                    border: Border(
-                                        bottom: BorderSide(
-                                            width: ScreenUtil().setWidth(1),
-                                            color: Color.fromRGBO(39, 39, 39, 1)
-                                        )
-                                    ),
-                                    color: Color.fromRGBO(255, 255, 255, 1),
-                                ),
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                        Container(
-                                            child: Row(
-                                                children: <Widget>[
-                                                    Text("사용자 이름",
-                                                        style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontFamily: "NotoSans",
-                                                            color: Color.fromRGBO(39, 39, 39, 1),
-                                                            fontWeight: FontWeight.w500,
-                                                        )
-                                                    ),
-                                                ]
-                                            )
-                                        ),
-                                        Container(
-                                            child: Row(
-                                                children: <Widget>[
-                                                    Text(
-                                                        "강희근",
-                                                        style: TextStyle(
-                                                            fontSize: 15,
-                                                            fontFamily: "NotoSans",
-                                                            color: Color.fromRGBO(107, 107, 107, 1)
-                                                        )
-                                                    ),
-                                                    IconButton(
-                                                        icon: Image.asset(
-                                                            "assets/images/icon/iconMore.png"
-                                                        ),
-                                                        onPressed: () {},
-                                                    )
-                                                ]
-                                            )
-                                        ),
+                    buildSettingHeader("프로필"),
 
-                                    ],
-                                )
-                            ),
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 10.0
-                                ),
-                                width: MediaQuery.of(context).size.width,
-                                height: 50.0,
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(255, 255, 255, 1),
-                                ),
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                        Text("한 줄 소개",
-                                            style: TextStyle(
-                                                height: 1,
-                                                letterSpacing: ScreenUtil.getInstance().setWidth(-0.75),
-                                                fontFamily: "NotoSans",
-                                                color: Color.fromRGBO(39, 39, 39, 1),
-                                                fontWeight: FontWeight.w500,
-                                            )
-                                        ),
-                                        Container(
-                                            child: Row(
-                                                children: <Widget>[
-                                                    InkWell(child:
-                                                        Text(
-                                                            "안녕하세요 강희근입니다.",
-                                                            style: TextStyle(
-                                                                fontSize: 15,
-                                                                fontFamily: "NotoSans",
-                                                                color: Color.fromRGBO(107, 107, 107,1)
-                                                            )
-                                                        )
-                                                    ),
-                                                    IconButton(
-                                                        icon: Image.asset(
-                                                            "assets/images/icon/iconMore.png"),
-                                                        onPressed: () {},
-                                                    )
-                                                ]
-                                            )
-                                        ),
-                                    ],
-                                )
-                            ),
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 16.0,
-                                    vertical: 10.0
-                                ),
-                                width: MediaQuery.of(context).size.width,
-                                height: 50.0,
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(255, 255, 255, 1),
-                                ),
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                        Text(
-                                            "연락처",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: "NotoSans",
-                                                color: Color.fromRGBO(39, 39, 39, 1),
-                                                fontWeight: FontWeight.w500,)
-                                        ),
-                                        Container(
-                                            child: Row(
-                                                children: <Widget>[
-                                                    InkWell(
-                                                        child: Text(
-                                                            "010-1234-5678",
-                                                            style: TextStyle(
-                                                                fontSize: 15,
-                                                                fontFamily: "NotoSans",
-                                                                color: Color.fromRGBO(107, 107,107, 1)
-                                                            )
-                                                        )
-                                                    ),
-                                                    IconButton(
-                                                        icon: Image.asset("assets/images/icon/iconMore.png"),
-                                                        onPressed: () {},
-                                                    )
-                                                ]
-                                            )
-                                        ),
-                                    ],
-                                )
-                            ),
-                            Container(
-                                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-                                width: MediaQuery.of(context).size.width,
-                                height: 50.0,
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(255, 255, 255, 1),
-                                ),
-                                child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
-                                        Text(
-                                            "명함 관리",
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: "NotoSans",
-                                                color: Color.fromRGBO(39, 39, 39, 1),
-                                                fontWeight: FontWeight.w500,
-                                            )
-                                        ),
+                    buildTextItem("사용자 이름", "강희근", false),
 
-                                        IconButton(
-                                            icon: Image.asset(
-                                                "assets/images/icon/iconMore.png"
-                                            ),
-                                            onPressed: () {},
-                                        )
-                                    ],
-                                )
-                            ),
-                        ]
-                    ),
-                ],
+                    buildTextItem("한 줄 소개", "안녕하세요 강희근입니다", false),
+
+                    buildTextItem("연락처", "010-1234-5678", false),
+
+                    buildTextItem("명함 관리", "", true)
+                ]
             ),
         );
   }
 
   Widget _appSetting(BuildContext context){
       return Container(
-          child: Stack(
+          child: Column(
               children: <Widget>[
-                  Column(
-                      children: <Widget>[
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
-                              width: MediaQuery.of(context).size.width,
-                              height: 30.0,
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(214, 214, 214, 1),
-                              ),
-                              child: Text("앱 설정",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
-                          ),
+                  buildSettingHeader("앱 설정"),
 
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
-                              width: MediaQuery.of(context).size.width,
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(255, 255, 255, 1),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                      Text("푸쉬 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
-                                        fontWeight: FontWeight.w500,
-                                      )),
-                                  CustomSwitch(
-                                      onChanged: _onSwitchChanged,
-                                      value: true,
-                                      activeColor: Color.fromRGBO(77, 96, 191, 1)
-                                    )
-                                  ],
-                              )
-                          ),
+                  buildSwitchItem("푸쉬 알림", false, false),
 
-
-
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
-                              width: MediaQuery.of(context).size.width,
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(255, 255, 255, 1),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                      Text("친구 허용 알림", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
-                                        fontWeight: FontWeight.w500,
-                                      )),
-                                  CustomSwitch(
-                                        onChanged: _onSwitchChanged,
-                                        value: true,
-                                        activeColor: Color.fromRGBO(77, 96, 191, 1)
-                                    )
-                                  ],
-                              )
-                          ),
-                      ]
-                  )
-              ],
-          ),
+                  buildSwitchItem("친구 요청 허용", true, true),
+              ]
+          )
       );
   }
 
-  void _onSwitchChanged(bool value) {
-  }
 
-
-  Widget _accountSetting(BuildContext context){
+    Widget _accountSetting(BuildContext context){
       return Container(
-
-          child: Stack(
+          child: Column(
               children: <Widget>[
-                  Column(
-                      children: <Widget>[
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
-                              width: MediaQuery.of(context).size.width,
-                              height: 30.0,
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(214, 214, 214, 1),
-                              ),
-                              child: Text("계정",style: TextStyle(fontSize: 14,fontFamily: "NotoSans")),
-                          ),
+                  buildSettingHeader("계정"),
 
-                          InkWell(
-                              child:Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
-                                  width: MediaQuery.of(context).size.width,
-                                  height: 50.0,
-                                  decoration: BoxDecoration(
-                                      color: Color.fromRGBO(255, 255, 255, 1),
-                                  ),
-                                  child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                          InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
-                                              fontWeight: FontWeight.w500,
-                                          ))),
-                                          IconButton(
-                                              icon: Image.asset("assets/images/icon/iconMore.png"),
-                                              onPressed: (){
-                                                  logOut().then((value) {
-                                                      Navigator.of(context).popUntil((route) => route.isFirst);
-                                                  });
-                                              },
-                                          )
-                                      ],
-                                  ),
-                              ),
-                              onTap:() {
-                                  logOut().then((value) {
-                                      Navigator.of(context).popUntil((route) => route.isFirst);
-                                  });
-                              }
-                          ),
+                  InkWell(
+                      child: buildTextItem("로그아웃", "", false),
+                      onTap:() {
+                          logOut().then((value) {
+                              Navigator.of(context).popUntil((route) => route.isFirst);
+                          });
+                      }
+                  ),
 
-                          Container(
-                              padding: EdgeInsets.symmetric(horizontal: 16.0,vertical: 10.0),
+                  buildTextItem("탈퇴하기", "", false),
 
-                              width: MediaQuery.of(context).size.width,
-                              height: 50.0,
-                              decoration: BoxDecoration(
-                                  color: Color.fromRGBO(255, 255, 255, 1),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                      InkWell(
-                                          child: Text("탈퇴하기", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
-                                            fontWeight: FontWeight.w500,
-                                          ))),
-                                    IconButton(
-                                      icon: Image.asset("assets/images/icon/iconMore.png"),
-                                      onPressed: (){},
-                                    )
-                                  ],
-                              )
-                          ),
-
-                      ]
-                  )
-
-
-
-              ],
-
-
-          ),
-
-
+              ]
+          )
       );
-  }
+    }
+
+    Widget buildSettingHeader(String title) {
+        return Container(
+            padding: EdgeInsets.symmetric(
+                horizontal: ScreenUtil().setWidth(16)
+            ),
+            width: MediaQuery.of(context).size.width,
+            height: ScreenUtil().setHeight(25),
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(235, 235, 235, 1),
+            ),
+            child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                    title,
+                    style: TextStyle(
+                        fontFamily: "NotoSans",
+                        fontWeight: FontWeight.w400,
+                        color: Color.fromRGBO(39, 39, 39, 1),
+                        fontSize: ScreenUtil.getInstance().setSp(13),
+                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.65)
+                    )
+                ),
+            ),
+        );
+    }
+
+    Widget buildTextItem(String title, String value, bool isLast) {
+        return Container(
+            height: ScreenUtil().setHeight(49),
+            margin: EdgeInsets.only(
+                left: ScreenUtil().setWidth(16)
+            ),
+            padding: EdgeInsets.only(
+                right: ScreenUtil().setWidth(8)
+            ),
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                        width: ScreenUtil().setWidth(1),
+                        color: isLast ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(39, 39, 39, 0.15)
+                    )
+                )
+            ),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                    Text(
+                        title,
+                        style: TextStyle(
+                            height: 1,
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromRGBO(39, 39, 39, 1),
+                            fontSize: ScreenUtil.getInstance().setSp(15),
+                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                        )
+                    ),
+                    Container(
+                        child: Row(
+                            children: <Widget>[
+                                Text(
+                                    value,
+                                    style: TextStyle(
+                                        height: 1,
+                                        fontFamily: "NotoSans",
+                                        fontWeight: FontWeight.w400,
+                                        color: Color.fromRGBO(107, 107, 107, 1),
+                                        fontSize: ScreenUtil.getInstance().setSp(15),
+                                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                                    )
+                                ),
+                                Container(
+                                    width: ScreenUtil().setWidth(20),
+                                    height: ScreenUtil().setHeight(20),
+                                    margin: EdgeInsets.only(
+                                        left: ScreenUtil().setWidth(6)
+                                    ),
+                                    child: Image.asset(
+                                        'assets/images/icon/iconMore.png'
+                                    )
+                                )
+                            ],
+                        ),
+                    )
+                ],
+            )
+        );
+    }
+
+    Widget buildSwitchItem(String title, bool value, bool isLast) {
+        return Container(
+            height: ScreenUtil().setHeight(49),
+            margin: EdgeInsets.only(
+                left: ScreenUtil().setWidth(16)
+            ),
+            padding: EdgeInsets.only(
+                right: ScreenUtil().setWidth(8)
+            ),
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                        width: ScreenUtil().setWidth(1),
+                        color: isLast ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(39, 39, 39, 0.15)
+                    )
+                )
+            ),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                    Text(
+                        title,
+                        style: TextStyle(
+                            height: 1,
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromRGBO(39, 39, 39, 1),
+                            fontSize: ScreenUtil.getInstance().setSp(15),
+                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                        )
+                    ),
+                    CustomSwitch(
+                        onChanged: (val){
+                            print(val);
+                            _onSwitchChanged(val);
+                        } ,
+                        value: value,
+                        inactiveColor: Color.fromRGBO(235, 235, 235, 1),
+                        activeColor: Color.fromRGBO(77, 96, 191, 1),
+                        shadow: BoxShadow(
+                            color: Color.fromRGBO(0, 0, 0, 0.4),
+                            offset: new Offset(
+                                ScreenUtil().setWidth(0),
+                                ScreenUtil().setWidth(0)
+                            ),
+                            blurRadius: 2
+                        )
+                    )
+                ],
+            )
+        );
+    }
 }

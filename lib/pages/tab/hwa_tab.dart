@@ -536,7 +536,7 @@ class _HwaTabState extends State<HwaTab> {
     }
 
     /*
-    * @author : hs
+    * @author : hsshadow
     * @date : 2019-12-27
     * @description : 단화방 생성 Dialog
     */
@@ -547,12 +547,16 @@ class _HwaTabState extends State<HwaTab> {
                 title: Text(
                     '단화 생성하기'
                 ),
-                content: TextField(
-                    controller: _textFieldController,
-                    decoration: InputDecoration(
+                content: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: TextField(
+                        controller: _textFieldController,
+                        decoration: InputDecoration(
 
-                        /// GPS 연동
-                        hintText: _currentAddress ?? '단화방 이름을 입력해주세요.'
+                            /// GPS 연동
+                            hintText: _currentAddress ?? '단화방 이름을 입력해주세요.'
+                        ),
+                        maxLength: 15,
                     ),
                 ),
                 actions: <Widget>[
@@ -621,8 +625,8 @@ class _HwaTabState extends State<HwaTab> {
                     ],
                 ),
             ),
-            resizeToAvoidBottomPadding: false,
             body: setScreen(),
+            resizeToAvoidBottomPadding: false,
         );
     }
 
