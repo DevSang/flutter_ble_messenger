@@ -7,9 +7,12 @@ class Constant {
     static List<FriendInfo> FRIEND_LIST;
     static Map<String, String> HEADER;
 
+    static String PROFILE_IMG_URI;
+
     static setUserIdx () async {
         var spf = await SharedPreferences.getInstance();
         USER_IDX = int.parse(spf.getString("userIdx"));
+        PROFILE_IMG_URI = API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + USER_IDX.toString() + "&type=SMALL";
     }
 
     static setHeader () async {

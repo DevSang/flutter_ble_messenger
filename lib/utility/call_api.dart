@@ -45,18 +45,18 @@ class CallApi {
     }
 
     static logRequest(String prefixUrl, method, header, url, data){
-        print("#Request Url : " + url.toString());
+//        print("#Request Url : " + url.toString());
 //        print("#Method : " + method.toString());
 //        print("#Headers : " + header.toString());
 //        print("#Data : " + data.toString());
     }
 
     static setResponse(http.Response response){
-        developer.log("# Response : " + response.toString());
+//        developer.log("# Response : " + response.toString());
         var statusCode = response.statusCode.toString();
 
         if(statusCode.indexOf("20") > -1) {
-            developer.log("# Request result : " + response.body.toString());
+//            developer.log("# Request result : " + response.body.toString());
             return response;
         } else {
             developer.log("# [Error] Status Code :" + statusCode);
