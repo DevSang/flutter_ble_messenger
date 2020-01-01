@@ -212,7 +212,7 @@ class _FriendTabState extends State<FriendTab> {
         return MaterialApp(
             debugShowCheckedModeBanner: false,
             home: Scaffold(
-                backgroundColor: Colors.white,
+                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
                 appBar: TabAppBar(
                     title: '단화 친구',
                     leftChild: Container(
@@ -331,29 +331,56 @@ class _FriendTabState extends State<FriendTab> {
                 children: <Widget>[
                     Container(
                         width: ScreenUtil().setWidth(375),
-                        height: ScreenUtil().setHeight(32),
+                        height: ScreenUtil().setHeight(25),
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(214, 214, 214, 1),
                         ),
                         padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(16),
+                            left: ScreenUtil().setWidth(10),
                         ),
                         child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                                title,
-                                style: TextStyle(
-                                    fontFamily: "NotoSans",
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: ScreenUtil().setSp(13),
-                                    letterSpacing: ScreenUtil().setWidth(-0.65),
-                                    color: Color.fromRGBO(39, 39, 39, 1),
-                                ),
+                            child: Row(
+                                children: <Widget>[
+                                    title == '친구 목록' ?
+                                        Image.asset('assets/images/icon/iconMasterBadge.png')
+                                        : Image.asset('assets/images/icon/iconAttachMore.png')
+                                    ,Text(
+                                        title,
+                                        style: TextStyle(
+                                            fontFamily: "NotoSans",
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: ScreenUtil().setSp(15),
+                                            letterSpacing: ScreenUtil().setWidth(-0.65),
+                                            color: Color.fromRGBO(39, 39, 39, 1),
+                                        ),
+                                    )
+                                ],
                             )
                         )
                     ),
-                    friendInfoList.length > 0
-                        ? ListView.builder(
+                    friendInfoList.length == 0 ?
+                        Container(
+                            height: title == '친구 목록' ? ScreenUtil().setHeight( (5 - requestList.length) * 62 ) : ScreenUtil().setHeight(62),
+                            child: Center(
+                                    child:Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                            Text(
+                                                title == '친구 목록' ? "아직 추가된 친구가 없어요." : "새로운 친구 요청이 없어요.",
+                                                style: TextStyle(
+                                                    fontFamily: "NotoSans",
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: ScreenUtil().setSp(14),
+                                                    letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                    color: Color.fromRGBO(39, 39, 39, 0.2),
+                                                ),
+                                            )
+                                        ]
+                                    )
+                                )
+                            )
+                        : ListView.builder(
                             physics: new NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
@@ -361,13 +388,6 @@ class _FriendTabState extends State<FriendTab> {
 
                             itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], isFriend, index == friendInfoList.length - 1, index)
                         )
-                        : Container(
-                            height: ScreenUtil().setHeight(1),
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(255, 255, 255, 1),
-                            ),
-                        )
-
                 ],
             ),
         );
@@ -384,7 +404,7 @@ class _FriendTabState extends State<FriendTab> {
                 left: ScreenUtil().setWidth(16)
             ),
             decoration: BoxDecoration(
-                color: Colors.white,
+                color: Color.fromRGBO(250, 250, 250, 1),
             ),
             child: Row(
                 children: <Widget>[
