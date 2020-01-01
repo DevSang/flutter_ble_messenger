@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomDialog extends StatelessWidget {
-    final String title, leftButtonText, rightButtonText, value;
+    final String title, leftButtonText, rightButtonText, hintText, value;
     final int type;
     final Image image;
     final Function func;
@@ -15,8 +15,9 @@ class CustomDialog extends StatelessWidget {
         @required this.leftButtonText,
         @required this.rightButtonText,
         @required this.type,
-        @required this.value,
-        @required this.func,
+        this.hintText,
+        this.value,
+        this.func,
         this.image,
     });
 
@@ -185,11 +186,19 @@ class CustomDialog extends StatelessWidget {
                             ),
                             decoration: InputDecoration(
                                 border: InputBorder.none,
+                                hintText: hintText ?? "",
+                                hintStyle: TextStyle(
+                                    fontFamily: "NotoSans",
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromRGBO(39, 39, 39, 0.4),
+                                    fontSize: ScreenUtil().setSp(15),
+                                    letterSpacing: ScreenUtil().setWidth(-0.38),
+                                )
                             ),
                             autofocus: false,
                             onChanged: (String chat){},
                             inputFormatters:[
-                                LengthLimitingTextInputFormatter(8),
+                                LengthLimitingTextInputFormatter(18),
                             ]
                         ),
                     ),

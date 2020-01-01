@@ -72,7 +72,6 @@ class _ProfilePageState extends State <ProfilePage>{
      * @description : 프로필 설정 받아오기
     */
     void getSettingInfo() async {
-
         try {
             /// 참여 타입 수정
             String uri = "/api/v2/user/profile?target_user_idx=" + Constant.USER_IDX.toString();
@@ -92,6 +91,35 @@ class _ProfilePageState extends State <ProfilePage>{
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
         }
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-01
+     * @description : 프로필 저장
+    */
+    void saveSettingInfo() async {
+        try {
+            String uri = "/api/v2/user/profile";
+            final response = await CallApi.commonApiCall(
+                method: HTTP_METHOD.post,
+                url: uri,
+                data: {
+                    "nickname" : nickName,
+                    "description" : intro,
+                    "is_push_allowed"  : allowedPush,
+                    "is_friend_request_allowed" : allowedFriend
+                }
+            );
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
+    }
+
+    
+    void popNav() async {
+        await saveSettingInfo();
     }
 
     @override
@@ -212,11 +240,11 @@ class _ProfilePageState extends State <ProfilePage>{
                 children: <Widget>[
                     buildSettingHeader("프로필"),
 
-                    buildTextItem("사용자 이름", nickName ?? "", false),
+                    buildTextItem("사용자 이름", nickName, false),
 
-                    buildTextItem("한 줄 소개", intro ?? "", false),
+                    buildTextItem("한 줄 소개", intro, false),
 
-                    buildTextInfoItem("연락처", phoneNum ?? "", true),
+                    buildTextInfoItem("연락처", phoneNum, true),
 
 //                    buildTextItem("명함 관리", "", true)
                 ]
@@ -321,7 +349,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             child: Row(
                                 children: <Widget>[
                                     Text(
-                                        value,
+                                        value ?? "",
                                         style: TextStyle(
                                             height: 1,
                                             fontFamily: "NotoSans",
@@ -352,6 +380,7 @@ class _ProfilePageState extends State <ProfilePage>{
                                         leftButtonText: "취소",
                                         rightButtonText: "저장하기",
                                         value: value,
+                                        hintText: value == null ? "소개글을 입력해 보세요 :)" : "",
                                         func: () => {
 
                                         }
@@ -451,7 +480,7 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Text(
-                        value,
+                        value ?? "",
                         style: TextStyle(
                             height: 1,
                             fontFamily: "NotoSans",
