@@ -14,6 +14,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:Hwa/utility/get_same_size.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:Hwa/constant.dart';
+
 
 class TrendPage extends StatefulWidget {
   _TrendPageState createState() => _TrendPageState();
@@ -466,10 +470,16 @@ class _TrendPageState extends State<TrendPage> {
                                                 : BorderRadius.circular(0)
                                             ,
                                             child:
-                                            Image.asset(
-                                                trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-                                                fit: BoxFit.scaleDown,
-                                            ),
+//                                            Image.asset(
+//                                                trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
+//                                                fit: BoxFit.scaleDown,
+//                                            ),
+		                                        CachedNetworkImage(
+				                                        imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + trendChatInfo.chatIdx.toString(),
+				                                        placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+				                                        errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+				                                        httpHeaders: Constant.HEADER, fit: BoxFit.fill
+		                                        )
                                         ),
                                     ),
                                     Container(
@@ -661,12 +671,18 @@ class _TrendPageState extends State<TrendPage> {
                                                 ScreenUtil().setWidth(10)
                                             ),
                                             child:
-                                            Image.asset(
-                                                trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-                                                width: sameSize * 50,
-                                                height: sameSize * 50,
-                                                fit: BoxFit.cover,
-                                            ),
+//                                            Image.asset(
+//                                                trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
+//                                                width: sameSize * 50,
+//                                                height: sameSize * 50,
+//                                                fit: BoxFit.cover,
+//                                            ),
+		                                        CachedNetworkImage(
+				                                        imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + trendChatInfo.chatIdx.toString(),
+				                                        placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+				                                        errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+				                                        httpHeaders: Constant.HEADER, fit: BoxFit.fill
+		                                        )
                                         )
                                     ),
                                     // 단화방 정보
