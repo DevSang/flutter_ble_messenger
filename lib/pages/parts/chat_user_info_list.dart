@@ -54,7 +54,7 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
     requestFriend (int targetIdx, StateSetter setStateBuild) async {
         String uri = "/api/v2/relation/request?target_user_idx=" + targetIdx.toString();
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: uri);
-        print(response.statusCode.toString());
+
         if(response.statusCode == 200){
             setState(() {
                 developer.log("## 친구요청에 성공하였습니다.");

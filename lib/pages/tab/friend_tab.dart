@@ -1,14 +1,20 @@
-import 'package:Hwa/constant.dart';
-import 'package:Hwa/data/models/friend_info.dart';
-import 'package:Hwa/pages/parts/set_friend_data.dart';
-import 'package:Hwa/pages/parts/tab_app_bar.dart';
-import 'package:Hwa/utility/get_same_size.dart';
+import 'dart:developer' as developer;
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/data/models/friend_info.dart';
+import 'package:Hwa/data/models/friend_request_info.dart';
+import 'package:Hwa/pages/parts/set_friend_data.dart';
+import 'package:Hwa/pages/parts/tab_app_bar.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/app.dart';
 
 /*
  * @project : HWA - Mobile
@@ -35,7 +41,7 @@ class _FriendTabState extends State<FriendTab> {
 //    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
     List<FriendInfo> originList = [];              // 원본 친구 리스트
     List<FriendInfo> friendList = [];                                   // 화면에 보이는 친구 리스트 (검색 용도)
-    List<FriendInfo> requestList = [];
+    List<FriendRequestInfo> requestList = [];
 
     TextEditingController searchController = TextEditingController();
     double sameSize;
@@ -65,11 +71,10 @@ class _FriendTabState extends State<FriendTab> {
      * @description : 친구리스트 초기화
      */
     void _initState() async {
+        friendList = Constant.FRIEND_LIST;
         originList = Constant.FRIEND_LIST;
-        requestList = Constant.FRIEND_REQUEST_LIST;
 
-        print("originList" + originList.toString());
-        print("requestList" + requestList.toString());
+        await getFriendRequestList();
     }
 
     @override
@@ -106,6 +111,100 @@ class _FriendTabState extends State<FriendTab> {
         setState(() {
             friendList.addAll(constList);
         });
+    }
+
+    /*
+    * @author : sh
+    * @date : 2019-12-28
+    * @description : 친구요청 목록
+    */
+    getFriendRequestList () async {
+        List<FriendRequestInfo> friendRequestList = <FriendRequestInfo>[];
+
+        String uri = "/api/v2/relation/request/all";
+        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
+        if(response.body != null){
+            List<dynamic> friendRequest = jsonDecode(response.body)['data'];
+
+            for(var i = 0; i < friendRequest.length; i++){
+                var friendInfo = friendRequest[i]['jb_request_user_data'];
+                if(!['5101','5102'].contains(friendRequest[i]['response_type']) && !friendRequest[i]['is_cancel']){
+                    friendRequestList.add(
+                        FriendRequestInfo(
+                            req_idx: friendRequest[i]['idx'],
+                            user_idx: friendInfo['user_idx'],
+                            nickname: friendInfo['nickname'],
+                            phone_number: friendInfo['phone_number'],
+                            profile_picture_idx: friendInfo['profile_picture_idx'],
+                            business_card_idx: friendInfo['business_card_idx'],
+                            user_status: friendInfo['user_status']
+                        )
+                    );
+                }
+            }
+            setState(() {
+                requestList = friendRequestList;
+            });
+//            await store.put<List<FriendInfo>>("friendRequestList",friendRequestList);
+        } else {
+            setState(() {
+                requestList = [];
+            });
+
+//            await store.put<List<FriendInfo>>("friendRequestList",[]);
+        }
+    }
+
+    /*
+     * @author : sh
+     * @date : 2020-01-01
+     * @description : 친구 수락
+    */
+    approveRequest(dynamic friendInfo, int listIdx) async {
+        String uri = "/api/v2/relation/request?req_idx=" + friendInfo.req_idx.toString();
+        final response = await CallApi.commonApiCall(
+            method: HTTP_METHOD.put,
+            url: uri,
+        );
+
+        if(response.statusCode == 200){
+            friendList.add(
+                FriendInfo(
+                    user_idx: friendInfo.user_idx,
+                    nickname: friendInfo.nickname,
+                    phone_number: friendInfo.phone_number,
+                    profile_picture_idx: friendInfo.profile_picture_idx,
+                    business_card_idx: friendInfo.business_card_idx,
+                    user_status: friendInfo.user_status
+                )
+            );
+            requestList.removeAt(listIdx);
+            _initState();
+            developer.log("## 친구요청을 수락하였습니다.");
+        } else {
+            developer.log("## 친구요청을 수락에 실패하였습니다.");
+        }
+    }
+
+    /*
+     * @author : sh
+     * @date : 2020-01-01
+     * @description : 친구 거절
+    */
+    rejectRequest(dynamic friendInfo, int listIdx) async {
+        String uri = "/api/v2/relation/request?req_idx=" + friendInfo.req_idx.toString();
+        final response = await CallApi.commonApiCall(
+            method: HTTP_METHOD.patch,
+            url: uri,
+        );
+
+        if(response.statusCode == 200){
+            requestList.removeAt(listIdx);
+            _initState();
+            developer.log("## 친구요청을 거절하였습니다.");
+        } else {
+            developer.log("## 친구요청을 거절에 실패하였습니다.");
+        }
     }
 
     @override
@@ -226,7 +325,7 @@ class _FriendTabState extends State<FriendTab> {
         );
     }
 
-    Widget buildFriendList(String title, List<FriendInfo> friendInfoList, bool isFriend) {
+    Widget buildFriendList(String title, List<dynamic> friendInfoList, bool isFriend) {
         return Container(
             child: Column(
                 children: <Widget>[
@@ -259,7 +358,7 @@ class _FriendTabState extends State<FriendTab> {
                         shrinkWrap: true,
                         itemCount: friendInfoList.length,
 
-                        itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], isFriend, index == friendInfoList.length - 1)
+                        itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], isFriend, index == friendInfoList.length - 1, index)
                     )
                 ],
             ),
@@ -267,7 +366,7 @@ class _FriendTabState extends State<FriendTab> {
     }
 
 
-    Widget buildFriendItem(FriendInfo friendInfo, bool isFriend, bool isLast) {
+    Widget buildFriendItem(dynamic friendInfo, bool isFriend, bool isLast, int index) {
         print("friendInfo" + friendInfo.user_idx.toString());
         String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=SMALL";
         return Container(
@@ -291,7 +390,7 @@ class _FriendTabState extends State<FriendTab> {
                         ),
                         child: ClipRRect(
                             borderRadius: new BorderRadius.circular(
-                                ScreenUtil().setWidth(10)
+                                ScreenUtil().setWidth(300)
                             ),
                             child: CachedNetworkImage(
                                 imageUrl: profileImgUri,
@@ -317,7 +416,7 @@ class _FriendTabState extends State<FriendTab> {
                             )
                         ),
                         child: Row(
-                            mainAxisAlignment: !isFriend ? MainAxisAlignment.start : MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                                 Align(
                                     alignment: Alignment.centerLeft,
@@ -326,14 +425,9 @@ class _FriendTabState extends State<FriendTab> {
                                         style: TextStyle(
                                             height: 1,
                                             fontFamily: "NotoSans",
-                                            fontWeight: FontWeight
-                                                .w500,
-                                            fontSize: ScreenUtil(
-                                                allowFontScaling: true)
-                                                .setSp(16),
-                                            color: Color
-                                                .fromRGBO(
-                                                39, 39, 39, 1),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                            color: Color.fromRGBO(39, 39, 39, 1),
                                             letterSpacing: ScreenUtil()
                                                 .setWidth(-0.8),
                                         ),
@@ -341,14 +435,16 @@ class _FriendTabState extends State<FriendTab> {
                                 ),
                                 !isFriend
                                     ? Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                    mainAxisAlignment: MainAxisAlignment.end,
                                         children: <Widget>[
-                                            friendBtn(0),
-                                            friendBtn(1),
-                                            Container()
+                                            Container(),
+                                            friendBtn(0, friendInfo, index),
+                                            friendBtn(1, friendInfo, index),
                                         ],
                                     )
-                                    : contactIcon
+                                    //TODO 주소록에 있는지 없는지
+//                                    : contactIcon
+                                    : Container()
                             ],
                         ),
                     )
@@ -357,39 +453,49 @@ class _FriendTabState extends State<FriendTab> {
         );
     }
 
-    Widget friendBtn(int index) {
+    Widget friendBtn(int index, dynamic friendInfo, int listIdx) {
         Color tabColor = index == 0 ? Color.fromRGBO(158, 158, 158, 1) : Color.fromRGBO(77, 96, 191, 1);
         Color textColor = index == 0 ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(77, 96, 191, 1);
 
-        return new Container(
-            width: ScreenUtil().setWidth(58),
-            height: ScreenUtil().setWidth(32),
-            margin: EdgeInsets.only(
-                left: index == 0 ? ScreenUtil().setWidth(10) : ScreenUtil().setWidth(8),
-            ),
-            decoration: BoxDecoration(
-                border: Border.all(
-                    width: ScreenUtil().setWidth(1),
-                    color: tabColor,
+        return new InkWell(
+            child: Container(
+                width: ScreenUtil().setWidth(58),
+                height: ScreenUtil().setWidth(32),
+                margin: EdgeInsets.only(
+                    left: index == 0 ? ScreenUtil().setWidth(10) : ScreenUtil().setWidth(8),
                 ),
-                borderRadius: BorderRadius.all(
-                    Radius.circular(ScreenUtil().setHeight(16))
-                )
-            ),
-            child: Center (
-                child: Text(
-                    index == 0 ? '삭제' : '수락',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        height: 1,
-                        fontFamily: "NotoSans",
-                        fontWeight: FontWeight.w500,
-                        fontSize: ScreenUtil().setSp(14),
-                        color: textColor
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: ScreenUtil().setWidth(1),
+                        color: tabColor,
+                    ),
+                    borderRadius: BorderRadius.all(
+                        Radius.circular(ScreenUtil().setHeight(16))
+                    )
+                ),
+                child: Center (
+                    child: Text(
+                        index == 0 ? '삭제' : '수락',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            height: 1,
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            fontSize: ScreenUtil().setSp(14),
+                            color: textColor
+                        ),
                     ),
                 ),
             ),
+            onTap: (){
+                if(index == 0){
+                    rejectRequest(friendInfo, listIdx);
+                } else {
+                    approveRequest(friendInfo, listIdx);
+                }
+            },
         );
+
     }
 
     Widget contactIcon = new Container(

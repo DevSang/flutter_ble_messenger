@@ -1,16 +1,19 @@
 import 'package:Hwa/data/models/friend_info.dart';
+import 'package:Hwa/data/models/friend_request_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Constant {
     //App 관련 변수
     static int USER_IDX;
     static List<FriendInfo> FRIEND_LIST;
-    static List<FriendInfo> FRIEND_REQUEST_LIST;
+    static List<FriendRequestInfo> FRIEND_REQUEST_LIST;
     static Map<String, String> HEADER;
 
     static String PROFILE_IMG_URI;
 
     static bool IS_CHANGE_PROFILE_IMG = false;
+    static bool APP_BAR_LOADING_COMPLETE = false;
+    static bool APP_BAR_LOADING_ERROR = false;
 
     static setUserIdx () async {
         var spf = await SharedPreferences.getInstance();

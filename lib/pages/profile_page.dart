@@ -50,7 +50,7 @@ class _ProfilePageState extends State <ProfilePage>{
         cachedNetworkImage = CachedNetworkImage(
             imageUrl: profileImgUri,
             placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover),
+            errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
             httpHeaders: Constant.HEADER
         );
 
@@ -184,6 +184,7 @@ class _ProfilePageState extends State <ProfilePage>{
 						    httpHeaders: Constant.HEADER
 				    );
 
+				    Constant.IS_CHANGE_PROFILE_IMG = true;
 
                     isLoading = false;
 			    });

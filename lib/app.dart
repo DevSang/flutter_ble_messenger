@@ -12,6 +12,7 @@ import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
 import 'package:Hwa/data/models/friend_info.dart';
+import 'package:Hwa/data/models/friend_request_info.dart';
 
 
 final store = KvStore();
@@ -66,7 +67,6 @@ class _MainPageState extends State<MainPage> {
         String token = sharedPreferences.getString("token");
         if(token != '' && token != null){
             getFriendList();
-            getFriendRequestList();
         }
 
     }
@@ -76,7 +76,7 @@ class _MainPageState extends State<MainPage> {
     * @date : 2019-12-28
     * @description : 친구목록이 Store에 없을 경우 api call 하여 저장
     */
-    getFriendList () async {
+    static getFriendList () async {
         List<FriendInfo> friendInfoList = <FriendInfo>[];
 
         String uri = "/api/v2/relation/relationship/all";
@@ -105,44 +105,6 @@ class _MainPageState extends State<MainPage> {
             Constant.FRIEND_LIST = [];
 
 //            await store.put<List<FriendInfo>>("friendList",[]);
-        }
-    }
-
-    /*
-    * @author : sh
-    * @date : 2019-12-28
-    * @description : 친구요청 목록
-    */
-    getFriendRequestList () async {
-        List<FriendInfo> friendRequestList = <FriendInfo>[];
-
-        String uri = "/api/v2/relation/request/all";
-        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-
-        if(response.body != null){
-            List<dynamic> friendRequest = jsonDecode(response.body)['data'];
-
-            for(var i = 0; i < friendRequest.length; i++){
-                var friendInfo = friendRequest[i]['jb_request_user_data'];
-
-                friendRequestList.add(
-                    FriendInfo(
-                        user_idx: friendInfo['user_idx'],
-                        nickname: friendInfo['nickname'],
-                        phone_number: friendInfo['phone_number'],
-                        profile_picture_idx: friendInfo['profile_picture_idx'],
-                        business_card_idx: friendInfo['business_card_idx'],
-                        user_status: friendInfo['user_status']
-                    )
-                );
-            }
-            Constant.FRIEND_REQUEST_LIST = friendRequestList;
-
-//            await store.put<List<FriendInfo>>("friendRequestList",friendRequestList);
-        } else {
-            Constant.FRIEND_REQUEST_LIST = [];
-
-//            await store.put<List<FriendInfo>>("friendRequestList",[]);
         }
     }
 
