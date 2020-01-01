@@ -42,7 +42,7 @@ class TabAppBarState extends State<TabAppBar> {
 
     TabAppBarState({@required this.title, this.leftChild});
 
-    CachedNetworkImageProvider profileImg;
+    ImageProvider profileImg;
 
     @override
     void initState() {
@@ -52,7 +52,9 @@ class TabAppBarState extends State<TabAppBar> {
     }
 
     void _initState() async {
-	    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER);
+	    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER, errorListener: (){
+		    profileImg = AssetImage("assets/images/icon/profile.png");
+	    });
     }
 
     /*
@@ -63,7 +65,9 @@ class TabAppBarState extends State<TabAppBar> {
     void expireProfileImgCache() async {
 	    if(Constant.IS_CHANGE_PROFILE_IMG){
 		    profileImg.evict();
-		    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER);
+		    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER, errorListener: (){
+			    profileImg = AssetImage("assets/images/icon/profile.png");
+		    });
 	    }
     }
 
