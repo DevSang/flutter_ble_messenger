@@ -5,9 +5,8 @@ import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/chat_user_info.dart';
 
 class ChatJoinInfo {
-    /// 추후 교체
-    String joinType;				// User Join Type
-    int userIdx;			    // User Idx
+    String joinType;				// User Join Type : BLE_JOIN / BLE_OUT / ONLINE
+    int userIdx;			        // User Idx
     String userNick;			    // User Nick
 
     ChatJoinInfo({

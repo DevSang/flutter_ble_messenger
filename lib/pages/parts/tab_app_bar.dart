@@ -1,16 +1,15 @@
 import 'dart:convert';
 
 import "package:flutter/material.dart";
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
 
 import '../profile_page.dart';
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/pages/signin_page.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:Hwa/data/models/UserInfo.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 /*
  * @project : HWA - Mobile
@@ -43,11 +42,33 @@ class TabAppBarState extends State<TabAppBar> {
 
     TabAppBarState({@required this.title, this.leftChild});
 
+    ImageProvider profileImg;
+
     @override
     void initState() {
+	    setUserInfo();
+	    _initState();
         super.initState();
+    }
 
-        setUserInfo();
+    void _initState() async {
+	    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER, errorListener: (){
+		    profileImg = AssetImage("assets/images/icon/profile.png");
+	    });
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-02
+     * @description : 프로필 이미지 변경됐을 경우 캐시 지우고 새로 로딩
+     */
+    void expireProfileImgCache() async {
+	    if(Constant.IS_CHANGE_PROFILE_IMG){
+		    profileImg.evict();
+		    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER, errorListener: (){
+			    profileImg = AssetImage("assets/images/icon/profile.png");
+		    });
+	    }
     }
 
     /*
@@ -155,10 +176,11 @@ class TabAppBarState extends State<TabAppBar> {
                                                     height: ScreenUtil().setHeight(38),
                                                     decoration: BoxDecoration(
                                                         image: DecorationImage(
-                                                            image: (userInfo != null && userInfo['profileURL'] != null && userInfo['profileURL'].toString() != "")
-                                                                    ? NetworkImage(userInfo['profileURL'])
-                                                                    : new AssetImage(Constant.PROFILE_IMG)
-                                                            ,
+//                                                            image: CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER),
+                                                            image: profileImg,
+//		                                                        image: isLoadingComplete
+//		                                                            ? CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER)
+//		                                                            : AssetImage("assets/images/icon/profile.png"),
                                                             fit: BoxFit.cover
                                                         ),
                                                         shape: BoxShape.circle
@@ -190,7 +212,9 @@ class TabAppBarState extends State<TabAppBar> {
                                             MaterialPageRoute(builder: (context) {
                                                 return ProfilePage();
                                             })
-                                        );
+                                        ).then((val) => {
+	                                        expireProfileImgCache()
+                                        });
                                     },
                                 )
                             ),

@@ -641,7 +641,6 @@ class _HwaTabState extends State<HwaTab> {
                                                 ? '단화방 이름을 입력해주세요.'
                                                 : _currentAddress,
                                         func: (String titleValue) {
-                                            print("titleValue");
                                             _createChat(titleValue);
                                             Navigator.of(context).pop();
 
@@ -765,7 +764,8 @@ class _HwaTabState extends State<HwaTab> {
                         ),
 
                         Container(
-                            child:Text(titleText,
+                            child:Text(
+                                titleText.length > 15 ? titleText.substring(0, 15) + "..." : titleText,
                                 style: TextStyle(
                                     fontFamily: 'NotoSans',
                                     color: Color(0xff272727),
