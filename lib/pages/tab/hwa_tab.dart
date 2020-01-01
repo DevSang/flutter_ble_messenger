@@ -541,7 +541,7 @@ class _HwaTabState extends State<HwaTab> {
     }
 
     /*
-    * @author : hs
+    * @author : hsshadow
     * @date : 2019-12-27
     * @description : 단화방 생성 Dialog
     */
@@ -552,14 +552,18 @@ class _HwaTabState extends State<HwaTab> {
                 title: Text(
                     '단화 생성하기'
                 ),
-                content: TextField(
-                    controller: _textFieldController,
-                    decoration: InputDecoration(
+                content: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: TextField(
+                        controller: _textFieldController,
+                        decoration: InputDecoration(
 
-                        /// GPS 연동
-                        hintText: _currentAddress == '위치 검색 중..' ?
+                            /// GPS 연동
+                            hintText: _currentAddress == '위치 검색 중..' ?
                             '단화방 이름을 입력해주세요.'
                             : _currentAddress
+                        ),
+                        maxLength: 15,
                     ),
                 ),
                 actions: <Widget>[
@@ -628,8 +632,8 @@ class _HwaTabState extends State<HwaTab> {
                     ],
                 ),
             ),
-            resizeToAvoidBottomPadding: false,
             body: setScreen(),
+            resizeToAvoidBottomPadding: false,
         );
     }
 
@@ -713,99 +717,102 @@ class _HwaTabState extends State<HwaTab> {
                 }
             }
 
-            return Column(
-                children: <Widget>[
-                    Container(
-                        child: Column(
-                            children: <Widget>[
-                                // 위치 정보 영역
-                                getLocation(),
-                            ],
-                        )
-                    ),
-                    Container(
-                        margin:EdgeInsets.only(
-                            top: 11 + ScreenUtil().setHeight(35.5),
-                            bottom: ScreenUtil().setHeight(35.5),
-                        ),
-                        child: Image.asset(mainBackImg,
-                            width: ScreenUtil().setWidth(375),
-                        )
-                    ),
-
-                    Container(
-                        child:Text(titleText,
-                            style: TextStyle(
-                                fontFamily: 'NotoSans',
-                                color: Color(0xff272727),
-                                fontSize: ScreenUtil().setSp(20),
-                                fontWeight: FontWeight.w600,
-                                fontStyle: FontStyle.normal,
-                                letterSpacing: ScreenUtil().setWidth(-1),
-                            )
-                        )
-                    ),
-                    Container(
-                        margin: EdgeInsets.only(
-                            top:ScreenUtil().setHeight(10),
-                            bottom:ScreenUtil().setHeight(6),
-                        ),
-                        child: Text(subTitle,
-                            style: TextStyle(
-                                fontFamily: 'NotoSans',
-                                color: Color(0xff6b6b6b),
-                                fontSize: ScreenUtil().setSp(20),
-                                fontWeight: FontWeight.w400,
-                                fontStyle: FontStyle.normal,
-                                letterSpacing: ScreenUtil().setWidth(-1),
-                            )
-                        )
-                    ),
-                    Container(
-                        width: ScreenUtil().setWidth(319),
-                        height: 44.0,
-                        margin: EdgeInsets.only(top: 10),
-                        padding: EdgeInsets.symmetric(horizontal: 15.0),
-                        child: RaisedButton(
-                            onPressed: (){
-                                (buttonClick != _displayAndroidDialog && buttonClick != _displayIosDialog) ? buttonClick() : buttonClick(context);
-                            },
-                            color: Color.fromRGBO(77, 96, 191, 1),
-                            elevation: 0.0,
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+            return SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                child: Column(
+                    children: <Widget>[
+                        Container(
+                            child: Column(
                                 children: <Widget>[
-                                    Text(
-                                        buttonText,
-                                        style: TextStyle(
-                                            fontFamily: 'NotoSans',
-                                            color: Colors.white,
-                                            fontSize: ScreenUtil().setSp(16),
-                                            fontWeight: FontWeight.w500,
-                                            letterSpacing: ScreenUtil().setWidth(-0.8),
-                                        )
-                                    ),
-                                    Container(
-                                        margin: EdgeInsets.only(
-                                            left: 12
-                                        ),
-                                        width: ScreenUtil().setWidth(9),
-                                        height: ScreenUtil().setHeight(15),
-                                        decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                                image:AssetImage("assets/images/icon/iconMoreWhite.png"),
-                                                fit: BoxFit.cover
-                                            ),
-                                        ),
-                                    )
+                                    // 위치 정보 영역
+                                    getLocation(),
                                 ],
+                            )
+                        ),
+                        Container(
+                            margin:EdgeInsets.only(
+                                top: 11 + ScreenUtil().setHeight(35.5),
+                                bottom: ScreenUtil().setHeight(35.5),
                             ),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(5.0)
+                            child: Image.asset(mainBackImg,
+                                width: ScreenUtil().setWidth(375),
+                            )
+                        ),
+
+                        Container(
+                            child:Text(titleText,
+                                style: TextStyle(
+                                    fontFamily: 'NotoSans',
+                                    color: Color(0xff272727),
+                                    fontSize: ScreenUtil().setSp(20),
+                                    fontWeight: FontWeight.w600,
+                                    fontStyle: FontStyle.normal,
+                                    letterSpacing: ScreenUtil().setWidth(-1),
+                                )
+                            )
+                        ),
+                        Container(
+                            margin: EdgeInsets.only(
+                                top:ScreenUtil().setHeight(10),
+                                bottom:ScreenUtil().setHeight(6),
+                            ),
+                            child: Text(subTitle,
+                                style: TextStyle(
+                                    fontFamily: 'NotoSans',
+                                    color: Color(0xff6b6b6b),
+                                    fontSize: ScreenUtil().setSp(20),
+                                    fontWeight: FontWeight.w400,
+                                    fontStyle: FontStyle.normal,
+                                    letterSpacing: ScreenUtil().setWidth(-1),
+                                )
+                            )
+                        ),
+                        Container(
+                            width: ScreenUtil().setWidth(319),
+                            height: 44.0,
+                            margin: EdgeInsets.only(top: 10),
+                            padding: EdgeInsets.symmetric(horizontal: 15.0),
+                            child: RaisedButton(
+                                onPressed: (){
+                                    (buttonClick != _displayAndroidDialog && buttonClick != _displayIosDialog) ? buttonClick() : buttonClick(context);
+                                },
+                                color: Color.fromRGBO(77, 96, 191, 1),
+                                elevation: 0.0,
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                        Text(
+                                            buttonText,
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSans',
+                                                color: Colors.white,
+                                                fontSize: ScreenUtil().setSp(16),
+                                                fontWeight: FontWeight.w500,
+                                                letterSpacing: ScreenUtil().setWidth(-0.8),
+                                            )
+                                        ),
+                                        Container(
+                                            margin: EdgeInsets.only(
+                                                left: 12
+                                            ),
+                                            width: ScreenUtil().setWidth(9),
+                                            height: ScreenUtil().setHeight(15),
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image:AssetImage("assets/images/icon/iconMoreWhite.png"),
+                                                    fit: BoxFit.cover
+                                                ),
+                                            ),
+                                        )
+                                    ],
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0)
+                                )
                             )
                         )
-                    )
-                ],
+                    ],
+                )
             );
         } else {
             return Loading();
