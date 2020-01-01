@@ -226,16 +226,14 @@ class _FriendTabState extends State<FriendTab> {
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(214, 214, 214, 1),
                         ),
-                        child: Padding(
-                            padding: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(6.5),
-                                bottom: ScreenUtil().setHeight(6.5),
-                                left: ScreenUtil().setWidth(16),
-                            ),
+                        padding: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(16),
+                        ),
+                        child: Align(
+                            alignment: Alignment.centerLeft,
                             child: Text(
                                 title,
                                 style: TextStyle(
-                                    height: 1.2,
                                     fontFamily: "NotoSans",
                                     fontWeight: FontWeight.w400,
                                     fontSize: ScreenUtil().setSp(13),

@@ -23,9 +23,8 @@ class TabAppBar extends StatefulWidget implements PreferredSizeWidget {
     final Widget leftChild;
 
     @override
-    final Size preferredSize;
-    TabAppBar({@required this.title, this.leftChild})
-        : preferredSize = Size(375, 84);
+    Size get preferredSize => Size(375, 84);
+    TabAppBar({@required this.title, this.leftChild});
 
     @override
     TabAppBarState createState() => TabAppBarState(title: title, leftChild: leftChild);
@@ -42,10 +41,7 @@ class TabAppBarState extends State<TabAppBar> {
     SharedPreferences prefs;
     final store = KvStore();
 
-    @override
-    final Size preferredSize;
-    TabAppBarState({@required this.title, this.leftChild})
-        : preferredSize = Size(375, 84);
+    TabAppBarState({@required this.title, this.leftChild});
 
     @override
     void initState() {
@@ -89,7 +85,7 @@ class TabAppBarState extends State<TabAppBar> {
     Widget build(BuildContext context) {
         sameSize  = GetSameSize().main();
         return PreferredSize(
-            preferredSize: preferredSize,
+            preferredSize: widget.preferredSize,
             child: SafeArea(
                 child: Container(
                     width: ScreenUtil().setWidth(375),

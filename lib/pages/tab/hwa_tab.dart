@@ -619,10 +619,9 @@ class _HwaTabState extends State<HwaTab> {
                                 {
                                     if (Platform.isAndroid) {
                                         _displayAndroidDialog(context)
-                                    } else
-                                        if (Platform.isIOS) {
-                                            _displayIosDialog(context)
-                                        }
+                                    } else if (Platform.isIOS) {
+                                        _displayIosDialog(context)
+                                    }
                                 },
                             )
                         ),
