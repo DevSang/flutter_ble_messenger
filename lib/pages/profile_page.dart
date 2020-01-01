@@ -433,7 +433,7 @@ class _ProfilePageState extends State <ProfilePage>{
     }
 
     Widget buildTextItem(String title, String value, bool isLast, Function fn) {
-                return Container(
+        return Container(
             height: ScreenUtil().setHeight(49),
             margin: EdgeInsets.only(
                 left: ScreenUtil().setWidth(16)
@@ -463,49 +463,47 @@ class _ProfilePageState extends State <ProfilePage>{
                             letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
                         )
                     ),
-                    Container(
-                        child: InkWell(
-                            child: Row(
-                                children: <Widget>[
-                                    Text(
-                                        value ?? "",
-                                        style: TextStyle(
-                                            height: 1,
-                                            fontFamily: "NotoSans",
-                                            fontWeight: FontWeight.w400,
-                                            color: Color.fromRGBO(107, 107, 107, 1),
-                                            fontSize: ScreenUtil.getInstance().setSp(15),
-                                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
-                                        )
-                                    ),
-                                    Container(
-                                        width: ScreenUtil().setWidth(20),
-                                        height: ScreenUtil().setHeight(20),
-                                        margin: EdgeInsets.only(
-                                            left: ScreenUtil().setWidth(6)
-                                        ),
-                                        child: Image.asset(
-                                            'assets/images/icon/iconMore.png'
-                                        )
+                    InkWell(
+                        child: Row(
+                            children: <Widget>[
+                                Text(
+                                    value ?? "",
+                                    style: TextStyle(
+                                        height: 1,
+                                        fontFamily: "NotoSans",
+                                        fontWeight: FontWeight.w400,
+                                        color: Color.fromRGBO(107, 107, 107, 1),
+                                        fontSize: ScreenUtil.getInstance().setSp(15),
+                                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
                                     )
-                                ],
-                            ),
-                            onTap: (){
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) => CustomDialog(
-                                        title: title,
-                                        type: 1,
-                                        leftButtonText: "취소",
-                                        rightButtonText: "저장하기",
-                                        value: value,
-                                        hintText: value == null ? "소개글을 입력해 보세요 :)" : ""
+                                ),
+                                Container(
+                                    width: ScreenUtil().setWidth(20),
+                                    height: ScreenUtil().setHeight(20),
+                                    margin: EdgeInsets.only(
+                                        left: ScreenUtil().setWidth(6)
                                     ),
-                                ).then((onValue) {
-                                    if (fn != null) fn(onValue);
-                                });
-                            },
-                        )
+                                    child: Image.asset(
+                                        'assets/images/icon/iconMore.png'
+                                    )
+                                )
+                            ],
+                        ),
+                        onTap: (){
+                            showDialog(
+                                context: context,
+                                builder: (BuildContext context) => CustomDialog(
+                                    title: title,
+                                    type: 1,
+                                    leftButtonText: "취소",
+                                    rightButtonText: "저장하기",
+                                    value: value,
+                                    hintText: value == null ? "소개글을 입력해 보세요 :)" : ""
+                                ),
+                            ).then((onValue) {
+                                if (fn != null && onValue != null) fn(onValue);
+                            });
+                        },
                     )
                 ],
             )
