@@ -94,7 +94,9 @@ class _HwaTabState extends State<HwaTab> {
         await Constant.setUserIdx();
 
         // BLE Scanning API 초기화
-        await HwaBeacon().initializeScanning();
+        if(Platform.isAndroid){
+            await HwaBeacon().initializeScanning();
+        }
 
         checkGpsBleAndStartService();
     }
@@ -229,10 +231,12 @@ class _HwaTabState extends State<HwaTab> {
 
     Future<bool> checkGPS() async {
 	    // Location 서비스 켜져있는지 확인
-	    bool isLocationAllowed = await HwaBeacon().checkLocationService();
+//        bool isLocationAllowed = await HwaBeacon().checkLocationService();
 
-	    if (Platform.isAndroid) {
-		    // 안드로이드 위치 서비스 처리
+
+	    if(Platform.isAndroid) {
+            bool isLocationAllowed = await HwaBeacon().checkLocationService();
+            // 안드로이드 위치 서비스 처리
 		    if(isLocationAllowed == false) {
 			    isAllowedGPS = false;
                 isAuthGPS = false;
@@ -505,9 +509,9 @@ class _HwaTabState extends State<HwaTab> {
                     '단화 생성하기'
                 ),
                 content: TextField(
+                    keyboardType: TextInputType.multiline,
                     controller: _textFieldController,
                     decoration: InputDecoration(
-
                         /// GPS 연동
                         hintText: _currentAddress ?? '단화방 이름을 입력해주세요.'
                     ),
