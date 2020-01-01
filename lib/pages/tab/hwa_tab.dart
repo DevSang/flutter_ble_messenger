@@ -79,6 +79,7 @@ class _HwaTabState extends State<HwaTab> {
 
     @override
     void initState() {
+
         super.initState();
         _initState();
         isLoading = false;
