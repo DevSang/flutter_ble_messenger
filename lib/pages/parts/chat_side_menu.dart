@@ -177,29 +177,27 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                     children: <Widget>[
                         Container(
                             color: Colors.white,
-                            height: ScreenUtil().setHeight(74),
+                            height: ScreenUtil().setHeight(72),
                             padding: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(10),
-                                bottom: ScreenUtil().setHeight(12),
                                 left: ScreenUtil().setWidth(20)
                             ),
                             child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                     Container(
-                                        width: ScreenUtil().setWidth(237),
+                                        width: ScreenUtil().setWidth(184),
                                         child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
                                                 Container (
                                                     margin: EdgeInsets.only(
-                                                        top: ScreenUtil().setHeight(9.5),
+                                                        top: ScreenUtil().setHeight(14.5),
                                                         bottom: ScreenUtil().setHeight(10)
                                                     ),
                                                     child: Row(
                                                         children: <Widget>[
                                                             Text(
-                                                                "단화방 정보",
+                                                                chatInfo.title,
                                                                 style: TextStyle(
                                                                     fontFamily: "assets/fonts/NotoSansKR-Medium.otf",
                                                                     height: 1,
@@ -208,21 +206,21 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                                     color: Color.fromRGBO(39, 39, 39, 1)
                                                                 ),
                                                             ),
-                                                            Container(
-                                                                height: ScreenUtil().setHeight(12),
-                                                                padding: EdgeInsets.only(
-                                                                    left: ScreenUtil().setWidth(11.5),
-                                                                ),
-                                                                child: Text(
-                                                                    chatInfo.userCount.total.toString(),
-                                                                    style: TextStyle(
-                                                                        height: 1,
-                                                                        fontSize: ScreenUtil().setSp(13),
-                                                                        letterSpacing: ScreenUtil().setWidth(-0.33),
-                                                                        color: Color.fromRGBO(107, 107, 107, 1)
-                                                                    ),
-                                                                ),
-                                                            ),
+//                                                            Container(
+//                                                                height: ScreenUtil().setHeight(12),
+//                                                                padding: EdgeInsets.only(
+//                                                                    left: ScreenUtil().setWidth(11.5),
+//                                                                ),
+//                                                                child: Text(
+//                                                                    chatInfo.userCount.total.toString(),
+//                                                                    style: TextStyle(
+//                                                                        height: 1,
+//                                                                        fontSize: ScreenUtil().setSp(13),
+//                                                                        letterSpacing: ScreenUtil().setWidth(-0.33),
+//                                                                        color: Color.fromRGBO(107, 107, 107, 1)
+//                                                                    ),
+//                                                                ),
+//                                                            ),
                                                         ],
                                                     ),
                                                 ),
@@ -240,18 +238,56 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                             ],
                                         )
                                     ),
+                                    Container(
+                                        width: ScreenUtil().setWidth(53),
+                                        height: ScreenUtil().setHeight(72),
+                                        decoration: BoxDecoration(
+                                            border: new Border(right: BorderSide(color:Color.fromRGBO(39, 39, 39, 0.4), width: 0.5))
+                                        ),
+                                        child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                                Container(
+                                                    width: ScreenUtil().setWidth(20),
+                                                    height: ScreenUtil().setHeight(20),
+                                                    decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                            image:AssetImage("assets/images/icon/howmanyIcon.png")
+                                                        ),
+                                                    ),
+                                                ),
+                                                Container(
+                                                    child:
+                                                    Text(
+                                                        chatInfo.userCount.total.toString(),
+                                                        textAlign: TextAlign.center,
+                                                        style: TextStyle(
+                                                            height: 1,
+                                                            fontFamily: 'NotoSans',
+                                                            fontWeight: FontWeight.w400,
+                                                            color:Color.fromRGBO(107, 107, 107, 1),
+                                                            fontSize: ScreenUtil().setSp(13),
+                                                            letterSpacing: ScreenUtil().setWidth(-0.33)
+                                                        ),
+                                                    ),
+                                                ),
+                                            ],
+                                        )
+                                    ),
                                     GestureDetector(
                                         child: Container(
                                             width: ScreenUtil().setWidth(53),
-                                            height: ScreenUtil().setHeight(60),
+                                            height: ScreenUtil().setHeight(72),
                                             child: Column(
                                                 crossAxisAlignment: CrossAxisAlignment.center,
+                                                mainAxisAlignment: MainAxisAlignment.center,
                                                 children: <Widget>[
                                                     Container(
                                                         width: ScreenUtil().setWidth(32),
                                                         height: ScreenUtil().setHeight(32),
                                                         margin: EdgeInsets.only(
-                                                            bottom: ScreenUtil().setHeight(6)
+                                                            bottom: ScreenUtil().setHeight(4)
                                                         ),
                                                         decoration: isLiked ? likeChat(context) : unlikeChat(context),
                                                     ),
@@ -262,6 +298,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                             textAlign: TextAlign.center,
                                                             style: TextStyle(
                                                                 height: 1,
+                                                                fontFamily: 'NotoSans',
+                                                                fontWeight: FontWeight.w400,
+                                                                color:Color.fromRGBO(107, 107, 107, 1),
                                                                 fontSize: ScreenUtil().setSp(13),
                                                                 letterSpacing: ScreenUtil().setWidth(-0.33)
                                                             ),
