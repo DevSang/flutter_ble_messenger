@@ -9,6 +9,8 @@ class Constant {
 
     static String PROFILE_IMG_URI;
 
+    static bool IS_CHANGE_PROFILE_IMG = false;
+
     static setUserIdx () async {
         var spf = await SharedPreferences.getInstance();
         USER_IDX = int.parse(spf.getString("userIdx"));
