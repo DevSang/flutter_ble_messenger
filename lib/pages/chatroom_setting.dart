@@ -6,6 +6,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_info.dart';
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Hwa/constant.dart';
+import 'dart:developer' as developer;
 
 /*
  * @project : HWA - Mobile
@@ -32,10 +39,23 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     List<String> inviteRange = ["좁게", "보통", "넓게"];
 
     bool isLoading;
+    bool isProfileLoading;
+
+    String profileImgUri;
+
+    CachedNetworkImage cachedNetworkImage;
 
     @override
     void initState() {
-        super.initState();
+
+	    profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?chat_idx=" + chatInfo.chatIdx.toString() + "&type=SMALL";
+
+	    cachedNetworkImage = CachedNetworkImage(
+			    imageUrl: profileImgUri,
+			    placeholder: (context, url) => CircularProgressIndicator(),
+			    errorWidget: (context, url, error) => Image.asset(chatInfo.chatImg,fit: BoxFit.cover),
+			    httpHeaders: Constant.HEADER
+	    );
 
         chatSettingUpdated.chatImg = chatInfo.chatImg;
         chatSettingUpdated.title = chatInfo.title;
@@ -45,6 +65,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
         chatSettingUpdated.mode = chatInfo.mode;
 
         isLoading = false;
+	    super.initState();
     }
 
     /*
@@ -118,6 +139,59 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
         } catch (e) {
             print("#### Error :: " + e.toString());
         }
+    }
+
+
+	/*
+	 * @project : HWA - Mobile
+	 * @author : hk
+	 * @date : 2020-01-02
+	 * @description : 단화방 프로필사진 업로드
+	 */
+    void updateRoomImg(int flag) async {
+	    File imageFile;
+
+	    if(flag == 0){
+		    // 사진첩 열기
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+	    } else {
+		    // 카메라 열기
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+	    }
+
+	    if(imageFile != null){
+		    setState(() {
+			    isProfileLoading = true;
+		    });
+
+		    //chat_idx
+
+		    Map<String, dynamic> paramMap = {
+			    "chat_idx" : chatInfo.chatIdx.toString()
+		    };
+
+		    // 파일 업로드 API 호출
+		    Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/profile/image", filePath: imageFile.path, paramMap: paramMap ,onSendProgress: (int sent, int total){
+			    print("$sent : $total");
+		    });
+
+		    if(response.statusCode == 200){
+			    await DefaultCacheManager().removeFile(profileImgUri);
+
+			    setState(() {
+				    cachedNetworkImage = CachedNetworkImage(
+						    imageUrl: profileImgUri,
+						    placeholder: (context, url) => CircularProgressIndicator(),
+						    errorWidget: (context, url, error) => Icon(Icons.error),
+						    httpHeaders: Constant.HEADER
+				    );
+
+				    isProfileLoading = false;
+			    });
+		    } else {
+			    developer.log("## 이미지파일 업로드에 실패하였습니다.");
+		    }
+	    }
     }
 
     Widget build(BuildContext context) {
@@ -227,15 +301,18 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                 ),
                                 child: ClipRRect(
                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(22.5)),
-                                    child: Image.asset(
-                                        chatInfo.chatImg,
-                                        fit: BoxFit.cover,
-                                    )
+                                    child: cachedNetworkImage
+//	                                    Image.asset(
+//	                                        chatInfo.chatImg,
+//	                                        fit: BoxFit.cover,
+//	                                    )
+
+
                                 ),
                             ),
                         ),
                         onTap: () {
-                            // TODO: Gallery
+                            updateRoomImg(0);
                         },
                     ),
                     Positioned(
@@ -254,7 +331,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                 )
                             ),
                             onTap:(){
-                                // TODO: Gallery
+	                            updateRoomImg(1);
                             }
                         )
                     )
