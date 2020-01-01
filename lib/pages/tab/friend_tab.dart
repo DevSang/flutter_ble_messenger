@@ -262,7 +262,6 @@ class _FriendTabState extends State<FriendTab> {
             children: <Widget>[
                 // 친구 검색
                 buildSearch(),
-
                 Flexible(
                     child: ListView(
                         children: <Widget>[
@@ -271,6 +270,7 @@ class _FriendTabState extends State<FriendTab> {
 
                             // 친구 리스트
                             buildFriendList('친구 목록', friendList, true)
+
                         ],
                     ),
                 ),
@@ -360,32 +360,46 @@ class _FriendTabState extends State<FriendTab> {
                         )
                     ),
                     friendInfoList.length == 0 ?
-                        Container(
-                            height: title == '친구 목록' ? ScreenUtil().setHeight( (5 - requestList.length) * 62 ) : ScreenUtil().setHeight(62),
-                            child: Center(
-                                    child:Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                            Text(
-                                                title == '친구 목록' ? "아직 추가된 친구가 없어요." : "새로운 친구 요청이 없어요.",
-                                                style: TextStyle(
-                                                    fontFamily: "NotoSans",
-                                                    fontWeight: FontWeight.w400,
-                                                    fontSize: ScreenUtil().setSp(14),
-                                                    letterSpacing: ScreenUtil().setWidth(-0.65),
-                                                    color: Color.fromRGBO(39, 39, 39, 0.2),
+                        Column(
+                            children: <Widget>[
+                                Container(
+                                    height: title == '친구 목록' ? ScreenUtil().setHeight( (5 - requestList.length) * 62 ) : ScreenUtil().setHeight(62),
+                                    child: Center(
+                                        child:Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                                Text(
+                                                    title == '친구 목록' ? "아직 추가된 친구가 없어요." : "새로운 친구 요청이 없어요.",
+                                                    style: TextStyle(
+                                                        fontFamily: "NotoSans",
+                                                        fontWeight: FontWeight.w400,
+                                                        fontSize: ScreenUtil().setSp(14),
+                                                        letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                        color: Color.fromRGBO(39, 39, 39, 0.2),
+                                                    ),
                                                 ),
-                                            )
-                                        ]
+                                                title == '친구 목록' ? Column(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    children: <Widget>[
+                                                        Image.asset(
+                                                            'assets/images/icon/appIcon2.png',
+                                                            width: ScreenUtil().setWidth(50),
+                                                            height: ScreenUtil().setHeight(50),
+                                                        )
+                                                    ],
+                                                ) : Container()
+                                            ]
+                                        )
                                     )
-                                )
-                            )
+                                ),
+                            ],
+                        )
+
                         : ListView.builder(
                             physics: new NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             itemCount: friendInfoList.length,
-
                             itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], isFriend, index == friendInfoList.length - 1, index)
                         )
                 ],
