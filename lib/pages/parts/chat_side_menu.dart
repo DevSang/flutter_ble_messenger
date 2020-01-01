@@ -33,22 +33,24 @@ class ChatSideMenu extends StatefulWidget {
     bool isLiked;
     int likeCount;
     final List<ChatJoinInfo> chatJoinInfoList;
+    final List<ChatJoinInfo> joinedUserNow;
     final StompClient sc;
     final String from;
-    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.sc, this.from});
+    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.joinedUserNow, this.sc, this.from});
 
     @override
-    State createState() => new ChatSideMenuState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: chatJoinInfoList);
+    State createState() => new ChatSideMenuState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: chatJoinInfoList, joinedUserNow: joinedUserNow);
 }
 
 
 class ChatSideMenuState extends State<ChatSideMenu> {
-    ChatSideMenuState({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList});
+    ChatSideMenuState({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.joinedUserNow});
 
     final ChatInfo chatInfo;
     bool isLiked;
     int likeCount;
     final List<ChatJoinInfo> chatJoinInfoList;
+    final List<ChatJoinInfo> joinedUserNow;
 
     List<ChatJoinInfo> userInfoListBle = <ChatJoinInfo>[];
     List<ChatJoinInfo> userInfoListBleOut = <ChatJoinInfo>[];
@@ -86,6 +88,19 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                         break;
                     case "ONLINE": userInfoListOnline.add(chatJoinInfo);
                         break;
+                }
+            }
+            if (joinedUserNow.length > 0) {
+                for(var chatJoinInfo in joinedUserNow) {
+
+                    switch(chatJoinInfo.joinType) {
+                        case "BLE_JOIN": userInfoListBle.add(chatJoinInfo);
+                        break;
+                        case "BLE_OUT": userInfoListBleOut.add(chatJoinInfo);
+                        break;
+                        case "ONLINE": userInfoListOnline.add(chatJoinInfo);
+                        break;
+                    }
                 }
             }
             setState(() { });
@@ -267,7 +282,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                 Container(
                                                     child:
                                                     Text(
-                                                        chatInfo.userCount.total.toString(),
+                                                        (chatInfo.userCount.total + joinedUserNow.length).toString(),
                                                         textAlign: TextAlign.center,
                                                         style: TextStyle(
                                                             height: 1,
