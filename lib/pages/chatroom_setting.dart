@@ -125,7 +125,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                 width: ScreenUtil().setWidth(90),
                                 height: ScreenUtil().setHeight(90),
                                 margin: EdgeInsets.only(
-                                    top: ScreenUtil().setHeight(41),
+                                    top: ScreenUtil().setHeight(42),
                                     bottom: ScreenUtil().setHeight(46),
                                 ),
                                 decoration: BoxDecoration(
