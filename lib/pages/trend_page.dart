@@ -202,7 +202,7 @@ class _TrendPageState extends State<TrendPage> {
     return Scaffold(
         appBar: AppBar(
             centerTitle: true,
-            backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+            backgroundColor: Color.fromRGBO(250, 250, 250, 1),
             title: Text(
               "실시간 단화 트랜드",
               style: TextStyle(

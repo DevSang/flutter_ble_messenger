@@ -218,7 +218,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 ),
                 centerTitle: true,
                 elevation: 0,
-                backgroundColor: Colors.white,
+                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
                 brightness: Brightness.light,
             ),
             body:
