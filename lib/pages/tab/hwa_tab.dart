@@ -6,6 +6,7 @@ import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -621,13 +622,36 @@ class _HwaTabState extends State<HwaTab> {
                                 child: Image.asset(
                                     'assets/images/icon/navIconNew.png'),
                                 onTap: () =>
-                                {
-                                    if (Platform.isAndroid) {
-                                        _displayAndroidDialog(context)
-                                    } else if (Platform.isIOS) {
-                                        _displayIosDialog(context)
-                                    }
-                                },
+//                                {
+//                                    if (Platform.isAndroid) {
+//                                        _displayAndroidDialog(context)
+//                                    } else if (Platform.isIOS) {
+//                                        _displayIosDialog(context)
+//                                    }
+//                                },
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) => CustomDialog(
+                                        title: '단화 생성하기',
+                                        type: 1,
+                                        leftButtonText: "취소",
+                                        rightButtonText: "생성하기",
+                                        value: _currentAddress,
+                                        hintText: _currentAddress == '위치 검색 중..'
+                                                ? '단화방 이름을 입력해주세요.'
+                                                : _currentAddress,
+                                        func: (String titleValue) {
+                                            print("titleValue");
+                                            _createChat(titleValue);
+                                            Navigator.of(context).pop();
+
+                                            setState(() {
+                                                isLoading = true;
+                                            });
+                                        },
+                                        maxLength: 15,
+                                    ),
+                                )
                             )
                         ),
                     ],

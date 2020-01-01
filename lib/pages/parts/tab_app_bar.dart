@@ -118,8 +118,8 @@ class TabAppBarState extends State<TabAppBar> {
                                                         title,
                                                         style: TextStyle(
                                                             height: 1,
-                                                            fontFamily: "NotoSansKR-Bold",
-                                                            fontWeight: FontWeight.w800,
+                                                            fontFamily: "NotoSans",
+                                                            fontWeight: FontWeight.w600,
                                                             fontSize: ScreenUtil(allowFontScaling: true).setSp(20),
                                                             color: Color.fromRGBO(39, 39, 39, 1),
                                                             letterSpacing: ScreenUtil().setWidth(-0.5),

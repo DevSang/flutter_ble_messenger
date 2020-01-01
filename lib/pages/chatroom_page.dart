@@ -81,7 +81,6 @@ class ChatScreenState extends State<ChatroomPage> {
     // 현재 채팅 Advertising condition
     BoxDecoration adCondition;
     // 현재 채팅 Advertising condition
-    // 현재 채팅 Advertising condition
     bool openedNf;
     // ChatTextField Focused
     bool isFocused;
@@ -130,8 +129,6 @@ class ChatScreenState extends State<ChatroomPage> {
         isEmpty = true;
         inputLineCount = 1;
         _inputHeight = 36;
-
-        print("***************" + joinInfo.length.toString());
 
         getMessageList();
     }
