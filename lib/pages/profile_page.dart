@@ -184,6 +184,7 @@ class _ProfilePageState extends State <ProfilePage>{
 						    httpHeaders: Constant.HEADER
 				    );
 
+				    Constant.IS_CHANGE_PROFILE_IMG = true;
 
                     isLoading = false;
 			    });

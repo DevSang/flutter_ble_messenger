@@ -42,7 +42,7 @@ class TabAppBarState extends State<TabAppBar> {
 
     TabAppBarState({@required this.title, this.leftChild});
 
-    ImageProvider profileImg;
+    StatefulWidget profileImg;
 
     @override
     void initState() {
@@ -51,24 +51,73 @@ class TabAppBarState extends State<TabAppBar> {
         super.initState();
     }
 
+    /*
+     * @author : hk
+     * @date : 2020-01-02
+     * @description : 상단 탭바가 페이지 이동시마다 리로딩되어 임시 조치, TODO
+     */
     void _initState() async {
-	    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER, errorListener: (){
-		    profileImg = AssetImage("assets/images/icon/profile.png");
-	    });
+	    if(Constant.APP_BAR_LOADING_COMPLETE == false){
+		    getCacheImg();
+		    Constant.APP_BAR_LOADING_COMPLETE = true;
+	    }else{
+		    if(Constant.APP_BAR_LOADING_ERROR == true){
+			    profileImg = Image.asset('assets/images/icon/profile.png');
+		    }else{
+			    getCacheImg();
+		    }
+	    }
     }
 
     /*
      * @author : hk
      * @date : 2020-01-02
-     * @description : 프로필 이미지 변경됐을 경우 캐시 지우고 새로 로딩
+     * @description : 사용자 프로필 이미지 캐시로 가져오기
+     */
+    getCacheImg(){
+	    profileImg = CachedNetworkImage(
+			    imageUrl: Constant.PROFILE_IMG_URI,
+			    placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
+			    errorWidget: (context, url, error) => getErrorWidget(),
+			    httpHeaders: Constant.HEADER
+	    );
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-02
+     * @description : 사용자 이미지 캐시 실패시 다음부터 기본 Asset 이미지 제공
+     */
+    getErrorWidget(){
+    	Constant.APP_BAR_LOADING_ERROR = true;
+    	return Image.asset('assets/images/icon/profile.png');
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-02
+     * @description : 프로필 이미지 변경 됐을 경우 캐시 지우고 새로 로딩
      */
     void expireProfileImgCache() async {
-	    if(Constant.IS_CHANGE_PROFILE_IMG){
-		    profileImg.evict();
-		    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER, errorListener: (){
-			    profileImg = AssetImage("assets/images/icon/profile.png");
-		    });
+	    if(Constant.IS_CHANGE_PROFILE_IMG && Constant.APP_BAR_LOADING_ERROR == false){
+		    await DefaultCacheManager().removeFile(Constant.PROFILE_IMG_URI);
+
+		    profileImg = CachedNetworkImage(
+			    imageUrl: Constant.PROFILE_IMG_URI,
+			    placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
+			    errorWidget: (context, url, error) => getErrorWidget(),
+			    httpHeaders: Constant.HEADER
+		    );
 	    }
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-02
+     * @description : 기본 프로파일 이미지 얻기
+     */
+    ImageProvider getDefaultAssetProfileImg(){
+    	return AssetImage("assets/images/icon/profile.png");
     }
 
     /*
@@ -175,16 +224,15 @@ class TabAppBarState extends State<TabAppBar> {
                                                     width: ScreenUtil().setHeight(38),
                                                     height: ScreenUtil().setHeight(38),
                                                     decoration: BoxDecoration(
-                                                        image: DecorationImage(
-//                                                            image: CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER),
-                                                            image: profileImg,
-//		                                                        image: isLoadingComplete
-//		                                                            ? CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER)
-//		                                                            : AssetImage("assets/images/icon/profile.png"),
-                                                            fit: BoxFit.cover
-                                                        ),
                                                         shape: BoxShape.circle
-                                                    )
+                                                    ),
+	                                                child: ClipRRect(
+			                                                borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
+			                                                child: profileImg
+//	                                  child: proFileImgUri == null
+//	                                      ? Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
+//	                                      : Image.network(proFileImgUri, scale: 1.0, headers: header)
+	                                                ),
                                                 ),
                                             ),
                                             Positioned(
