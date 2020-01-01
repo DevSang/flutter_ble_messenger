@@ -163,7 +163,7 @@ class _ChatTabState extends State<ChatTab> {
                     vertical: ScreenUtil().setWidth(16),
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Color.fromRGBO(250, 250, 250, 1),
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                   boxShadow: [
                     new BoxShadow(
@@ -176,24 +176,26 @@ class _ChatTabState extends State<ChatTab> {
                   ]),
                 child: Row(
                     children: <Widget>[
-                      // 단화방 이미지
-                    Container(
-                        width: sameSize * 50,
-                        height: sameSize * 50,
-                        margin: EdgeInsets.only(
-                        right: ScreenUtil().setWidth(15),
-                        ),
-                        child: ClipRRect(
-                            borderRadius:
-                                new BorderRadius.circular(ScreenUtil().setWidth(10)),
-                            child: Image.asset(
-                                chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-                                width: sameSize * 50,
-                                height: sameSize * 50,
-                                fit: BoxFit.cover,
+                        // 단화방 이미지
+                        Container(
+                            width: sameSize * 50,
+                            height: sameSize * 50,
+                            margin: EdgeInsets.only(
+                                right: ScreenUtil().setWidth(15),
                             ),
-                        )
-                    ),
+                            child: ClipRRect(
+                                borderRadius:
+                                    new BorderRadius.circular(
+                                        ScreenUtil().setWidth(10)
+                                    ),
+                                child: Image.asset(
+                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
+                                    width: sameSize * 50,
+                                    height: sameSize * 50,
+                                    fit: BoxFit.cover,
+                                ),
+                            )
+                        ),
                     // 단화방 정보
                     Container(
                         width: ScreenUtil().setWidth(250),
