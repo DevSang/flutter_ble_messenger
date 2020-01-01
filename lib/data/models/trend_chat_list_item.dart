@@ -1,7 +1,7 @@
 import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 
-class ChatListItem {
+class TrendChatListItem {
     final int chatIdx;
     final String chatImg;
     final String title;
@@ -10,9 +10,10 @@ class ChatListItem {
     double score;               // 랭킹 점수
     ChatMessage lastMsg;		// 마지막 메시지
     ChatCountUser userCount;	// 참여 사용자 수
+    int likeCount;	            // 좋아요 수
     int adReceiveTs;	        // AD 받아서 chatList에 넣은 시간
 
-    ChatListItem({
+    TrendChatListItem({
         this.chatIdx,
         this.chatImg,
         this.title,
@@ -20,13 +21,14 @@ class ChatListItem {
         this.lon,
         this.score,
         this.lastMsg,
-        this.userCount
+        this.userCount,
+        this.likeCount
     });
 
-    factory ChatListItem.fromJSON (Map<String, dynamic> jsonData) {
-        return ChatListItem (
+    factory TrendChatListItem.fromJSON (Map<String, dynamic> jsonData) {
+        return TrendChatListItem (
             chatIdx : jsonData['roomIdx'],
-            chatImg : jsonData['roomImg'] ?? 'assets/images/icon/thumbnailUnset1.png',
+            chatImg : jsonData['roomImg'],
             title : jsonData['title'] ?? "단화방 제목입니다.",
             lat : jsonData['lat'],
             lon : jsonData['lon'],
@@ -34,7 +36,8 @@ class ChatListItem {
             lastMsg : new ChatMessage.fromJSON(jsonData['lastMsg']
                 ?? {"type":null, "roomIdx":null, "msgIdx":null, "senderIdx":null, "nickname":null, "message":null, "userCountObj":null, "createTs": null}),
             userCount : new ChatCountUser.fromJSON(jsonData['userCount']
-                ?? {"roomIdx":null, "bleJoin":null, "bleOut":null, "online":null, "totalCount":null})
+                ?? {"roomIdx":0, "bleJoin":0, "bleOut":0, "online":0, "totalCount":0}),
+            likeCount : jsonData['likeCount'] ?? 0
         );
     }
     /*
@@ -43,7 +46,7 @@ class ChatListItem {
      * @description : ChatListItem 의 같음 여부 체크 위해 재정의
      */
     @override
-    bool operator ==(Object other) => other is ChatListItem && other.chatIdx == chatIdx;
+    bool operator ==(Object other) => other is TrendChatListItem && other.chatIdx == chatIdx;
 
     @override
     int get hashCode => chatIdx.hashCode;

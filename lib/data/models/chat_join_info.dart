@@ -8,20 +8,22 @@ class ChatJoinInfo {
     /// 추후 교체
     String joinType;				// User Join Type
     int userIdx;			    // User Idx
-//    int userNick;			    // User Nick
+    String userNick;			    // User Nick
 
     ChatJoinInfo({
         this.joinType
         , this.userIdx
-//        , this.userNick
+        , this.userNick
     });
 
 
     factory ChatJoinInfo.fromJSON (Map<String, dynamic> jsonData) {
+        Map<String, dynamic> userVal = json.decode(jsonData['jb_user_data']['value']);
+
         return ChatJoinInfo (
             joinType : jsonData['join_type'],
             userIdx : jsonData['user_idx'],
-//            masterUserIdx : jsonData['masterUserIdx'] ?? jsonData['createUserIdx'],
+            userNick : userVal['nickname'],
         );
     }
 }

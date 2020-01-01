@@ -144,7 +144,7 @@ class _SignInPageState extends State<SignInPage> {
         if (response.statusCode == 200) {
             developer.log("# 로그인에 성공하였습니다.");
             developer.log("# 로그인정보 :" + response.body);
-            RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+            RedToast.toast("로그인에 성공하였습니다.", ToastGravity.BOTTOM);
 
             pushTokenRequest();
 
@@ -153,7 +153,7 @@ class _SignInPageState extends State<SignInPage> {
 
         } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
             developer.log('# New user');
-            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
+            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.BOTTOM);
 
             developer.log('# [Navigator] SignInPage -> SignUpPage');
             Navigator.push(context,
@@ -167,7 +167,7 @@ class _SignInPageState extends State<SignInPage> {
             );
         } else {
             developer.log('#Request failed：${response.statusCode}');
-            RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+            RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.BOTTOM);
         }
     }
 
@@ -179,7 +179,7 @@ class _SignInPageState extends State<SignInPage> {
     loginCodeRequest() async {
         if(_phoneController.text == '' ){
             developer.log("# Phone number is empty.");
-            RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
+            RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.BOTTOM);
         } else {
             FocusScope.of(context).requestFocus(new FocusNode());
             developer.log("# Requerst phone number : " + _phoneController.text);
@@ -199,14 +199,14 @@ class _SignInPageState extends State<SignInPage> {
             if (response.statusCode == 200 || response.statusCode == 202) {
                 developer.log("# Auth code requset info :" + response.body);
                 developer.log("# 인증문자 요청에 성공하였습니다.");
-                RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
+                RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.BOTTOM);
             } else {
                 if(response.statusCode == 406){
                     developer.log("# This is not a HWA user.");
                     RedToast.toast("가입 되어있지 않은 번호입니다. 번호를 다시 확인해주세요.",ToastGravity.TOP);
                 } else {
                     developer.log('# Request failed：${response.statusCode}');
-                    RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+                    RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.BOTTOM);
                 }
             }
         }
@@ -223,7 +223,7 @@ class _SignInPageState extends State<SignInPage> {
         try {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
-                RedToast.toast("인증번호를 입력해주세요.", ToastGravity.TOP);
+                RedToast.toast("인증번호를 입력해주세요.", ToastGravity.BOTTOM);
             } else {
                 developer.log("# Auth number : " + _authCodeController.text);
                 String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
@@ -251,12 +251,12 @@ class _SignInPageState extends State<SignInPage> {
                     SPF.setString('token', token.toString());
                     SPF.setString('userIdx', userIdx.toString());
 
-                    RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+                    RedToast.toast("로그인에 성공하였습니다.", ToastGravity.BOTTOM);
                     pushTokenRequest();
                     developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
                 } else {
-                    RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
+                    RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.BOTTOM);
                     developer.log('#Request failed：${response.statusCode}');
                 }
             }

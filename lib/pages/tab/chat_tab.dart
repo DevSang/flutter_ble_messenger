@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'dart:developer' as developer;
+
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
@@ -9,6 +11,7 @@ import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -27,11 +30,11 @@ class _ChatTabState extends State<ChatTab> {
 
     @override
     void initState() {
-    super.initState();
-    _getChatList();
+	    super.initState();
+	    _getChatList();
 
-    sameSize = GetSameSize().main();
-    isLoading = false;
+	    sameSize = GetSameSize().main();
+	    isLoading = false;
     }
 
     /*
@@ -52,7 +55,7 @@ class _ChatTabState extends State<ChatTab> {
               jsonParse = info;
               chatInfo = new ChatListItem.fromJSON(jsonParse);
               // 채팅 리스트에 추가
-              chatList.insert(0, chatInfo);
+              chatList.add(chatInfo);
           }
 
           setState(() {});
@@ -104,7 +107,7 @@ class _ChatTabState extends State<ChatTab> {
 
             Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return ChatroomPage(
-                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, isFromMain: false
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "ChatTab"
                 );
             }));
 
@@ -118,9 +121,9 @@ class _ChatTabState extends State<ChatTab> {
     @override
     Widget build(BuildContext context) {
       return Scaffold(
-          backgroundColor: Color.fromRGBO(214, 214, 214, 1),
           appBar: TabAppBar(title: '참여했던 단화방', leftChild: Container(height: 0)),
           body: Container(
+              color: Color.fromRGBO(214, 214, 214, 1),
               padding: EdgeInsets.symmetric(
                   horizontal: ScreenUtil().setWidth(16),
               ),
@@ -184,7 +187,7 @@ class _ChatTabState extends State<ChatTab> {
                             borderRadius:
                                 new BorderRadius.circular(ScreenUtil().setWidth(10)),
                             child: Image.asset(
-                                chatListItem.chatImg,
+                                chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
                                 width: sameSize * 50,
                                 height: sameSize * 50,
                                 fit: BoxFit.cover,
@@ -266,7 +269,7 @@ class _ChatTabState extends State<ChatTab> {
                                                     right: ScreenUtil().setWidth(5),
                                                 ),
                                                 child: Text(
-                                                    GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime),
+	                                                chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : "메시지 없음",
                                                     style: TextStyle(
                                                         height: 1,
                                                         fontFamily: "NotoSans",
