@@ -112,6 +112,7 @@ flutter:
     - assets/images/iosLaunchScreen/visualImage.png
     #Icon Image
     - assets/images/icon/appIcon.jpg
+    - assets/images/icon/appIcon2.png
     - assets/images/icon/crown.png
     - assets/images/icon/iconActionMenuOpen.png
     - assets/images/icon/iconAddress.png
