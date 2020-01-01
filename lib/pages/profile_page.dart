@@ -1,9 +1,15 @@
+import 'dart:convert';
+import 'dart:developer' as developer;
+
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/custom_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/pages/signin_page.dart';
 
 
@@ -18,6 +24,19 @@ class _ProfilePageState extends State <ProfilePage>{
 
     bool isSwitched = true;
     double sameSize = GetSameSize().main();
+
+    String nickName;
+    String intro;
+    String phoneNum;
+    bool allowedPush = true;
+    bool allowedFriend = true;
+
+    @override
+    void initState() {
+        super.initState();
+
+        getSettingInfo();
+    }
 
   /*
     * @author : hs
@@ -45,6 +64,34 @@ class _ProfilePageState extends State <ProfilePage>{
      * @description : Switch Change
     */
     void _onSwitchChanged(bool value) {
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-01
+     * @description : 프로필 설정 받아오기
+    */
+    void getSettingInfo() async {
+
+        try {
+            /// 참여 타입 수정
+            String uri = "/api/v2/user/profile?target_user_idx=" + Constant.USER_IDX.toString();
+            final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
+
+            Map<String, dynamic> jsonParse = json.decode(response.body);
+            Map<String, dynamic> profile = jsonParse['data'];
+
+            setState(() {
+                nickName = profile['nickname'];
+                intro = profile['description'];
+                phoneNum = profile['phone_number'];
+                allowedPush = profile['is_push_allowed'];
+                allowedFriend = profile['is_friend_request_allowed'];
+            });
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
     }
 
     @override
@@ -165,13 +212,13 @@ class _ProfilePageState extends State <ProfilePage>{
                 children: <Widget>[
                     buildSettingHeader("프로필"),
 
-                    buildTextItem("사용자 이름", "강희근", false),
+                    buildTextItem("사용자 이름", nickName ?? "", false),
 
-                    buildTextItem("한 줄 소개", "안녕하세요 강희근입니다", false),
+                    buildTextItem("한 줄 소개", intro ?? "", false),
 
-                    buildTextItem("연락처", "010-1234-5678", false),
+                    buildTextInfoItem("연락처", phoneNum ?? "", true),
 
-                    buildTextItem("명함 관리", "", true)
+//                    buildTextItem("명함 관리", "", true)
                 ]
             ),
         );
@@ -183,9 +230,9 @@ class _ProfilePageState extends State <ProfilePage>{
               children: <Widget>[
                   buildSettingHeader("앱 설정"),
 
-                  buildSwitchItem("푸쉬 알림", false, false),
+                  buildSwitchItem("푸쉬 알림", allowedPush, false),
 
-                  buildSwitchItem("친구 요청 허용", true, true),
+                  buildSwitchItem("친구 요청 허용", allowedFriend, true),
               ]
           )
       );
@@ -205,7 +252,7 @@ class _ProfilePageState extends State <ProfilePage>{
                       }
                   ),
 
-                  buildTextItem("탈퇴하기", "", false),
+                  buildTextItem("탈퇴하기", "", true),
 
               ]
           )
@@ -251,7 +298,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 border: Border(
                     bottom: BorderSide(
                         width: ScreenUtil().setWidth(1),
-                        color: isLast ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(39, 39, 39, 0.15)
+                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
                     )
                 )
             ),
@@ -270,31 +317,48 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Container(
-                        child: Row(
-                            children: <Widget>[
-                                Text(
-                                    value,
-                                    style: TextStyle(
-                                        height: 1,
-                                        fontFamily: "NotoSans",
-                                        fontWeight: FontWeight.w400,
-                                        color: Color.fromRGBO(107, 107, 107, 1),
-                                        fontSize: ScreenUtil.getInstance().setSp(15),
-                                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
-                                    )
-                                ),
-                                Container(
-                                    width: ScreenUtil().setWidth(20),
-                                    height: ScreenUtil().setHeight(20),
-                                    margin: EdgeInsets.only(
-                                        left: ScreenUtil().setWidth(6)
+                        child: InkWell(
+                            child: Row(
+                                children: <Widget>[
+                                    Text(
+                                        value,
+                                        style: TextStyle(
+                                            height: 1,
+                                            fontFamily: "NotoSans",
+                                            fontWeight: FontWeight.w400,
+                                            color: Color.fromRGBO(107, 107, 107, 1),
+                                            fontSize: ScreenUtil.getInstance().setSp(15),
+                                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                                        )
                                     ),
-                                    child: Image.asset(
-                                        'assets/images/icon/iconMore.png'
+                                    Container(
+                                        width: ScreenUtil().setWidth(20),
+                                        height: ScreenUtil().setHeight(20),
+                                        margin: EdgeInsets.only(
+                                            left: ScreenUtil().setWidth(6)
+                                        ),
+                                        child: Image.asset(
+                                            'assets/images/icon/iconMore.png'
+                                        )
                                     )
-                                )
-                            ],
-                        ),
+                                ],
+                            ),
+                            onTap: (){
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) => CustomDialog(
+                                        title: title,
+                                        type: 1,
+                                        leftButtonText: "취소",
+                                        rightButtonText: "저장하기",
+                                        value: value,
+                                        func: () => {
+
+                                        }
+                                    ),
+                                );
+                            },
+                        )
                     )
                 ],
             )
@@ -314,7 +378,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 border: Border(
                     bottom: BorderSide(
                         width: ScreenUtil().setWidth(1),
-                        color: isLast ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(39, 39, 39, 0.15)
+                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
                     )
                 )
             ),
@@ -347,6 +411,54 @@ class _ProfilePageState extends State <ProfilePage>{
                                 ScreenUtil().setWidth(0)
                             ),
                             blurRadius: 2
+                        )
+                    )
+                ],
+            )
+        );
+    }
+
+
+    Widget buildTextInfoItem(String title, String value, bool isLast) {
+        return Container(
+            height: ScreenUtil().setHeight(49),
+            margin: EdgeInsets.only(
+                left: ScreenUtil().setWidth(16)
+            ),
+            padding: EdgeInsets.only(
+                right: ScreenUtil().setWidth(16)
+            ),
+            decoration: BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                        width: ScreenUtil().setWidth(1),
+                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                    )
+                )
+            ),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                    Text(
+                        title,
+                        style: TextStyle(
+                            height: 1,
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            color: Color.fromRGBO(39, 39, 39, 1),
+                            fontSize: ScreenUtil.getInstance().setSp(15),
+                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                        )
+                    ),
+                    Text(
+                        value,
+                        style: TextStyle(
+                            height: 1,
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w400,
+                            color: Color.fromRGBO(107, 107, 107, 1),
+                            fontSize: ScreenUtil.getInstance().setSp(15),
+                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
                         )
                     )
                 ],
