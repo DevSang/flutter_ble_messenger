@@ -15,6 +15,8 @@ import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/pages/signin_page.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -37,16 +39,24 @@ class _ProfilePageState extends State <ProfilePage>{
 
     bool isLoading;
 
-    FadeInImage profileImg;
-	String profileImgUri;
+    String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
 
+    CachedNetworkImage cachedNetworkImage;
 
     @override
     void initState() {
-        super.initState();
         isLoading = false;
 
+        cachedNetworkImage = CachedNetworkImage(
+	        imageUrl: profileImgUri,
+	        placeholder: (context, url) => CircularProgressIndicator(),
+	        errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover),
+	        httpHeaders: Constant.HEADER
+        );
+
         getSettingInfo();
+
+	    super.initState();
     }
 
   /*
@@ -90,13 +100,6 @@ class _ProfilePageState extends State <ProfilePage>{
                 allowedPush = profile['is_push_allowed'];
                 allowedFriend = profile['is_friend_request_allowed'];
             });
-
-            // Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
-
-//            profileImg = Image.network(proFileImgUri, scale: 1.0, headers: header);
-//            profileImg = Image.network("https://ss.sdfsdf/c", scale: 1.0, headers: header);
-
-//	        profileImg =
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
@@ -142,18 +145,6 @@ class _ProfilePageState extends State <ProfilePage>{
         });
 
         Navigator.of(context).pop();
-
-    }
-
-    getProfileImage() {
-	    return FadeInImage(
-			    placeholder: AssetImage('assets/images/icon/thumbnailUnset1.png'),
-			    image: NetworkImage(
-					    Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL"
-					    , scale: 1
-					    , headers: Constant.HEADER),
-			    fadeInDuration: Duration(milliseconds: 200)
-	    );
     }
 
     /*
@@ -162,7 +153,6 @@ class _ProfilePageState extends State <ProfilePage>{
 	 * @description : 프로필 사진 업로드
 	 */
     void uploadProfileImg(int flag) async {
-
 	    File imageFile;
 
 	    if(flag == 1){
@@ -173,19 +163,27 @@ class _ProfilePageState extends State <ProfilePage>{
 		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
 	    }
 
-	    // 파일 업로드 API 호출
-	    Response response = await CallApi.fileUploadCall(url: "/api/v2/user/profile/image", filePath: imageFile.path, onSendProgress: (int sent, int total){
-		    print("$sent : $total");
-	    });
-
-	    if(response.statusCode == 200){
-		    setState(() {
-//			    proFileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+	    if(imageFile != null){
+		    // 파일 업로드 API 호출
+		    Response response = await CallApi.fileUploadCall(url: "/api/v2/user/profile/image", filePath: imageFile.path, onSendProgress: (int sent, int total){
+			    print("$sent : $total");
 		    });
-	    } else {
-		    developer.log("## 이미지파일 업로드에 실패하였습니다.");
-	    }
 
+		    if(response.statusCode == 200){
+			    await DefaultCacheManager().removeFile(profileImgUri);
+
+			    setState(() {
+				    cachedNetworkImage = CachedNetworkImage(
+						    imageUrl: profileImgUri,
+						    placeholder: (context, url) => CircularProgressIndicator(),
+						    errorWidget: (context, url, error) => Icon(Icons.error),
+						    httpHeaders: Constant.HEADER
+				    );
+			    });
+		    } else {
+			    developer.log("## 이미지파일 업로드에 실패하였습니다.");
+		    }
+	    }
     }
 
     @override
@@ -274,7 +272,7 @@ class _ProfilePageState extends State <ProfilePage>{
                                   ),
                                   child: ClipRRect(
                                       borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
-                                      child: getProfileImage()
+                                      child: cachedNetworkImage
 //	                                  child: proFileImgUri == null
 //	                                      ? Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
 //	                                      : Image.network(proFileImgUri, scale: 1.0, headers: header)
