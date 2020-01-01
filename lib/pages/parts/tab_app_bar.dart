@@ -42,50 +42,30 @@ class TabAppBarState extends State<TabAppBar> {
 
     TabAppBarState({@required this.title, this.leftChild});
 
-    // 사용자 프로필 이미지
-    CachedNetworkImage profileImage;
-
-    bool isLoadingComplete = false;
-
-    //AssetImage("assets/images/icon/setIcon.png")
+    CachedNetworkImageProvider profileImg;
 
     @override
     void initState() {
-	    _initState();
-
 	    setUserInfo();
-
+	    _initState();
         super.initState();
     }
 
     void _initState() async {
+	    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER);
+    }
 
-	    print("#########################");
-	    print("#########################");
-	    print("#########################");
-	    print("#########################" + isLoadingComplete.toString());
-
-
-
-
-	    await Constant.setUserIdx();
-	    await Constant.setHeader();
-	    isLoadingComplete = true;
-
-	    var file = await DefaultCacheManager().getSingleFile(Constant.PROFILE_IMG_URI);
-
-	    print("#########################" + file.toString());
-
-
-	    // 사용자 프로필 이미지 설정
-//	    profileImage = CachedNetworkImage(
-//			    imageUrl: Constant.PROFILE_IMG_URI,
-//			    placeholder: (context, url) => CircularProgressIndicator(),
-//			    errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover),
-//			    httpHeaders: Constant.HEADER
-//	    );
-	}
-
+    /*
+     * @author : hk
+     * @date : 2020-01-02
+     * @description : 프로필 이미지 변경됐을 경우 캐시 지우고 새로 로딩
+     */
+    void expireProfileImgCache() async {
+	    if(Constant.IS_CHANGE_PROFILE_IMG){
+		    profileImg.evict();
+		    profileImg = CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER);
+	    }
+    }
 
     /*
     * @author : hs
@@ -192,9 +172,11 @@ class TabAppBarState extends State<TabAppBar> {
                                                     height: ScreenUtil().setHeight(38),
                                                     decoration: BoxDecoration(
                                                         image: DecorationImage(
-                                                            image: isLoadingComplete
-		                                                            ? CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER)
-		                                                            : AssetImage("assets/images/icon/profile.png"),
+//                                                            image: CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER),
+                                                            image: profileImg,
+//		                                                        image: isLoadingComplete
+//		                                                            ? CachedNetworkImageProvider(Constant.PROFILE_IMG_URI, headers: Constant.HEADER)
+//		                                                            : AssetImage("assets/images/icon/profile.png"),
                                                             fit: BoxFit.cover
                                                         ),
                                                         shape: BoxShape.circle
@@ -226,7 +208,9 @@ class TabAppBarState extends State<TabAppBar> {
                                             MaterialPageRoute(builder: (context) {
                                                 return ProfilePage();
                                             })
-                                        );
+                                        ).then((val) => {
+	                                        expireProfileImgCache()
+                                        });
                                     },
                                 )
                             ),
