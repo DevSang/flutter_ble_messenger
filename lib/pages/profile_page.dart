@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/pages/signin_page.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -21,14 +22,19 @@ class _ProfilePageState extends State <ProfilePage>{
   /*
     * @author : hs
     * @date : 2019-12-28
-    * @description : 임시 로그아웃
+    * @description : 로그아웃
     */
     Future<void> logOut() async {
         SPF = await SharedPreferences.getInstance();
         await store.onReady;
-        SPF.remove('token');
-        store.delete("friendList");
-        store.delete("test");
+        await SPF.remove('token');
+        await store.delete("friendList");
+        await store.delete("test");
+
+        Navigator.of(context).pushAndRemoveUntil(
+	        MaterialPageRoute(builder: (BuildContext context) => SignInPage()),
+	        ModalRoute.withName('/login')
+        );
 
         return;
     }
@@ -195,9 +201,7 @@ class _ProfilePageState extends State <ProfilePage>{
                   InkWell(
                       child: buildTextItem("로그아웃", "", false),
                       onTap:() {
-                          logOut().then((value) {
-                              Navigator.of(context).popUntil((route) => route.isFirst);
-                          });
+                          logOut();
                       }
                   ),
 
