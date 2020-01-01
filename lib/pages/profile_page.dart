@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:io';
+import 'package:dio/dio.dart';
 
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/parts/loading.dart';
@@ -12,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/pages/signin_page.dart';
+import 'package:image_picker/image_picker.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -33,6 +36,10 @@ class _ProfilePageState extends State <ProfilePage>{
     bool allowedFriend;
 
     bool isLoading;
+
+    FadeInImage profileImg;
+	String profileImgUri;
+
 
     @override
     void initState() {
@@ -84,6 +91,13 @@ class _ProfilePageState extends State <ProfilePage>{
                 allowedFriend = profile['is_friend_request_allowed'];
             });
 
+            // Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
+
+//            profileImg = Image.network(proFileImgUri, scale: 1.0, headers: header);
+//            profileImg = Image.network("https://ss.sdfsdf/c", scale: 1.0, headers: header);
+
+//	        profileImg =
+
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
         }
@@ -128,6 +142,49 @@ class _ProfilePageState extends State <ProfilePage>{
         });
 
         Navigator.of(context).pop();
+
+    }
+
+    getProfileImage() {
+	    return FadeInImage(
+			    placeholder: AssetImage('assets/images/icon/thumbnailUnset1.png'),
+			    image: NetworkImage(
+					    Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL"
+					    , scale: 1
+					    , headers: Constant.HEADER),
+			    fadeInDuration: Duration(milliseconds: 200)
+	    );
+    }
+
+    /*
+	 * @author : hk
+	 * @date : 2020-01-01
+	 * @description : 프로필 사진 업로드
+	 */
+    void uploadProfileImg(int flag) async {
+
+	    File imageFile;
+
+	    if(flag == 1){
+		    // 사진첩 열기
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+	    } else {
+		    // 카메라 열기
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+	    }
+
+	    // 파일 업로드 API 호출
+	    Response response = await CallApi.fileUploadCall(url: "/api/v2/user/profile/image", filePath: imageFile.path, onSendProgress: (int sent, int total){
+		    print("$sent : $total");
+	    });
+
+	    if(response.statusCode == 200){
+		    setState(() {
+//			    proFileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+		    });
+	    } else {
+		    developer.log("## 이미지파일 업로드에 실패하였습니다.");
+	    }
 
     }
 
@@ -217,14 +274,16 @@ class _ProfilePageState extends State <ProfilePage>{
                                   ),
                                   child: ClipRRect(
                                       borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
-                                      child: Image.asset(
-                                          'assets/images/icon/thumbnailUnset1.png',
-                                          fit: BoxFit.cover,
-                                      )
+                                      child: getProfileImage()
+//	                                  child: proFileImgUri == null
+//	                                      ? Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
+//	                                      : Image.network(proFileImgUri, scale: 1.0, headers: header)
                                   ),
                               ),
                           ),
-                          onTap: () {},
+                          onTap: () {
+                          	  uploadProfileImg(1);
+                          },
                       ),
                       Positioned(
                           bottom: ScreenUtil().setHeight(41),
@@ -242,7 +301,9 @@ class _ProfilePageState extends State <ProfilePage>{
                                       shape: BoxShape.circle
                                   )
                               ),
-                              onTap: () {}
+                              onTap: () {
+                              	  uploadProfileImg(2);
+                              }
                           )
                       )
                   ],

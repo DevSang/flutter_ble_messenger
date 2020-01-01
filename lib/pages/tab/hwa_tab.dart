@@ -93,6 +93,7 @@ class _HwaTabState extends State<HwaTab> {
      */
     void _initState() async {
         await Constant.setUserIdx();
+        await Constant.setHeader();
 
         // BLE Scanning API 초기화
         if(Platform.isAndroid){
