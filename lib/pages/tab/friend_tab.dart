@@ -6,6 +6,8 @@ import 'package:Hwa/utility/get_same_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:kvsql/kvsql.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 /*
@@ -28,19 +30,12 @@ class FriendTab extends StatefulWidget {
 }
 
 class _FriendTabState extends State<FriendTab> {
+    final store = KvStore();
+
 //    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
-    List<FriendInfo> originList = SetFriendsData().main();              // 원본 친구 리스트
+    List<FriendInfo> originList = [];              // 원본 친구 리스트
     List<FriendInfo> friendList = [];                                   // 화면에 보이는 친구 리스트 (검색 용도)
-    List<FriendInfo> requestList = [                                    // 요청 리스트
-        FriendInfo(
-            userIdx: 4,
-            nickname: "화영",
-            phone_number: "010-1432-7653",
-            profile_picture_idx: null,
-            business_card_idx: null,
-            user_status: "",
-        )
-    ];
+    List<FriendInfo> requestList = [];
 
     TextEditingController searchController = TextEditingController();
     double sameSize;
@@ -59,7 +54,22 @@ class _FriendTabState extends State<FriendTab> {
             searchFriends();
         });
 
+        _initState();
+
         super.initState();
+    }
+
+    /*
+     * @author :sh
+     * @date : 2020-01-01
+     * @description : 친구리스트 초기화
+     */
+    void _initState() async {
+        originList = Constant.FRIEND_LIST;
+        requestList = Constant.FRIEND_REQUEST_LIST;
+
+        print("originList" + originList.toString());
+        print("requestList" + requestList.toString());
     }
 
     @override
@@ -258,6 +268,8 @@ class _FriendTabState extends State<FriendTab> {
 
 
     Widget buildFriendItem(FriendInfo friendInfo, bool isFriend, bool isLast) {
+        print("friendInfo" + friendInfo.user_idx.toString());
+        String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=SMALL";
         return Container(
             width: ScreenUtil().setWidth(375),
             height: ScreenUtil().setHeight(62),
@@ -281,13 +293,12 @@ class _FriendTabState extends State<FriendTab> {
                             borderRadius: new BorderRadius.circular(
                                 ScreenUtil().setWidth(10)
                             ),
-                            child:
-                            Image.asset(
-                                "assets/images/icon/profile.png",
-                                width: ScreenUtil().setWidth(50),
-                                height: ScreenUtil().setWidth(50),
-                                fit: BoxFit.cover,
-                            ),
+                            child: CachedNetworkImage(
+                                imageUrl: profileImgUri,
+                                placeholder: (context, url) => CircularProgressIndicator(),
+                                errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
+                                httpHeaders: Constant.HEADER
+                            )
                         )
                     ),
                     // 유저 정보
