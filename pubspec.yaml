@@ -88,7 +88,6 @@ flutter:
     - assets/images/logo.png
     - assets/images/loginLogo.png
     - assets/images/splash.png
-    - assets/images/profile_img.png
     - assets/images/businesscard.png
     - assets/images/bgGradeLogin.png
     - assets/images/bgGrade.png
@@ -103,6 +102,7 @@ flutter:
     - assets/images/sns/snsIconGoogle.png
     - assets/images/sns/snsIconKakao.png
     #Ios launch Image
+    - assets/images/iosLaunchScreen/hwaImage.png
     - assets/images/iosLaunchScreen/hwaImage.png
     - assets/images/iosLaunchScreen/visualImage.png
     #Icon Image

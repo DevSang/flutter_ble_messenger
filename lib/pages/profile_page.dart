@@ -39,6 +39,8 @@ class _ProfilePageState extends State <ProfilePage>{
 
     bool isLoading;
 
+    String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+
     CachedNetworkImage cachedNetworkImage;
 
     @override
@@ -46,10 +48,10 @@ class _ProfilePageState extends State <ProfilePage>{
         isLoading = false;
 
         cachedNetworkImage = CachedNetworkImage(
-	        imageUrl: Constant.PROFILE_IMG_URI,
-	        placeholder: (context, url) => CircularProgressIndicator(),
-	        errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover),
-	        httpHeaders: Constant.HEADER
+            imageUrl: profileImgUri,
+            placeholder: (context, url) => CircularProgressIndicator(),
+            errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover),
+            httpHeaders: Constant.HEADER
         );
 
         getSettingInfo();
@@ -162,24 +164,29 @@ class _ProfilePageState extends State <ProfilePage>{
 	    }
 
 	    if(imageFile != null){
+            setState(() {
+                isLoading = true;
+            });
+
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(url: "/api/v2/user/profile/image", filePath: imageFile.path, onSendProgress: (int sent, int total){
 			    print("$sent : $total");
 		    });
 
 		    if(response.statusCode == 200){
-			    await DefaultCacheManager().removeFile(Constant.PROFILE_IMG_URI);
-			    Constant.IS_CHANGE_PROFILE_IMG = true;
+			    await DefaultCacheManager().removeFile(profileImgUri);
 
 			    setState(() {
 				    cachedNetworkImage = CachedNetworkImage(
-						    imageUrl: Constant.PROFILE_IMG_URI,
+						    imageUrl: profileImgUri,
 						    placeholder: (context, url) => CircularProgressIndicator(),
 						    errorWidget: (context, url, error) => Icon(Icons.error),
 						    httpHeaders: Constant.HEADER
 				    );
-			    });
 
+
+                    isLoading = false;
+			    });
 		    } else {
 			    developer.log("## 이미지파일 업로드에 실패하였습니다.");
 		    }

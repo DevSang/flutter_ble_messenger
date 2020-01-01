@@ -1031,7 +1031,6 @@ class _HwaTabState extends State<HwaTab> {
 
                                     /// 인원 수, 시간
                                     Container(
-                                        height: ScreenUtil().setHeight(13),
                                         width: ScreenUtil().setWidth(260),
                                         margin: EdgeInsets.only(
                                             left:ScreenUtil().setWidth(14),
