@@ -907,7 +907,6 @@ class _HwaTabState extends State<HwaTab> {
                     right:ScreenUtil().setHeight(16),
                 ),
                 decoration: BoxDecoration(
-                    color: Colors.white,
                     borderRadius: BorderRadius.all(
                         Radius.circular(10.0)
                     ),

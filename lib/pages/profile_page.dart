@@ -380,19 +380,19 @@ class _ProfilePageState extends State <ProfilePage>{
                                       color: Color.fromRGBO(255, 255, 255, 1),
                                   ),
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: <Widget>[
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
                                           InkWell( child: Text("로그아웃", style: TextStyle(fontSize: 15,fontFamily: "NotoSans",color: Color.fromRGBO(39, 39, 39, 1),
-                                            fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.w500,
                                           ))),
-                                        IconButton(
-                                          icon: Image.asset("assets/images/icon/iconMore.png"),
-                                          onPressed: (){
-                                            logOut().then((value) {
-                                              Navigator.of(context).popUntil((route) => route.isFirst);
-                                            });
-                                          },
-                                        )
+                                          IconButton(
+                                              icon: Image.asset("assets/images/icon/iconMore.png"),
+                                              onPressed: (){
+                                                  logOut().then((value) {
+                                                      Navigator.of(context).popUntil((route) => route.isFirst);
+                                                  });
+                                              },
+                                          )
                                       ],
                                   ),
                               ),

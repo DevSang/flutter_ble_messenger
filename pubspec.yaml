@@ -147,7 +147,6 @@ flutter:
     - assets/images/businesscard.png
     - assets/images/bgGradeLogin.png
     - assets/images/bgGrade.png
-    - assets/images/login/visualImageLogin.png
     - assets/images/sns/snsIconFacebook.png
     - assets/images/sns/snsIconGoogle.png
     - assets/images/sns/snsIconKakao.png
