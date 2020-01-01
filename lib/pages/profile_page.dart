@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/pages/parts/loading.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/custom_switch.dart';
 import 'package:flutter/material.dart';
@@ -28,12 +29,15 @@ class _ProfilePageState extends State <ProfilePage>{
     String nickName;
     String intro;
     String phoneNum;
-    bool allowedPush = true;
-    bool allowedFriend = true;
+    bool allowedPush;
+    bool allowedFriend;
+
+    bool isLoading;
 
     @override
     void initState() {
         super.initState();
+        isLoading = false;
 
         getSettingInfo();
     }
@@ -56,14 +60,6 @@ class _ProfilePageState extends State <ProfilePage>{
         );
 
         return;
-    }
-
-    /*
-     * @author : hs
-     * @date : 2020-01-01
-     * @description : Switch Change
-    */
-    void _onSwitchChanged(bool value) {
     }
 
     /*
@@ -102,7 +98,7 @@ class _ProfilePageState extends State <ProfilePage>{
         try {
             String uri = "/api/v2/user/profile";
             final response = await CallApi.commonApiCall(
-                method: HTTP_METHOD.post,
+                method: HTTP_METHOD.put,
                 url: uri,
                 data: {
                     "nickname" : nickName,
@@ -112,14 +108,27 @@ class _ProfilePageState extends State <ProfilePage>{
                 }
             );
 
+            print("####" + response.body.toString());
+
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
         }
     }
 
-    
+
     void popNav() async {
+        setState(() {
+            isLoading = true;
+        });
+
         await saveSettingInfo();
+
+        setState(() {
+            isLoading = false;
+        });
+
+        Navigator.of(context).pop();
+
     }
 
     @override
@@ -141,7 +150,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 leading: new IconButton(
                     icon: new Image.asset('assets/images/icon/navIconPrev.png'),
                     onPressed: (){
-                        Navigator.of(context).pop(null);
+                        popNav();
                     }
                 ),
                 centerTitle: true,
@@ -149,27 +158,34 @@ class _ProfilePageState extends State <ProfilePage>{
                 backgroundColor: Colors.white,
                 brightness: Brightness.light,
             ),
-            body: Column(
+            body:
+            Stack(
                 children: <Widget>[
-                    Flexible(
-                        child: ListView(
-                            children: <Widget>[
-                                // 프로필 이미지
-                                _profileImageSection(context),
+                    Column(
+                        children: <Widget>[
+                            Flexible(
+                                child: ListView(
+                                    children: <Widget>[
+                                        // 프로필 이미지
+                                        _profileImageSection(context),
 
-                                // 프로필 설정
-                                _profileSetting(context),
+                                        // 프로필 설정
+                                        _profileSetting(context),
 
-                                // 앱 설정
-                                _appSetting(context),
+                                        // 앱 설정
+                                        _appSetting(context),
 
-                                // 계정 설정
-                                _accountSetting(context)
-                            ]
-                        )
-                    )
+                                        // 계정 설정
+                                        _accountSetting(context)
+                                    ]
+                                )
+                            )
+                        ],
+                    ),
+                    // Loading
+                    isLoading ? Loading() : Container()
                 ],
-            ),
+            )
         );
     }
 
@@ -240,9 +256,27 @@ class _ProfilePageState extends State <ProfilePage>{
                 children: <Widget>[
                     buildSettingHeader("프로필"),
 
-                    buildTextItem("사용자 이름", nickName, false),
+                    buildTextItem(
+                        "사용자 이름",
+                        nickName,
+                        false,
+                        (dynamic value)  {
+                            setState(() {
+                                nickName = value;
+                            });
+                        }
+                    ),
 
-                    buildTextItem("한 줄 소개", intro, false),
+                    buildTextItem(
+                        "한 줄 소개",
+                        intro,
+                        false,
+                        (dynamic value)  {
+                            setState(() {
+                                intro = value;
+                            });
+                        }
+                    ),
 
                     buildTextInfoItem("연락처", phoneNum, true),
 
@@ -258,9 +292,28 @@ class _ProfilePageState extends State <ProfilePage>{
               children: <Widget>[
                   buildSettingHeader("앱 설정"),
 
-                  buildSwitchItem("푸쉬 알림", allowedPush, false),
+                  buildSwitchItem(
+                      "푸쉬 알림",
+                      allowedPush,
+                      false,
+                      (bool value) {
+                          setState(() {
+                              allowedPush = value;
+                          });
+                      }
+                  ),
 
-                  buildSwitchItem("친구 요청 허용", allowedFriend, true),
+                  buildSwitchItem(
+                      "친구 요청 허용",
+                      allowedFriend,
+                      true,
+                      (bool value) {
+                          print(value);
+                          setState(() {
+                              allowedFriend = value;
+                          });
+                      }
+                  ),
               ]
           )
       );
@@ -274,13 +327,13 @@ class _ProfilePageState extends State <ProfilePage>{
                   buildSettingHeader("계정"),
 
                   InkWell(
-                      child: buildTextItem("로그아웃", "", false),
+                      child: buildTextItem("로그아웃", "", false, null),
                       onTap:() {
                           logOut();
                       }
                   ),
 
-                  buildTextItem("탈퇴하기", "", true),
+                  buildTextInfoItem("탈퇴하기", "", true),
 
               ]
           )
@@ -313,8 +366,8 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget buildTextItem(String title, String value, bool isLast) {
-        return Container(
+    Widget buildTextItem(String title, String value, bool isLast, Function fn) {
+                return Container(
             height: ScreenUtil().setHeight(49),
             margin: EdgeInsets.only(
                 left: ScreenUtil().setWidth(16)
@@ -380,12 +433,11 @@ class _ProfilePageState extends State <ProfilePage>{
                                         leftButtonText: "취소",
                                         rightButtonText: "저장하기",
                                         value: value,
-                                        hintText: value == null ? "소개글을 입력해 보세요 :)" : "",
-                                        func: () => {
-
-                                        }
+                                        hintText: value == null ? "소개글을 입력해 보세요 :)" : ""
                                     ),
-                                );
+                                ).then((onValue) {
+                                    if (fn != null) fn(onValue);
+                                });
                             },
                         )
                     )
@@ -394,7 +446,7 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget buildSwitchItem(String title, bool value, bool isLast) {
+    Widget buildSwitchItem(String title, bool value, bool isLast, Function fn) {
         return Container(
             height: ScreenUtil().setHeight(49),
             margin: EdgeInsets.only(
@@ -427,10 +479,9 @@ class _ProfilePageState extends State <ProfilePage>{
                     ),
                     CustomSwitch(
                         onChanged: (val){
-                            print(val);
-                            _onSwitchChanged(val);
+                            fn(val);
                         } ,
-                        value: value,
+                        value: value ?? true,
                         inactiveColor: Color.fromRGBO(235, 235, 235, 1),
                         activeColor: Color.fromRGBO(77, 96, 191, 1),
                         shadow: BoxShadow(

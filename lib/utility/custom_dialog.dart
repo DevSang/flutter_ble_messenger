@@ -138,7 +138,7 @@ class CustomDialog extends StatelessWidget {
                                                     ),
                                                 ),
                                                 onTap: () {
-                                                    func(); // To close the dialog
+                                                    func != null ? func() : Navigator.pop(context, _textEditingController.text);
                                                 },
                                             ),
                                         ],
