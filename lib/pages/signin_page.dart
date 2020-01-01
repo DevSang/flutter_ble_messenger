@@ -331,8 +331,6 @@ class _SignInPageState extends State<SignInPage> {
                 children: <Widget>[
                     Image.asset(
                         'assets/images/loginLogo.png',
-                        width: ScreenUtil().setWidth(219.7),
-                        height: ScreenUtil().setHeight(80.5),
                         fit: BoxFit.cover,
                         alignment: Alignment(0, -1),
                     )
@@ -353,13 +351,13 @@ class _SignInPageState extends State<SignInPage> {
             margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16), vertical: ScreenUtil().setHeight(3)),
             decoration: new BoxDecoration(
                 color: Color.fromRGBO(240, 240, 240, 1),
-                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(16.0)))
+                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
             ),
             child: Row(
                 children: <Widget>[
                     Container(
                         margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
-                        width: ScreenUtil().setWidth(215),
+                        width: ScreenUtil().setWidth(217),
                         child: TextFormField(
                             maxLength: 11,
                             onChanged: (loginAuthCode) {
@@ -383,7 +381,7 @@ class _SignInPageState extends State<SignInPage> {
                         )
                     )
                     ,RaisedButton(
-                        padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(12), horizontal: ScreenUtil().setWidth(15)),
+                        padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(13), horizontal: ScreenUtil().setWidth(15)),
                         focusNode: contextFocus,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
@@ -417,7 +415,7 @@ class _SignInPageState extends State<SignInPage> {
             margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16), vertical: ScreenUtil().setHeight(3)),
             decoration: new BoxDecoration(
                 color: Color.fromRGBO(240, 240, 240, 1),
-                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(16.0)))
+                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
             ),
             child:  Container(
                 margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
@@ -446,6 +444,7 @@ class _SignInPageState extends State<SignInPage> {
                     obscureText: true,
                     style: TextStyle(color: Colors.black, fontFamily: 'NotoSans',  fontSize: 15),
                     decoration: new InputDecoration(
+                        contentPadding: EdgeInsets.only(top:ScreenUtil().setHeight(3)),
                         border: InputBorder.none,
                         counterText: "",
                         hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
@@ -466,7 +465,7 @@ class _SignInPageState extends State<SignInPage> {
         return Container(
             margin: EdgeInsets.only(top:ScreenUtil().setHeight(3)),
             width: MediaQuery.of(context).size.width,
-            height: 50.0,
+            height: ScreenUtil().setHeight(50),
             padding: EdgeInsets.symmetric(horizontal: 15.0),
             color: Colors.white,
             child: RaisedButton(
@@ -477,7 +476,7 @@ class _SignInPageState extends State<SignInPage> {
                 child: Text("로그인", style: TextStyle(
                     color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')
                 ),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenUtil().setHeight(10.0))),
             ),
         );
     }
