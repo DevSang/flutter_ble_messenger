@@ -54,13 +54,20 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     List<ChatJoinInfo> userInfoListBleOut = <ChatJoinInfo>[];
     List<ChatJoinInfo> userInfoListOnline  = <ChatJoinInfo>[];
 
-
-
     @override
     void initState() {
         super.initState();
 
         _getChatJoinInfo();
+    }
+
+    /*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 내부 초기화 함수. BLE Scan 시작, 현재 내 위치 검색
+     */
+    void _initState() async {
+        await Constant.setHeader();
     }
 
     /*
@@ -197,7 +204,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                     child: Row(
                                                         children: <Widget>[
                                                             Text(
-                                                                chatInfo.title,
+                                                                chatInfo.title.length > 13 ? chatInfo.title.substring(0, 13) + ".." : chatInfo.title,
                                                                 style: TextStyle(
                                                                     fontFamily: "assets/fonts/NotoSansKR-Medium.otf",
                                                                     height: 1,

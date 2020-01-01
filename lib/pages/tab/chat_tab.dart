@@ -88,16 +88,16 @@ class _ChatTabState extends State<ChatTab> {
         });
 
         try {
-          /// 참여 타입 수정
-            String uri =
-              "/danhwa/roomDetail?roomIdx=" + chatIdx.toString();
-            final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
+            String uri = "/danhwa/join?roomIdx=" + chatIdx.toString() + "&type=BLE_JOIN";
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
             Map<String, dynamic> jsonParse = json.decode(response.body);
+
             // 단화방 입장
             _enterChat(jsonParse);
+
         } catch (e) {
-            print("#### Error :: " + e.toString());
+            developer.log("#### Error :: "+ e.toString());
         }
     }
 
@@ -114,8 +114,14 @@ class _ChatTabState extends State<ChatTab> {
             bool isLiked = chatInfoJson['isLiked'];
             int likeCount = chatInfoJson['danhwaLikeCount'];
 
+            for (var joinInfo in chatInfoJson['joinList']) {
+                chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
+            }
+
+            print("###########"+chatInfoJson.toString());
+
             setState(() {
-            isLoading = false;
+                isLoading = false;
             });
 
             Navigator.push(context, MaterialPageRoute(builder: (context) {
@@ -375,7 +381,7 @@ class _ChatTabState extends State<ChatTab> {
                                           constraints: BoxConstraints(
                                               maxWidth: ScreenUtil().setWidth(190)),
                                           child: Text(
-                                            chatListItem.title,
+                                            chatListItem.title.length > 13 ? chatListItem.title.substring(0, 13) + ".." : chatListItem.title,
                                             style: TextStyle(
                                               height: 1,
                                               fontFamily: "NotoSans",

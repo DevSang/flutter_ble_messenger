@@ -44,8 +44,6 @@ dependencies:
     kvsql: ^0.3.0
     sqlcool: ^4.2.0
 
-
-
     #Social Login
     flutter_facebook_login: 3.0.0
     google_sign_in: ^4.1.1
@@ -65,112 +63,113 @@ dev_dependencies:
 
 flutter:
   fonts:
-      - family: NotoSans
-        fonts:
-            - asset: assets/fonts/NotoSansKR-Regular.otf
-              weight: 400
-            - asset: assets/fonts/NotoSansKR-Bold.otf
-              weight: 600
-            - asset: assets/fonts/NotoSansKR-Black.otf
-            - asset: assets/fonts/NotoSansKR-Light.otf
-            - asset: assets/fonts/NotoSansKR-Medium.otf
-              weight: 500
-            - asset: assets/fonts/NotoSansKR-Thin.otf
-      - family: NanumSquare
-        fonts:
-            - asset: assets/fonts/NanumSquare_acR.ttf
-              weight: 400
-            - asset: assets/fonts/NanumSquare_acB.ttf
-              weight: 500
-            - asset: assets/fonts/NanumSquare_acL.ttf
-            - asset: assets/fonts/NanumSquare_acEB.ttf
+    - family: NotoSans
+      fonts:
+        - asset: assets/fonts/NotoSansKR-Regular.otf
+          weight: 400
+        - asset: assets/fonts/NotoSansKR-Bold.otf
+          weight: 600
+        - asset: assets/fonts/NotoSansKR-Black.otf
+        - asset: assets/fonts/NotoSansKR-Light.otf
+        - asset: assets/fonts/NotoSansKR-Medium.otf
+          weight: 500
+        - asset: assets/fonts/NotoSansKR-Thin.otf
+    - family: NanumSquare
+      fonts:
+        - asset: assets/fonts/NanumSquare_acR.ttf
+          weight: 400
+        - asset: assets/fonts/NanumSquare_acB.ttf
+          weight: 500
+        - asset: assets/fonts/NanumSquare_acL.ttf
+        - asset: assets/fonts/NanumSquare_acEB.ttf
 
   assets:
-  #Common Image
-  - assets/images/logo.png
-  - assets/images/loginLogo.png
-  - assets/images/splash.png
-  - assets/images/profile_img.png
-  - assets/images/businesscard.png
-  - assets/images/bgGradeLogin.png
-  - assets/images/bgGrade.png
-  #Background Image
-  - assets/images/background/noChatackgroundImg.png
-  - assets/images/background/noRoomBackgroundImg.png
-  - assets/images/background/noBleBackgroundImg.png
-  - assets/images/background/noLocationBackgroundImg.png
-  - assets/images/background/commonBackgroundImg.png
-  #SNS Image
-  - assets/images/sns/snsIconFacebook.png
-  - assets/images/sns/snsIconGoogle.png
-  - assets/images/sns/snsIconKakao.png
-  #Ios launch Image
-  - assets/images/iosLaunchScreen/hwaImage.png
-  - assets/images/iosLaunchScreen/visualImage.png
-  #Icon Image
-  - assets/images/icon/appIcon.jpg
-  - assets/images/icon/crown.png
-  - assets/images/icon/iconActionMenuOpen.png
-  - assets/images/icon/iconAddress.png
-  - assets/images/icon/iconAttachCamera.png
-  - assets/images/icon/iconAttachCard.png
-  - assets/images/icon/iconAttachClose.png
-  - assets/images/icon/iconAttachMore.png
-  - assets/images/icon/iconAttachPhoto.png
-  - assets/images/icon/iconAttachFold.png
-  - assets/images/icon/iconBell.png
-  - assets/images/icon/iconBlock.png
-  - assets/images/icon/iconBounds.png
-  - assets/images/icon/iconCar.png
-  - assets/images/icon/iconClosePopup.png
-  - assets/images/icon/iconDeleteSmall.png
-  - assets/images/icon/iconDirectChat.png
-  - assets/images/icon/iconEject.png
-  - assets/images/icon/iconFold.png
-  - assets/images/icon/iconLike.png
-  - assets/images/icon/iconExit.png
-  - assets/images/icon/iconExpand.png
-  - assets/images/icon/iconLikeCount.png
-  - assets/images/icon/iconMasterBadge.png
-  - assets/images/icon/iconMore.png
-  - assets/images/icon/iconMoreWhite.png
-  - assets/images/icon/iconPin.png
-  - assets/images/icon/iconRequest.png
-  - assets/images/icon/iconRequestCalling.png
-  - assets/images/icon/iconVideoPlay.png
-  - assets/images/icon/iconViewCard.png
-  - assets/images/icon/iconViewCount.png
-  - assets/images/icon/iconWallet.png
-  - assets/images/icon/iconLock.png
-  - assets/images/icon/iconUnlock.png
-  - assets/images/icon/iconSendMessage.png
-  - assets/images/icon/iconSetting.png
-  - assets/images/icon/navIconHot.png
-  - assets/images/icon/navIconClose.png
-  - assets/images/icon/navIconDown.png
-  - assets/images/icon/navIconNew.png
-  - assets/images/icon/navIconPrev.png
-  - assets/images/icon/navIconMenu.png
-  - assets/images/icon/navIconSearch.png
-  - assets/images/icon/navIconWrite.png
-  - assets/images/icon/photoProfileDefault.png
-  - assets/images/icon/profile.png
-  - assets/images/icon/profileSeticonBasic.png
-  - assets/images/icon/setIcon.png
-  - assets/images/icon/tabIconChat.png
-  - assets/images/icon/tabIconChatActive.png
-  - assets/images/icon/tabIconFriend.png
-  - assets/images/icon/tabIconFriendActive.png
-  - assets/images/icon/tabIconHwa.png
-  - assets/images/icon/tabIconHwaActive.png
-  - assets/images/icon/gpsIconConnected.png
-  - assets/images/icon/bluetoothIconConnected.png
-  - assets/images/icon/bluetoothIconUnconnected.png
-  - assets/images/icon/thumbnailUnset1.png
-  - assets/images/icon/iconRefresh.png
-  - assets/images/icon/gpsIconUnconnected.png
-  - assets/images/icon/howmanyIcon.png
+    #Common Image
+    - assets/images/logo.png
+    - assets/images/loginLogo.png
+    - assets/images/splash.png
+    - assets/images/profile_img.png
+    - assets/images/businesscard.png
+    - assets/images/bgGradeLogin.png
+    - assets/images/bgGrade.png
+    #Background Image
+    - assets/images/background/noChatackgroundImg.png
+    - assets/images/background/noRoomBackgroundImg.png
+    - assets/images/background/noBleBackgroundImg.png
+    - assets/images/background/noLocationBackgroundImg.png
+    - assets/images/background/commonBackgroundImg.png
+    #SNS Image
+    - assets/images/sns/snsIconFacebook.png
+    - assets/images/sns/snsIconGoogle.png
+    - assets/images/sns/snsIconKakao.png
+    #Ios launch Image
+    - assets/images/iosLaunchScreen/hwaImage.png
+    - assets/images/iosLaunchScreen/visualImage.png
+    #Icon Image
+    - assets/images/icon/appIcon.jpg
+    - assets/images/icon/crown.png
+    - assets/images/icon/iconActionMenuOpen.png
+    - assets/images/icon/iconAddress.png
+    - assets/images/icon/iconAttachCamera.png
+    - assets/images/icon/iconAttachCard.png
+    - assets/images/icon/iconAttachClose.png
+    - assets/images/icon/iconAttachMore.png
+    - assets/images/icon/iconAttachPhoto.png
+    - assets/images/icon/iconAttachFold.png
+    - assets/images/icon/iconBell.png
+    - assets/images/icon/iconBlock.png
+    - assets/images/icon/iconBounds.png
+    - assets/images/icon/iconCar.png
+    - assets/images/icon/iconClosePopup.png
+    - assets/images/icon/iconDeleteSmall.png
+    - assets/images/icon/iconDirectChat.png
+    - assets/images/icon/iconEject.png
+    - assets/images/icon/iconFold.png
+    - assets/images/icon/iconLike.png
+    - assets/images/icon/iconExit.png
+    - assets/images/icon/iconExpand.png
+    - assets/images/icon/iconHeartRed.png
+    - assets/images/icon/iconLikeCount.png
+    - assets/images/icon/iconMasterBadge.png
+    - assets/images/icon/iconMore.png
+    - assets/images/icon/iconMoreWhite.png
+    - assets/images/icon/iconPin.png
+    - assets/images/icon/iconRequest.png
+    - assets/images/icon/iconRequestCalling.png
+    - assets/images/icon/iconVideoPlay.png
+    - assets/images/icon/iconViewCard.png
+    - assets/images/icon/iconViewCount.png
+    - assets/images/icon/iconWallet.png
+    - assets/images/icon/iconLock.png
+    - assets/images/icon/iconUnlock.png
+    - assets/images/icon/iconSendMessage.png
+    - assets/images/icon/iconSetting.png
+    - assets/images/icon/navIconHot.png
+    - assets/images/icon/navIconClose.png
+    - assets/images/icon/navIconDown.png
+    - assets/images/icon/navIconNew.png
+    - assets/images/icon/navIconPrev.png
+    - assets/images/icon/navIconMenu.png
+    - assets/images/icon/navIconSearch.png
+    - assets/images/icon/navIconWrite.png
+    - assets/images/icon/photoProfileDefault.png
+    - assets/images/icon/profile.png
+    - assets/images/icon/profileSeticonBasic.png
+    - assets/images/icon/setIcon.png
+    - assets/images/icon/tabIconChat.png
+    - assets/images/icon/tabIconChatActive.png
+    - assets/images/icon/tabIconFriend.png
+    - assets/images/icon/tabIconFriendActive.png
+    - assets/images/icon/tabIconHwa.png
+    - assets/images/icon/tabIconHwaActive.png
+    - assets/images/icon/gpsIconConnected.png
+    - assets/images/icon/bluetoothIconConnected.png
+    - assets/images/icon/bluetoothIconUnconnected.png
+    - assets/images/icon/thumbnailUnset1.png
+    - assets/images/icon/iconRefresh.png
+    - assets/images/icon/gpsIconUnconnected.png
+    - assets/images/icon/howmanyIcon.png
 
-uses-material-design: true
+  uses-material-design: true
 
 

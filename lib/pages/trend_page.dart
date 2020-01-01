@@ -145,6 +145,54 @@ class _TrendPageState extends State<TrendPage> {
       }
   }
 
+  /*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : 단화방 좋아요
+    */
+  void _likeChat(List<TrendChatListItem> chatList, int listIdx) async {
+
+      try {
+          /// 참여 타입 수정
+          String uri = "/danhwa/like?roomIdx=" + chatList[listIdx].chatIdx.toString();
+          final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+          print(response.body);
+
+          setState(() {
+              chatList[listIdx].isLiked = true;
+              chatList[listIdx].likeCount++;
+          });
+
+      } catch (e) {
+          print("#### Error :: "+ e.toString());
+      }
+  }
+
+  /*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : 단화방 좋아요 취소
+    */
+  void _unLikeChat(List<TrendChatListItem> chatList, int listIdx) async {
+
+      try {
+          /// 참여 타입 수정
+          String uri = "/danhwa/likeCancel?roomIdx=" + chatList[listIdx].chatIdx.toString();
+          final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+          print(response.body);
+
+          setState(() {
+              chatList[listIdx].isLiked = false;
+              chatList[listIdx].likeCount--;
+          });
+
+      } catch (e) {
+          print("#### Error :: "+ e.toString());
+      }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -178,31 +226,24 @@ class _TrendPageState extends State<TrendPage> {
         ),
         body: Stack(
             children: <Widget>[
-                Positioned(
-                    top: ScreenUtil().setHeight(-72),
-                    left: 0,
-                    child: Container(
-                        width: ScreenUtil().setWidth(375),
-                        height: ScreenUtil().setHeight(500),
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: AssetImage("assets/images/background/bgGrade.png"),
-                                fit: BoxFit.fitHeight,
-                            ),
-                        ),
-                    ),
-                ),
                 Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                        // 검색 영역
-                        showSearch ? _searchTrend() : Container(),
+                        Container(
+                            color: Color.fromRGBO(240, 240, 240, 1),
+                            child: Column(
+                                children: <Widget>[
+                                    // 검색 영역
+                                    showSearch ? _searchTrend() : Container(),
 
-                        // 상단 탭 영역
-                        trendHeader(),
+                                    // 상단 탭 영역
+                                    trendHeader(),
 
-                        // 상단 Top2 영역
-                        topChat(),
+                                    // 상단 Top2 영역
+                                    topChat(),
+                                ],
+                            )
+                        ),
 
                         // 하단 단화 리스트
                         chatList()
@@ -211,7 +252,6 @@ class _TrendPageState extends State<TrendPage> {
                 isLoading ? Loading() : new Container()
             ],
         ),
-        backgroundColor: Color.fromRGBO(255, 255, 255, 1),
     );
   }
 
@@ -365,186 +405,203 @@ class _TrendPageState extends State<TrendPage> {
     }
 
     Widget topChatItem(TrendChatListItem trendChatInfo, bool isFirst) {
-        return Container(
-            width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5) + sameSize*8,
-            height: ScreenUtil().setHeight(190) + sameSize*8,
-            margin: EdgeInsets.only(
-                left: ScreenUtil().setWidth(16) - sameSize*8,
-                bottom: ScreenUtil().setHeight(5),
-            ),
-            child: Stack(
-                children: <Widget>[
-                    Container(
-                        width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5),
-                        height: ScreenUtil().setHeight(180),
-                        margin: EdgeInsets.only(
-                            left: sameSize*8,
-                            top: sameSize*8,
-                            bottom: ScreenUtil().setHeight(10),
-                        ),
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(255, 255, 255, 1),
-                            borderRadius: isFirst
-                                ? BorderRadius.all(
-                                Radius.circular(ScreenUtil().setWidth(8))
-                            )
-                                : BorderRadius.only(
-                                bottomLeft:  Radius.circular(ScreenUtil().setWidth(8))
-                            )
-                            ,
-                            boxShadow: [
-                                new BoxShadow(
-                                    color: Color.fromRGBO(39, 39, 39, 0.1),
-                                    offset: new Offset(ScreenUtil().setWidth(0),ScreenUtil().setWidth(5)),
-                                    blurRadius: ScreenUtil().setWidth(10)
-                                )
-                            ]
-                        ),
-                        child: Column(
-                            children: <Widget>[
-                                Container(
-                                    width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5),
-                                    height: ScreenUtil().setHeight(110),
-                                    decoration: BoxDecoration(
-                                        color: trendChatInfo.chatImg != null ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(0, 0, 0, 0.1)
-                                        ,
-                                        borderRadius: isFirst
-                                            ? BorderRadius.only(
-                                            topLeft: Radius.circular(ScreenUtil().setWidth(8)),
-                                            topRight: Radius.circular(ScreenUtil().setWidth(8))
-                                        )
-                                            : BorderRadius.circular(0)
-                                        ,
-                                    ),
-                                    child: ClipRRect(
-                                        borderRadius: isFirst
-                                            ? BorderRadius.only(
-                                            topLeft: Radius.circular(ScreenUtil().setWidth(8)),
-                                            topRight: Radius.circular(ScreenUtil().setWidth(8))
-                                        )
-                                            : BorderRadius.circular(0)
-                                        ,
-                                        child:
-                                        Image.asset(
-                                            trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-                                            fit: BoxFit.scaleDown,
-                                        ),
-                                    ),
-                                ),
-                                Container(
-                                    child: Column(
-                                        children: <Widget>[
-                                            Container (
-                                                width: ScreenUtil().setWidth(151.5),
-                                                margin: EdgeInsets.symmetric(
-                                                    horizontal: ScreenUtil().setWidth(15),
-                                                    vertical: ScreenUtil().setWidth(14.5),
-                                                ),
-                                                child:
-                                                Text(
-                                                    trendChatInfo.title,
-                                                    textAlign: TextAlign.left,
-                                                    style: TextStyle(
-                                                        fontFamily: "NotoSans",
-                                                        fontWeight: FontWeight.w500,
-                                                        fontSize: ScreenUtil().setSp(16),
-                                                        letterSpacing: ScreenUtil().setWidth(-0.8),
-                                                        color: Color.fromRGBO(39, 39, 39, 1)
-                                                    ),
-                                                ),
-                                            ),
-                                            Container(
-                                                margin: EdgeInsets.only(
-                                                    left: ScreenUtil().setWidth(15),
-                                                    right: ScreenUtil().setWidth(isFirst ? 3.5 : 0),
-                                                ),
-                                                child: Row(
-                                                    children:<Widget>[
-                                                        getCount(trendChatInfo.userCount.total, true),
-                                                        getCount(trendChatInfo.likeCount, false)
-                                                    ]
-                                                ),
-                                            )
-                                        ],
-                                    )
-                                )
-                            ],
-                        ),
-                    ),
-                    Positioned(
-                        top:  0,
-                        left: 0,
-                        child: Container(
-                            width: sameSize*34,
-                            height: sameSize*34,
-                            child: Center(
-                                child: Text(
-                                    isFirst ? '1' : '2',
-                                    style: TextStyle(
-                                        fontFamily: "NanumSquare",
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: ScreenUtil().setSp(15),
-                                        letterSpacing: ScreenUtil().setWidth(-0.38),
-                                        color: Color.fromRGBO(255, 255, 255, 1)
-                                    ),
-                                ),
+        int index = isFirst ? 0 : 1;
+        return InkWell(
+            child: Container(
+                width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5) + sameSize*8,
+                height: ScreenUtil().setHeight(190) + sameSize*8,
+                margin: EdgeInsets.only(
+                    left: ScreenUtil().setWidth(16) - sameSize*8,
+                    bottom: ScreenUtil().setHeight(5),
+                ),
+                child: Stack(
+                    children: <Widget>[
+                        Container(
+                            width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5),
+                            height: ScreenUtil().setHeight(180),
+                            margin: EdgeInsets.only(
+                                left: sameSize*8,
+                                top: sameSize*8,
                             ),
                             decoration: BoxDecoration(
-                                color: Color.fromRGBO(77, 96, 191, 1),
-                                borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setWidth(8))),
+                                color: Color.fromRGBO(255, 255, 255, 1),
+                                borderRadius: isFirst
+                                    ? BorderRadius.all(
+                                    Radius.circular(ScreenUtil().setWidth(8))
+                                )
+                                    : BorderRadius.only(
+                                    bottomLeft:  Radius.circular(ScreenUtil().setWidth(8))
+                                )
+                                ,
                                 boxShadow: [
                                     new BoxShadow(
-                                        color: Color.fromRGBO(39, 39, 39, 0.2),
+                                        color: Color.fromRGBO(39, 39, 39, 0.1),
                                         offset: new Offset(ScreenUtil().setWidth(0),ScreenUtil().setWidth(5)),
-                                        blurRadius: ScreenUtil().setWidth(5)
+                                        blurRadius: ScreenUtil().setWidth(10)
                                     )
                                 ]
                             ),
+                            child: Column(
+                                children: <Widget>[
+                                    Container(
+                                        width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5),
+                                        height: ScreenUtil().setHeight(110),
+                                        decoration: BoxDecoration(
+                                            color: trendChatInfo.chatImg != null ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(0, 0, 0, 0.02)
+                                            ,
+                                            borderRadius: isFirst
+                                                ? BorderRadius.only(
+                                                topLeft: Radius.circular(ScreenUtil().setWidth(8)),
+                                                topRight: Radius.circular(ScreenUtil().setWidth(8))
+                                            )
+                                                : BorderRadius.circular(0)
+                                            ,
+                                        ),
+                                        child: ClipRRect(
+                                            borderRadius: isFirst
+                                                ? BorderRadius.only(
+                                                topLeft: Radius.circular(ScreenUtil().setWidth(8)),
+                                                topRight: Radius.circular(ScreenUtil().setWidth(8))
+                                            )
+                                                : BorderRadius.circular(0)
+                                            ,
+                                            child:
+                                            Image.asset(
+                                                trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
+                                                fit: BoxFit.scaleDown,
+                                            ),
+                                        ),
+                                    ),
+                                    Container(
+                                        child: Column(
+                                            children: <Widget>[
+                                                Container (
+                                                    width: ScreenUtil().setWidth(151.5),
+                                                    margin: EdgeInsets.symmetric(
+                                                        horizontal: ScreenUtil().setWidth(15),
+                                                        vertical: ScreenUtil().setWidth(14.5),
+                                                    ),
+                                                    child:
+                                                    Text(
+                                                        trendChatInfo.title.length > 15 ? trendChatInfo.title.substring(0, 15) + "..." : trendChatInfo.title,
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(
+                                                            fontFamily: "NotoSans",
+                                                            fontWeight: FontWeight.w500,
+                                                            fontSize: ScreenUtil().setSp(16),
+                                                            letterSpacing: ScreenUtil().setWidth(-0.8),
+                                                            color: Color.fromRGBO(39, 39, 39, 1)
+                                                        ),
+                                                    ),
+                                                ),
+                                                Container(
+                                                    margin: EdgeInsets.only(
+                                                        left: ScreenUtil().setWidth(15),
+                                                        right: ScreenUtil().setWidth(isFirst ? 3.5 : 0),
+                                                    ),
+                                                    child: Row(
+                                                        children:<Widget>[
+                                                            getCount(topTrendChatList, index, true),
+                                                            getCount(topTrendChatList, index, false)
+                                                        ]
+                                                    ),
+                                                )
+                                            ],
+                                        )
+                                    )
+                                ],
+                            ),
                         ),
-                    )
-                ],
-            )
+                        Positioned(
+                            top:  0,
+                            left: 0,
+                            child: Container(
+                                width: sameSize*34,
+                                height: sameSize*34,
+                                child: Center(
+                                    child: Text(
+                                        isFirst ? '1' : '2',
+                                        style: TextStyle(
+                                            fontFamily: "NanumSquare",
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ScreenUtil().setSp(15),
+                                            letterSpacing: ScreenUtil().setWidth(-0.38),
+                                            color: Color.fromRGBO(255, 255, 255, 1)
+                                        ),
+                                    ),
+                                ),
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(77, 96, 191, 1),
+                                    borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setWidth(8))),
+                                    boxShadow: [
+                                        new BoxShadow(
+                                            color: Color.fromRGBO(39, 39, 39, 0.2),
+                                            offset: new Offset(ScreenUtil().setWidth(0),ScreenUtil().setWidth(5)),
+                                            blurRadius: ScreenUtil().setWidth(5)
+                                        )
+                                    ]
+                                ),
+                            ),
+                        )
+                    ],
+                )
+            ),
+            onTap: () {
+                _joinChat(trendChatInfo.chatIdx);
+            }
         );
     }
 
-    Widget getCount(int value, bool isViewCount) {
+    Widget getCount(List<TrendChatListItem> chatList, int index, bool isViewCount) {
       return
-      Container(
-          width: ScreenUtil().setWidth(65),
-          margin: EdgeInsets.only(
-              right: isViewCount ? ScreenUtil().setWidth(16.5) : ScreenUtil().setWidth(0)
-          ),
-          child: Row(
-              children: <Widget>[
-                  Container(
-                      width: sameSize*20,
-                      height: sameSize*20,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image:AssetImage(
-                                  isViewCount ? "assets/images/icon/iconViewCount.png" : "assets/images/icon/iconLikeCount.png"
+      InkWell(
+          child: Container(
+              width: ScreenUtil().setWidth(65),
+              margin: EdgeInsets.only(
+                  right: isViewCount ? ScreenUtil().setWidth(16.5) : ScreenUtil().setWidth(0)
+              ),
+              padding: EdgeInsets.only(
+                  bottom: ScreenUtil().setHeight(4)
+              ),
+              child: Row(
+                  children: <Widget>[
+                      Container(
+                          width: sameSize*20,
+                          height: sameSize*20,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image:AssetImage(
+                                      isViewCount
+                                          ? "assets/images/icon/iconViewCount.png"
+                                          : chatList[index].isLiked
+                                                ? "assets/images/icon/iconHeartRed.png"
+                                                : "assets/images/icon/iconLikeCount.png"
+                                  ),
+                                  fit: BoxFit.contain
                               ),
-                              fit: BoxFit.cover
                           ),
                       ),
-                  ),
-                  Container(
-                      margin: EdgeInsets.only(
-                          left: ScreenUtil().setWidth(4.5),
-                      ),
-                      child: Text(
-                          value.toString(),
-                          style: TextStyle(
-                              fontFamily: "NanumSquare",
-                              fontWeight: FontWeight.w500,
-                              fontSize: ScreenUtil().setSp(13),
-                              letterSpacing: ScreenUtil().setWidth(-0.32),
-                              color: Color.fromRGBO(107, 107, 107, 1)
+                      Container(
+                          margin: EdgeInsets.only(
+                              left: ScreenUtil().setWidth(4.5),
+                          ),
+                          child: Text(
+                              isViewCount ? chatList[index].userCount.total.toString() : chatList[index].likeCount.toString(),
+                              style: TextStyle(
+                                  fontFamily: "NanumSquare",
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: ScreenUtil().setSp(13),
+                                  letterSpacing: ScreenUtil().setWidth(-0.32),
+                                  color: Color.fromRGBO(107, 107, 107, 1)
+                              ),
                           ),
                       ),
-                  ),
-              ],
+                  ],
+              ),
           ),
+          onTap: () {
+              chatList[index].isLiked ? _unLikeChat(chatList, index) : _likeChat(chatList, index);
+          },
       );
     }
 
@@ -563,22 +620,32 @@ class _TrendPageState extends State<TrendPage> {
     Widget buildChatItem(TrendChatListItem trendChatInfo, int index) {
         return InkWell(
             child: Container(
+                width: ScreenUtil().setWidth(375),
                 height: ScreenUtil().setHeight(81),
-                width: ScreenUtil().setWidth(359),
-                margin: EdgeInsets.only(
+                padding: EdgeInsets.only(
                     left:ScreenUtil().setWidth(16),
                 ),
-                padding: EdgeInsets.symmetric(
-                    vertical: (ScreenUtil().setHeight(81) - sameSize*50)/2
-                ),
-                child: Row(
+                child: Stack(
                     children: <Widget>[
                         Container(
-                            width:  ScreenUtil().setWidth(89),
+                            width: ScreenUtil().setWidth(334),
                             height: ScreenUtil().setHeight(81),
-                            child: Stack(
+                            margin: EdgeInsets.only(
+                                left:ScreenUtil().setWidth(25),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                                vertical: (ScreenUtil().setHeight(81) - sameSize*50)/2
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        width: ScreenUtil().setWidth(1),
+                                        color: Color.fromRGBO(39, 39, 39, 0.15)
+                                    )
+                                )
+                            ),
+                            child: Row(
                                 children: <Widget>[
-                                    // 단화방 이미지
                                     Container(
                                         width: sameSize * 50,
                                         height: sameSize * 50,
@@ -588,7 +655,7 @@ class _TrendPageState extends State<TrendPage> {
                                             ),
                                         ),
                                         margin: EdgeInsets.only(
-                                            left: sameSize*25,
+                                            right: ScreenUtil().setWidth(14.5),
                                         ),
                                         child: ClipRRect(
                                             borderRadius: new BorderRadius.circular(
@@ -603,188 +670,195 @@ class _TrendPageState extends State<TrendPage> {
                                             ),
                                         )
                                     ),
-                                    Positioned(
-                                        top:  sameSize*10,
-                                        left: 0,
-                                        child: Container(
-                                            width: sameSize*29,
-                                            height: sameSize*29,
-                                            child: Center(
-                                                child: Text(
-                                                    (index + 3).toString(),
-                                                    style: TextStyle(
-                                                        fontFamily: "NanumSquare",
-                                                        fontWeight: FontWeight.w500,
-                                                        fontSize: ScreenUtil().setSp(13),
-                                                        letterSpacing: ScreenUtil().setWidth(-0.32),
-                                                        color: Color.fromRGBO(255, 255, 255, 1)
-                                                    ),
-                                                ),
-                                            ),
-                                            decoration: BoxDecoration(
-                                                color: Color.fromRGBO(77, 96, 191, 1),
-                                                borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setWidth(8))),
-                                                boxShadow: [
-                                                    new BoxShadow(
-                                                        color: Color.fromRGBO(39, 39, 39, 0.2),
-                                                        offset: new Offset(ScreenUtil().setWidth(0),ScreenUtil().setWidth(5)),
-                                                        blurRadius: ScreenUtil().setWidth(5)
-                                                    )
-                                                ]
-                                            ),
-                                        ),
-                                    )
-                                ],
-                            )
-                        ),
-                        // 단화방 정보
-                        Container(
-                            width: ScreenUtil().setWidth(205),
-                            padding: EdgeInsets.only(
-                                top: sameSize * 5,
-                                bottom: sameSize * 2,
-                            ),
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                    /// 정보
-                                    Container(
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .end,
-                                            children: <Widget>[
-                                                Container(
-                                                    constraints: BoxConstraints(
-                                                        maxWidth: ScreenUtil().setWidth(190)
-                                                    ),
-                                                    child: Align(
-                                                        alignment: Alignment.centerLeft,
-                                                        child: Text(
-                                                            trendChatInfo.title,
-                                                            style: TextStyle(
-                                                                height: 1,
-                                                                fontFamily: "NotoSans",
-                                                                fontWeight: FontWeight.w500,
-                                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
-                                                                color: Color.fromRGBO(39, 39, 39, 1),
-                                                                letterSpacing: ScreenUtil().setWidth(-0.8),
-                                                            ),
-                                                        ),
-                                                    )
-                                                ),
-                                            ],
-                                        )
-                                    ),
-
-                                    /// 인원 수, 시간
+                                    // 단화방 정보
                                     Container(
                                         width: ScreenUtil().setWidth(205),
-                                        height: ScreenUtil().setHeight(12),
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
+                                        padding: EdgeInsets.only(
+                                            top: sameSize * 5,
+                                            bottom: sameSize * 2,
+                                        ),
+                                        child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
+                                                /// 정보
                                                 Container(
-                                                    margin: EdgeInsets.only(
-                                                        right:ScreenUtil().setHeight(10),
-                                                    ),
-                                                    padding: EdgeInsets.only(
-                                                        right:ScreenUtil().setHeight(12),
-                                                    ),
-                                                    decoration: BoxDecoration(
-                                                        border: Border(
-                                                            right: BorderSide(
-                                                                width: ScreenUtil().setWidth(1),
-                                                                color: Color.fromRGBO(194, 194, 194, 1)
-                                                            )
-                                                        )
-                                                    ),
                                                     child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment
+                                                            .spaceBetween,
+                                                        crossAxisAlignment: CrossAxisAlignment
+                                                            .end,
                                                         children: <Widget>[
-                                                            Text(
-                                                                (trendChatInfo.userCount.total ?? 0).toString(),
-                                                                style: TextStyle(
-                                                                    height: 1,
-                                                                    fontFamily: "NanumSquare",
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                                    color: Color.fromRGBO(107,107,107, 1),
-                                                                    letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                            Container(
+                                                                constraints: BoxConstraints(
+                                                                    maxWidth: ScreenUtil().setWidth(190)
                                                                 ),
-                                                            ),
-                                                            Text(
-                                                                '명',
-                                                                style: TextStyle(
-                                                                    height: 1,
-                                                                    fontFamily: "NotoSans",
-                                                                    fontWeight: FontWeight.w400,
-                                                                    fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                                    color: Color.fromRGBO(107,107,107, 1),
-                                                                    letterSpacing: ScreenUtil().setWidth(-0.33),
-                                                                ),
+                                                                child: Align(
+                                                                    alignment: Alignment.centerLeft,
+                                                                    child: Text(
+                                                                        trendChatInfo.title.length > 13 ? trendChatInfo.title.substring(0, 13) + "..." : trendChatInfo.title,
+                                                                        style: TextStyle(
+                                                                            height: 1,
+                                                                            fontFamily: "NotoSans",
+                                                                            fontWeight: FontWeight.w500,
+                                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                                            color: Color.fromRGBO(39, 39, 39, 1),
+                                                                            letterSpacing: ScreenUtil().setWidth(-0.8),
+                                                                        ),
+                                                                    ),
+                                                                )
                                                             ),
                                                         ],
                                                     )
                                                 ),
+
+                                                /// 인원 수, 시간
                                                 Container(
-                                                    child: Text(
-                                                        trendChatInfo.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(trendChatInfo.lastMsg.chatTime) : "메시지 없음",
-                                                        style: TextStyle(
-                                                            height: 1,
-                                                            fontFamily: "NotoSans",
-                                                            fontWeight: FontWeight.w400,
-                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                            color: Color.fromRGBO(107, 107, 107, 1),
-                                                            letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                    width: ScreenUtil().setWidth(205),
+                                                    height: ScreenUtil().setHeight(12),
+                                                    child: Row(
+                                                        mainAxisAlignment: MainAxisAlignment.start,
+                                                        children: <Widget>[
+                                                            Container(
+                                                                margin: EdgeInsets.only(
+                                                                    right:ScreenUtil().setHeight(10),
+                                                                ),
+                                                                padding: EdgeInsets.only(
+                                                                    right:ScreenUtil().setHeight(12),
+                                                                ),
+                                                                decoration: BoxDecoration(
+                                                                    border: Border(
+                                                                        right: BorderSide(
+                                                                            width: ScreenUtil().setWidth(1),
+                                                                            color: Color.fromRGBO(194, 194, 194, 1)
+                                                                        )
+                                                                    )
+                                                                ),
+                                                                child: Row(
+                                                                    children: <Widget>[
+                                                                        Text(
+                                                                            (trendChatInfo.userCount.total ?? 0).toString(),
+                                                                            style: TextStyle(
+                                                                                height: 1,
+                                                                                fontFamily: "NanumSquare",
+                                                                                fontWeight: FontWeight.w500,
+                                                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                                                color: Color.fromRGBO(107,107,107, 1),
+                                                                                letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                                            ),
+                                                                        ),
+                                                                        Text(
+                                                                            '명',
+                                                                            style: TextStyle(
+                                                                                height: 1,
+                                                                                fontFamily: "NotoSans",
+                                                                                fontWeight: FontWeight.w400,
+                                                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                                                color: Color.fromRGBO(107,107,107, 1),
+                                                                                letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                                            ),
+                                                                        ),
+                                                                    ],
+                                                                )
+                                                            ),
+                                                            Container(
+                                                                child: Text(
+                                                                    trendChatInfo.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(trendChatInfo.lastMsg.chatTime) : "메시지 없음",
+                                                                    style: TextStyle(
+                                                                        height: 1,
+                                                                        fontFamily: "NotoSans",
+                                                                        fontWeight: FontWeight.w400,
+                                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                                        color: Color.fromRGBO(107, 107, 107, 1),
+                                                                        letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    )
+                                                )
+                                            ],
+                                        ),
+                                    ),
+                                    // 좋아요
+                                    InkWell(
+                                        child: Container(
+                                            width: ScreenUtil().setWidth(64),
+                                            child: Column(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                    Container(
+                                                        width: sameSize*20,
+                                                        height: sameSize*20,
+                                                        margin: EdgeInsets.only(
+                                                            bottom: sameSize*2.5
+                                                        ),
+                                                        decoration: BoxDecoration(
+                                                            image: DecorationImage(
+                                                                image:AssetImage(
+                                                                    trendChatList[index].isLiked
+                                                                        ? "assets/images/icon/iconHeartRed.png"
+                                                                        : "assets/images/icon/iconLikeCount.png"
+                                                                ),
+                                                                fit: BoxFit.contain
+                                                            ),
                                                         ),
                                                     ),
-                                                ),
-                                            ],
-                                        )
+                                                    Container(
+                                                        child: Text(
+                                                            trendChatInfo.likeCount.toString(),
+                                                            style: TextStyle(
+                                                                fontFamily: "NanumSquare",
+                                                                fontWeight: FontWeight.w500,
+                                                                fontSize: ScreenUtil().setSp(13),
+                                                                letterSpacing: ScreenUtil().setWidth(-0.32),
+                                                                color: Color.fromRGBO(107, 107, 107, 1)
+                                                            ),
+                                                        ),
+                                                    ),
+                                                ],
+                                            )
+                                        ),
+                                        onTap: () {
+                                            trendChatList[index].isLiked ? _unLikeChat(trendChatList, index) : _likeChat(trendChatList, index);
+                                        },
                                     )
                                 ],
                             ),
                         ),
-                        // 좋아요
-                        Container(
-                            width: ScreenUtil().setWidth(65),
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                    Container(
-                                        width: sameSize*20,
-                                        height: sameSize*20,
-                                        margin: EdgeInsets.only(
-                                            bottom: sameSize*2.5
-                                        ),
-                                        decoration: BoxDecoration(
-                                            image: DecorationImage(
-                                                image:AssetImage(
-                                                    "assets/images/icon/iconLikeCount.png"
-                                                ),
-                                                fit: BoxFit.cover
-                                            ),
+                        Positioned(
+                            top:  (ScreenUtil().setHeight(81) - sameSize*29)/2,
+                            left: 0,
+                            child: Container(
+                                width: sameSize*29,
+                                height: sameSize*29,
+                                child: Center(
+                                    child: Text(
+                                        (index + 3).toString(),
+                                        style: TextStyle(
+                                            fontFamily: "NanumSquare",
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ScreenUtil().setSp(13),
+                                            letterSpacing: ScreenUtil().setWidth(-0.32),
+                                            color: Color.fromRGBO(255, 255, 255, 1)
                                         ),
                                     ),
-                                    Container(
-                                        child: Text(
-                                            trendChatInfo.likeCount.toString(),
-                                            style: TextStyle(
-                                                fontFamily: "NanumSquare",
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: ScreenUtil().setSp(13),
-                                                letterSpacing: ScreenUtil().setWidth(-0.32),
-                                                color: Color.fromRGBO(107, 107, 107, 1)
-                                            ),
-                                        ),
-                                    ),
-                                ],
-                            )
+                                ),
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(77, 96, 191, 1),
+                                    borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setWidth(8))),
+                                    boxShadow: [
+                                        new BoxShadow(
+                                            color: Color.fromRGBO(39, 39, 39, 0.2),
+                                            offset: new Offset(ScreenUtil().setWidth(0),ScreenUtil().setWidth(5)),
+                                            blurRadius: ScreenUtil().setWidth(5)
+                                        )
+                                    ]
+                                ),
+                            ),
                         )
                     ],
-                )
+                ),
             ),
             onTap: () {
                 _joinChat(trendChatInfo.chatIdx);

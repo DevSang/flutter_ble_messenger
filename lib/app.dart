@@ -99,14 +99,13 @@ class _MainPageState extends State<MainPage> {
                 );
             }
 
-//            await store.put<List<dynamic>>("friendList",friendInfoList);
+            await store.put<List<dynamic>>("friendList",friendInfoList);
         } else {
-//            await store.put<List<dynamic>>("friendList",[]);
+            await store.put<List<dynamic>>("friendList",[]);
         }
 
         Constant.FRIEND_LIST = friendInfoList;
     }
-
     /*
     * @author : sh
     * @date : 2019-12-28
@@ -121,10 +120,13 @@ class _MainPageState extends State<MainPage> {
         print("userIdx : " + userIdx.toString());
 
         if(sharedPreferences.getString("token") == null) {
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
         }
         else {
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
+            Constant.setUserIdx();
+            Constant.setHeader();
+            callInitApi();
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
         }
     }
 
