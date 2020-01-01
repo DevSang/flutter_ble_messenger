@@ -68,6 +68,7 @@ class ChatScreenState extends State<ChatroomPage> {
     bool isShowMenu;
     String imageUrl;
     bool disable;
+    List<ChatJoinInfo> joinedUserNow;
 
     // 채팅방 메세지 View 리스트
     final List<ChatMessage> messageList = <ChatMessage>[];

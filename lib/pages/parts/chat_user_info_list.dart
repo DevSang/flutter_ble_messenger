@@ -97,8 +97,8 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
                                                             Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=SMALL"
                                                             , scale: 1
                                                             , headers: Constant.HEADER
-
                                                         ),
+                                                        fit: BoxFit.cover,
                                                         fadeInDuration: Duration(milliseconds: 1)
                                                     )
                                                 )
@@ -280,11 +280,11 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
                                             children: <Widget>[
                                                 InkWell(
                                                     child: Container(
-                                                        width: ScreenUtil().setWidth(90),
+                                                        width: ScreenUtil().setHeight(90),
                                                         height: ScreenUtil().setHeight(90),
                                                         margin: EdgeInsets.only(
-                                                            top: ScreenUtil().setHeight(16),
-                                                            bottom: ScreenUtil().setHeight(13),
+                                                            top: ScreenUtil().setHeight(17),
+                                                            bottom: ScreenUtil().setHeight(13.5),
                                                         ),
                                                         child: ClipRRect(
                                                             borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),

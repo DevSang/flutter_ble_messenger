@@ -204,7 +204,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                     child: Row(
                                                         children: <Widget>[
                                                             Text(
-                                                                chatInfo.title,
+                                                                chatInfo.title.length > 13 ? chatInfo.title.substring(0, 13) + ".." : chatInfo.title,
                                                                 style: TextStyle(
                                                                     fontFamily: "assets/fonts/NotoSansKR-Medium.otf",
                                                                     height: 1,
