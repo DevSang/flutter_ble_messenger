@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:io';
+import 'package:dio/dio.dart';
 
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/pages/parts/loading.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/custom_switch.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/pages/signin_page.dart';
+import 'package:image_picker/image_picker.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -28,12 +32,19 @@ class _ProfilePageState extends State <ProfilePage>{
     String nickName;
     String intro;
     String phoneNum;
-    bool allowedPush = true;
-    bool allowedFriend = true;
+    bool allowedPush;
+    bool allowedFriend;
+
+    bool isLoading;
+
+    FadeInImage profileImg;
+	String profileImgUri;
+
 
     @override
     void initState() {
         super.initState();
+        isLoading = false;
 
         getSettingInfo();
     }
@@ -61,18 +72,9 @@ class _ProfilePageState extends State <ProfilePage>{
     /*
      * @author : hs
      * @date : 2020-01-01
-     * @description : Switch Change
-    */
-    void _onSwitchChanged(bool value) {
-    }
-
-    /*
-     * @author : hs
-     * @date : 2020-01-01
      * @description : 프로필 설정 받아오기
     */
     void getSettingInfo() async {
-
         try {
             /// 참여 타입 수정
             String uri = "/api/v2/user/profile?target_user_idx=" + Constant.USER_IDX.toString();
@@ -89,9 +91,101 @@ class _ProfilePageState extends State <ProfilePage>{
                 allowedFriend = profile['is_friend_request_allowed'];
             });
 
+            // Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
+
+//            profileImg = Image.network(proFileImgUri, scale: 1.0, headers: header);
+//            profileImg = Image.network("https://ss.sdfsdf/c", scale: 1.0, headers: header);
+
+//	        profileImg =
+
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
         }
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-01
+     * @description : 프로필 저장
+    */
+    void saveSettingInfo() async {
+        try {
+            String uri = "/api/v2/user/profile";
+            final response = await CallApi.commonApiCall(
+                method: HTTP_METHOD.put,
+                url: uri,
+                data: {
+                    "nickname" : nickName,
+                    "description" : intro,
+                    "is_push_allowed"  : allowedPush,
+                    "is_friend_request_allowed" : allowedFriend
+                }
+            );
+
+            print("####" + response.body.toString());
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
+    }
+
+
+    void popNav() async {
+        setState(() {
+            isLoading = true;
+        });
+
+        await saveSettingInfo();
+
+        setState(() {
+            isLoading = false;
+        });
+
+        Navigator.of(context).pop();
+
+    }
+
+    getProfileImage() {
+	    return FadeInImage(
+			    placeholder: AssetImage('assets/images/icon/thumbnailUnset1.png'),
+			    image: NetworkImage(
+					    Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL"
+					    , scale: 1
+					    , headers: Constant.HEADER),
+			    fadeInDuration: Duration(milliseconds: 200)
+	    );
+    }
+
+    /*
+	 * @author : hk
+	 * @date : 2020-01-01
+	 * @description : 프로필 사진 업로드
+	 */
+    void uploadProfileImg(int flag) async {
+
+	    File imageFile;
+
+	    if(flag == 1){
+		    // 사진첩 열기
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+	    } else {
+		    // 카메라 열기
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+	    }
+
+	    // 파일 업로드 API 호출
+	    Response response = await CallApi.fileUploadCall(url: "/api/v2/user/profile/image", filePath: imageFile.path, onSendProgress: (int sent, int total){
+		    print("$sent : $total");
+	    });
+
+	    if(response.statusCode == 200){
+		    setState(() {
+//			    proFileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+		    });
+	    } else {
+		    developer.log("## 이미지파일 업로드에 실패하였습니다.");
+	    }
+
     }
 
     @override
@@ -113,7 +207,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 leading: new IconButton(
                     icon: new Image.asset('assets/images/icon/navIconPrev.png'),
                     onPressed: (){
-                        Navigator.of(context).pop(null);
+                        popNav();
                     }
                 ),
                 centerTitle: true,
@@ -121,27 +215,34 @@ class _ProfilePageState extends State <ProfilePage>{
                 backgroundColor: Colors.white,
                 brightness: Brightness.light,
             ),
-            body: Column(
+            body:
+            Stack(
                 children: <Widget>[
-                    Flexible(
-                        child: ListView(
-                            children: <Widget>[
-                                // 프로필 이미지
-                                _profileImageSection(context),
+                    Column(
+                        children: <Widget>[
+                            Flexible(
+                                child: ListView(
+                                    children: <Widget>[
+                                        // 프로필 이미지
+                                        _profileImageSection(context),
 
-                                // 프로필 설정
-                                _profileSetting(context),
+                                        // 프로필 설정
+                                        _profileSetting(context),
 
-                                // 앱 설정
-                                _appSetting(context),
+                                        // 앱 설정
+                                        _appSetting(context),
 
-                                // 계정 설정
-                                _accountSetting(context)
-                            ]
-                        )
-                    )
+                                        // 계정 설정
+                                        _accountSetting(context)
+                                    ]
+                                )
+                            )
+                        ],
+                    ),
+                    // Loading
+                    isLoading ? Loading() : Container()
                 ],
-            ),
+            )
         );
     }
 
@@ -173,14 +274,16 @@ class _ProfilePageState extends State <ProfilePage>{
                                   ),
                                   child: ClipRRect(
                                       borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
-                                      child: Image.asset(
-                                          'assets/images/icon/thumbnailUnset1.png',
-                                          fit: BoxFit.cover,
-                                      )
+                                      child: getProfileImage()
+//	                                  child: proFileImgUri == null
+//	                                      ? Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
+//	                                      : Image.network(proFileImgUri, scale: 1.0, headers: header)
                                   ),
                               ),
                           ),
-                          onTap: () {},
+                          onTap: () {
+                          	  uploadProfileImg(1);
+                          },
                       ),
                       Positioned(
                           bottom: ScreenUtil().setHeight(41),
@@ -198,7 +301,9 @@ class _ProfilePageState extends State <ProfilePage>{
                                       shape: BoxShape.circle
                                   )
                               ),
-                              onTap: () {}
+                              onTap: () {
+                              	  uploadProfileImg(2);
+                              }
                           )
                       )
                   ],
@@ -212,11 +317,29 @@ class _ProfilePageState extends State <ProfilePage>{
                 children: <Widget>[
                     buildSettingHeader("프로필"),
 
-                    buildTextItem("사용자 이름", nickName ?? "", false),
+                    buildTextItem(
+                        "사용자 이름",
+                        nickName,
+                        false,
+                        (dynamic value)  {
+                            setState(() {
+                                nickName = value;
+                            });
+                        }
+                    ),
 
-                    buildTextItem("한 줄 소개", intro ?? "", false),
+                    buildTextItem(
+                        "한 줄 소개",
+                        intro,
+                        false,
+                        (dynamic value)  {
+                            setState(() {
+                                intro = value;
+                            });
+                        }
+                    ),
 
-                    buildTextInfoItem("연락처", phoneNum ?? "", true),
+                    buildTextInfoItem("연락처", phoneNum, true),
 
 //                    buildTextItem("명함 관리", "", true)
                 ]
@@ -230,9 +353,28 @@ class _ProfilePageState extends State <ProfilePage>{
               children: <Widget>[
                   buildSettingHeader("앱 설정"),
 
-                  buildSwitchItem("푸쉬 알림", allowedPush, false),
+                  buildSwitchItem(
+                      "푸쉬 알림",
+                      allowedPush,
+                      false,
+                      (bool value) {
+                          setState(() {
+                              allowedPush = value;
+                          });
+                      }
+                  ),
 
-                  buildSwitchItem("친구 요청 허용", allowedFriend, true),
+                  buildSwitchItem(
+                      "친구 요청 허용",
+                      allowedFriend,
+                      true,
+                      (bool value) {
+                          print(value);
+                          setState(() {
+                              allowedFriend = value;
+                          });
+                      }
+                  ),
               ]
           )
       );
@@ -246,13 +388,13 @@ class _ProfilePageState extends State <ProfilePage>{
                   buildSettingHeader("계정"),
 
                   InkWell(
-                      child: buildTextItem("로그아웃", "", false),
+                      child: buildTextItem("로그아웃", "", false, null),
                       onTap:() {
                           logOut();
                       }
                   ),
 
-                  buildTextItem("탈퇴하기", "", true),
+                  buildTextInfoItem("탈퇴하기", "", true),
 
               ]
           )
@@ -285,8 +427,8 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget buildTextItem(String title, String value, bool isLast) {
-        return Container(
+    Widget buildTextItem(String title, String value, bool isLast, Function fn) {
+                return Container(
             height: ScreenUtil().setHeight(49),
             margin: EdgeInsets.only(
                 left: ScreenUtil().setWidth(16)
@@ -321,7 +463,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             child: Row(
                                 children: <Widget>[
                                     Text(
-                                        value,
+                                        value ?? "",
                                         style: TextStyle(
                                             height: 1,
                                             fontFamily: "NotoSans",
@@ -352,11 +494,11 @@ class _ProfilePageState extends State <ProfilePage>{
                                         leftButtonText: "취소",
                                         rightButtonText: "저장하기",
                                         value: value,
-                                        func: () => {
-
-                                        }
+                                        hintText: value == null ? "소개글을 입력해 보세요 :)" : ""
                                     ),
-                                );
+                                ).then((onValue) {
+                                    if (fn != null) fn(onValue);
+                                });
                             },
                         )
                     )
@@ -365,7 +507,7 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget buildSwitchItem(String title, bool value, bool isLast) {
+    Widget buildSwitchItem(String title, bool value, bool isLast, Function fn) {
         return Container(
             height: ScreenUtil().setHeight(49),
             margin: EdgeInsets.only(
@@ -398,10 +540,9 @@ class _ProfilePageState extends State <ProfilePage>{
                     ),
                     CustomSwitch(
                         onChanged: (val){
-                            print(val);
-                            _onSwitchChanged(val);
+                            fn(val);
                         } ,
-                        value: value,
+                        value: value ?? true,
                         inactiveColor: Color.fromRGBO(235, 235, 235, 1),
                         activeColor: Color.fromRGBO(77, 96, 191, 1),
                         shadow: BoxShadow(
@@ -451,7 +592,7 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Text(
-                        value,
+                        value ?? "",
                         style: TextStyle(
                             height: 1,
                             fontFamily: "NotoSans",
