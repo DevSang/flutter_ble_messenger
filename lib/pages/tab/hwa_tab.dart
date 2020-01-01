@@ -504,93 +504,28 @@ class _HwaTabState extends State<HwaTab> {
     * @date : 2019-12-27
     * @description : 단화방 생성 Dialog
     */
-    void _displayIosDialog(BuildContext context) async {
+    void _displayDialog(BuildContext context) async {
         return showDialog(
             context: context,
+            builder: (BuildContext context) => CustomDialog(
+                title: '단화 생성하기',
+                type: 1,
+                leftButtonText: "취소",
+                rightButtonText: "생성하기",
+                value: _currentAddress,
+                hintText: _currentAddress == '위치 검색 중..'
+                    ? '단화방 이름을 입력해주세요.'
+                    : _currentAddress,
+                func: (String titleValue) {
+                    _createChat(titleValue);
+                    Navigator.of(context).pop();
 
-            builder: (BuildContext context) => new CupertinoAlertDialog(
-                title: new Text("단화 생성하기"),
-
-                content: new CupertinoTextField(
-                    prefix: const Padding(padding: EdgeInsets.symmetric(vertical:10)),
-                    placeholder: '단화방 이름을 입력해주세요.',
-                    controller: _textFieldController = TextEditingController(
-                            text: _currentAddress == '위치 검색 중..' ?
-                                ''
-                                : _currentAddress
-                        ),
-                ),
-                actions: <Widget>[
-                    new FlatButton(
-                        child: new Text('취소'),
-                        onPressed: () {
-                            Navigator.of(context).pop();
-                        },
-                    ),
-                    new FlatButton(
-                        child: new Text('생성하기'),
-                        onPressed: () {
-                            _createChat(_textFieldController.text);
-                            Navigator.of(context).pop();
-
-                            setState(() {
-                                isLoading = true;
-                            });
-                        },
-                    )
-                ]
-            )
-        );
-    }
-
-    /*
-    * @author : hsshadow
-    * @date : 2019-12-27
-    * @description : 단화방 생성 Dialog
-    */
-    void _displayAndroidDialog(BuildContext context) async {
-        return showDialog(
-            context: context,
-            child: new AlertDialog(
-                title: Text(
-                    '단화 생성하기'
-                ),
-                content: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: TextField(
-                        controller: _textFieldController,
-                        decoration: InputDecoration(
-
-                            /// GPS 연동
-                            hintText: _currentAddress == '위치 검색 중..' ?
-                            '단화방 이름을 입력해주세요.'
-                            : _currentAddress
-                        ),
-                        maxLength: 15,
-                    ),
-                ),
-                actions: <Widget>[
-                    new FlatButton(
-                        child: new Text('취소'),
-                        onPressed: () {
-                            Navigator.of(context).pop();
-                        },
-                    ),
-                    new FlatButton(
-                        child: new Text('생성하기'),
-                        onPressed: () {
-                            _createChat(_textFieldController.text);
-                            Navigator.of(context).pop();
-
-                            setState(() {
-                                isLoading = true;
-                            });
-
-                            _textFieldController.clear();
-                        },
-                    )
-                ]
-            )
+                    setState(() {
+                        isLoading = true;
+                    });
+                },
+                maxLength: 15,
+            ),
         );
     }
 
@@ -621,7 +556,9 @@ class _HwaTabState extends State<HwaTab> {
                             child: InkWell(
                                 child: Image.asset(
                                     'assets/images/icon/navIconNew.png'),
-                                onTap: () =>
+                                onTap: (){
+                                    _displayDialog(context);
+                                }
 //                                {
 //                                    if (Platform.isAndroid) {
 //                                        _displayAndroidDialog(context)
@@ -629,29 +566,7 @@ class _HwaTabState extends State<HwaTab> {
 //                                        _displayIosDialog(context)
 //                                    }
 //                                },
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) => CustomDialog(
-                                        title: '단화 생성하기',
-                                        type: 1,
-                                        leftButtonText: "취소",
-                                        rightButtonText: "생성하기",
-                                        value: _currentAddress,
-                                        hintText: _currentAddress == '위치 검색 중..'
-                                                ? '단화방 이름을 입력해주세요.'
-                                                : _currentAddress,
-                                        func: (String titleValue) {
-                                            _createChat(titleValue);
-                                            Navigator.of(context).pop();
-
-                                            setState(() {
-                                                isLoading = true;
-                                            });
-                                        },
-                                        maxLength: 15,
-                                    ),
                                 )
-                            )
                         ),
                     ],
                 ),
@@ -706,13 +621,13 @@ class _HwaTabState extends State<HwaTab> {
             String titleText = "현재 위치 단화방이 없습니다.";
             String subTitle = "원하는 방을 만들어 보실래요?";
             String buttonText = "방 만들기";
-            Function buttonClick = Platform.isAndroid ? _displayAndroidDialog : _displayIosDialog;
+            Function buttonClick = _displayDialog;
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
                 titleText= "현재 위치 단화방이 없습니다.";
                 subTitle="원하는 방을 만들어 보실래요?";
                 buttonText="방 만들기";
-                buttonClick =  Platform.isAndroid ? _displayAndroidDialog : _displayIosDialog;
+                buttonClick = _displayDialog;
             } else if(!isAuthBLE) {
                 mainBackImg = "assets/images/background/noBleBackgroundImg.png";
                 titleText= "블루투스 권한이 필요합니다.";
@@ -799,7 +714,7 @@ class _HwaTabState extends State<HwaTab> {
                             padding: EdgeInsets.symmetric(horizontal: 15.0),
                             child: RaisedButton(
                                 onPressed: (){
-                                    (buttonClick != _displayAndroidDialog && buttonClick != _displayIosDialog) ? buttonClick() : buttonClick(context);
+                                    (buttonClick != _displayDialog) ? buttonClick() : buttonClick(context);
                                 },
                                 color: Color.fromRGBO(77, 96, 191, 1),
                                 elevation: 0.0,
