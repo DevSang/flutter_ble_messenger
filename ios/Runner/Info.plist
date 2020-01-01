@@ -25,6 +25,7 @@
 			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>fb1596664447155921</string>
 				<string>com.googleusercontent.apps.560232493191-jpriv1u5kplknuqgns4ac81eph29g3ea</string>
 			</array>
 			<key>CLIENT_ID</key>
@@ -35,6 +36,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>FIRAnalyticsDebugEnabled</key>
 	<string>NO</string>
+	<key>FacebookAppID</key>
+	<string>1596664447155921</string>
+	<key>FacebookDisplayName</key>
+	<string>HWA</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<string>NO</string>
 	<key>FirebaseScreenReportingEnabled</key>

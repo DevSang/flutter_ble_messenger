@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -84,9 +85,6 @@ class _SignInPageState extends State<SignInPage> {
             }).catchError((err){
                 print('error occured');
             });
-
-
-
         } catch (error) {
             developer.log(error);
         }
@@ -302,12 +300,6 @@ class _SignInPageState extends State<SignInPage> {
                     FocusScope.of(context).requestFocus(new FocusNode());
                 },
                 child: new Container(
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: AssetImage("assets/images/background/bgGradeLogin.png"),
-                            fit: BoxFit.cover,
-                        ),
-                    ),
                     child: _isLoading
                         ? Center(child: CircularProgressIndicator())
                         : ListView(
@@ -316,25 +308,13 @@ class _SignInPageState extends State<SignInPage> {
                             _loginInputText(),
                             _loginInputCodeField(),
                             _SignInButton(),
-                            _signinText(),
-                            _socialSignin(),
                             _registerSection(context),
+                            _signinText(),
+                            _socialSignin()
                         ],
                     ),
                 ),
-            ),
-            appBar: AppBar(
-                centerTitle: true,
-                brightness: Brightness.light,
-                backgroundColor: Colors.white,
-                elevation: 0.0,
-                title: Text("HWA 로그인",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontFamily: 'NotoSans'),
-                ),
-            ),
+            )
         );
     }
 
@@ -345,14 +325,14 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _loginMainImage() {
         return Container(
-            height: 203,
+            height: ScreenUtil().setHeight(232),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                     Image.asset(
-                        'assets/images/login/visualImageLogin.png',
-                        width: 241,
-                        height: 263,
+                        'assets/images/loginLogo.png',
+                        width: ScreenUtil().setWidth(219.7),
+                        height: ScreenUtil().setHeight(80.5),
                         fit: BoxFit.cover,
                         alignment: Alignment(0, -1),
                     )
@@ -368,12 +348,19 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _loginInputText() {
         return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            height: ScreenUtil().setHeight(50),
+            width: ScreenUtil().setWidth(343),
+            margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16), vertical: ScreenUtil().setHeight(3)),
+            decoration: new BoxDecoration(
+                color: Color.fromRGBO(240, 240, 240, 1),
+                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(16.0)))
+            ),
             child: Row(
                 children: <Widget>[
-                    Flexible(
-                        child:
-                        TextFormField(
+                    Container(
+                        margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
+                        width: ScreenUtil().setWidth(215),
+                        child: TextFormField(
                             maxLength: 11,
                             onChanged: (loginAuthCode) {
                                 developer.log(loginAuthCode);
@@ -386,43 +373,33 @@ class _SignInPageState extends State<SignInPage> {
                                 WhitelistingTextInputFormatter.digitsOnly
                             ],
                             controller: _phoneController,
-                            cursorColor: Colors.black,
-                            style: TextStyle(color: Colors.black, fontFamily: 'NotoSans'),
-                            decoration:
-                            InputDecoration(
-                                suffixIcon:
-                                Container(
-                                    margin: EdgeInsets.only(right:5),
-                                    child: RaisedButton(
-                                        focusNode: contextFocus,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8.0),
-                                        ),
-                                        child: Text("인증문자 받기",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'NotoSans'
-                                            ),
-                                        ),
-                                        color: Color.fromRGBO(77, 96, 191, 1),
-                                        onPressed: () {
-                                            loginCodeRequest();
-                                        }
-                                    )
-                                ),
+                            style: TextStyle(color: Colors.black, fontFamily: 'NotoSans',  fontSize: 15),
+                            decoration: new InputDecoration(
+                                border: InputBorder.none,
                                 counterText: "",
-                                hintText: "휴대폰 번호 (-없이 숫자만 입력)",
-                                hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                    borderSide: BorderSide(
-                                    ),
-                                ),
-                                fillColor: Colors.grey[200],
-                                filled: true,
-                            )
+                                hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
+                                hintText: '휴대폰번호 ( -없이 숫자만 입력)'
+                            ),
+                        )
+                    )
+                    ,RaisedButton(
+                        padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(12), horizontal: ScreenUtil().setWidth(15)),
+                        focusNode: contextFocus,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
                         ),
-                    ),
+                        child: Text("인증문자 받기",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'NotoSans',
+                                fontSize: ScreenUtil().setSp(13)
+                            ),
+                        ),
+                        color: Color.fromRGBO(77, 96, 191, 1),
+                        onPressed: () {
+                            loginCodeRequest();
+                        }
+                    )
                 ],
             ),
         );
@@ -435,50 +412,49 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _loginInputCodeField() {
         return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 5.0),
-            child: Column(
-                children: <Widget>[
-                    TextFormField(
-                        maxLength: 6,
-                        onChanged: (regAuthCode) {
-                            if(regAuthCode.length == 6 && !lengthConfirm) {
-                                setState(() {
-                                    lengthConfirm = true;
-                                });
-                            } else if (regAuthCode.length != 6 && lengthConfirm){
-                                setState(() {
-                                    lengthConfirm = false;
-                                });
-                            }
-                        },
-                        onFieldSubmitted: (loginAuthCode) {
-                            developer.log('login authcode 입력 :$loginAuthCode');
-                        },
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                            WhitelistingTextInputFormatter.digitsOnly
-                        ],
-                        controller: _authCodeController,
-                        cursorColor: Colors.black,
-                        obscureText: true,
-                        style: TextStyle(color: Colors.black, fontFamily: "NotoSans"),
-                        decoration: InputDecoration(
-                            counterText: "",
-                            hintText: "인증번호",
-                            hintStyle: TextStyle(color: Colors.black38, fontSize:15),
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide(),
-                            ),
-                            fillColor: Colors.grey[200],
-                            filled: true,
-                        )
-                    ),
-                ],
+            height: ScreenUtil().setHeight(50),
+            width: ScreenUtil().setWidth(343),
+            margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16), vertical: ScreenUtil().setHeight(3)),
+            decoration: new BoxDecoration(
+                color: Color.fromRGBO(240, 240, 240, 1),
+                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(16.0)))
             ),
+            child:  Container(
+                margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
+                width: ScreenUtil().setWidth(215),
+                child: TextFormField(
+                    maxLength: 6,
+                    onChanged: (regAuthCode) {
+                        if(regAuthCode.length == 6 && !lengthConfirm) {
+                            setState(() {
+                                lengthConfirm = true;
+                            });
+                        } else if (regAuthCode.length != 6 && lengthConfirm){
+                            setState(() {
+                                lengthConfirm = false;
+                            });
+                        }
+                    },
+                    onFieldSubmitted: (loginAuthCode) {
+                        developer.log('login authcode 입력 :$loginAuthCode');
+                    },
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                        WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    controller: _authCodeController,
+                    obscureText: true,
+                    style: TextStyle(color: Colors.black, fontFamily: 'NotoSans',  fontSize: 15),
+                    decoration: new InputDecoration(
+                        border: InputBorder.none,
+                        counterText: "",
+                        hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
+                        hintText: '인증번호'
+                    ),
+                )
+            )
         );
     }
-
 
     /*
      * @author : sh
@@ -488,6 +464,7 @@ class _SignInPageState extends State<SignInPage> {
     Widget _SignInButton() {
         var color = lengthConfirm ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
         return Container(
+            margin: EdgeInsets.only(top:ScreenUtil().setHeight(3)),
             width: MediaQuery.of(context).size.width,
             height: 50.0,
             padding: EdgeInsets.symmetric(horizontal: 15.0),
@@ -497,10 +474,53 @@ class _SignInPageState extends State<SignInPage> {
                     authCodeLoginRequest();
                 },
                 color: color,
-                child: Text("Sign In", style: TextStyle(
+                child: Text("로그인", style: TextStyle(
                     color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')
                 ),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            ),
+        );
+    }
+
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Signup button widget
+     */
+    Widget _registerSection(BuildContext context) {
+        return Container(
+            decoration: new BoxDecoration(
+                border: new Border(bottom: BorderSide(color:Color.fromRGBO(122, 122, 122, 1), width: 0.5)),
+            ),
+            padding: EdgeInsets.only(top: ScreenUtil().setHeight(16), bottom: ScreenUtil().setHeight(34)),
+            margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16)),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                    InkWell(
+                        child: Text(
+                            "계정이 없으세요? ",
+                            style: TextStyle(
+                                color: Color.fromRGBO(107, 107, 107, 1),
+                                fontSize: ScreenUtil().setSp(15),
+                                fontFamily: 'NotoSans')
+                        )
+                    ),
+                    InkWell(
+                        child: Text("회원가입", style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: Color.fromRGBO(107, 107, 107, 1),
+                                fontSize: ScreenUtil().setSp(15),
+                                fontFamily: 'NotoSans',
+                                fontWeight: FontWeight.w600
+                            )
+                        ),
+                        onTap: () {
+                            developer.log('# [Navigator] SignInPage -> SignUpPage');
+                            Navigator.pushNamed(context, '/register');
+                        },
+                    )
+                ],
             ),
         );
     }
@@ -512,12 +532,20 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _signinText() {
         return Container(
-            margin: EdgeInsets.only(top: 20, bottom: 10),
+            margin: EdgeInsets.only(top:ScreenUtil().setHeight(34), bottom: ScreenUtil().setHeight(17)),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                    Text("Or Sign in with", style: TextStyle(
-                    color: Colors.black, fontSize: 15, fontFamily: 'NotoSans'))
+                    Text(
+                        "SNS계정으로 간편로그인 하세요.",
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                            fontFamily: 'NotoSans',
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: ScreenUtil().setWidth(-0.75)
+                        )
+                    )
                 ],
             )
         );
@@ -531,93 +559,38 @@ class _SignInPageState extends State<SignInPage> {
     Widget _socialSignin() {
         return Container(
             child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-            RaisedButton(
-                        elevation: 0,
-                        color: Colors.white,
-                        child: Row(
-                            children: <Widget>[
-                                InkWell(
-                                    child: Image.asset('assets/images/sns/snsIconKakao.png'),
-                                ),
-                                InkWell(
-                                    child: Text("Kakao", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-                                ),
-                            ],
-                        ),
-                        onPressed: () {
-
-                        },
-                    ),
-                    RaisedButton(
-                      color: Colors.white,
-                        elevation: 0,
-                        child: Row(
-                            children: <Widget>[
-                                InkWell(
-                                    child: Image.asset('assets/images/sns/snsIconFacebook.png'),
-                                ),
-                                InkWell(
-                                    child: Text("Facebook", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-                                ),
-                            ],
-                        ),
-                        onPressed: () {
-                            facebookLogin();
-                        },
-                    ),
-                    RaisedButton(
-                        elevation: 0,
-                        color: Colors.white,
-                      child: Row(
-                            children: <Widget>[
-                                InkWell(
-                                    child: Image.asset('assets/images/sns/snsIconGoogle.png'),
-                                ),
-                                InkWell(
-                                    child: Text("Google", style: TextStyle(color: Colors.black54, fontSize: 15, fontFamily: 'NotoSans'))
-                                ),
-                            ],
-                        ),
-                        onPressed:googleSignin,
-                    ),
-                ],
-            ),
-        );
-    }
-
-
-    /*
-     * @author : sh
-     * @date : 2019-12-30
-     * @description : Signup button widget
-     */
-    Widget _registerSection(BuildContext context) {
-        return Container(
-            margin: EdgeInsets.only(top: 40, bottom: 20),
-            child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                    InkWell(
-                        child: Text(
-                            "New Here? ",
-                            style: TextStyle(
-                                color: Colors.black, fontSize: 15, fontFamily: 'NotoSans')
-                        )
+                    Container(
+                        padding: EdgeInsets.all(ScreenUtil().setWidth(5)),
+                        child: InkWell(
+                            child: Image.asset('assets/images/sns/snsIconKakao.png'),
+                            onTap:googleSignin,
+                        ),
                     ),
-                    InkWell(
-                        child: Text("Sign Up", style: TextStyle(color: Colors.black,
-                        fontSize: 15,
-                        fontFamily: 'NotoSans',
-                        fontWeight: FontWeight.bold)),
-                        onTap: () {
-                            developer.log('# [Navigator] SignInPage -> SignUpPage');
-                            Navigator.pushNamed(context, '/register');
-                        },
+                    Container(
+                        padding: EdgeInsets.all(ScreenUtil().setWidth(5)),
+                        margin: EdgeInsets.only(left: ScreenUtil().setWidth(23)),
+                        child: InkWell(
+                            child: Image.asset('assets/images/sns/snsIconFacebook.png'),
+                            onTap:(){
+                                facebookLogin();
+                            },
+                        ),
+                    ),
+                    Container(
+                        padding: EdgeInsets.all(ScreenUtil().setWidth(5)),
+                        margin: EdgeInsets.only(left: ScreenUtil().setWidth(23)),
+                        child: InkWell(
+                            child: Image.asset('assets/images/sns/snsIconGoogle.png'),
+                            onTap:() {
+                                googleSignin();
+                            }
+                        ),
                     )
                 ],
-            ),
+            )
+
         );
     }
 }

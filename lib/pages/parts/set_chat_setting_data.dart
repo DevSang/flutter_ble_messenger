@@ -8,7 +8,7 @@ class SetChatSettingData {
         ChatInfo chatSetting;
 
         chatSetting = ChatInfo(
-            chatImg: "assets/images/visualImageLogin.png",
+            chatImg: "assets/images/loginLogo.png",
             title: "코엑스 별마당 도서관",
 //            intro: "단화방을 소개해 보세요",
 //            isPublic: true,

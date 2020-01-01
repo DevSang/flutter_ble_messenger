@@ -75,7 +75,7 @@ class _HwaTabState extends State<HwaTab> {
     bool isAuthBLE = true;
 
     bool isBeaconSupport = false;
-    
+
 
     @override
     void initState() {

@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> {
         firebaseCloudMessaging_Listeners();
 
         new Future.delayed(
-            const Duration(seconds: 1),
+            const Duration(seconds: 3),
                 () => checkLoginStatus()
         );
 
