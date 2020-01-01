@@ -93,7 +93,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                     ),
                 ],
                 centerTitle: true,
-                backgroundColor: Colors.white,
+                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
             ),
             body: buildNotice(),
         );

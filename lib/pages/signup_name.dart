@@ -130,7 +130,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         return Scaffold(
             appBar: AppBar(
                 brightness: Brightness.light,
-                backgroundColor: Colors.white,
+                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
                 elevation: 0.0,
                 leading: Padding(
                     padding: EdgeInsets.only(left: 16),

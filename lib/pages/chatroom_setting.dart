@@ -148,6 +148,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 	 * @description : 단화방 프로필사진 업로드
 	 */
     void updateRoomImg(int flag) async {
+
 	    File imageFile;
 
 	    if(flag == 0){
@@ -160,7 +161,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 
 	    if(imageFile != null){
 		    setState(() {
-			    isProfileLoading = true;
+                isLoading = true;
 		    });
 
 		    //chat_idx
@@ -185,7 +186,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 						    httpHeaders: Constant.HEADER
 				    );
 
-				    isProfileLoading = false;
+                    isLoading = false;
 			    });
 		    } else {
 			    developer.log("## 이미지파일 업로드에 실패하였습니다.");

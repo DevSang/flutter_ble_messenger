@@ -66,7 +66,7 @@ class NoticePageState extends State<NoticePage> {
                 ],
                 centerTitle: true,
                 elevation: 0,
-                backgroundColor: Colors.white,
+                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
             ),
             body: noticeList(),
         );

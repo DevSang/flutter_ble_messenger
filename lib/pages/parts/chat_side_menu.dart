@@ -195,7 +195,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                 child: Column(
                     children: <Widget>[
                         Container(
-                            color: Colors.white,
+                            color: Color.fromRGBO(250, 250, 250, 1),
                             height: ScreenUtil().setHeight(72),
                             padding: EdgeInsets.only(
                                 left: ScreenUtil().setWidth(20)
