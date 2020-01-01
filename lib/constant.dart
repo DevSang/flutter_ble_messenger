@@ -5,10 +5,20 @@ class Constant {
     //App 관련 변수
     static int USER_IDX;
     static List<FriendInfo> FRIEND_LIST;
+    static Map<String, String> HEADER;
 
     static setUserIdx () async {
         var spf = await SharedPreferences.getInstance();
         USER_IDX = int.parse(spf.getString("userIdx"));
+    }
+
+    static setHeader () async {
+	    var spf = await SharedPreferences.getInstance();
+	    var token = spf.getString('token').toString();
+	    HEADER = {
+		    'Content-Type': 'application/json',
+		    'X-Authorization': 'Bearer ' + token
+	    };
     }
 
 
