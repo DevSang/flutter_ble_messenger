@@ -121,19 +121,18 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     */
     void saveSettingInfo() async {
         try {
-            String uri = "/danhwa/room/update";
+            String uri = "/danhwa/room/update?roomIdx=" + chatInfo.chatIdx.toString();
+            uri += "&title=" + chatSettingUpdated.title;
+            uri += "&intro=" + chatSettingUpdated.intro;
+            uri += "&isPublic=" + chatSettingUpdated.isPublic.toString();
+            uri += "&inviteRange=" + chatSettingUpdated.inviteRange.toString();
+            uri += "&chatMode=" + chatSettingUpdated.mode;
+
+            var encoded = Uri.encodeFull(uri);
 
             final response = await CallApi.messageApiCall(
                 method: HTTP_METHOD.post,
-                url: uri,
-                data: {
-                    "roomIdx" : chatInfo.chatIdx,
-                    "title" : chatSettingUpdated.title,
-                    "intro" : chatSettingUpdated.intro,
-                    "isPublic"  : chatSettingUpdated.isPublic,
-                    "inviteRange" : chatSettingUpdated.inviteRange,
-                    "chatMode" : chatSettingUpdated.mode
-                }
+                url: encoded
             );
 
         } catch (e) {

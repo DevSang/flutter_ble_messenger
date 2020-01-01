@@ -18,10 +18,10 @@ import 'package:Hwa/data/models/friend_request_info.dart';
 final store = KvStore();
 class MainPage extends StatefulWidget {
     @override
-    _MainPageState createState() => _MainPageState();
+    MainPageState createState() => MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> {
     SharedPreferences sharedPreferences;
     final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
