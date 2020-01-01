@@ -68,7 +68,7 @@ class ChatScreenState extends State<ChatroomPage> {
     bool isShowMenu;
     String imageUrl;
     bool disable;
-    List<ChatJoinInfo> joinedUserNow;
+    List<ChatJoinInfo> joinedUserNow = <ChatJoinInfo>[];
 
     // 채팅방 메세지 View 리스트
     final List<ChatMessage> messageList = <ChatMessage>[];
@@ -236,6 +236,16 @@ class ChatScreenState extends State<ChatroomPage> {
             messageList.insert(0, cmb);
             isReceived = true;
         });
+
+        if (message.chatType == "ENTER") {
+            joinedUserNow.add(
+                ChatJoinInfo(
+                    joinType: "BLE_JOIN",
+                    userIdx: message.senderIdx,
+                    userNick: message.nickName
+                )
+            );
+        }
     }
 
     /*
@@ -439,7 +449,13 @@ class ChatScreenState extends State<ChatroomPage> {
             ),
             endDrawer: SafeArea(
                 child: new ChatSideMenu(
-                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: joinInfo, sc: s, from: widget.from
+                    chatInfo: chatInfo,
+                    isLiked: isLiked,
+                    likeCount: likeCount,
+                    chatJoinInfoList: joinInfo,
+                    joinedUserNow: joinedUserNow,
+                    sc: s,
+                    from: widget.from
                 )
             ),
             body: GestureDetector(
