@@ -168,6 +168,7 @@ flutter:
   - assets/images/icon/thumbnailUnset1.png
   - assets/images/icon/iconRefresh.png
   - assets/images/icon/gpsIconUnconnected.png
+  - assets/images/icon/howmanyIcon.png
 
 uses-material-design: true
 

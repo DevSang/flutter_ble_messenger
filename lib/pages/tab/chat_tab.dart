@@ -312,7 +312,9 @@ class _ChatTabState extends State<ChatTab> {
                 width: ScreenUtil().setWidth(343),
                 margin: EdgeInsets.only(
                     top: ScreenUtil().setHeight(10),
-                    bottom: isLastItem ? ScreenUtil().setHeight(10) : 0
+                    bottom: isLastItem ? ScreenUtil().setHeight(10) : 0,
+                    left: ScreenUtil().setWidth(16),
+                    right: ScreenUtil().setWidth(16)
                 ),
                 padding: EdgeInsets.symmetric(
                     horizontal: ScreenUtil().setWidth(14),
