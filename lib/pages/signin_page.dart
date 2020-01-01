@@ -14,7 +14,7 @@ import 'package:Hwa/pages/signup_page.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
-
+import 'package:Hwa/constant.dart';
 
 /*
  * @project : HWA - Mobile
@@ -250,6 +250,9 @@ class _SignInPageState extends State<SignInPage> {
 
                     SPF.setString('token', token.toString());
                     SPF.setString('userIdx', userIdx.toString());
+
+                    Constant.setUserIdx();
+                    Constant.setHeader();
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.BOTTOM);
                     pushTokenRequest();
