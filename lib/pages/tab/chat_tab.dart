@@ -121,6 +121,12 @@ class _ChatTabState extends State<ChatTab> {
             ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
             bool isLiked = chatInfoJson['isLiked'];
             int likeCount = chatInfoJson['danhwaLikeCount'];
+            bool alreadyJoined = chatInfoJson['alreadyJoin'];
+            String myJoinType;
+
+            if (alreadyJoined) {
+                myJoinType = chatInfoJson['myJoinType'];
+            }
 
             for (var joinInfo in chatInfoJson['joinList']) {
                 chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
@@ -140,7 +146,7 @@ class _ChatTabState extends State<ChatTab> {
 
             Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return ChatroomPage(
-                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "ChatTab"
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "ChatTab", disable: (!alreadyJoined || myJoinType == "ONLINE")
                 );
             }));
 
