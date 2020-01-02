@@ -43,8 +43,8 @@ class _FriendTabState extends State<FriendTab> {
     final store = KvStore();
 
 //    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
-    List<FriendInfo> originList = [];              // 원본 친구 리스트
-    List<FriendInfo> friendList = [];              // 화면에 보이는 친구 리스트 (검색 용도)
+    List<FriendInfo> originList;              // 원본 친구 리스트
+    List<FriendInfo> friendList;              // 화면에 보이는 친구 리스트 (검색 용도)
     List<FriendRequestInfo> requestList = [];
 
     TextEditingController searchController = TextEditingController();
@@ -58,14 +58,15 @@ class _FriendTabState extends State<FriendTab> {
         _scrollController = new ScrollController()..addListener(_sc);
         sameSize = GetSameSize().main();
         isLoading = false;
-        friendList.addAll(originList);
-        friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
 
-        searchController.addListener(() {
-            searchFriends();
-        });
+        originList = [];
+        friendList = [];
 
         _initState();
+
+        searchController.addListener(() {
+//            searchFriends();
+        });
 
         super.initState();
     }
@@ -76,11 +77,13 @@ class _FriendTabState extends State<FriendTab> {
      * @description : 친구리스트 초기화
      */
     void _initState() async {
-        friendList = Constant.FRIEND_LIST;
-        originList = Constant.FRIEND_LIST;
+//        friendList = Constant.FRIEND_LIST;
+//        originList = Constant.FRIEND_LIST;
 
         await getFriendList();
         await getFriendRequestList();
+
+        friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
     }
 
     @override
@@ -401,7 +404,7 @@ class _FriendTabState extends State<FriendTab> {
                 Column(
                     children: <Widget>[
                         // 친구 검색
-                        buildSearch(),
+//                        buildSearch(),
                         Flexible(
                             child: ListView(
                                 children: <Widget>[
@@ -457,7 +460,7 @@ class _FriendTabState extends State<FriendTab> {
                         Icons.search,
                         color: Color.fromRGBO(39, 39, 39, 0.5),
                     ),
-                    hintText: "검색",
+                    hintText: "서비스 준비중 입니다.",
                     hintStyle: TextStyle(
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
