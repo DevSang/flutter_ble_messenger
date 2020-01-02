@@ -1,6 +1,10 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
 
+import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/package/fullPhoto.dart';
+import 'package:Hwa/pages/chatroom_page.dart';
+import 'package:Hwa/pages/parts/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -45,6 +49,7 @@ class _FriendTabState extends State<FriendTab> {
 
     TextEditingController searchController = TextEditingController();
     double sameSize;
+    bool isLoading;
 
     ScrollController _scrollController;
 
@@ -52,7 +57,7 @@ class _FriendTabState extends State<FriendTab> {
     void initState() {
         _scrollController = new ScrollController()..addListener(_sc);
         sameSize = GetSameSize().main();
-
+        isLoading = false;
         friendList.addAll(originList);
         friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
 
@@ -207,6 +212,93 @@ class _FriendTabState extends State<FriendTab> {
         }
     }
 
+    /*
+     * @author : hs
+     * @date : 2020-01-02
+     * @description : 친구 프로필
+    */
+    _showModalSheet(BuildContext context, FriendInfo friendInfo) {
+        return showModalBottomSheet(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(ScreenUtil().setWidth(15)),
+                    topRight: Radius.circular(ScreenUtil().setWidth(15)),
+                ),
+            ),
+            context: context,
+            builder: (builder) {
+                return StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setStateBuild){
+                        return userProfileModal(context, friendInfo, setStateBuild);
+                    }
+                );
+            }
+        );
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-02
+     * @description : 1:1 채팅 생성
+    */
+    void _createChat(FriendInfo friendInfo) async {
+        Navigator.pop(context);
+
+        setState(() {
+            isLoading = true;
+        });
+
+        try {
+            String uri = "/danhwa/p2p?opponentIdx=" + friendInfo.user_idx.toString();
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+            print(response.body);
+            Map<String, dynamic> jsonParse = json.decode(response.body);
+            print(jsonParse.toString());
+            // 단화방 입장
+            _enterChat(jsonParse, friendInfo);
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
+    }
+
+    /*
+    * @author : hs
+    * @date : 2019-12-28
+    * @description : 단화방 입장 파라미터 처리
+    */
+    void _enterChat(Map<String, dynamic> chatInfoJson, FriendInfo friendInfo) async {
+
+        try {
+            ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson);
+            bool isLiked = chatInfoJson['isLiked'];
+            int likeCount = chatInfoJson['danhwaLikeCount'];
+
+            setState(() {
+                isLoading = false;
+            });
+
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) {
+                    return ChatroomPage(
+                        chatInfo: chatInfo,
+                        isLiked: isLiked,
+                        likeCount: likeCount,
+                        isP2P: true,
+                        oppIdx: friendInfo.user_idx,
+                        oppNick: friendInfo.nickname
+                    );
+                })
+            );
+
+            isLoading = false;
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
+    }
+
+
     @override
     Widget build(BuildContext context) {
         return MaterialApp(
@@ -258,23 +350,30 @@ class _FriendTabState extends State<FriendTab> {
     }
 
     Widget buildBody() {
-        return Column(
+        return Stack(
             children: <Widget>[
-                // 친구 검색
-                buildSearch(),
-                Flexible(
-                    child: ListView(
-                        children: <Widget>[
-                            // 친구 요청리스트
-                            buildFriendList('친구 요청', requestList, false),
+                Column(
+                    children: <Widget>[
+                        // 친구 검색
+                        buildSearch(),
+                        Flexible(
+                            child: ListView(
+                                children: <Widget>[
+                                    // 친구 요청리스트
+                                    buildFriendList('친구 요청', requestList, false),
 
-                            // 친구 리스트
-                            buildFriendList('친구 목록', friendList, true)
+                                    // 친구 리스트
+                                    buildFriendList('친구 목록', friendList, true)
 
-                        ],
-                    ),
+                                ],
+                            ),
+                        ),
+                    ],
                 ),
-            ],
+
+                // Loading
+                isLoading ? Loading() : Container()
+            ]
         );
     }
 
@@ -421,87 +520,92 @@ class _FriendTabState extends State<FriendTab> {
     Widget buildFriendItem(dynamic friendInfo, bool isFriend, bool isLast, int index) {
         print("friendInfo" + friendInfo.user_idx.toString());
         String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=SMALL";
-        return Container(
-            width: ScreenUtil().setWidth(375),
-            height: ScreenUtil().setHeight(62),
-            padding: EdgeInsets.only(
-                left: ScreenUtil().setWidth(16)
-            ),
-            decoration: BoxDecoration(
-                color: Color.fromRGBO(250, 250, 250, 1),
-            ),
-            child: Row(
-                children: <Widget>[
-                    // 유저 이미지
-                    Container(
-                        width: sameSize * 50,
-                        height: sameSize * 50,
-                        margin: EdgeInsets.only(
-                            top: ScreenUtil().setHeight(6),
-                            bottom: ScreenUtil().setHeight(6),
-                        ),
-                        child: ClipRRect(
-                            borderRadius: new BorderRadius.circular(
-                                ScreenUtil().setWidth(300)
+        return InkWell(
+            child: Container(
+                width: ScreenUtil().setWidth(375),
+                height: ScreenUtil().setHeight(62),
+                padding: EdgeInsets.only(
+                    left: ScreenUtil().setWidth(16)
+                ),
+                decoration: BoxDecoration(
+                    color: Color.fromRGBO(250, 250, 250, 1),
+                ),
+                child: Row(
+                    children: <Widget>[
+                        // 유저 이미지
+                        Container(
+                            width: sameSize * 50,
+                            height: sameSize * 50,
+                            margin: EdgeInsets.only(
+                                top: ScreenUtil().setHeight(6),
+                                bottom: ScreenUtil().setHeight(6),
                             ),
-                            child: CachedNetworkImage(
-                                imageUrl: profileImgUri,
-                                placeholder: (context, url) => CircularProgressIndicator(),
-                                errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
-                                httpHeaders: Constant.HEADER
-                            )
-                        )
-                    ),
-                    // 유저 정보
-                    Container(
-                        width: ScreenUtil().setWidth(293),
-                        height: isLast ? ScreenUtil().setHeight(61) : ScreenUtil().setHeight(62),
-                        padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(13.5),
-                        ),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    width: isLast ? 0 : sameSize,
-                                    color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                            child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(
+                                    ScreenUtil().setWidth(300)
+                                ),
+                                child: CachedNetworkImage(
+                                    imageUrl: profileImgUri,
+                                    placeholder: (context, url) => CircularProgressIndicator(),
+                                    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
+                                    httpHeaders: Constant.HEADER
                                 )
                             )
                         ),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                                Align(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                        friendInfo.nickname,
-                                        style: TextStyle(
-                                            height: 1,
-                                            fontFamily: "NotoSans",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
-                                            color: Color.fromRGBO(39, 39, 39, 1),
-                                            letterSpacing: ScreenUtil()
-                                                .setWidth(-0.8),
-                                        ),
+                        // 유저 정보
+                        Container(
+                            width: ScreenUtil().setWidth(293),
+                            height: isLast ? ScreenUtil().setHeight(61) : ScreenUtil().setHeight(62),
+                            padding: EdgeInsets.only(
+                                left: ScreenUtil().setWidth(13.5),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    bottom: BorderSide(
+                                        width: isLast ? 0 : sameSize,
+                                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
                                     )
-                                ),
-                                !isFriend
-                                    ? Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                        children: <Widget>[
-                                            Container(),
-                                            friendBtn(0, friendInfo, index),
-                                            friendBtn(1, friendInfo, index),
-                                        ],
-                                    )
-                                    //TODO 주소록에 있는지 없는지
-//                                    : contactIcon
-                                    : Container()
-                            ],
-                        ),
-                    )
-                ],
-            )
+                                )
+                            ),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                    Align(
+                                        alignment: Alignment.centerLeft,
+                                        child: Text(
+                                            friendInfo.nickname,
+                                            style: TextStyle(
+                                                height: 1,
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                color: Color.fromRGBO(39, 39, 39, 1),
+                                                letterSpacing: ScreenUtil()
+                                                    .setWidth(-0.8),
+                                            ),
+                                        )
+                                    ),
+                                    !isFriend
+                                        ? Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                            children: <Widget>[
+                                                Container(),
+                                                friendBtn(0, friendInfo, index),
+                                                friendBtn(1, friendInfo, index),
+                                            ],
+                                        )
+                                        //TODO 주소록에 있는지 없는지
+    //                                    : contactIcon
+                                        : Container()
+                                ],
+                            ),
+                        )
+                    ],
+                )
+            ),
+            onTap: () {
+                _showModalSheet(context, friendInfo);
+            },
         );
     }
 
@@ -562,4 +666,191 @@ class _FriendTabState extends State<FriendTab> {
             ),
         )
     );
+
+    Widget userProfileModal(BuildContext context, FriendInfo friendInfo ,StateSetter setStateBuild) {
+        return Container(
+            height: friendInfo.user_idx == Constant.USER_IDX ? ScreenUtil().setHeight(200) : ScreenUtil().setHeight(299),
+            decoration: BoxDecoration(
+            ),
+            child: Column(
+                children: <Widget>[
+                    Container(
+                        width: ScreenUtil().setWidth(375),
+                        height: ScreenUtil().setHeight(52),
+                        padding: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(18),
+                            right: ScreenUtil().setWidth(18)
+                        ),
+                        decoration: BoxDecoration(
+                            border: Border(
+                                bottom: BorderSide(
+                                    width: ScreenUtil().setWidth(1),
+                                    color: Color.fromRGBO(39, 39, 39, 0.15)
+                                )
+                            )
+                        ),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                                Container(
+                                    width: ScreenUtil().setWidth(27),
+                                    height: ScreenUtil().setHeight(27),
+                                    decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image:AssetImage(
+                                                "assets/images/icon/iconViewCard.png"
+                                                // TODO: 명함 맵핑
+//                                                        userInfo.businessCard != ""
+//                                                        ? "assets/images/icon/iconViewCard.png"
+//                                                        : ""
+                                            )
+                                        )
+                                    )
+                                ),
+                                Container(
+                                    child: Text(
+                                        friendInfo.nickname,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            height: 1,
+                                            fontSize: ScreenUtil().setSp(16),
+                                            letterSpacing: ScreenUtil().setWidth(-0.8),
+                                            color: Color.fromRGBO(39, 39, 39, 1)
+                                        ),
+                                    )
+                                ),
+                                Container(
+                                    width: ScreenUtil().setWidth(20),
+                                    height: ScreenUtil().setHeight(20),
+                                    decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image:AssetImage("assets/images/icon/iconClosePopup.png")
+                                        )
+                                    ),
+                                    child: FlatButton(
+                                        onPressed:(){
+                                            Navigator.pop(context);
+                                        }
+                                    ),
+                                ),
+                            ],
+                        )
+                    ),
+                    Container(
+                        height: friendInfo.user_idx == Constant.USER_IDX ? ScreenUtil().setHeight(148) : ScreenUtil().setHeight(246),
+                        child: Column(
+                            children: <Widget>[
+                                InkWell(
+                                    child: Container(
+                                        width: ScreenUtil().setHeight(90),
+                                        height: ScreenUtil().setHeight(90),
+                                        margin: EdgeInsets.only(
+                                            top: ScreenUtil().setHeight(17),
+                                            bottom: ScreenUtil().setHeight(13.5),
+                                        ),
+                                        child: ClipRRect(
+                                            borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                            child: FadeInImage(
+                                                placeholder: AssetImage(
+                                                    "assets/images/icon/profile.png"
+                                                ),
+                                                image: NetworkImage(
+                                                    Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=BIG"
+                                                    , scale: 1
+                                                    , headers: Constant.HEADER
+                                                ),
+                                                fit: BoxFit.cover,
+                                                fadeInDuration: Duration(milliseconds: 1)
+                                            )
+                                        )
+                                    ),
+                                    onTap: () {
+                                        Navigator.push(
+                                            context, MaterialPageRoute(
+                                            builder: (context) => FullPhoto(
+                                                url: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=BIG"
+                                                , header: Constant.HEADER
+                                            )
+                                        ));
+                                    },
+                                ),
+                                Container(
+                                    child: Text(
+                                        // TODO: 인삿말 맵핑
+//                                                userInfo.userIntro,
+                                        '안녕하세요! ' + friendInfo.nickname + "입니다! :)",
+                                        style: TextStyle(
+                                            height: 1,
+                                            fontSize: ScreenUtil().setSp(13),
+                                            letterSpacing: ScreenUtil().setWidth(-0.33),
+                                            color: Color.fromRGBO(107, 107, 107, 1)
+                                        ),
+                                    )
+                                ),
+                                friendInfo.user_idx == Constant.USER_IDX ? Container() : Container(
+                                    width: ScreenUtil().setWidth(359),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: ScreenUtil().setWidth(8)
+                                    ),
+                                    margin: EdgeInsets.only(
+                                        top: ScreenUtil().setHeight(21),
+                                    ),
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children:  <Widget> [
+                                            userFunc("assets/images/icon/iconDirectChat.png", "1:1 채팅", _createChat, friendInfo, setStateBuild),
+                                            userFunc("assets/images/icon/iconBlock.png", "차단하기", null, friendInfo, setStateBuild)
+                                        ]
+                                    ),
+                                )
+                            ],
+                        )
+                    )
+                ],
+            ),
+        );
+    }
+
+    Widget userFunc(String iconSrc, String title,Function fn, FriendInfo friendInfo, StateSetter setStateBuild) {
+        return new Container(
+            width: ScreenUtil().setWidth(85.75),
+            child: Column(
+                children: <Widget>[
+                    GestureDetector(
+                        child: Container(
+                            margin: EdgeInsets.only(
+                                bottom: ScreenUtil().setHeight(9),
+                            ),
+                            width: sameSize*50,
+                            height: sameSize*50,
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(210, 217, 250, 1),
+                                image: DecorationImage(
+                                    image:AssetImage(iconSrc)
+                                ),
+                                shape: BoxShape.circle
+                            )
+                        ),
+                        onTap:(){
+//                            fn(userIdx, setStateBuild);
+                            fn(friendInfo);
+                        }
+                    ),
+                    Container(
+                        height: ScreenUtil().setHeight(12),
+                        child:
+                        Text(
+                            title,
+                            style: TextStyle(
+                                height: 1,
+                                fontSize: ScreenUtil().setSp(13),
+                                letterSpacing: ScreenUtil().setWidth(-0.33),
+                                color: Color.fromRGBO(107, 107, 107, 1)
+                            ),
+                        )
+                    )
+                ],
+            ),
+        );
+    }
 }

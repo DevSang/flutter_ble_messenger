@@ -47,8 +47,11 @@ class ChatroomPage extends StatefulWidget {
     final String from;      // HwaTab, ChatTab, Trend
     final bool disable;
     final bool isCreated;
+    final bool isP2P;
+    final int oppIdx;
+    final String oppNick;
 
-    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList, this.from, this.disable, this.isCreated}) : super(key: key);
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList, this.from, this.disable, this.isCreated, this.isP2P, this.oppIdx, this.oppNick}) : super(key: key);
 
 
     @override
@@ -136,7 +139,12 @@ class ChatScreenState extends State<ChatroomPage> {
         _inputHeight = 36;
 
         joinedUserNow = <ChatJoinInfo>[];
-        getMessageList();
+
+        if (widget.isP2P != null && widget.isP2P == true) {
+
+        } else {
+            getMessageList();
+        }
     }
 
     @override
@@ -291,6 +299,21 @@ class ChatScreenState extends State<ChatroomPage> {
         for (var recentMsg in recentMessageList) {
             messageList.add(recentMsg);
         }
+    }
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : P2P화면 입장 후 셋팅
+    */
+    setP2PChat() async {
+        // 단화방 생성 시
+        joinedUserNow.add(
+            ChatJoinInfo(
+                joinType: "ONLINE",
+                userIdx: widget.oppIdx,
+                userNick: widget.oppNick
+            )
+        );
     }
 
     /*
