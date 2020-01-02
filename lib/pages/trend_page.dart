@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
+import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/trend_chat_list_item.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
 import 'package:Hwa/pages/parts/loading.dart';
@@ -59,8 +60,6 @@ class _TrendPageState extends State<TrendPage> {
           List<dynamic> jsonParseList = json.decode(response.body);
 
           for (var index = jsonParseList.length; index > 0; index--) {
-
-              print(index.toString() + "##############" + jsonParseList[index - 1].toString());
               chatInfo = new TrendChatListItem.fromJSON(jsonParseList[index - 1]);
 
               if (topTrendChatList.length < 2) {
@@ -113,6 +112,7 @@ class _TrendPageState extends State<TrendPage> {
   */
   void _enterChat(Map<String, dynamic> chatInfoJson) {
       List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
+      List<ChatMessage> chatMessageList = <ChatMessage>[];
 
       try {
           ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
@@ -125,19 +125,19 @@ class _TrendPageState extends State<TrendPage> {
               myJoinType = chatInfoJson['myJoinType'];
           }
 
-          print(chatInfoJson);
-
 
           try {
               for (var joinInfo in chatInfoJson['joinList']) {
                   chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
-                  print("좀돼라*******" + joinInfo.toString());
+              }
+
+
+              for (var recentMsg in chatInfoJson['recentMsg']) {
+                  chatMessageList.add(new ChatMessage.fromJSON(recentMsg));
               }
           } catch (e) {
               developer.log("#### Error :: "+ e.toString());
           }
-
-          print("wha  _____________"+chatInfoJson.toString());
 
           setState(() {
               isLoading = false;
@@ -145,7 +145,7 @@ class _TrendPageState extends State<TrendPage> {
 
           Navigator.push(context,
               MaterialPageRoute(builder: (context) {
-                  return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "Trend", disable: (!alreadyJoined || myJoinType == "ONLINE"));
+                  return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "Trend", disable: (!alreadyJoined || myJoinType == "ONLINE"));
               })
           );
 

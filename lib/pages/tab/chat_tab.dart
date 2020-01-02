@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'dart:developer' as developer;
+import 'package:Hwa/data/models/chat_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -114,6 +115,7 @@ class _ChatTabState extends State<ChatTab> {
       */
     void _enterChat(Map<String, dynamic> chatInfoJson) async {
         List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
+        List<ChatMessage> chatMessageList = <ChatMessage>[];
 
         try {
             ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
@@ -124,7 +126,13 @@ class _ChatTabState extends State<ChatTab> {
                 chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
             }
 
+            for (var recentMsg in chatInfoJson['recentMsg']) {
+                chatMessageList.add(new ChatMessage.fromJSON(recentMsg));
+            }
+
             print("###########"+chatInfoJson.toString());
+
+
 
             setState(() {
                 isLoading = false;
@@ -132,7 +140,7 @@ class _ChatTabState extends State<ChatTab> {
 
             Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return ChatroomPage(
-                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "ChatTab"
+                    chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "ChatTab"
                 );
             }));
 

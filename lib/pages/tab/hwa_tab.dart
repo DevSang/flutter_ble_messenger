@@ -6,6 +6,7 @@ import 'dart:developer' as developer;
 import 'dart:ui';
 
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -437,6 +438,7 @@ class _HwaTabState extends State<HwaTab> {
       */
     void _enterChat(Map<String, dynamic> chatInfoJson, bool isCreated) async {
         List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
+        List<ChatMessage> chatMessageList = <ChatMessage>[];
 
         try {
             ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
@@ -447,6 +449,10 @@ class _HwaTabState extends State<HwaTab> {
                 try {
                     for (var joinInfo in chatInfoJson['joinList']) {
                         chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
+                    }
+
+                    for (var recentMsg in chatInfoJson['recentMsg']) {
+                        chatMessageList.add(new ChatMessage.fromJSON(recentMsg));
                     }
                 } catch (e) {
                     developer.log("#### Error :: "+ e.toString());
@@ -464,7 +470,7 @@ class _HwaTabState extends State<HwaTab> {
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
-                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, from: "HwaTab");
+                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "HwaTab", isCreated: isCreated);
                 })
             ).then((onValue) {
                 startBleService();

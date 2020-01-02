@@ -43,14 +43,16 @@ class ChatroomPage extends StatefulWidget {
     final bool isLiked;
     final int likeCount;
     final List<ChatJoinInfo> joinInfo;
+    final List<ChatMessage> recentMessageList;
     final String from;      // HwaTab, ChatTab, Trend
     final bool disable;
+    final bool isCreated;
 
-    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.from, this.disable}) : super(key: key);
+    ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList, this.from, this.disable, this.isCreated}) : super(key: key);
 
 
     @override
-    State createState() => new ChatScreenState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: joinInfo);
+    State createState() => new ChatScreenState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: joinInfo, recentMessageList: recentMessageList);
 }
 
 class ChatScreenState extends State<ChatroomPage> {
@@ -58,8 +60,9 @@ class ChatScreenState extends State<ChatroomPage> {
     final bool isLiked;
     final int likeCount;
     final List<ChatJoinInfo> joinInfo;
+    final List<ChatMessage> recentMessageList;
 
-    ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo});
+    ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList});
 
     SharedPreferences prefs;
 
@@ -251,9 +254,23 @@ class ChatScreenState extends State<ChatroomPage> {
     /*
      * @author : hs
      * @date : 2019-12-22
-     * @description : 화면 입장 후 메세지 리스트 받아오기
+     * @description : 화면 입장 후 메세지/유저 리스트 받아오기
     */
     getMessageList() async {
+        if (widget.isCreated != null) {
+            joinedUserNow.add(
+                ChatJoinInfo(
+                    joinType: "BLE_JOIN",
+                    userIdx: chatInfo.createUser.userIdx,
+                    userNick: chatInfo.createUser.nick
+                )
+            );
+        }
+
+        for (var recentMsg in recentMessageList) {
+            messageList.add(recentMsg);
+        }
+
         setState(() {});
     }
 
