@@ -359,7 +359,6 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
     }
 
     Widget userFunc(String iconSrc, String title,Function fn, int userIdx, StateSetter setStateBuild) {
-        developer.log(isSendRequestFriend.toString());
         return new Container(
             width: ScreenUtil().setWidth(85.75),
             child: Column(
