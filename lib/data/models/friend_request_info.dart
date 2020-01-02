@@ -23,7 +23,7 @@ class FriendRequestInfo {
         return FriendRequestInfo (
             user_idx : json['user_idx'],
             req_idx : json['req_idx'],
-            nickname : json['nickname'],
+            nickname : json['nickname'] ?? "닉네임 정보가 없습니다.",
             phone_number : json['phone_number'],
             profile_picture_idx : json['profile_picture_idx'],
             business_card_idx : json['business_card_idx'],
