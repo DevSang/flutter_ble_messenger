@@ -139,7 +139,9 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     void dispose() {
-        HwaBeacon().stopAdvertising();
+	    if(Platform.isAndroid){{
+		    HwaBeacon().stopAdvertising();
+	    }}
 
         s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
         s.disconnect();
@@ -152,14 +154,22 @@ class ChatScreenState extends State<ChatroomPage> {
      * @description : 입장 시 기존 Advertising Stop
     */
     void checkAd() async {
-        bool advertising = await HwaBeacon().isAdvertising();
 
-        if (advertising) {
-            await HwaBeacon().stopAdvertising();
-            await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
-        }
-        else
-            await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+    	if(Constant.USER_IDX == chatInfo.createUserIdx){
+
+		    if(Platform.isAndroid){
+			    bool advertising = await HwaBeacon().isAdvertising();
+
+			    if (advertising) {
+				    await HwaBeacon().stopAdvertising();
+				    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+			    }
+			    else
+				    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+		    }
+
+
+	    }
     }
 
     /*
@@ -168,15 +178,19 @@ class ChatScreenState extends State<ChatroomPage> {
      * @description : Advertising Stop/Start
     */
     void advertiseChange() async {
-        if (advertising) {
-            await HwaBeacon().stopAdvertising();
-            setState(() {advertising = false;});
-            print('##BLE STOP!!!');
-        } else {
-            await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
-            setState(() {advertising = true;});
-            print('##BLE START!!!');
-        }
+
+	    if(Platform.isAndroid){
+		    if (advertising) {
+			    await HwaBeacon().stopAdvertising();
+			    setState(() {advertising = false;});
+			    print('##BLE STOP!!!');
+		    } else {
+			    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+			    setState(() {advertising = true;});
+			    print('##BLE START!!!');
+		    }
+	    }
+
     }
 
     /*
@@ -405,8 +419,12 @@ class ChatScreenState extends State<ChatroomPage> {
             isLoading = true;
         });
 
-	    advertising = false;
-	    await HwaBeacon().stopAdvertising();
+        if(Platform.isAndroid){
+	        advertising = false;
+	        await HwaBeacon().stopAdvertising();
+        }
+
+
 
         setState(() {
             isLoading = false;

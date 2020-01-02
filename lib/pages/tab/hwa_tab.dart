@@ -110,7 +110,11 @@ class _HwaTabState extends State<HwaTab> {
     @override
     void dispose() {
 	    super.dispose();
-	    HwaBeacon().stopRanging();
+	    // BLE Scanning API 초기화
+	    if(Platform.isAndroid){
+		    HwaBeacon().stopRanging();
+	    }
+
 
 	    // 모든 타이머 정지
 	    stopAllTimer();
@@ -166,27 +170,31 @@ class _HwaTabState extends State<HwaTab> {
     	// 오래된 채팅방 삭제 타이머 시작
 	    startOldChatRemoveTimer();
 
-    	// 비콘 listen 위한 Stream 설정
-	    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
-		    if (result != null && result.beacons.isNotEmpty && mounted) {
-			    result.beacons.forEach((beacon) {
-				    if (!chatIdxList.contains(beacon.roomId))  {
-					    _setChatItem(beacon.roomId);
-				    }else {
-				        //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
-					    for(ChatListItem chatItem in chatList){
-						    if(chatItem.chatIdx == beacon.roomId){
-							    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
-							    break;
+	    if(Platform.isAndroid){
+		    // 비콘 listen 위한 Stream 설정
+		    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
+			    if (result != null && result.beacons.isNotEmpty && mounted) {
+				    result.beacons.forEach((beacon) {
+					    if (!chatIdxList.contains(beacon.roomId))  {
+						    _setChatItem(beacon.roomId);
+					    }else {
+						    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
+						    for(ChatListItem chatItem in chatList){
+							    if(chatItem.chatIdx == beacon.roomId){
+								    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
+								    break;
+							    }
 						    }
 					    }
-				    }
-			    });
-		    }
-	    });
+				    });
+			    }
+		    });
 
-	    // 스캔(비콘 Listen) 시작
-	    HwaBeacon().startRanging();
+		    // 스캔(비콘 Listen) 시작
+		    HwaBeacon().startRanging();
+	    }
+
+
     }
 
     /*
@@ -307,6 +315,7 @@ class _HwaTabState extends State<HwaTab> {
      * @description : 현재 블루투스 사용 가능 여부 체크
      */
     Future<bool> checkBLE() async {
+
 	    // Bluetooth 상태 확인
 	    BluetoothState bs = await HwaBeacon().getBluetoothState();
 
