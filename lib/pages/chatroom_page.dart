@@ -71,7 +71,7 @@ class ChatScreenState extends State<ChatroomPage> {
     bool isShowMenu;
     String imageUrl;
     bool disable;
-    List<ChatJoinInfo> joinedUserNow = <ChatJoinInfo>[];
+    List<ChatJoinInfo> joinedUserNow;
 
     // 채팅방 메세지 View 리스트
     final List<ChatMessage> messageList = <ChatMessage>[];
@@ -111,6 +111,7 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     void initState() {
         super.initState();
+
         checkAd();
         /// Stomp 초기화
         connectStomp();
@@ -134,6 +135,7 @@ class ChatScreenState extends State<ChatroomPage> {
         inputLineCount = 1;
         _inputHeight = 36;
 
+        joinedUserNow = <ChatJoinInfo>[];
         getMessageList();
     }
 
@@ -271,7 +273,11 @@ class ChatScreenState extends State<ChatroomPage> {
      * @description : 화면 입장 후 메세지/유저 리스트 받아오기
     */
     getMessageList() async {
-        if (widget.isCreated != null) {
+        // 단화방 생성 시
+        if (widget.isCreated != null && widget.isCreated) {
+
+            print("created!" + widget.isCreated.toString());
+
             joinedUserNow.add(
                 ChatJoinInfo(
                     joinType: "BLE_JOIN",
@@ -279,13 +285,12 @@ class ChatScreenState extends State<ChatroomPage> {
                     userNick: chatInfo.createUser.nick
                 )
             );
+            print(joinedUserNow[0].userNick);
         }
 
         for (var recentMsg in recentMessageList) {
             messageList.add(recentMsg);
         }
-
-        setState(() {});
     }
 
     /*
@@ -485,6 +490,7 @@ class ChatScreenState extends State<ChatroomPage> {
             endDrawer: SafeArea(
                 child: new ChatSideMenu(
                     chatInfo: chatInfo,
+                    isCreated: widget.isCreated,
                     isLiked: isLiked,
                     likeCount: likeCount,
                     chatJoinInfoList: joinInfo,

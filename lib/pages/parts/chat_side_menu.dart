@@ -27,13 +27,14 @@ import 'package:Hwa/pages/chatroom_setting.dart';
  */
 class ChatSideMenu extends StatefulWidget {
     final ChatInfo chatInfo;
+    final bool isCreated;
     bool isLiked;
     int likeCount;
     final List<ChatJoinInfo> chatJoinInfoList;
     final List<ChatJoinInfo> joinedUserNow;
     final StompClient sc;
     final String from;
-    ChatSideMenu({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.joinedUserNow, this.sc, this.from});
+    ChatSideMenu({Key key, @required this.chatInfo, this.isCreated, this.isLiked, this.likeCount, this.chatJoinInfoList, this.joinedUserNow, this.sc, this.from});
 
     @override
     State createState() => new ChatSideMenuState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, chatJoinInfoList: chatJoinInfoList, joinedUserNow: joinedUserNow);
@@ -44,6 +45,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     ChatSideMenuState({Key key, @required this.chatInfo, this.isLiked, this.likeCount, this.chatJoinInfoList, this.joinedUserNow});
 
     final ChatInfo chatInfo;
+    bool isCreated;
     bool isLiked;
     int likeCount;
     final List<ChatJoinInfo> chatJoinInfoList;
@@ -56,7 +58,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     @override
     void initState() {
         super.initState();
-
+        isCreated = widget.isCreated ?? false;
         _getChatJoinInfo();
     }
 
@@ -87,21 +89,25 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                         break;
                 }
             }
-            if (joinedUserNow.length > 0) {
-                for(var chatJoinInfo in joinedUserNow) {
+        }
 
-                    switch(chatJoinInfo.joinType) {
-                        case "BLE_JOIN": userInfoListBle.add(chatJoinInfo);
-                        break;
-                        case "BLE_OUT": userInfoListBleOut.add(chatJoinInfo);
-                        break;
-                        case "ONLINE": userInfoListOnline.add(chatJoinInfo);
-                        break;
-                    }
+        if (joinedUserNow.length > 0) {
+            for(var chatJoinInfo in joinedUserNow) {
+                print("#side menu###" + chatJoinInfo.toString());
+                print("#side menu###" + chatJoinInfo.userNick);
+
+                switch(chatJoinInfo.joinType) {
+                    case "BLE_JOIN": userInfoListBle.add(chatJoinInfo);
+                    break;
+                    case "BLE_OUT": userInfoListBleOut.add(chatJoinInfo);
+                    break;
+                    case "ONLINE": userInfoListOnline.add(chatJoinInfo);
+                    break;
                 }
             }
-            setState(() { });
         }
+
+        setState(() { });
     }
 
 
@@ -279,7 +285,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                 Container(
                                                     child:
                                                     Text(
-                                                        (chatInfo.userCount.total + joinedUserNow.length).toString(),
+                                                        isCreated ? (joinedUserNow.length).toString() : (chatInfo.userCount.total + joinedUserNow.length).toString(),
                                                         textAlign: TextAlign.center,
                                                         style: TextStyle(
                                                             height: 1,

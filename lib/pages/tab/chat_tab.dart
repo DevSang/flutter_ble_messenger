@@ -117,6 +117,8 @@ class _ChatTabState extends State<ChatTab> {
         List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
         List<ChatMessage> chatMessageList = <ChatMessage>[];
 
+        print("enter function" + chatInfoJson.toString());
+
         try {
             ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
             bool isLiked = chatInfoJson['isLiked'];
@@ -132,8 +134,10 @@ class _ChatTabState extends State<ChatTab> {
                 chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
             }
 
-            for (var recentMsg in chatInfoJson['recentMsg']) {
-                chatMessageList.add(new ChatMessage.fromJSON(recentMsg));
+            if (chatInfoJson['recentMsg'] != null) {
+                for (var recentMsg in chatInfoJson['recentMsg']) {
+                    chatMessageList.add(new ChatMessage.fromJSON(recentMsg));
+                }
             }
 
             print("###########"+chatInfoJson.toString());
