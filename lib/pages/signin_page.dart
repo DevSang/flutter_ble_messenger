@@ -596,7 +596,8 @@ class _SignInPageState extends State<SignInPage> {
                         child: InkWell(
                             child: Image.asset('assets/images/sns/snsIconGoogle.png'),
                             onTap:() {
-                                googleSignin();
+//                                googleSignin();
+                                RedToast.toast("구글 로그인은 준비 중 입니다.", ToastGravity.TOP);
                             }
                         ),
                     )
