@@ -44,7 +44,7 @@ class _FriendTabState extends State<FriendTab> {
 
 //    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
     List<FriendInfo> originList = [];              // 원본 친구 리스트
-    List<FriendInfo> friendList = [];                                   // 화면에 보이는 친구 리스트 (검색 용도)
+    List<FriendInfo> friendList = [];              // 화면에 보이는 친구 리스트 (검색 용도)
     List<FriendRequestInfo> requestList = [];
 
     TextEditingController searchController = TextEditingController();
@@ -79,6 +79,7 @@ class _FriendTabState extends State<FriendTab> {
         friendList = Constant.FRIEND_LIST;
         originList = Constant.FRIEND_LIST;
 
+        await getFriendList();
         await getFriendRequestList();
     }
 
@@ -116,6 +117,47 @@ class _FriendTabState extends State<FriendTab> {
         setState(() {
             friendList.addAll(constList);
         });
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-02
+     * @description : 친구목록 호출
+    */
+    getFriendList() async {
+        List<FriendInfo> getFriendList = <FriendInfo>[];
+
+        String uri = "/api/v2/relation/relationship/all";
+        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
+        if(response.body != null){
+            List<dynamic> friendListJson = jsonDecode(response.body)['data'];
+
+            for(var i = 0; i < friendListJson.length; i++){
+                var friendInfo = friendListJson[i]['related_user_data'];
+                getFriendList.add(
+                    FriendInfo(
+                        user_idx: friendInfo['user_idx'],
+                        nickname: friendInfo['nickname'],
+                        phone_number: friendInfo['phone_number'],
+                        profile_picture_idx: friendInfo['profile_picture_idx'],
+                        business_card_idx: friendInfo['business_card_idx'],
+                        user_status: friendInfo['user_status']
+                    )
+                );
+            }
+            setState(() {
+                originList = getFriendList;
+                friendList = getFriendList;
+            });
+//            await store.put<List<FriendInfo>>("friendRequestList",friendRequestList);
+        } else {
+            setState(() {
+                originList = [];
+                friendList = [];
+            });
+
+//            await store.put<List<FriendInfo>>("friendRequestList",[]);
+        }
     }
 
     /*
@@ -254,7 +296,6 @@ class _FriendTabState extends State<FriendTab> {
 
             print(response.body);
             Map<String, dynamic> jsonParse = json.decode(response.body);
-            print(jsonParse.toString());
             // 단화방 입장
             _enterChat(jsonParse, friendInfo);
 
@@ -278,6 +319,11 @@ class _FriendTabState extends State<FriendTab> {
             setState(() {
                 isLoading = false;
             });
+
+            print("################" + chatInfo.toString());
+            print("################**" + isLiked.toString());
+            print("################**" + friendInfo.user_idx.toString());
+            print("################**" + friendInfo.nickname);
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
@@ -314,7 +360,7 @@ class _FriendTabState extends State<FriendTab> {
                         child: Row(
                             children: <Widget>[
                                 Text(
-                                    friendList.length.toString(),
+                                    friendList != null ? friendList.length.toString() : 0.toString(),
                                     style: TextStyle(
                                         height: 1,
                                         fontFamily: "NanumSquare",

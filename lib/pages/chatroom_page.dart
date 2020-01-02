@@ -141,7 +141,7 @@ class ChatScreenState extends State<ChatroomPage> {
         joinedUserNow = <ChatJoinInfo>[];
 
         if (widget.isP2P != null && widget.isP2P == true) {
-
+            getMyNick();
         } else {
             getMessageList();
         }
@@ -300,13 +300,22 @@ class ChatScreenState extends State<ChatroomPage> {
             messageList.add(recentMsg);
         }
     }
+
     /*
      * @author : hs
      * @date : 2019-12-22
      * @description : P2P화면 입장 후 셋팅
     */
-    setP2PChat() async {
+    setP2PChat(String myNick) async {
         // 단화방 생성 시
+        joinedUserNow.add(
+            ChatJoinInfo(
+                joinType: "ONLINE",
+                userIdx: Constant.USER_IDX,
+                userNick: myNick
+            )
+        );
+
         joinedUserNow.add(
             ChatJoinInfo(
                 joinType: "ONLINE",
@@ -314,6 +323,21 @@ class ChatScreenState extends State<ChatroomPage> {
                 userNick: widget.oppNick
             )
         );
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-02
+     * @description : 자신의 닉네임 얻어오기 (임시)
+    */
+    getMyNick() async {
+        /// 참여 타입 수정
+        String uri = "/api/v2/user/profile?target_user_idx=" + Constant.USER_IDX.toString();
+        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
+
+        Map<String, dynamic> jsonParse = json.decode(response.body);
+        Map<String, dynamic> profile = jsonParse['data'];
+        setP2PChat(profile['nickname']);
     }
 
     /*

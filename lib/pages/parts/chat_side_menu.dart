@@ -191,6 +191,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
         }
     }
 
+
     @override
     Widget build(BuildContext context) {
 
@@ -285,7 +286,14 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                 Container(
                                                     child:
                                                     Text(
-                                                        isCreated ? (joinedUserNow.length).toString() : (chatInfo.userCount.total + joinedUserNow.length).toString(),
+                                                        chatInfo.userCount != null
+                                                            ? isCreated
+                                                                ? (joinedUserNow.length).toString()
+                                                                : (chatInfo.userCount.total + joinedUserNow.length).toString()
+                                                            : chatInfo.mode == "P_TO_P"
+                                                                ? 2.toString()
+                                                                : 0,
+
                                                         textAlign: TextAlign.center,
                                                         style: TextStyle(
                                                             height: 1,
@@ -314,12 +322,14 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                         margin: EdgeInsets.only(
                                                             bottom: ScreenUtil().setHeight(4)
                                                         ),
-                                                        decoration: isLiked ? likeChat(context) : unlikeChat(context),
+                                                        decoration: isLiked ?? false
+                                                                        ? likeChat(context)
+                                                                        : unlikeChat(context),
                                                     ),
                                                     Container(
                                                         child:
                                                         Text(
-                                                            likeCount.toString(),
+                                                            (likeCount ?? 0).toString(),
                                                             textAlign: TextAlign.center,
                                                             style: TextStyle(
                                                                 height: 1,

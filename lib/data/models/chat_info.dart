@@ -56,9 +56,9 @@ class ChatInfo {
             score : jsonData['score'] ?? 0,
             createTs : jsonData['createTs'],
             lastMsg :  ChatMessage.fromJSON(jsonData['lastMsg'] ?? {"type":"TALK","roomIdx":1,"msgIdx":18,"senderIdx":100,"nickname":null,"message":"ㅇㅇ","userCountObj":null,"createTs":1577515882850}),
-            userCount :  ChatCountUser.fromJSON(jsonData['userCount']),
+            userCount :  jsonData['userCount'] != null ? ChatCountUser.fromJSON(jsonData['userCount']) : null,
             mode : jsonData['chatMode'],
-            createUser :  ChatUserInfo.fromJSON(jsonData['createUser'] ?? {"user_idx": 32, "nickname": "마이런"}),
+            createUser :  ChatUserInfo.fromJSON(jsonData['createUser'] ?? {"user_idx": jsonData['createUserIdx'], "nickname": "닉네임 정보가 없습니다."}),
             isPublic : jsonData['isPublic'] ?? true,
             inviteRange : jsonData['inviteRange'] ?? 2
         );
