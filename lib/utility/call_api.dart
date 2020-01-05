@@ -45,18 +45,16 @@ class CallApi {
     }
 
     static logRequest(String prefixUrl, method, header, url, data){
-        print("#Request Url : " + url.toString());
-        print("#Method : " + method.toString());
-        print("#Headers : " + header.toString());
-        print("#Data : " + data.toString());
+	    developer.log("#Request Url : " + url.toString());
+	    developer.log("#Method : " + method.toString());
+	    developer.log("#Headers : " + header.toString());
+	    developer.log("#Data : " + data.toString());
     }
 
     static setResponse(http.Response response){
-//        developer.log("# Response : " + response.toString());
         var statusCode = response.statusCode.toString();
 
         if(statusCode.indexOf("20") > -1) {
-//            developer.log("# Request result : " + response.body.toString());
             return response;
         } else {
             developer.log("# [Error] Status Code :" + statusCode);
@@ -67,7 +65,7 @@ class CallApi {
     /*
      * @author : hk
      * @date : 2019-12-31
-     * @description : 파일업로드 API, TODO 아직 채팅방 이미지만 테스트 되어있음
+     * @description : 파일업로드 API 연동 util
      */
     static Future<Response> fileUploadCall({@required String url, @required String filePath, Map<String, dynamic> paramMap, String fileParameterName, Function onSendProgress}) async {
 	    String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
