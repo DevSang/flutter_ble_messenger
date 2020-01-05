@@ -68,7 +68,6 @@ class ChatScreenState extends State<ChatroomPage> {
     ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList});
 
     SharedPreferences prefs;
-
     File imageFile;
     bool isLoading;
     bool isShowMenu;
@@ -76,14 +75,14 @@ class ChatScreenState extends State<ChatroomPage> {
     bool disable;
     List<ChatJoinInfo> joinedUserNow;
 
+    final TextEditingController textEditingController = new TextEditingController();
+    final ScrollController listScrollController = new ScrollController();
+    final FocusNode focusNode = new FocusNode();
+
     // 채팅방 메세지 View 리스트
     final List<ChatMessage> messageList = <ChatMessage>[];
     // 받은 메세지
     ChatMessage message;
-
-    final TextEditingController textEditingController = new TextEditingController();
-    final ScrollController listScrollController = new ScrollController();
-    final FocusNode focusNode = new FocusNode();
 
     // 현재 채팅 Advertising condition
     BoxDecoration adCondition;
@@ -205,16 +204,65 @@ class ChatScreenState extends State<ChatroomPage> {
 
     /*
      * @author : hs
-     * @date : 2019-12-30
-     * @description : Focus 감지에 따른 화면
+     * @date : 2019-12-22
+     * @description : 화면 입장 후 메세지/유저 리스트 받아오기
     */
-    void onFocusChange() {
-        if (focusNode.hasFocus) {
-            // Hide sticker when keyboard appear
-            setState(() {
-                isShowMenu = false;
-            });
+    getMessageList() async {
+        // 단화방 생성 시
+        if (widget.isCreated != null && widget.isCreated) {
+
+            joinedUserNow.add(
+                ChatJoinInfo(
+                    joinType: "BLE_JOIN",
+                    userIdx: chatInfo.createUser.userIdx,
+                    userNick: chatInfo.createUser.nick
+                )
+            );
+            print(joinedUserNow[0].userNick);
         }
+
+        for (var recentMsg in recentMessageList) {
+            messageList.add(recentMsg);
+        }
+    }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-22
+     * @description : P2P화면 입장 후 셋팅
+    */
+    setP2PChat(String myNick) async {
+        // 단화방 생성 시
+        joinedUserNow.add(
+            ChatJoinInfo(
+                joinType: "ONLINE",
+                userIdx: Constant.USER_IDX,
+                userNick: myNick
+            )
+        );
+
+        joinedUserNow.add(
+            ChatJoinInfo(
+                joinType: "ONLINE",
+                userIdx: widget.oppIdx,
+                userNick: widget.oppNick
+            )
+        );
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-02
+     * @description : 자신의 닉네임 얻어오기 (임시)
+    */
+    getMyNick() async {
+        /// 참여 타입 수정
+        String uri = "/api/v2/user/profile?target_user_idx=" + Constant.USER_IDX.toString();
+        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
+
+        Map<String, dynamic> jsonParse = json.decode(response.body);
+        Map<String, dynamic> profile = jsonParse['data'];
+        setP2PChat(profile['nickname']);
     }
 
     /*
@@ -277,71 +325,6 @@ class ChatScreenState extends State<ChatroomPage> {
 
     /*
      * @author : hs
-     * @date : 2019-12-22
-     * @description : 화면 입장 후 메세지/유저 리스트 받아오기
-    */
-    getMessageList() async {
-        // 단화방 생성 시
-        if (widget.isCreated != null && widget.isCreated) {
-
-            print("created!" + widget.isCreated.toString());
-
-            joinedUserNow.add(
-                ChatJoinInfo(
-                    joinType: "BLE_JOIN",
-                    userIdx: chatInfo.createUser.userIdx,
-                    userNick: chatInfo.createUser.nick
-                )
-            );
-            print(joinedUserNow[0].userNick);
-        }
-
-        for (var recentMsg in recentMessageList) {
-            messageList.add(recentMsg);
-        }
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-22
-     * @description : P2P화면 입장 후 셋팅
-    */
-    setP2PChat(String myNick) async {
-        // 단화방 생성 시
-        joinedUserNow.add(
-            ChatJoinInfo(
-                joinType: "ONLINE",
-                userIdx: Constant.USER_IDX,
-                userNick: myNick
-            )
-        );
-
-        joinedUserNow.add(
-            ChatJoinInfo(
-                joinType: "ONLINE",
-                userIdx: widget.oppIdx,
-                userNick: widget.oppNick
-            )
-        );
-    }
-
-    /*
-     * @author : hs
-     * @date : 2020-01-02
-     * @description : 자신의 닉네임 얻어오기 (임시)
-    */
-    getMyNick() async {
-        /// 참여 타입 수정
-        String uri = "/api/v2/user/profile?target_user_idx=" + Constant.USER_IDX.toString();
-        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-
-        Map<String, dynamic> jsonParse = json.decode(response.body);
-        Map<String, dynamic> profile = jsonParse['data'];
-        setP2PChat(profile['nickname']);
-    }
-
-    /*
-     * @author : hs
      * @date : 2019-12-24
      * @description : Image 받아오기
     */
@@ -368,7 +351,7 @@ class ChatScreenState extends State<ChatroomPage> {
     /*
      * @author : hs
      * @date : 2019-12-25
-     * @description :
+     * @description : 카메라 촬영
     */
     Future getCamera() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
@@ -389,6 +372,21 @@ class ChatScreenState extends State<ChatroomPage> {
             }
         }
     }
+
+    /*
+     * @author : hs
+     * @date : 2019-12-30
+     * @description : Focus 감지에 따른 화면
+    */
+    void onFocusChange() {
+        if (focusNode.hasFocus) {
+            // Hide sticker when keyboard appear
+            setState(() {
+                isShowMenu = false;
+            });
+        }
+    }
+
     /*
      * @author : hs
      * @date : 2019-12-24
@@ -402,6 +400,11 @@ class ChatScreenState extends State<ChatroomPage> {
         });
     }
 
+    /*
+     * @author : hs
+     * @date : 2020-01-05
+     * @description : 메세지 전송
+    */
     void onSendMessage(dynamic content, int type) {
         String message;
         String sendType;
@@ -443,19 +446,6 @@ class ChatScreenState extends State<ChatroomPage> {
         }
     }
 
-    Future<bool> onBackPress() {
-        if (isShowMenu) {
-            setState(() {
-                isShowMenu = false;
-            });
-        } else {
-//            Firestore.instance.collection('users').document(id).updateData({'chattingWith': null});
-            Navigator.pop(context);
-        }
-
-        return Future.value(false);
-    }
-
     /*
      * @author : hs
      * @date : 2020-01-05
@@ -476,8 +466,13 @@ class ChatScreenState extends State<ChatroomPage> {
      * @description : Page 뒤로가기 동작
     */
     void popPage() async {
+
         setState(() {
             isLoading = true;
+
+            if (isShowMenu) {
+                isShowMenu = false;
+            }
         });
 
         if(Platform.isAndroid){
@@ -554,42 +549,39 @@ class ChatScreenState extends State<ChatroomPage> {
                 )
             ),
             body: GestureDetector(
-                child: WillPopScope(
-                    child: Stack(
-                        children: <Widget>[
-                            Container(
-                                decoration: BoxDecoration(
-                                    color: Color.fromRGBO(210, 217, 250, 1),
-                                    border: Border(
-                                        top: BorderSide(
-                                            width: ScreenUtil().setWidth(0.5),
-                                            color: Color.fromRGBO(178, 178, 178, 0.8)
-                                        )
+                child: Stack(
+                    children: <Widget>[
+                        Container(
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(210, 217, 250, 1),
+                                border: Border(
+                                    top: BorderSide(
+                                        width: ScreenUtil().setWidth(0.5),
+                                        color: Color.fromRGBO(178, 178, 178, 0.8)
                                     )
-                                ),
-                                child: Column(
-                                    children: <Widget>[
-                                        // List of messages
-                                        ChatMessageList(messageList: messageList),
-
-                                        // Input content
-                                        disable ? Container() : buildInput(),
-
-                                        /// 하단 메뉴 서비스 추가 시 코드 교체
-                                        // Menu
-//                                            (isShowMenu && !isFocused ? buildMenu() : Container()),
-                                    ],
-                                ),
+                                )
                             ),
+                            child: Column(
+                                children: <Widget>[
+                                    // List of messages
+                                    ChatMessageList(messageList: messageList),
 
-                            // Notification
-                            openedNf ? buildNoticeOpen() : buildNotice(),
+                                    // Input content
+                                    disable ? Container() : buildInput(),
 
-                            // Loading
-                            isLoading ? Loading() : Container()
-                        ],
-                    ),
-                    onWillPop: onBackPress,
+                                    /// 하단 메뉴 서비스 추가 시 코드 교체
+                                    // Menu
+//                                            (isShowMenu && !isFocused ? buildMenu() : Container()),
+                                ],
+                            ),
+                        ),
+
+                        // Notification
+                        openedNf ? buildNoticeOpen() : buildNotice(),
+
+                        // Loading
+                        isLoading ? Loading() : Container()
+                    ],
                 ),
                 onTap: () {
                     FocusScope.of(context).requestFocus(focusNode);
