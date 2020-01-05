@@ -418,7 +418,7 @@ class _TrendPageState extends State<TrendPage> {
         int index = isFirst ? 0 : 1;
         return InkWell(
             child: Container(
-                width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5) + sameSize*8,
+                width: ScreenUtil().setWidth(163.5) + sameSize*8,
                 height: ScreenUtil().setHeight(190) + sameSize*8,
                 margin: EdgeInsets.only(
                     left: ScreenUtil().setWidth(16) - sameSize*8,
@@ -427,7 +427,7 @@ class _TrendPageState extends State<TrendPage> {
                 child: Stack(
                     children: <Widget>[
                         Container(
-                            width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5),
+                            width: ScreenUtil().setWidth(163.5),
                             height: ScreenUtil().setHeight(180),
                             margin: EdgeInsets.only(
                                 left: sameSize*8,
@@ -435,14 +435,9 @@ class _TrendPageState extends State<TrendPage> {
                             ),
                             decoration: BoxDecoration(
                                 color: Color.fromRGBO(255, 255, 255, 1),
-                                borderRadius: isFirst
-                                    ? BorderRadius.all(
+                                borderRadius: BorderRadius.all(
                                     Radius.circular(ScreenUtil().setWidth(8))
-                                )
-                                    : BorderRadius.only(
-                                    bottomLeft:  Radius.circular(ScreenUtil().setWidth(8))
-                                )
-                                ,
+                                ),
                                 boxShadow: [
                                     new BoxShadow(
                                         color: Color.fromRGBO(39, 39, 39, 0.1),
@@ -454,27 +449,21 @@ class _TrendPageState extends State<TrendPage> {
                             child: Column(
                                 children: <Widget>[
                                     Container(
-                                        width: ScreenUtil().setWidth(isFirst ? 181.5 : 161.5),
+                                        width: ScreenUtil().setWidth(163.5),
                                         height: ScreenUtil().setHeight(110),
                                         decoration: BoxDecoration(
                                             color: trendChatInfo.chatImg != null ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(0, 0, 0, 0.02)
                                             ,
-                                            borderRadius: isFirst
-                                                ? BorderRadius.only(
+                                            borderRadius: BorderRadius.only(
                                                 topLeft: Radius.circular(ScreenUtil().setWidth(8)),
                                                 topRight: Radius.circular(ScreenUtil().setWidth(8))
-                                            )
-                                                : BorderRadius.circular(0)
-                                            ,
+                                            ),
                                         ),
                                         child: ClipRRect(
-                                            borderRadius: isFirst
-                                                ? BorderRadius.only(
+                                            borderRadius: BorderRadius.only(
                                                 topLeft: Radius.circular(ScreenUtil().setWidth(8)),
                                                 topRight: Radius.circular(ScreenUtil().setWidth(8))
-                                            )
-                                                : BorderRadius.circular(0)
-                                            ,
+                                            ),
                                             child:
 //                                            Image.asset(
 //                                                trendChatInfo.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
@@ -492,9 +481,9 @@ class _TrendPageState extends State<TrendPage> {
                                         child: Column(
                                             children: <Widget>[
                                                 Container (
-                                                    width: ScreenUtil().setWidth(151.5),
+                                                    width: ScreenUtil().setWidth(143.5),
                                                     margin: EdgeInsets.symmetric(
-                                                        horizontal: ScreenUtil().setWidth(15),
+                                                        horizontal: ScreenUtil().setWidth(10),
                                                         vertical: sameSize*14.5,
                                                     ),
                                                     child:
@@ -512,9 +501,8 @@ class _TrendPageState extends State<TrendPage> {
                                                     ),
                                                 ),
                                                 Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: ScreenUtil().setWidth(15),
-                                                        right: ScreenUtil().setWidth(isFirst ? 3.5 : 0),
+                                                    margin: EdgeInsets.symmetric(
+                                                        horizontal: ScreenUtil().setWidth(10),
                                                     ),
                                                     child: Row(
                                                         children:<Widget>[
@@ -573,9 +561,9 @@ class _TrendPageState extends State<TrendPage> {
       return
       InkWell(
           child: Container(
-              width: ScreenUtil().setWidth(65),
-              margin: EdgeInsets.only(
-                  right: isViewCount ? ScreenUtil().setWidth(16.5) : ScreenUtil().setWidth(0)
+              width: ScreenUtil().setWidth(71.75),
+              padding: EdgeInsets.only(
+                  left: isViewCount ? ScreenUtil().setWidth(0) : ScreenUtil().setWidth(4.75)
               ),
               child: Row(
                   children: <Widget>[
