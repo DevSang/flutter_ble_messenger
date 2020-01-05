@@ -456,7 +456,11 @@ class ChatScreenState extends State<ChatroomPage> {
         return Future.value(false);
     }
 
-
+    /*
+     * @author : hs
+     * @date : 2020-01-05
+     * @description : 입력창 클릭시 동작
+    */
     void _onTapTextField() {
         isFocused
             ? null
@@ -466,6 +470,11 @@ class ChatScreenState extends State<ChatroomPage> {
             });
     }
 
+    /*
+     * @author : hs
+     * @date : 2020-01-05
+     * @description : Page 뒤로가기 동작
+    */
     void popPage() async {
         setState(() {
             isLoading = true;
@@ -475,8 +484,6 @@ class ChatScreenState extends State<ChatroomPage> {
 	        advertising = false;
 	        await HwaBeacon().stopAdvertising();
         }
-
-
 
         setState(() {
             isLoading = false;

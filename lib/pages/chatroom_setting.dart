@@ -51,10 +51,10 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 	    profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?chat_idx=" + chatInfo.chatIdx.toString() + "&type=SMALL";
 
 	    cachedNetworkImage = CachedNetworkImage(
-			    imageUrl: profileImgUri,
-			    placeholder: (context, url) => CircularProgressIndicator(),
-			    errorWidget: (context, url, error) => Image.asset(chatInfo.chatImg,fit: BoxFit.cover),
-			    httpHeaders: Constant.HEADER
+            imageUrl: profileImgUri,
+            placeholder: (context, url) => CircularProgressIndicator(),
+            errorWidget: (context, url, error) => Image.asset(chatInfo.chatImg,fit: BoxFit.cover),
+            httpHeaders: Constant.HEADER
 	    );
 
         chatSettingUpdated.chatImg = chatInfo.chatImg;
@@ -74,7 +74,8 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
      * @description : get picker value
     */
     void getPickerValue(String setType) async {
-        print("??" + setType);
+        // setType : mode / inviteRange
+
         int selectedValue = await showModalBottomSheet<int>(
             context: context,
             builder: (BuildContext context) {
@@ -98,7 +99,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     /*
      * @author : hs
      * @date : 2020-01-02
-     * @description : 설정 저장
+     * @description : 설정 저장 및 페이지 이동
     */
     void popNav() async {
         setState(() {
@@ -180,10 +181,10 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 
 			    setState(() {
 				    cachedNetworkImage = CachedNetworkImage(
-						    imageUrl: profileImgUri,
-						    placeholder: (context, url) => CircularProgressIndicator(),
-						    errorWidget: (context, url, error) => Icon(Icons.error),
-						    httpHeaders: Constant.HEADER
+                        imageUrl: profileImgUri,
+                        placeholder: (context, url) => CircularProgressIndicator(),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                        httpHeaders: Constant.HEADER
 				    );
 
                     isLoading = false;
@@ -381,7 +382,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
         );
     }
 
-    Widget buildTextItem(String title, String value, String fn) {
+    Widget buildTextItem(String title, String value, dynamic fn) {
         return Container(
             height: ScreenUtil().setHeight(49),
             padding: EdgeInsets.only(
@@ -572,16 +573,13 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
         int _selectedItemIdx;
         List<String> setTypeList;
 
-        print(setType);
-        print(value);
-
         if (setType == "mode") {
             switch(value) {
-                case "누구나 단화" : _selectedItemIdx = 0;
+                case "ANYONE" : _selectedItemIdx = 0;
                 break;
-                case "방장만 공지" : _selectedItemIdx = 1;
+                case "ONLY_MASTER" : _selectedItemIdx = 1;
                 break;
-                case "방장과 대화" :_selectedItemIdx = 2;
+                case "M_TO_P" :_selectedItemIdx = 2;
                 break;
             }
             setTypeList = chatMode;
