@@ -9,7 +9,7 @@ dependencies:
     flutter:
         sdk: flutter
 
-    #채워주세요~~~ 쓸데없는거 지우게
+    #채워주세요~~~ 쓸데없는거 지우게, indent 4칸으로 맞춰주세요
     ### Add by HS ###
 
     ### Add by HK ###
@@ -17,7 +17,7 @@ dependencies:
     http:                           # Http
     cached_network_image: 2.0.0     # Image Cache
     firebase_messaging: ^6.0.9      # Firebase messaging
-#    web_socket_channel: ^1.0.13    # WebSocket Test
+    web_socket_channel: ^1.0.13     # WebSocket
     geolocator: ^5.1.5              # Location
     image_picker: 0.6.2+3           # Image Picker
     photo_view: ^0.5.0              # Photo View
