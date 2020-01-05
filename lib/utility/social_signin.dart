@@ -33,7 +33,7 @@ class SocialSign {
 //
 //        switch (result.status) {
 //            case KakaoLoginStatus.loggedIn:
-//                print('LoggedIn by the user.\n'
+//                developer.log('LoggedIn by the user.\n'
 //                    '- UserID is ${result.account.userID}\n'
 //                    '- UserEmail is ${result.account.userEmail} ');
 //                    final KakaoAccessToken accessToken = await (kakaoSignIn.currentAccessToken);
@@ -44,11 +44,11 @@ class SocialSign {
 //                break;
 //
 //            case KakaoLoginStatus.loggedOut:
-//                print('LoggedOut by the user.');
+//                developer.log('LoggedOut by the user.');
 //                break;
 //
 //            case KakaoLoginStatus.error:
-//                print('This is Kakao error message : ${result.errorMessage}');
+//                developer.log('This is Kakao error message : ${result.errorMessage}');
 //                return result.errorMessage;
 //                break;
 //        }

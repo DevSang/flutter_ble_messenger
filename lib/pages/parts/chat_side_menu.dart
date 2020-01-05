@@ -84,8 +84,8 @@ class ChatSideMenuState extends State<ChatSideMenu> {
 
         if (joinedUserNow.length > 0) {
             for(var chatJoinInfo in joinedUserNow) {
-                print("#side menu###" + chatJoinInfo.toString());
-                print("#side menu###" + chatJoinInfo.userNick);
+                developer.log("#side menu###" + chatJoinInfo.toString());
+                developer.log("#side menu###" + chatJoinInfo.userNick);
 
                 switch(chatJoinInfo.joinType) {
                     case "BLE_JOIN": userInfoListBle.add(chatJoinInfo);
@@ -117,10 +117,10 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             String uri = "/danhwa/like?roomIdx=" + chatInfo.chatIdx.toString();
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
-            print(response.body);
+            developer.log(response.body);
 
         } catch (e) {
-            print("#### Error :: "+ e.toString());
+            developer.log("#### Error :: "+ e.toString());
         }
     }
 
@@ -139,10 +139,10 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             String uri = "/danhwa/likeCancel?roomIdx=" + chatInfo.chatIdx.toString();
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
-            print(response.body);
+            developer.log(response.body);
 
         } catch (e) {
-            print("#### Error :: "+ e.toString());
+            developer.log("#### Error :: "+ e.toString());
         }
     }
 

@@ -192,11 +192,11 @@ class ChatScreenState extends State<ChatroomPage> {
 		    if (advertising) {
 			    await HwaBeacon().stopAdvertising();
 			    setState(() {advertising = false;});
-			    print('##BLE STOP!!!');
+			    developer.log('##BLE STOP!!!');
 		    } else {
 			    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
 			    setState(() {advertising = true;});
-			    print('##BLE START!!!');
+                developer.log('##BLE START!!!');
 		    }
 	    }
 
@@ -218,7 +218,7 @@ class ChatScreenState extends State<ChatroomPage> {
                     userNick: chatInfo.createUser.nick
                 )
             );
-            print(joinedUserNow[0].userNick);
+            developer.log(joinedUserNow[0].userNick);
         }
 
         for (var recentMsg in recentMessageList) {
@@ -280,10 +280,10 @@ class ChatScreenState extends State<ChatroomPage> {
         s.subscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString(), roomIdx: chatInfo.chatIdx.toString(), userIdx: Constant.USER_IDX.toString()).stream.listen((HashMap data) =>
             messageReceieved(data),
             onDone: () {
-                print("Listen Done");
+                developer.log("Listen Done");
             },
             onError: (error) {
-                print("Listen Error $error");
+                developer.log("Listen Error $error");
             }
         );
     }
@@ -339,7 +339,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
 	        // 파일 업로드 API 호출
 	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
-		        print("$sent : $total");
+                developer.log("$sent : $total");
 	        });
 
 	        if(response.statusCode == 200){
@@ -363,7 +363,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
             // 파일 업로드 API 호출
             Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
-	            print("$sent : $total");
+                developer.log("$sent : $total");
             });
 
             if(response.statusCode == 200){

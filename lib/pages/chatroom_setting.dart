@@ -137,7 +137,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
             );
 
         } catch (e) {
-            print("#### Error :: " + e.toString());
+            developer.log("#### Error :: " + e.toString());
         }
     }
 
@@ -173,7 +173,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/profile/image", filePath: imageFile.path, paramMap: paramMap ,onSendProgress: (int sent, int total){
-			    print("$sent : $total");
+                developer.log("$sent : $total");
 		    });
 
 		    if(response.statusCode == 200){
@@ -362,7 +362,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                         '온라인 공개',
                         chatSettingUpdated.isPublic,
                         (val) => {
-                            print(val)
+                            developer.log(val)
                         }
                     ),
 
@@ -553,7 +553,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                             value: _value.toDouble(),
                             divisions: 3,
                             onChanged: (value) {
-                                print(value.round().toString());
+                                developer.log(value.round().toString());
                                 setState(() {
                                     _value = value.round();
                                 });

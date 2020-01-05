@@ -619,17 +619,17 @@ class _HwaTabState extends State<HwaTab> {
             );
         } else if (chatList.length == 0) {
             bool noRoomFlag = (isAllowedBLE && isAllowedGPS && isAuthBLE && isAuthGPS && chatList.length == 0);
-//            print("####################################");
-//            print("##noRoomFlag : " + noRoomFlag.toString());
-//            print("##isAuthBLE : " + isAuthBLE.toString());
-//            print("##isAllowedBLE : " + isAllowedBLE.toString());
-//            print("##isAuthGPS : " + isAuthGPS.toString());
-//            print("##isAllowedGPS : " + isAllowedGPS.toString());
-//            print("####################################");
+//            developer.log("####################################");
+//            developer.log("##noRoomFlag : " + noRoomFlag.toString());
+//            developer.log("##isAuthBLE : " + isAuthBLE.toString());
+//            developer.log("##isAllowedBLE : " + isAllowedBLE.toString());
+//            developer.log("##isAuthGPS : " + isAuthGPS.toString());
+//            developer.log("##isAllowedGPS : " + isAllowedGPS.toString());
+//            developer.log("####################################");
 
-//            print("##chatList.length == 0 : " + (chatList.length == 0).toString());
-//            print("##notAllowedBLE : " + notAllowedBLE.toString());
-//            print("##notAllowedLoc : " + notAllowedLoc.toString());
+//            developer.log("##chatList.length == 0 : " + (chatList.length == 0).toString());
+//            developer.log("##notAllowedBLE : " + notAllowedBLE.toString());
+//            developer.log("##notAllowedLoc : " + notAllowedLoc.toString());
 
             String mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
             String titleText = "현재 위치 단화방이 없습니다.";

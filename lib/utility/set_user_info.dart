@@ -44,7 +44,7 @@ class SetUserInfo {
         //Usage
 //        SharedPreferences SPF2 = await SharedPreferences.getInstance();
 //        Map<String, dynamic> userMap = jsonDecode(SPF2.getString('userInfo'));
-//        print(userMap['userIdx']);
+//        developer.log(userMap['userIdx']);
 
     }
 }

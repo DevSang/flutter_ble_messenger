@@ -76,7 +76,7 @@ class _TrendPageState extends State<TrendPage> {
           });
 
       } catch (e) {
-          print("#### Error :: " + e.toString());
+          developer.log("#### Error :: " + e.toString());
       }
   }
 
@@ -167,7 +167,7 @@ class _TrendPageState extends State<TrendPage> {
           String uri = "/danhwa/like?roomIdx=" + chatList[listIdx].chatIdx.toString();
           final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
-          print(response.body);
+          developer.log(response.body);
 
           setState(() {
               chatList[listIdx].isLiked = true;
@@ -175,7 +175,7 @@ class _TrendPageState extends State<TrendPage> {
           });
 
       } catch (e) {
-          print("#### Error :: "+ e.toString());
+          developer.log("#### Error :: "+ e.toString());
       }
   }
 
@@ -191,7 +191,7 @@ class _TrendPageState extends State<TrendPage> {
           String uri = "/danhwa/likeCancel?roomIdx=" + chatList[listIdx].chatIdx.toString();
           final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
-          print(response.body);
+          developer.log(response.body);
 
           setState(() {
               chatList[listIdx].isLiked = false;
@@ -199,7 +199,7 @@ class _TrendPageState extends State<TrendPage> {
           });
 
       } catch (e) {
-          print("#### Error :: "+ e.toString());
+          developer.log("#### Error :: "+ e.toString());
       }
   }
 

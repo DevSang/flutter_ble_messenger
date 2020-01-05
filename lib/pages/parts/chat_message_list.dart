@@ -578,7 +578,6 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                                         ),
                                                         onTap: (){
                                                             /// 명함 다운로드
-                                                            print("명함");
                                                         },
                                                     ),
                                                 )

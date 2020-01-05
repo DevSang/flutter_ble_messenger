@@ -80,7 +80,7 @@ class _ChatTabState extends State<ChatTab> {
                 isLoading = false;
             });
         } catch (e) {
-            print("#### Error :: " + e.toString());
+            developer.log("#### Error :: " + e.toString());
         }
     }
 
@@ -117,7 +117,7 @@ class _ChatTabState extends State<ChatTab> {
         List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
         List<ChatMessage> chatMessageList = <ChatMessage>[];
 
-        print("enter function" + chatInfoJson.toString());
+        developer.log("enter function" + chatInfoJson.toString());
 
         try {
             ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
@@ -140,7 +140,7 @@ class _ChatTabState extends State<ChatTab> {
                 }
             }
 
-            print("###########"+chatInfoJson.toString());
+            developer.log("###########"+chatInfoJson.toString());
 
 
 
@@ -157,7 +157,7 @@ class _ChatTabState extends State<ChatTab> {
             isLoading = false;
 
         } catch (e) {
-            print("#### Error :: " + e.toString());
+            developer.log("#### Error :: " + e.toString());
         }
     }
 

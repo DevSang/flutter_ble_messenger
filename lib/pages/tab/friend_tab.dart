@@ -92,7 +92,7 @@ class _FriendTabState extends State<FriendTab> {
     }
 
     void _sc() {
-        print(_scrollController.position.extentAfter);
+        developer.log(_scrollController.position.extentAfter.toString());
         if (_scrollController.position.extentAfter < 500) {
             setState(() {
                 new List.generate(42, (index) => 'Inserted $index');
@@ -297,7 +297,7 @@ class _FriendTabState extends State<FriendTab> {
             String uri = "/danhwa/p2p?opponentIdx=" + friendInfo.user_idx.toString();
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
-            print(response.body);
+            developer.log(response.body);
             Map<String, dynamic> jsonParse = json.decode(response.body);
             // 단화방 입장
             _enterChat(jsonParse, friendInfo);
@@ -323,10 +323,10 @@ class _FriendTabState extends State<FriendTab> {
                 isLoading = false;
             });
 
-            print("################" + chatInfo.toString());
-            print("################**" + isLiked.toString());
-            print("################**" + friendInfo.user_idx.toString());
-            print("################**" + friendInfo.nickname);
+            developer.log("################" + chatInfo.toString());
+            developer.log("################**" + isLiked.toString());
+            developer.log("################**" + friendInfo.user_idx.toString());
+            developer.log("################**" + friendInfo.nickname);
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
@@ -567,7 +567,7 @@ class _FriendTabState extends State<FriendTab> {
 
 
     Widget buildFriendItem(dynamic friendInfo, bool isFriend, bool isLast, int index) {
-        print("friendInfo" + friendInfo.user_idx.toString());
+        developer.log("friendInfo" + friendInfo.user_idx.toString());
         String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=SMALL";
         return InkWell(
             child: Container(

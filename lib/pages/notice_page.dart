@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/pages/parts/set_chat_notice_data.dart';
@@ -283,7 +284,7 @@ class NoticePageState extends State<NoticePage> {
                                 ),
                                 onTap:(){
                                     showCupertinoModalPopup(context: context, builder: (context) => ActionSheet());
-                                    print("clicked");
+                                    developer.log("clicked");
                                 }
                             ),
                         )

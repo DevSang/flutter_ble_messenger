@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:developer' as developer;
 
 class ActionSheet extends StatefulWidget {
     static const String routeName = '/cupertino/alert';
@@ -42,14 +43,14 @@ class ActionSheetState extends State<ActionSheet> {
                     child: Text("Action 1"),
                     isDefaultAction: true,
                     onPressed: () {
-                        print("Action 1 is been clicked");
+                        developer.log("Action 1 is been clicked");
                     },
                 ),
                 CupertinoActionSheetAction(
                     child: Text("Action 2"),
                     isDestructiveAction: true,
                     onPressed: () {
-                        print("Action 2 is been clicked");
+                        developer.log("Action 2 is been clicked");
                     },
                 )
             ],

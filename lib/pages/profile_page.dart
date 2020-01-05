@@ -125,7 +125,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 }
             );
 
-            print("####" + response.body.toString());
+            developer.log("####" + response.body.toString());
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
@@ -170,7 +170,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(url: "/api/v2/user/profile/image", filePath: imageFile.path, onSendProgress: (int sent, int total){
-			    print("$sent : $total");
+                developer.log("$sent : $total");
 		    });
 
 		    if(response.statusCode == 200){
@@ -375,7 +375,7 @@ class _ProfilePageState extends State <ProfilePage>{
                       allowedFriend,
                       true,
                       (bool value) {
-                          print(value);
+                          developer.log(value.toString());
                           setState(() {
                               allowedFriend = value;
                           });
