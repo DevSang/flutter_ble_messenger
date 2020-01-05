@@ -12,7 +12,7 @@ import 'package:Hwa/pages/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/app.dart';
+import 'package:Hwa/home.dart';
 
 /*
  * @project : HWA - Mobile
@@ -66,7 +66,7 @@ class _SignUpPageState extends State<SignUpPage>{
      * @description : 인증 문자 요청
      */
     registerCodeRequest() async {
-        SPF = await SharedPreferences.getInstance();
+        SPF = await Constant.getSPF();
         if(phoneRegController.text == ''){
             developer.log("# Phone number is empty.");
             RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
@@ -108,10 +108,10 @@ class _SignUpPageState extends State<SignUpPage>{
                         developer.log("# [SPF SAVE] userIdx : " + userIdx.toString());
 
                         SPF.setString('token', token);
-                        SPF.setString('userIdx', userIdx.toString());
-                        Constant.setUserIdx();
-                        Constant.setHeader();
-                        MainPageState.getFriendList();
+                        SPF.setInt('userIdx', userIdx);
+
+                        Constant.initUserInfo();
+                        HomePageState.initApiCall();
 
                         developer.log('# [Navigator] SignUpPage -> MainPage');
                         RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);

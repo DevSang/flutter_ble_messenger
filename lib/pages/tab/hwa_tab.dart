@@ -96,9 +96,6 @@ class _HwaTabState extends State<HwaTab> {
      * @description : 내부 초기화 함수. BLE Scan 시작, 현재 내 위치 검색
      */
     void _initState() async {
-        await Constant.setUserIdx();
-        await Constant.setHeader();
-
         // BLE Scanning API 초기화
         if(Platform.isAndroid){
             await HwaBeacon().initializeScanning();
