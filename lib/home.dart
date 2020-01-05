@@ -33,7 +33,7 @@ class HomePageState extends State<HomePage> {
 
     final int startTs = new DateTime.now().millisecondsSinceEpoch;
 
-    // Splash screen Time
+    // Splash screen Time (ms)
     final int splashTime = 1500;
 
     @override
@@ -48,6 +48,7 @@ class HomePageState extends State<HomePage> {
      * @description : initialize App
      */
     void initApp() async {
+    	// spf, kvStore init 후 로직 진행, 뒤에서 spf, kvStore 다시 얻기 불필요
 	    _sharedPreferences = await Constant.getSPF();
 	    await kvStore.onReady;
 
@@ -56,7 +57,7 @@ class HomePageState extends State<HomePage> {
 
 	    // 로그인된 사용자 처리
 	    if(Constant.isUserLogin){
-		    await initApiCall();
+		    await initApiCall(); // TODO 부하증가에 따라 API 호출 시간이 너무 길어질 경우 어떻게 할것인가?
 		    firebaseCloudMessagingListeners();
 	    }
 
