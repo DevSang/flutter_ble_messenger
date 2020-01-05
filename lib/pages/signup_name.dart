@@ -12,7 +12,7 @@ import 'package:Hwa/pages/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/app.dart';
+import 'package:Hwa/home.dart';
 
 /*
  * @project : HWA - Mobile
@@ -80,7 +80,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      * @description : 회원가입 완료 request
      */
     registerFinish(BuildContext context) async {
-        SharedPreferences loginPref = await SharedPreferences.getInstance();
+        SharedPreferences loginPref = await Constant.getSPF();
         String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
 
         final response = await http.post(url,
@@ -108,10 +108,10 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             var userIdx = data['data']['userInfo']['idx'];
 
             loginPref.setString('token', token);
-            loginPref.setString('userIdx', userIdx.toString());
-            Constant.setUserIdx();
-            Constant.setHeader();
-            MainPageState.getFriendList();
+            loginPref.setInt('userIdx', userIdx);
+
+            Constant.initUserInfo();
+            HomePageState.initApiCall();
 
             RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
             Navigator.pushNamed(context, '/main');

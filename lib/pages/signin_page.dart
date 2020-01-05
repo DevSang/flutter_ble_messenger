@@ -15,7 +15,7 @@ import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/app.dart';
+import 'package:Hwa/home.dart';
 
 /*
  * @project : HWA - Mobile
@@ -32,13 +32,13 @@ class SignInPage extends StatefulWidget {
 class _SignInPageState extends State<SignInPage> {
     final TextEditingController _authCodeController = TextEditingController();
     final TextEditingController _phoneController = TextEditingController();
-    SharedPreferences SPF;
+    SharedPreferences spf;
     bool _isLoading = false;
     FocusNode contextFocus;
     String phone_number, auth_number;
-    bool lengthConfirm;
+    bool lengthConfirm = false;
 
-    //Social signin
+    //Social signin - Google
     GoogleSignInAccount _currentUser;
     GoogleSignIn _googleSignIn = GoogleSignIn(
         scopes: <String>[
@@ -49,31 +49,39 @@ class _SignInPageState extends State<SignInPage> {
 
     @override
     void initState() {
-        super.initState();
-        lengthConfirm = false;
+	    initSignIn();
+	    super.initState();
+    }
 
-        //Google사용자 status listner
-        _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
-            setState(() {
-                _currentUser = account;
-            });
-            if (_currentUser != null) {
-                developer.log("# Google current user : " + _currentUser.toString());
-            }
-        });
+    /*
+     * @author : hk
+     * @date : 2020-01-05
+     * @description : init SignIn
+     */
+    void initSignIn() async {
+	    spf = await Constant.getSPF();
+
+	    // Google 사용자 status listener
+	    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
+		    setState(() {
+			    _currentUser = account;
+		    });
+		    if (_currentUser != null) {
+			    developer.log("# Google current user : " + _currentUser.toString());
+		    }
+	    });
     }
 
     /*
      * @author : sh
      * @date : 2019-12-30
-     * @description : google signin function
+     * @description : google signin function, TODO 에러 처리
      */
     void googleSignin() async {
         try {
             developer.log("# Google Signin");
             _googleSignIn.signIn().then((result){
                 result.authentication.then((googleKey) async {
-                    String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
                     socialSigninAfterProcess(
                         "google",
                         googleKey.accessToken.toString(),
@@ -81,10 +89,10 @@ class _SignInPageState extends State<SignInPage> {
                         _googleSignIn.currentUser.photoUrl.toString()
                     );
                 }).catchError((err){
-                    print('inner error');
+	                developer.log('inner error');
                 });
             }).catchError((err){
-                print('error occured');
+	            developer.log('error occured');
             });
         } catch (error) {
             developer.log(error);
@@ -219,8 +227,6 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Confirm auth code function
      */
     authCodeLoginRequest() async {
-        SPF = await SharedPreferences.getInstance();
-
         try {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
@@ -249,13 +255,11 @@ class _SignInPageState extends State<SignInPage> {
                     var token = data['token'];
                     var userIdx = data['userInfo']['idx'];
 
-                    SPF.setString('token', token.toString());
-                    SPF.setString('userIdx', userIdx.toString());
+                    spf.setString('token', token.toString());
+                    spf.setInt('userIdx', userIdx);
 
-                    Constant.setUserIdx();
-                    Constant.setHeader();
-
-                    MainPageState.getFriendList();
+                    Constant.initUserInfo();
+                    HomePageState.initApiCall();
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
                     pushTokenRequest();
@@ -277,9 +281,7 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Save push token function
      */
     pushTokenRequest() async {
-        SPF = await SharedPreferences.getInstance();
-
-        var pushToken = SPF.getString("pushToken");
+        var pushToken = spf.getString("pushToken");
         try {
             String url = "/api/v2/user/push_token?push_token=" + pushToken;
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);

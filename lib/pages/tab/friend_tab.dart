@@ -18,7 +18,7 @@ import 'package:Hwa/pages/parts/set_friend_data.dart';
 import 'package:Hwa/pages/parts/tab_app_bar.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/app.dart';
+import 'package:Hwa/home.dart';
 
 /*
  * @project : HWA - Mobile

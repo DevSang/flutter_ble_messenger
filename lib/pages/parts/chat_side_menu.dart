@@ -63,15 +63,6 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     }
 
     /*
-     * @author : hk
-     * @date : 2019-12-30
-     * @description : 내부 초기화 함수. BLE Scan 시작, 현재 내 위치 검색
-     */
-    void _initState() async {
-        await Constant.setHeader();
-    }
-
-    /*
      * @author : hs
      * @date : 2019-12-30
      * @description : 단화방 정보 받아오기

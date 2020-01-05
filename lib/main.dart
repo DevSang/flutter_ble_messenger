@@ -4,7 +4,7 @@ import 'package:Hwa/pages/signup_page.dart';
 import 'package:Hwa/pages/trend_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:Hwa/app.dart';
+import 'package:Hwa/home.dart';
 import 'package:Hwa/pages/signin_page.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
 import 'package:Hwa/pages/chatroom_page.dart';
@@ -28,10 +28,10 @@ Future main() async {
 //    home = BottomNavigation();
 //  else
 //    home = SignInPage() ;
-    runApp(new MyApp());
+    runApp(new HereWeAreApp());
 }
 
-class MyApp extends StatelessWidget {
+class HereWeAreApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations([
@@ -50,16 +50,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'HWA',
         theme: ThemeData.light(),
-        home: MainPage(),
+        home: HomePage(),
         debugShowCheckedModeBanner: false,
         initialRoute: '/',
         routes: {
-            '/login': (context) => SignInPage(),  // login
-            '/register': (context) => SignUpPage(), //register
-            '/register2': (context) => SignUpNamePage(), //register name check
-            '/main': (context) => BottomNavigation(), // main
-            '/profile': (context) => ProfilePage(), // profile
-            '/trend': (context) => TrendPage(), // trend
+            '/login': (context) => SignInPage(),                // login
+            '/register': (context) => SignUpPage(),             // register
+            '/register2': (context) => SignUpNamePage(),        // register name check
+            '/main': (context) => BottomNavigation(),           // main
+            '/profile': (context) => ProfilePage(),             // profile
+            '/trend': (context) => TrendPage(),                 // trend
             '/chatroom': (context) => ChatroomPage(),
             '/notice': (context) => NoticePage(),
             '/notice_write': (context) => NoticeWritePage(),
@@ -68,7 +68,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-
-
-

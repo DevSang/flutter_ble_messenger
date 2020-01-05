@@ -3,7 +3,6 @@ import 'dart:io';
 import 'dart:core';
 import 'package:Hwa/pages/signin_page.dart';
 import 'package:Hwa/pages/bottom_navigation.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -12,63 +11,75 @@ import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
 import 'package:Hwa/data/models/friend_info.dart';
-import 'package:Hwa/data/models/friend_request_info.dart';
 
 
-final store = KvStore();
-class MainPage extends StatefulWidget {
+// KV Store 전역 선언
+final kvStore = KvStore();
+
+/*
+ * @project : HWA - Mobile
+ * @author : hk
+ * @date : 2020-01-05
+ * @description : 메인 페이지, main.dart 에서 Home 으로 지정
+ */
+class HomePage extends StatefulWidget {
     @override
-    MainPageState createState() => MainPageState();
+    HomePageState createState() => HomePageState();
 }
 
-class MainPageState extends State<MainPage> {
-    SharedPreferences sharedPreferences;
+class HomePageState extends State<HomePage> {
+    SharedPreferences _sharedPreferences;
     final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+    final int startTs = new DateTime.now().millisecondsSinceEpoch;
+
+    // Splash screen Time
+    final int splashTime = 1500;
 
     @override
     void initState() {
-//        clearLocalStorageForTest();
-
-        //Check local store and call init api
-
-
-        //get Firebase push token
-        firebaseCloudMessaging_Listeners();
-
-        new Future.delayed(
-            const Duration(seconds: 3),
-                () => checkLoginStatus()
-        );
-
+        initApp();
         super.initState();
     }
 
     /*
-    * @author : sh
-    * @date : 2019-12-28
-    * @description : Test를 위해 store, sharedpreference를 비움
-    */
-    clearLocalStorageForTest () async {
-        await store.onReady;
-        sharedPreferences.remove('token');
-        sharedPreferences.remove('userIdx');
-        store.delete("friendList");
-        store.delete("test");
+     * @author : hk
+     * @date : 2020-01-05
+     * @description : initialize App
+     */
+    void initApp() async {
+	    _sharedPreferences = await Constant.getSPF();
+	    await kvStore.onReady;
+
+	    // 사용자 로그인 여부 판별 및 사용자 정보 셋팅
+	    await Constant.initUserInfo();
+
+	    // 로그인된 사용자 처리
+	    if(Constant.isUserLogin){
+		    await initApiCall();
+		    firebaseCloudMessagingListeners();
+	    }
+
+	    // App 초기화 및 사용자 정보 셋팅 시간 측정, 1.5초 미만이면 1.5초를 채운 후 화면 이동
+	    int now = new DateTime.now().millisecondsSinceEpoch;
+	    int delayedTime = now - startTs;
+	    int requiredDelayTime = now - startTs > splashTime ? 0 : splashTime - delayedTime;
+
+	    new Future.delayed(
+		    Duration(milliseconds: requiredDelayTime),
+			    // 사용자 상태에 따른 페이지 이동
+			    () => startPageMove()
+	    );
     }
 
     /*
     * @author : sh
     * @date : 2019-12-28
-    * @description : Api를 call해서 store에 저장할지 안할지 구분
+    * @description : 사용자에게 필요한 정보 및 필수 API 미리 호출, TODO JWT 토큰 - 서버와 통신해서 만료되었는지, 유효한지, 만료면 Refresh 로직
     */
-    callInitApi () async {
-        await store.onReady;
-
-        String token = sharedPreferences.getString("token");
-        if(token != '' && token != null){
-            getFriendList();
-        }
-
+    static Future<void> initApiCall () async {
+        await getFriendList();
+        return;
     }
 
     /*
@@ -76,7 +87,7 @@ class MainPageState extends State<MainPage> {
     * @date : 2019-12-28
     * @description : 친구목록이 Store에 없을 경우 api call 하여 저장
     */
-    static getFriendList () async {
+    static Future<void> getFriendList () async {
         List<FriendInfo> friendInfoList = <FriendInfo>[];
 
         String uri = "/api/v2/relation/relationship/all";
@@ -100,36 +111,21 @@ class MainPageState extends State<MainPage> {
                 );
             }
             Constant.FRIEND_LIST = friendInfoList;
-//            await store.put<List<FriendInfo>>("friendList",friendInfoList);
         } else {
             Constant.FRIEND_LIST = [];
-
-//            await store.put<List<FriendInfo>>("friendList",[]);
         }
+
+        return;
     }
 
     /*
     * @author : sh
     * @date : 2019-12-28
-    * @description : 유저가 JWT토큰을 갖고있으면 main으로, 없으면, Signin으로 navigate
+    * @description : 사용자 로그인 상태 -> main, 아니면 Signin으로 navigate
     */
-    checkLoginStatus() async {
-        sharedPreferences = await SharedPreferences.getInstance();
-
-        var token = sharedPreferences.getString("token");
-        var userIdx = sharedPreferences.getString("userIdx");
-        print("Token : " + token.toString());
-        print("userIdx : " + userIdx.toString());
-
-        if(sharedPreferences.getString("token") == null) {
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
-        }
-        else {
-            Constant.setUserIdx();
-            Constant.setHeader();
-            callInitApi();
-            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
-        }
+    void startPageMove() {
+        if(Constant.isUserLogin) Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
+        else Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
     }
 
     /*
@@ -137,13 +133,12 @@ class MainPageState extends State<MainPage> {
     * @date : 2019-12-21
     * @description : FCM 수신 테스트 코드 삽입, TODO 소스코드 적용, MSG 혹은 API서버 - token 저장 api 연동
     */
-    void firebaseCloudMessaging_Listeners() async {
-        sharedPreferences = await SharedPreferences.getInstance();
+    void firebaseCloudMessagingListeners() async {
 
-        if (Platform.isIOS) iOS_Permission();
+    	// 푸시 권한 획득 및 token 저장
+        if (Platform.isIOS) iOSPermission();
             _firebaseMessaging.getToken().then((token) {
-                print('# FCM : token:' + token);
-                sharedPreferences.setString('pushToken', token);
+                _sharedPreferences.setString('pushToken', token);
         });
 
         _firebaseMessaging.configure(
@@ -162,28 +157,23 @@ class MainPageState extends State<MainPage> {
     /*
     * @author : hk
     * @date : 2019-12-21
-    * @description : FCM 수신 테스트 코드 삽입, TODO 소스코드 적용
+    * @description : FCM 수신 iOS 권한 획득
     */
-    void iOS_Permission() {
+    void iOSPermission() {
         _firebaseMessaging.requestNotificationPermissions(
             IosNotificationSettings(sound: true, badge: true, alert: true));
         _firebaseMessaging.onIosSettingsRegistered
             .listen((IosNotificationSettings settings) {
-                print("Settings registered: $settings");
         });
     }
 
 
+    /*
+     * UI Widget - Splash
+     */
     @override
     Widget build(BuildContext context) {
-//        SystemChrome.setSystemUIOverlayStyle(
-//            SystemUiOverlayStyle.dark.copyWith(
-//                statusBarColor: Colors.black,
-//            )
-//        );
-
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
-
         return Scaffold(
             body: Container(
                 width: ScreenUtil().setWidth(375),
