@@ -84,7 +84,7 @@ class _SignUpPageState extends State<SignUpPage>{
                     "social_id": socialId,
                     "token": accessToken
                 })
-            ).then((http.Response response) {
+            ).then((http.Response response) async {
                 developer.log("# Auth code request success.");
                 developer.log("# response : " + response.body);
 
@@ -110,12 +110,12 @@ class _SignUpPageState extends State<SignUpPage>{
                         SPF.setString('token', token);
                         SPF.setInt('userIdx', userIdx);
 
-                        Constant.initUserInfo();
+                        await Constant.initUserInfo();
                         HomePageState.initApiCall();
 
                         developer.log('# [Navigator] SignUpPage -> MainPage');
                         RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
-                        RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+                        RedToast.toast("Here We are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
                         Navigator.pushNamed(context, '/main');
                     }
                 } else {

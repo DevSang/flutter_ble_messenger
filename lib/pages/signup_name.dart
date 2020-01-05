@@ -110,7 +110,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             loginPref.setString('token', token);
             loginPref.setInt('userIdx', userIdx);
 
-            Constant.initUserInfo();
+            await Constant.initUserInfo();
             HomePageState.initApiCall();
 
             RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);

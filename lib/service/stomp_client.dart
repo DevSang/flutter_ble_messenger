@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:web_socket_channel/io.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:Hwa/constant.dart';
 
 /*
  * @project : HWA - Mobile
@@ -51,12 +52,7 @@ class StompClient {
   */
   Future<void> connectWebSocket() async {
     var header = await setHeader();
-
-    print("###header" + header.toString());
-
     channel = IOWebSocketChannel.connect(urlBackend, pingInterval: Duration(seconds: 30), headers: header);
-
-    print("####channel :: " + channel.toString());
 
     channel.stream.listen((message) {
       _messageReceieved(message);
@@ -72,7 +68,7 @@ class StompClient {
    * @description : Stomp header 생성
   */
   Future<Map<String, dynamic>> setHeader() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await Constant.getSPF();
     var token = prefs.getString('token').toString();
     Map<String, dynamic> header = {
       'Content-Type': 'application/json',

@@ -258,7 +258,7 @@ class _SignInPageState extends State<SignInPage> {
                     spf.setString('token', token.toString());
                     spf.setInt('userIdx', userIdx);
 
-                    Constant.initUserInfo();
+                    await Constant.initUserInfo();
                     HomePageState.initApiCall();
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
