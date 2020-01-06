@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:after_layout/after_layout.dart';
 
 import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:Hwa/utility/custom_dialog.dart';
 
 
 /*
