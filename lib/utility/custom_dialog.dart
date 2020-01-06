@@ -8,6 +8,7 @@ class CustomDialog extends StatelessWidget {
     final int type, maxLength;
     final Image image;
     final Function func;
+    final Widget bodyWidget;
     TextEditingController _textEditingController = TextEditingController();
 
     CustomDialog({
@@ -19,7 +20,8 @@ class CustomDialog extends StatelessWidget {
         this.value,
         this.func,
         this.image,
-        this.maxLength
+        this.maxLength,
+        this.bodyWidget
     });
 
     @override
@@ -64,7 +66,7 @@ class CustomDialog extends StatelessWidget {
                                     )
                                 ),
                             ),
-                            type == 1 ? inputDialogContent() : Container(),
+                            type == 1 ? inputDialogContent() : bodyWidget,
                             Container(
                                     width: ScreenUtil().setWidth(281),
                                     height: ScreenUtil().setHeight(68.5),
