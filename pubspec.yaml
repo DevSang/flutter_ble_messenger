@@ -47,6 +47,8 @@ dependencies:
     #flutter_kakao_login: "^0.5.0"  # Social Login - Kakao
     #kakao_flutter_sdk: ^0.3.2
 
+
+
     ### BLE module ###
     hwa_beacon:
 #        path: ./hwa_beacon-master
