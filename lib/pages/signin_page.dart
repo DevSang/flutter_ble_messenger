@@ -49,7 +49,7 @@ class _SignInPageState extends State<SignInPage> {
 
     @override
     void initState() {
-	    initSignIn();
+        googleAccountListner();
 	    super.initState();
     }
 
@@ -58,7 +58,7 @@ class _SignInPageState extends State<SignInPage> {
      * @date : 2020-01-05
      * @description : init SignIn
      */
-    void initSignIn() async {
+    void googleAccountListner() async {
 	    spf = await Constant.getSPF();
 
 	    // Google 사용자 status listener
@@ -130,6 +130,7 @@ class _SignInPageState extends State<SignInPage> {
 				break;
 		}
 	}
+
     /*
      * @author : sh
      * @date : 2019-12-30
@@ -144,23 +145,27 @@ class _SignInPageState extends State<SignInPage> {
             },
             body: jsonEncode({
                 "login_type" : loginType,
-                "token" : accessToken
+                "token" : accessToken,
+                "social_id" : profileId
             })
         );
 
         var data = jsonDecode(response.body);
         var message = data['message'].toString();
+        var errorCode = data['errorCode'];
+        developer.log(data.toString());
+
         if (response.statusCode == 200) {
             developer.log("# 로그인에 성공하였습니다.");
             developer.log("# 로그인정보 :" + response.body);
             RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
 
-            pushTokenRequest();
+            addPushTokenRequest();
 
             developer.log('# [Navigator] SignInPage -> MainPage');
             Navigator.pushNamed(context, '/main');
 
-        } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
+        } else if(errorCode == 13){
             developer.log('# New user');
             RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
 
@@ -262,7 +267,7 @@ class _SignInPageState extends State<SignInPage> {
                     HomePageState.initApiCall();
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
-                    pushTokenRequest();
+                    addPushTokenRequest();
                     developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
                 } else {
@@ -280,7 +285,7 @@ class _SignInPageState extends State<SignInPage> {
      * @date : 2019-12-30
      * @description : Save push token function
      */
-    pushTokenRequest() async {
+    addPushTokenRequest() async {
         var pushToken = spf.getString("pushToken");
         try {
             String url = "/api/v2/user/push_token?push_token=" + pushToken;
@@ -598,8 +603,8 @@ class _SignInPageState extends State<SignInPage> {
                         child: InkWell(
                             child: Image.asset('assets/images/sns/snsIconGoogle.png'),
                             onTap:() {
-//                                googleSignin();
-                                RedToast.toast("구글 로그인은 준비 중 입니다.", ToastGravity.TOP);
+                                googleSignin();
+//                                RedToast.toast("구글 로그인은 준비 중 입니다.", ToastGravity.TOP);
                             }
                         ),
                     )
