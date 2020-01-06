@@ -1,15 +1,12 @@
-import 'package:Hwa/pages/parts/common/tab_app_bar.dart';
-import 'package:Hwa/pages/trend/trend_page.dart';
-import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:after_layout/after_layout.dart';
+
 import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
-import 'package:Hwa/pages/chatting/chatroom_page.dart';
-import 'package:Hwa/pages/tab/test_tab.dart';
 import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/utility/custom_dialog.dart';
 
 
 /*
@@ -26,7 +23,7 @@ class BottomNavigation extends StatefulWidget {
     _BottomNavigationState createState() => new _BottomNavigationState();
 }
 
-class _BottomNavigationState extends State<BottomNavigation> {
+class _BottomNavigationState extends State<BottomNavigation>{
     final List<Widget> list = <Widget>[];
     int _currentIndex;
     // 화면 비율에 따른 1:1 요소 사이즈 셋팅
@@ -42,7 +39,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
             ..add(new ChatTab( setCurrentIndex:setCurrentIndex));
 
         sameSize  = GetSameSize().main();
-
         super.initState();
     }
 
