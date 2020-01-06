@@ -46,7 +46,7 @@ class TabAppBarState extends State<TabAppBar> {
 
     @override
     void initState() {
-	    setUserInfo();
+//	    setUserInfo();
 	    _initState();
         super.initState();
     }
