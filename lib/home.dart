@@ -94,7 +94,7 @@ class HomePageState extends State<HomePage> {
         String uri = "/api/v2/relation/relationship/all";
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
 
-        if(response ? true:false){
+        if(response != null ? true : false){
             List<dynamic> friendList = jsonDecode(response.body)['data'];
 
             for(var i = 0; i < friendList.length; i++){
