@@ -162,7 +162,7 @@ class _SignInPageState extends State<SignInPage> {
 
         } else if(message.indexOf("HWA 에서 사용자를 찾을 수 없습니다") > -1){
             developer.log('# New user');
-            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
+            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.BOTTOM);
 
             developer.log('# [Navigator] SignInPage -> SignUpPage');
             Navigator.push(context,
@@ -389,8 +389,9 @@ class _SignInPageState extends State<SignInPage> {
                                 hintText: '휴대폰번호 ( -없이 숫자만 입력)'
                             ),
                         )
-                    )
-                    ,RaisedButton(
+                    ),
+
+                    RaisedButton(
                         padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(13), horizontal: ScreenUtil().setWidth(15)),
                         focusNode: contextFocus,
                         shape: RoundedRectangleBorder(

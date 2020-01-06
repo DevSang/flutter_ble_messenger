@@ -10,6 +10,7 @@ import 'package:kvsql/kvsql.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:Hwa/data/models/friend_info.dart';
 
 
@@ -144,13 +145,13 @@ class HomePageState extends State<HomePage> {
 
         _firebaseMessaging.configure(
             onMessage: (Map<String, dynamic> message) async {
-                print('on message $message');
+                developer.log('on message $message');
             },
             onResume: (Map<String, dynamic> message) async {
-                print('on resume $message');
+                developer.log('on resume $message');
             },
             onLaunch: (Map<String, dynamic> message) async {
-                print('on launch $message');
+                developer.log('on launch $message');
             },
         );
     }
