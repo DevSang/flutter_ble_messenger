@@ -2,19 +2,19 @@ import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/pages/trend/trend_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:Hwa/home.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:Hwa/pages/chatting/chatroom_page.dart';
 import 'package:Hwa/pages/chatting/notice_page.dart';
 import 'package:Hwa/pages/chatting/notice_write_page.dart';
 import 'package:Hwa/pages/chatting/notice_detail_page.dart';
-
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:Hwa/home.dart';
+import 'package:provider/provider.dart';
+import 'package:catcher/catcher_plugin.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:catcher/catcher_plugin.dart';
 
 //import 'package:kakao_flutter_sdk/auth.dart';
 
@@ -36,7 +36,6 @@ Future main() async {
 
 
     Catcher(EasyLocalization(child:HereWeAreApp()), debugConfig: debugOptions, releaseConfig: releaseOptions);
-//    runApp(EasyLocalization(child:HereWeAreApp()));
 }
 
 class HereWeAreApp extends StatelessWidget {

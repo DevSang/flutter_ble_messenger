@@ -330,6 +330,8 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+//        Image image = decodeImage(imageFile.readAsBytesSync());
+
         if (imageFile != null) {
 
         	// 파일 이외의 추가 파라미터 셋팅

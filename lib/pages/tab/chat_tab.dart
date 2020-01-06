@@ -169,7 +169,6 @@ class _ChatTabState extends State<ChatTab> {
     @override
     Widget build(BuildContext context) {
       return Scaffold(
-          appBar: TabAppBar(title: '참여했던 단화방', leftChild: Container(height: 0)),
           body: setScreen()
 //          appBar: TabAppBar(title: '참여했던 단화방', leftChild: Container(height: 0)),
 //          body: Container(

@@ -9,5 +9,10 @@
             "signUp": "회원가입",
             "snsSignIn": "SNS 계정으로 간편 로그인 하세요."
         }
+    },
+    "tapMenuTitle": {
+        "hwa": "단화방",
+        "friend": "단화 친구",
+        "chat": "참여했던 단화방"
     }
 }

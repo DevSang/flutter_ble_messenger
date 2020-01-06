@@ -79,14 +79,12 @@ class _HwaTabState extends State<HwaTab> {
 
     bool isBeaconSupport = false;
 
-
     @override
     void initState() {
-
-        super.initState();
         _initState();
         isLoading = false;
         sameSize  = GetSameSize().main();
+        super.initState();
     }
 
     /*
@@ -543,45 +541,6 @@ class _HwaTabState extends State<HwaTab> {
     @override
     Widget build(BuildContext context) {
         return Scaffold(
-            appBar: TabAppBar(
-                title: "단화방",
-                leftChild: Row(
-                    children: <Widget>[
-                        Container(
-                            width: sameSize * 22,
-                            height: sameSize * 22,
-                            margin: EdgeInsets.only(left: 16),
-
-                            child: InkWell(
-                                child: Image.asset('assets/images/icon/navIconHot.png'),
-                                onTap: () =>
-                                    Navigator.push(
-                                        context, MaterialPageRoute(
-                                        builder: (context) => TrendPage())),
-                            )
-                        ),
-                        Container(
-                            margin: EdgeInsets.only(left: 16),
-                            width: sameSize * 22,
-                            height: sameSize * 22,
-                            child: InkWell(
-                                child: Image.asset(
-                                    'assets/images/icon/navIconNew.png'),
-                                onTap: (){
-                                    _displayDialog(context);
-                                }
-//                                {
-//                                    if (Platform.isAndroid) {
-//                                        _displayAndroidDialog(context)
-//                                    } else if (Platform.isIOS) {
-//                                        _displayIosDialog(context)
-//                                    }
-//                                },
-                                )
-                        ),
-                    ],
-                ),
-            ),
             body: setScreen(),
             resizeToAvoidBottomPadding: false,
         );
