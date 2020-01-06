@@ -55,18 +55,11 @@ class _FriendTabState extends State<FriendTab> {
 
     @override
     void initState() {
+        _initState();
+
         _scrollController = new ScrollController()..addListener(_sc);
         sameSize = GetSameSize().main();
         isLoading = false;
-
-        originList = [];
-        friendList = [];
-
-        _initState();
-
-        searchController.addListener(() {
-//            searchFriends();
-        });
 
         super.initState();
     }
@@ -128,6 +121,8 @@ class _FriendTabState extends State<FriendTab> {
      * @description : 친구목록 호출
     */
     getFriendList() async {
+        originList = [];
+        friendList = [];
         List<FriendInfo> getFriendList = <FriendInfo>[];
 
         String uri = "/api/v2/relation/relationship/all";
@@ -149,8 +144,8 @@ class _FriendTabState extends State<FriendTab> {
                 );
             }
             setState(() {
-                originList = getFriendList;
-                friendList = getFriendList;
+                originList.addAll(getFriendList);
+                friendList.addAll(getFriendList);
             });
 //            await store.put<List<FriendInfo>>("friendRequestList",friendRequestList);
         } else {
@@ -350,6 +345,10 @@ class _FriendTabState extends State<FriendTab> {
 
     @override
     Widget build(BuildContext context) {
+        searchController.addListener(() {
+            searchFriends();
+        });
+
         return MaterialApp(
             debugShowCheckedModeBanner: false,
             home: Scaffold(
@@ -404,7 +403,7 @@ class _FriendTabState extends State<FriendTab> {
                 Column(
                     children: <Widget>[
                         // 친구 검색
-//                        buildSearch(),
+                        buildSearch(),
                         Flexible(
                             child: ListView(
                                 children: <Widget>[
@@ -449,18 +448,15 @@ class _FriendTabState extends State<FriendTab> {
                     color: Color.fromRGBO(39, 39, 39, 1),
                 ),
                 decoration: InputDecoration(
-                    contentPadding: EdgeInsets.fromLTRB(
-                        ScreenUtil().setWidth(7),
-                        ScreenUtil().setHeight(11),
-                        ScreenUtil().setWidth(13),
-                        ScreenUtil().setHeight(11)
+                    contentPadding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(7),
                     ),
                     border: InputBorder.none,
                     prefixIcon: Icon(
                         Icons.search,
                         color: Color.fromRGBO(39, 39, 39, 0.5),
                     ),
-                    hintText: "서비스 준비중 입니다.",
+                    hintText: "검색",
                     hintStyle: TextStyle(
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
@@ -493,7 +489,7 @@ class _FriendTabState extends State<FriendTab> {
                                     Container(
                                         width: sameSize*30,
                                         margin: EdgeInsets.only(
-                                            right: ScreenUtil().setWidth(12)
+                                            right: ScreenUtil().setWidth(8)
                                         ),
                                         child: Image.asset(
                                             title == '친구 목록'
@@ -507,8 +503,8 @@ class _FriendTabState extends State<FriendTab> {
                                         title,
                                         style: TextStyle(
                                             fontFamily: "NotoSans",
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: ScreenUtil().setSp(15),
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: ScreenUtil().setSp(13),
                                             letterSpacing: ScreenUtil().setWidth(-0.65),
                                             color: Color.fromRGBO(39, 39, 39, 1),
                                         ),
