@@ -372,6 +372,7 @@ class _SignInPageState extends State<SignInPage> {
                 borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
             ),
             child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                     Container(
                         margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
@@ -398,24 +399,28 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                         )
                     ),
-
-                    RaisedButton(
-                        padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(13), horizontal: ScreenUtil().setWidth(15)),
-                        focusNode: contextFocus,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
+                    Container(
+                        margin: EdgeInsets.only(
+                            right: ScreenUtil().setWidth(5)
                         ),
-                        child: Text(AppLocalizations.of(context).tr('signIn.signIn.getAuthCode'),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'NotoSans',
-                                fontSize: ScreenUtil().setSp(13)
+                        child: RaisedButton(
+                            padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(13), horizontal: ScreenUtil().setWidth(15)),
+                            focusNode: contextFocus,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
                             ),
-                        ),
-                        color: Color.fromRGBO(77, 96, 191, 1),
-                        onPressed: () {
-                            loginCodeRequest();
-                        }
+                            child: Text(AppLocalizations.of(context).tr('signIn.signIn.getAuthCode'),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontFamily: 'NotoSans',
+                                    fontSize: ScreenUtil().setSp(13)
+                                ),
+                            ),
+                            color: Color.fromRGBO(77, 96, 191, 1),
+                            onPressed: () {
+                                loginCodeRequest();
+                            }
+                        )
                     )
                 ],
             ),
