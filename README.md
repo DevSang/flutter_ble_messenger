@@ -34,3 +34,6 @@ flutter pub get
 
 2. Example
  - https://www.dunebook.com/amazing-flutter-open-source-projects/?amp&fbclid=IwAR01SxYyyMdMufjn_HYlS4yEQie4NhccNQmGdlOV-qlQAzSlXmM3jjUMbbw
+
+3. study
+ - https://twitter.com/imthepk/status/1213003226070437891?s=21&fbclid=IwAR1CQGA2uqegq_kB38bpCmD80y_qRXp6MS2_aGFjbKQu3uuftQZdNpHGCbc
