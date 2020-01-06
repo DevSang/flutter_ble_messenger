@@ -11,11 +11,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
-import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
+import 'package:Hwa/service/set_fcm.dart';
 
 
 /*
@@ -167,7 +167,7 @@ class _SignInPageState extends State<SignInPage> {
             developer.log("# 로그인정보 :" + response.body);
             RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
 
-            addPushTokenRequest();
+            SetFCM.firebaseCloudMessagingListeners();
 
             developer.log('# [Navigator] SignInPage -> MainPage');
             Navigator.pushNamed(context, '/main');
@@ -274,11 +274,12 @@ class _SignInPageState extends State<SignInPage> {
                     spf.setString('token', token.toString());
                     spf.setInt('userIdx', userIdx);
 
+                    SetFCM.firebaseCloudMessagingListeners();
+
                     await Constant.initUserInfo();
                     HomePageState.initApiCall();
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
-                    addPushTokenRequest();
                     developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
                 } else {
@@ -291,25 +292,7 @@ class _SignInPageState extends State<SignInPage> {
         }
     }
 
-    /*
-     * @author : sh
-     * @date : 2019-12-30
-     * @description : Save push token function
-     */
-    addPushTokenRequest() async {
-        var pushToken = spf.getString("pushToken");
-        try {
-            String url = "/api/v2/user/push_token?push_token=" + pushToken;
-            final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
-            if(response != null){
-                developer.log("# Push token 저장에 성공하였습니다.");
-            } else {
-                developer.log('#Request failed：${response.statusCode}');
-            }
-        } catch (e) {
-            developer.log('#Request failed：${e}');
-        }
-    }
+
 
     /*
      * @author : sh

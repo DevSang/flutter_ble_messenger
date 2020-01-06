@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'dart:core';
-import 'package:Hwa/pages/signin/signin_page.dart';
-import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
-import 'package:flutter/services.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kvsql/kvsql.dart';
-import 'package:Hwa/constant.dart';
-import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
 import 'dart:developer' as developer;
-import 'package:Hwa/data/models/friend_info.dart';
 
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kvsql/kvsql.dart';
+
+import 'package:Hwa/data/models/friend_info.dart';
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/pages/signin/signin_page.dart';
+import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 
 // KV Store 전역 선언
 final kvStore = KvStore();
@@ -31,7 +30,6 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
     SharedPreferences _sharedPreferences;
-    final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
     final int startTs = new DateTime.now().millisecondsSinceEpoch;
 
@@ -60,7 +58,6 @@ class HomePageState extends State<HomePage> {
 	    // 로그인된 사용자 처리
 	    if(Constant.isUserLogin){
 		    await initApiCall(); // TODO 부하증가에 따라 API 호출 시간이 너무 길어질 경우 어떻게 할것인가?
-		    firebaseCloudMessagingListeners();
 	    }
 
 	    // App 초기화 및 사용자 정보 셋팅 시간 측정, 1.5초 미만이면 1.5초를 채운 후 화면 이동
@@ -129,45 +126,6 @@ class HomePageState extends State<HomePage> {
     void startPageMove() {
         if(Constant.isUserLogin) Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => BottomNavigation()), (Route<dynamic> route) => false);
         else Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (BuildContext context) => SignInPage()), (Route<dynamic> route) => false);
-    }
-
-    /*
-    * @author : hk
-    * @date : 2019-12-21
-    * @description : FCM 수신 테스트 코드 삽입, TODO 소스코드 적용, MSG 혹은 API서버 - token 저장 api 연동
-    */
-    void firebaseCloudMessagingListeners() async {
-
-    	// 푸시 권한 획득 및 token 저장
-        if (Platform.isIOS) iOSPermission();
-            _firebaseMessaging.getToken().then((token) {
-                _sharedPreferences.setString('pushToken', token);
-        });
-
-        _firebaseMessaging.configure(
-            onMessage: (Map<String, dynamic> message) async {
-                developer.log('on message $message');
-            },
-            onResume: (Map<String, dynamic> message) async {
-                developer.log('on resume $message');
-            },
-            onLaunch: (Map<String, dynamic> message) async {
-                developer.log('on launch $message');
-            },
-        );
-    }
-
-    /*
-    * @author : hk
-    * @date : 2019-12-21
-    * @description : FCM 수신 iOS 권한 획득
-    */
-    void iOSPermission() {
-        _firebaseMessaging.requestNotificationPermissions(
-            IosNotificationSettings(sound: true, badge: true, alert: true));
-        _firebaseMessaging.onIosSettingsRegistered
-            .listen((IosNotificationSettings settings) {
-        });
     }
 
     /*
