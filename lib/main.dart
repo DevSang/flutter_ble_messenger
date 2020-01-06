@@ -20,18 +20,9 @@ import 'package:easy_localization/easy_localization.dart';
 
 
 Future main() async {
-//	KakaoContext.clientId = "a3676c7b7fcfdedf54043bb8618fcb80";
     WidgetsFlutterBinding.ensureInitialized();
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-//  SharedPreferences prefs = await SharedPreferences.getInstance();
-//  bool isLogged = (prefs.getBool('isLogged') ?? false) ;
-
-//  var home;
-//  if(isLogged)
-//    home = BottomNavigation();
-//  else
-//    home = SignInPage() ;
 
     CatcherOptions debugOptions = CatcherOptions(
         SilentReportMode(),
@@ -39,6 +30,7 @@ Future main() async {
             ConsoleHandler()
         ]
     );
+
     CatcherOptions releaseOptions = CatcherOptions(
         SilentReportMode(),
         [
@@ -46,10 +38,9 @@ Future main() async {
         ]
     );
 
-//    Catcher(HereWeAreApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
 
-//    runApp(new HereWeAreApp());
-    runApp(EasyLocalization(child:HereWeAreApp()));
+    Catcher(EasyLocalization(child:HereWeAreApp()), debugConfig: debugOptions, releaseConfig: releaseOptions);
+//    runApp(EasyLocalization(child:HereWeAreApp()));
 }
 
 class HereWeAreApp extends StatelessWidget {
@@ -73,6 +64,7 @@ class HereWeAreApp extends StatelessWidget {
 		            title: 'HWA',
 		            theme: ThemeData.light(),
 		            home: HomePage(),
+                    navigatorKey: Catcher.navigatorKey,
 		            debugShowCheckedModeBanner: false,
 		            initialRoute: '/',
 		            routes: {
