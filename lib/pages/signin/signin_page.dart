@@ -245,6 +245,7 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Confirm auth code function
      */
     authCodeLoginRequest() async {
+	    spf = await Constant.getSPF();
         try {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
@@ -264,6 +265,8 @@ class _SignInPageState extends State<SignInPage> {
                 );
 
                 var data = jsonDecode(response.body)['data'];
+
+                print(data);
 
                 if (response.statusCode == 200) {
                     developer.log("# 로그인에 성공하였습니다.");
@@ -391,7 +394,6 @@ class _SignInPageState extends State<SignInPage> {
                                 border: InputBorder.none,
                                 counterText: "",
                                 hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
-//                                hintText: '휴대폰번호 ( -없이 숫자만 입력)'
                                 hintText: AppLocalizations.of(context).tr('signIn.signIn.phoneNumber')
                             ),
                         )
