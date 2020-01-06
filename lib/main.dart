@@ -24,23 +24,9 @@ Future main() async {
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
-    CatcherOptions debugOptions = CatcherOptions(
-        SilentReportMode(),
-        [
-            ConsoleHandler()
-        ]
-    );
-
-    CatcherOptions releaseOptions = CatcherOptions(
-        SilentReportMode(),
-        [
-            EmailManualHandler(["gjrjf@gmail.com"])
-        ]
-    );
-
-
+    CatcherOptions debugOptions = CatcherOptions(DialogReportMode(), [ConsoleHandler()]);
+    CatcherOptions releaseOptions = CatcherOptions(SilentReportMode(), [EmailManualHandler(["gjrjf1@gmail.com"])]);
     Catcher(EasyLocalization(child:HereWeAreApp()), debugConfig: debugOptions, releaseConfig: releaseOptions);
-//    runApp(EasyLocalization(child:HereWeAreApp()));
 }
 
 class HereWeAreApp extends StatelessWidget {
