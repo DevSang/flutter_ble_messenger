@@ -9,6 +9,10 @@ import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/trend/trend_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:Hwa/constant.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -47,6 +51,14 @@ class _BottomNavigationState extends State<BottomNavigation>{
             ..add(new ChatTab( setCurrentIndex:setCurrentIndex));
 
         sameSize  = GetSameSize().main();
+
+        profileImg = CachedNetworkImage(
+		        imageUrl: Constant.PROFILE_IMG_URI,
+		        placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
+		        errorWidget: (context, url, error) => getErrorWidget(),
+		        httpHeaders: Constant.HEADER
+        );
+
         super.initState();
     }
 
@@ -63,6 +75,16 @@ class _BottomNavigationState extends State<BottomNavigation>{
 
     _displayDialog(){
 
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-02
+     * @description : 사용자 이미지 캐시 실패시 다음부터 기본 Asset 이미지 제공
+     */
+    getErrorWidget(){
+	    Constant.APP_BAR_LOADING_ERROR = true;
+	    return Image.asset('assets/images/icon/profile.png');
     }
 
     /*
@@ -251,6 +273,11 @@ class _BottomNavigationState extends State<BottomNavigation>{
         );
     }
 
+    /*
+     * @author : hk
+     * @date : 2020-01-06
+     * @description : appBar title 오른쪽 트렌드, 단화방 만들기 버튼, TODO hidden으로 처리?
+     */
     Widget getLeftChild(){
     	return Row(
 		    children: <Widget>[
@@ -282,5 +309,4 @@ class _BottomNavigationState extends State<BottomNavigation>{
 		    ],
 	    );
     }
-
 }
