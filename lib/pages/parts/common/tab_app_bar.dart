@@ -76,10 +76,10 @@ class TabAppBarState extends State<TabAppBar> {
      */
     getCacheImg(){
 	    profileImg = CachedNetworkImage(
-			    imageUrl: Constant.PROFILE_IMG_URI,
-			    placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
-			    errorWidget: (context, url, error) => getErrorWidget(),
-			    httpHeaders: Constant.HEADER
+            imageUrl: Constant.PROFILE_IMG_URI,
+            placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
+            errorWidget: (context, url, error) => getErrorWidget(),
+            httpHeaders: Constant.HEADER
 	    );
     }
 
