@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:collection';
 
 import 'package:Hwa/data/models/chat_join_info.dart';
-import 'package:Hwa/pages/parts/loading.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
@@ -24,9 +24,9 @@ import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 
-import 'package:Hwa/pages/notice_page.dart';
-import 'package:Hwa/pages/parts/chat_side_menu.dart';
-import 'package:Hwa/pages/parts/chat_message_list.dart';
+import 'package:Hwa/pages/chatting/notice_page.dart';
+import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
+import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 
 import 'package:dio/dio.dart';
 

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/pages/parts/loading.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/custom_switch.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +13,7 @@ import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
-import 'package:Hwa/pages/signin_page.dart';
+import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';

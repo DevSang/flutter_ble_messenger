@@ -1,4 +1,4 @@
-import 'package:Hwa/pages/parts/loading.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/utility/custom_switch.dart';

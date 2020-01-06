@@ -20,10 +20,10 @@ import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 
-import 'package:Hwa/pages/chatroom_page.dart';
-import 'package:Hwa/pages/parts/loading.dart';
-import 'package:Hwa/pages/parts/tab_app_bar.dart';
-import 'package:Hwa/pages/trend_page.dart';
+import 'package:Hwa/pages/chatting/chatroom_page.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
+import 'package:Hwa/pages/parts/common/tab_app_bar.dart';
+import 'package:Hwa/pages/trend/trend_page.dart';
 
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';

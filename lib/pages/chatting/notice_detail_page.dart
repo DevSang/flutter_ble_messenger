@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
-import 'package:Hwa/pages/parts/set_chat_notice_reply_data.dart';
+import 'package:Hwa/pages/parts/chatting/notice/set_chat_notice_reply_data.dart';
 import 'package:Hwa/data/models/chat_notice_reply.dart';
 import 'package:intl/intl.dart';
 import 'package:Hwa/utility/convert_time.dart';

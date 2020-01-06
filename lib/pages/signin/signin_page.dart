@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
-import 'package:Hwa/pages/signup_page.dart';
+import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
@@ -167,7 +167,7 @@ class _SignInPageState extends State<SignInPage> {
 
         } else if(errorCode == 13){
             developer.log('# New user');
-            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
+            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.BOTTOM);
 
             developer.log('# [Navigator] SignInPage -> SignUpPage');
             Navigator.push(context,
@@ -307,9 +307,6 @@ class _SignInPageState extends State<SignInPage> {
      */
     @override
     Widget build(BuildContext context) {
-        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-            statusBarColor: Color.fromRGBO(250, 250, 250, 1)
-        ));
 
         return Scaffold(
             body: new GestureDetector(
@@ -397,8 +394,9 @@ class _SignInPageState extends State<SignInPage> {
                                 hintText: '휴대폰번호 ( -없이 숫자만 입력)'
                             ),
                         )
-                    )
-                    ,RaisedButton(
+                    ),
+
+                    RaisedButton(
                         padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(13), horizontal: ScreenUtil().setWidth(15)),
                         focusNode: contextFocus,
                         shape: RoundedRectangleBorder(

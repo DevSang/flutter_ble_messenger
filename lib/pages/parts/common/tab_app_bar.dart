@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
 
-import '../profile_page.dart';
+import '../../profile/profile_page.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';

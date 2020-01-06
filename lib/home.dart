@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:core';
-import 'package:Hwa/pages/signin_page.dart';
-import 'package:Hwa/pages/bottom_navigation.dart';
+import 'package:Hwa/pages/signin/signin_page.dart';
+import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,6 +11,7 @@ import 'package:kvsql/kvsql.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:Hwa/data/models/friend_info.dart';
 
 
@@ -144,13 +146,13 @@ class HomePageState extends State<HomePage> {
 
         _firebaseMessaging.configure(
             onMessage: (Map<String, dynamic> message) async {
-                print('on message $message');
+                developer.log('on message $message');
             },
             onResume: (Map<String, dynamic> message) async {
-                print('on resume $message');
+                developer.log('on resume $message');
             },
             onLaunch: (Map<String, dynamic> message) async {
-                print('on launch $message');
+                developer.log('on launch $message');
             },
         );
     }
@@ -168,12 +170,16 @@ class HomePageState extends State<HomePage> {
         });
     }
 
-
     /*
      * UI Widget - Splash
      */
     @override
     Widget build(BuildContext context) {
+        SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark.copyWith(
+            statusBarColor: Colors.transparent,
+            statusBarBrightness: Brightness.dark
+        ));
+
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
         return Scaffold(
             body: Container(
