@@ -48,7 +48,6 @@ dependencies:
     google_sign_in: ^4.1.1          # Social Login - Google
     #flutter_kakao_login: "^0.5.0"  # Social Login - Kakao
     #kakao_flutter_sdk: ^0.3.2
-    after_layout: ^1.0.7+2
 
 
     ### BLE module ###
