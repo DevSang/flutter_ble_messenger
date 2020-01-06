@@ -4,6 +4,7 @@ import 'dart:core';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -181,6 +182,7 @@ class HomePageState extends State<HomePage> {
         ));
 
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
+
         return Scaffold(
             body: Container(
                 width: ScreenUtil().setWidth(375),

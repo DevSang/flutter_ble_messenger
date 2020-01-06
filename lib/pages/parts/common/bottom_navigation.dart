@@ -57,78 +57,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
         });
     }
 
-    /*
-    * @author : hs
-    * @date : 2019-12-27
-    * @description : 단화방 생성 Dialog
-    */
-    void _displayDialog(BuildContext context) async {
-//        return showDialog(
-//            context: context,
-//            builder: (BuildContext context) => CustomDialog(
-//                title: '단화 생성하기',
-//                type: 1,
-//                leftButtonText: "취소",
-//                rightButtonText: "생성하기",
-//                value: _currentAddress,
-//                hintText: _currentAddress == '위치 검색 중..'
-//                    ? '단화방 이름을 입력해주세요.'
-//                    : _currentAddress,
-//                func: (String titleValue) {
-//                    _createChat(titleValue);
-//                    Navigator.of(context).pop();
-//
-//                    setState(() {
-//                        isLoading = true;
-//                    });
-//                },
-//                maxLength: 15,
-//            ),
-//        );
-    }
-
     @override
     Widget build(BuildContext context) {
         return Scaffold(
-            appBar: TabAppBar(
-                title: "단화방",
-                leftChild: Row(
-                    children: <Widget>[
-                        Container(
-                            width: sameSize * 22,
-                            height: sameSize * 22,
-                            margin: EdgeInsets.only(left: 16),
-
-                            child: InkWell(
-                                child: Image.asset('assets/images/icon/navIconHot.png'),
-                                onTap: () =>
-                                    Navigator.push(
-                                        context, MaterialPageRoute(
-                                        builder: (context) => TrendPage())),
-                            )
-                        ),
-                        Container(
-                            margin: EdgeInsets.only(left: 16),
-                            width: sameSize * 22,
-                            height: sameSize * 22,
-                            child: InkWell(
-                                child: Image.asset(
-                                    'assets/images/icon/navIconNew.png'),
-                                onTap: (){
-                                    _displayDialog(context);
-                                }
-    //                                {
-    //                                    if (Platform.isAndroid) {
-    //                                        _displayAndroidDialog(context)
-    //                                    } else if (Platform.isIOS) {
-    //                                        _displayIosDialog(context)
-    //                                    }
-    //                                },
-                            )
-                        ),
-                    ],
-                ),
-            ),
             body: list[_currentIndex],
             bottomNavigationBar: Theme(
                 data: Theme.of(context).copyWith(
