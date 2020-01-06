@@ -305,27 +305,6 @@ class _SignInPageState extends State<SignInPage> {
     Widget build(BuildContext context) {
 	    var data = EasyLocalizationProvider.of(context).data;
 
-        return Scaffold(
-            body: new GestureDetector(
-                onTap: (){
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                },
-                child: new Container(
-                    child:
-                        ListView(
-                            children: <Widget>[
-                                _loginMainImage(),
-                                _loginInputText(),
-                                _loginInputCodeField(),
-                                _SignInButton(),
-                                _registerSection(context),
-                                _signinText(),
-                                _socialSignin()
-                            ],
-                        ),
-                ),
-            ),
-            resizeToAvoidBottomPadding: false,
         return EasyLocalizationProvider(
 		    data: data,
 		    child: Scaffold(

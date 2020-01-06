@@ -45,12 +45,11 @@ class HereWeAreApp extends StatelessWidget {
 
 	    var data = EasyLocalizationProvider.of(context).data;
 
-	    return MultiProvider(
-            providers: [
-                ChangeNotifierProvider(create: (_) => GPSInfo()),       // 위치 정보
-                ChangeNotifierProvider(create: (_) => LoadingInfo()),   // 로딩 정보
-            ],
-            child: EasyLocalizationProvider(
+	    return //MultiProvider(
+//            providers: [
+//
+//            ],
+            EasyLocalizationProvider(
 				data: data,
 	            child: MaterialApp(
 		            title: 'HWA',
@@ -80,7 +79,7 @@ class HereWeAreApp extends StatelessWidget {
                     supportedLocales: [Locale('en', 'US'), Locale('ko', 'KR')],
                     locale: data.locale,
 	            ),
-            )
-        );
+            );
+//        );
     }
 }
