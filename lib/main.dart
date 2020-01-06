@@ -1,5 +1,3 @@
-import 'package:Hwa/data/models/gps_info.dart';
-import 'package:Hwa/data/models/loading_info.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/pages/signin/signup_page.dart';

@@ -13,6 +13,7 @@ import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
+import 'package:Hwa/service/set_fcm.dart';
 
 /*
  * @project : HWA - Mobile
@@ -109,6 +110,8 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
 
             loginPref.setString('token', token);
             loginPref.setInt('userIdx', userIdx);
+
+            SetFCM.firebaseCloudMessagingListeners();
 
             await Constant.initUserInfo();
             HomePageState.initApiCall();

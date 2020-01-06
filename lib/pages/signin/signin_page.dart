@@ -11,11 +11,12 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
-import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
+import 'package:Hwa/service/set_fcm.dart';
+
 
 import 'package:easy_localization/easy_localization.dart';
 
@@ -61,8 +62,6 @@ class _SignInPageState extends State<SignInPage> {
      * @description : init SignIn
      */
     void googleAccountListner() async {
-	    spf = await Constant.getSPF();
-
 	    // Google 사용자 status listener
 	    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
 		    setState(() {
@@ -80,6 +79,11 @@ class _SignInPageState extends State<SignInPage> {
      * @description : google signin function, TODO 에러 처리
      */
     void googleSignin() async {
+
+        setState(() {
+            _isLoading = true;
+        });
+
         try {
             developer.log("# Google Signin");
             _googleSignIn.signIn().then((result){
@@ -92,12 +96,15 @@ class _SignInPageState extends State<SignInPage> {
                     );
                 }).catchError((err){
 	                developer.log('inner error');
+                    setState(() { _isLoading = false; });
                 });
             }).catchError((err){
 	            developer.log('error occured');
+	            setState(() { _isLoading = false; });
             });
         } catch (error) {
             developer.log(error);
+            setState(() { _isLoading = false; });
         }
     }
 
@@ -109,7 +116,7 @@ class _SignInPageState extends State<SignInPage> {
 	void facebookLogin() async {
         developer.log("# Facebook Signin");
         final facebookLogin = FacebookLogin();
-		final result = await facebookLogin.logIn(["email"]);
+		final result = await facebookLogin. logIn(["email"]);
 
 		switch (result.status) {
 			case FacebookLoginStatus.loggedIn:
@@ -162,14 +169,14 @@ class _SignInPageState extends State<SignInPage> {
             developer.log("# 로그인정보 :" + response.body);
             RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
 
-            addPushTokenRequest();
+            SetFCM.firebaseCloudMessagingListeners();
 
             developer.log('# [Navigator] SignInPage -> MainPage');
             Navigator.pushNamed(context, '/main');
 
         } else if(errorCode == 13){
             developer.log('# New user');
-            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.BOTTOM);
+            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
 
             developer.log('# [Navigator] SignInPage -> SignUpPage');
             Navigator.push(context,
@@ -185,6 +192,10 @@ class _SignInPageState extends State<SignInPage> {
             developer.log('#Request failed：${response.statusCode}');
             RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
         }
+
+        setState(() {
+            _isLoading = false;
+        });
     }
 
     /*
@@ -265,11 +276,12 @@ class _SignInPageState extends State<SignInPage> {
                     spf.setString('token', token.toString());
                     spf.setInt('userIdx', userIdx);
 
+                    SetFCM.firebaseCloudMessagingListeners();
+
                     await Constant.initUserInfo();
                     HomePageState.initApiCall();
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
-                    addPushTokenRequest();
                     developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
                 } else {
@@ -282,25 +294,7 @@ class _SignInPageState extends State<SignInPage> {
         }
     }
 
-    /*
-     * @author : sh
-     * @date : 2019-12-30
-     * @description : Save push token function
-     */
-    addPushTokenRequest() async {
-        var pushToken = spf.getString("pushToken");
-        try {
-            String url = "/api/v2/user/push_token?push_token=" + pushToken;
-            final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
-            if(response != null){
-                developer.log("# Push token 저장에 성공하였습니다.");
-            } else {
-                developer.log('#Request failed：${response.statusCode}');
-            }
-        } catch (e) {
-            developer.log('#Request failed：${e}');
-        }
-    }
+
 
     /*
      * @author : sh
@@ -311,6 +305,27 @@ class _SignInPageState extends State<SignInPage> {
     Widget build(BuildContext context) {
 	    var data = EasyLocalizationProvider.of(context).data;
 
+        return Scaffold(
+            body: new GestureDetector(
+                onTap: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                },
+                child: new Container(
+                    child:
+                        ListView(
+                            children: <Widget>[
+                                _loginMainImage(),
+                                _loginInputText(),
+                                _loginInputCodeField(),
+                                _SignInButton(),
+                                _registerSection(context),
+                                _signinText(),
+                                _socialSignin()
+                            ],
+                        ),
+                ),
+            ),
+            resizeToAvoidBottomPadding: false,
         return EasyLocalizationProvider(
 		    data: data,
 		    child: Scaffold(

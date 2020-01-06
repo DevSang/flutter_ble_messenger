@@ -13,6 +13,7 @@ import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
+import 'package:Hwa/service/set_fcm.dart';
 
 /*
  * @project : HWA - Mobile
@@ -74,7 +75,7 @@ class _SignUpPageState extends State<SignUpPage>{
             FocusScope.of(context).requestFocus(new FocusNode());
             developer.log("# Phone number : " +  phoneRegController.text);
             String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
-            final response = await http.post(url,
+            await http.post(url,
                 headers: {
                     'Content-Type':'application/json'
                 },
@@ -99,24 +100,40 @@ class _SignUpPageState extends State<SignUpPage>{
                         developer.log("# Confirm auth code success.");
                         developer.log("# Already exist user.");
 
-                        SetUserInfo.set(data['data']['userInfo'],profileURL);
+                        ///최종 Signup
+                        String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
+                        await http.post(url,
+                            headers: {
+                                'Content-Type':'application/json'
+                            },
+                            body: jsonEncode({
+                                "phone_number": phoneRegController.text,
+                                "social_cd": socialType,
+                                "social_id": socialId,
+                                "token": accessToken
+                            })
+                        ).then((http.Response response) async {
+                            SetUserInfo.set(data['data']['userInfo'],profileURL);
 
-                        var token = data['data']['token'];
-                        var userIdx = data['data']['userInfo']['idx'];
+                            var token = data['data']['token'];
+                            var userIdx = data['data']['userInfo']['idx'];
 
-                        developer.log("# [SPF SAVE] token : " + token);
-                        developer.log("# [SPF SAVE] userIdx : " + userIdx.toString());
+                            developer.log("# [SPF SAVE] token : " + token);
+                            developer.log("# [SPF SAVE] userIdx : " + userIdx.toString());
 
-                        SPF.setString('token', token);
-                        SPF.setInt('userIdx', userIdx);
+                            SPF.setString('token', token);
+                            SPF.setInt('userIdx', userIdx);
 
-                        await Constant.initUserInfo();
-                        HomePageState.initApiCall();
+                            SetFCM.firebaseCloudMessagingListeners();
 
-                        developer.log('# [Navigator] SignUpPage -> MainPage');
-                        RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
-                        RedToast.toast("Here We are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
-                        Navigator.pushNamed(context, '/main');
+                            await Constant.initUserInfo();
+                            HomePageState.initApiCall();
+
+                            developer.log('# [Navigator] SignUpPage -> MainPage');
+                            RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
+                            RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+                            Navigator.pushNamed(context, '/main');
+                        });
                     }
                 } else {
                     if(data['message'].indexOf('이미 사용중인 전화번호입니다') > -1){
