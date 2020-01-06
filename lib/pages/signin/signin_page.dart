@@ -17,6 +17,7 @@ import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 
+
 /*
  * @project : HWA - Mobile
  * @author : sh
@@ -59,8 +60,6 @@ class _SignInPageState extends State<SignInPage> {
      * @description : init SignIn
      */
     void googleAccountListner() async {
-	    spf = await Constant.getSPF();
-
 	    // Google 사용자 status listener
 	    _googleSignIn.onCurrentUserChanged.listen((GoogleSignInAccount account) {
 		    setState(() {
@@ -78,6 +77,11 @@ class _SignInPageState extends State<SignInPage> {
      * @description : google signin function, TODO 에러 처리
      */
     void googleSignin() async {
+
+        setState(() {
+            _isLoading = true;
+        });
+
         try {
             developer.log("# Google Signin");
             _googleSignIn.signIn().then((result){
@@ -90,12 +94,15 @@ class _SignInPageState extends State<SignInPage> {
                     );
                 }).catchError((err){
 	                developer.log('inner error');
+                    setState(() { _isLoading = false; });
                 });
             }).catchError((err){
 	            developer.log('error occured');
+	            setState(() { _isLoading = false; });
             });
         } catch (error) {
             developer.log(error);
+            setState(() { _isLoading = false; });
         }
     }
 
@@ -107,7 +114,7 @@ class _SignInPageState extends State<SignInPage> {
 	void facebookLogin() async {
         developer.log("# Facebook Signin");
         final facebookLogin = FacebookLogin();
-		final result = await facebookLogin.logIn(["email"]);
+		final result = await facebookLogin. logIn(["email"]);
 
 		switch (result.status) {
 			case FacebookLoginStatus.loggedIn:
@@ -167,7 +174,7 @@ class _SignInPageState extends State<SignInPage> {
 
         } else if(errorCode == 13){
             developer.log('# New user');
-            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.BOTTOM);
+            RedToast.toast("환영합니다. 휴대폰 인증을 진행해주세요.", ToastGravity.TOP);
 
             developer.log('# [Navigator] SignInPage -> SignUpPage');
             Navigator.push(context,
@@ -183,6 +190,10 @@ class _SignInPageState extends State<SignInPage> {
             developer.log('#Request failed：${response.statusCode}');
             RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
         }
+
+        setState(() {
+            _isLoading = false;
+        });
     }
 
     /*
@@ -314,19 +325,18 @@ class _SignInPageState extends State<SignInPage> {
                     FocusScope.of(context).requestFocus(new FocusNode());
                 },
                 child: new Container(
-                    child: _isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : ListView(
-                        children: <Widget>[
-                            _loginMainImage(),
-                            _loginInputText(),
-                            _loginInputCodeField(),
-                            _SignInButton(),
-                            _registerSection(context),
-                            _signinText(),
-                            _socialSignin()
-                        ],
-                    ),
+                    child:
+                        ListView(
+                            children: <Widget>[
+                                _loginMainImage(),
+                                _loginInputText(),
+                                _loginInputCodeField(),
+                                _SignInButton(),
+                                _registerSection(context),
+                                _signinText(),
+                                _socialSignin()
+                            ],
+                        ),
                 ),
             ),
             resizeToAvoidBottomPadding: false,

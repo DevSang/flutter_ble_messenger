@@ -78,7 +78,7 @@ class Constant {
 	    USER_IDX = spf.getInt("userIdx");
 	    String token = spf.getString('token').toString();
 
-	    if(USER_IDX != null && token != null) isUserLogin = true;
+	    if(USER_IDX != null && token != 'null') isUserLogin = true;
 
 	    if(isUserLogin){
 		    PROFILE_IMG_URI = API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + USER_IDX.toString() + "&type=SMALL";
