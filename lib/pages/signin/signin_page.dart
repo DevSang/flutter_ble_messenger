@@ -11,12 +11,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
-import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
+import 'package:Hwa/service/set_fcm.dart';
 
+
+import 'package:easy_localization/easy_localization.dart';
 
 /*
  * @project : HWA - Mobile
@@ -167,7 +169,7 @@ class _SignInPageState extends State<SignInPage> {
             developer.log("# 로그인정보 :" + response.body);
             RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
 
-            addPushTokenRequest();
+            SetFCM.firebaseCloudMessagingListeners();
 
             developer.log('# [Navigator] SignInPage -> MainPage');
             Navigator.pushNamed(context, '/main');
@@ -243,6 +245,7 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Confirm auth code function
      */
     authCodeLoginRequest() async {
+	    spf = await Constant.getSPF();
         try {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
@@ -263,6 +266,8 @@ class _SignInPageState extends State<SignInPage> {
 
                 var data = jsonDecode(response.body)['data'];
 
+                print(data);
+
                 if (response.statusCode == 200) {
                     developer.log("# 로그인에 성공하였습니다.");
                     developer.log("# 로그인정보 :" + response.body);
@@ -274,11 +279,12 @@ class _SignInPageState extends State<SignInPage> {
                     spf.setString('token', token.toString());
                     spf.setInt('userIdx', userIdx);
 
+                    SetFCM.firebaseCloudMessagingListeners();
+
                     await Constant.initUserInfo();
                     HomePageState.initApiCall();
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
-                    addPushTokenRequest();
                     developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
                 } else {
@@ -291,25 +297,7 @@ class _SignInPageState extends State<SignInPage> {
         }
     }
 
-    /*
-     * @author : sh
-     * @date : 2019-12-30
-     * @description : Save push token function
-     */
-    addPushTokenRequest() async {
-        var pushToken = spf.getString("pushToken");
-        try {
-            String url = "/api/v2/user/push_token?push_token=" + pushToken;
-            final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
-            if(response != null){
-                developer.log("# Push token 저장에 성공하였습니다.");
-            } else {
-                developer.log('#Request failed：${response.statusCode}');
-            }
-        } catch (e) {
-            developer.log('#Request failed：${e}');
-        }
-    }
+
 
     /*
      * @author : sh
@@ -318,28 +306,33 @@ class _SignInPageState extends State<SignInPage> {
      */
     @override
     Widget build(BuildContext context) {
+	    var data = EasyLocalizationProvider.of(context).data;
 
-        return Scaffold(
-            body: new GestureDetector(
-                onTap: (){
-                    FocusScope.of(context).requestFocus(new FocusNode());
-                },
-                child: new Container(
-                    child:
-                        ListView(
-                            children: <Widget>[
-                                _loginMainImage(),
-                                _loginInputText(),
-                                _loginInputCodeField(),
-                                _SignInButton(),
-                                _registerSection(context),
-                                _signinText(),
-                                _socialSignin()
-                            ],
-                        ),
-                ),
-            ),
-            resizeToAvoidBottomPadding: false,
+        return EasyLocalizationProvider(
+		    data: data,
+		    child: Scaffold(
+	            body: new GestureDetector(
+	                onTap: (){
+	                    FocusScope.of(context).requestFocus(new FocusNode());
+	                },
+	                child: new Container(
+	                    child: _isLoading
+	                        ? Center(child: CircularProgressIndicator())
+	                        : ListView(
+	                        children: <Widget>[
+	                            _loginMainImage(),
+	                            _loginInputText(),
+	                            _loginInputCodeField(),
+	                            _SignInButton(),
+	                            _registerSection(context),
+	                            _signinText(),
+	                            _socialSignin()
+	                        ],
+	                    ),
+	                ),
+	            ),
+	            resizeToAvoidBottomPadding: false,
+	        )
         );
     }
 
@@ -401,7 +394,7 @@ class _SignInPageState extends State<SignInPage> {
                                 border: InputBorder.none,
                                 counterText: "",
                                 hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
-                                hintText: '휴대폰번호 ( -없이 숫자만 입력)'
+                                hintText: AppLocalizations.of(context).tr('signIn.signIn.phoneNumber')
                             ),
                         )
                     ),
@@ -412,7 +405,7 @@ class _SignInPageState extends State<SignInPage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
                         ),
-                        child: Text("인증문자 받기",
+                        child: Text(AppLocalizations.of(context).tr('signIn.signIn.getAuthCode'),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'NotoSans',
@@ -474,7 +467,7 @@ class _SignInPageState extends State<SignInPage> {
                         border: InputBorder.none,
                         counterText: "",
                         hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
-                        hintText: '인증번호'
+                        hintText: AppLocalizations.of(context).tr('signIn.signIn.authCode')
                     ),
                 )
             )
@@ -499,7 +492,7 @@ class _SignInPageState extends State<SignInPage> {
                     authCodeLoginRequest();
                 },
                 color: color,
-                child: Text("로그인", style: TextStyle(
+                child: Text(AppLocalizations.of(context).tr('signIn.signIn.signIn'), style: TextStyle(
                     color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')
                 ),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenUtil().setHeight(10.0))),
@@ -524,7 +517,7 @@ class _SignInPageState extends State<SignInPage> {
                 children: <Widget>[
                     InkWell(
                         child: Text(
-                            "계정이 없으세요? ",
+		                        AppLocalizations.of(context).tr('signIn.signIn.notHaveAccount'),
                             style: TextStyle(
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
@@ -532,7 +525,7 @@ class _SignInPageState extends State<SignInPage> {
                         )
                     ),
                     InkWell(
-                        child: Text("회원가입", style: TextStyle(
+                        child: Text(AppLocalizations.of(context).tr('signIn.signIn.signUp'), style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
@@ -562,7 +555,7 @@ class _SignInPageState extends State<SignInPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                     Text(
-                        "SNS계정으로 간편로그인 하세요.",
+	                    AppLocalizations.of(context).tr('signIn.signIn.snsSignIn'),
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 15,
