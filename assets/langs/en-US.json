@@ -1,0 +1,13 @@
+{
+    "signIn": {
+        "signIn": {
+            "phoneNumber": "Mobile number(without -)",
+            "getAuthCode": "Get Code",
+            "authCode": "Auth Code",
+            "signIn": "Sign In",
+            "notHaveAccount": "Don't have an account? ",
+            "signUp": "Sign Up",
+            "snsSignIn": "Easy login with your SNS account."
+        }
+    }
+}
