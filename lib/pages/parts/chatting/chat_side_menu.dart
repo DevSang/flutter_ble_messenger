@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
-import 'package:Hwa/pages/bottom_navigation.dart';
+import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/service/stomp_client.dart';
@@ -16,8 +16,8 @@ import 'package:configurable_expansion_tile/configurable_expansion_tile.dart';
 
 import 'package:Hwa/data/models/chat_user_info.dart';
 
-import 'package:Hwa/pages/parts/chat_user_list.dart';
-import 'package:Hwa/pages/chatroom_setting.dart';
+import 'package:Hwa/pages/parts/chatting/chat_user_list.dart';
+import 'package:Hwa/pages/chatting/chatroom_setting.dart';
 
 /*
  * @project : HWA - Mobile

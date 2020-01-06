@@ -1,13 +1,13 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Hwa/pages/parts/set_chat_notice_data.dart';
+import 'package:Hwa/pages/parts/chatting/notice/set_chat_notice_data.dart';
 import 'package:Hwa/utility/convert_time.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:Hwa/utility/action_sheet.dart';
 
-import 'package:Hwa/pages/notice_write_page.dart';
-import 'package:Hwa/pages/notice_detail_page.dart';
+import 'package:Hwa/pages/chatting/notice_write_page.dart';
+import 'package:Hwa/pages/chatting/notice_detail_page.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
 
 /*

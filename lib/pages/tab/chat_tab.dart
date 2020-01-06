@@ -11,12 +11,12 @@ import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
-import 'package:Hwa/pages/chatroom_page.dart';
-import 'package:Hwa/pages/parts/tab_app_bar.dart';
+import 'package:Hwa/pages/chatting/chatroom_page.dart';
+import 'package:Hwa/pages/parts/common/tab_app_bar.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:Hwa/pages/bottom_navigation.dart';
+import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -429,7 +429,6 @@ class _ChatTabState extends State<ChatTab> {
 
                                 /// 인원 수, 시간
                                 Container(
-                                    height: ScreenUtil().setHeight(13),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[

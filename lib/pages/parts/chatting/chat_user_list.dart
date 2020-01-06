@@ -16,7 +16,7 @@ import 'package:Hwa/package/fullPhoto.dart';
 import 'package:Hwa/data/models/UserInfo.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/pages/parts/chat_user_info_list.dart';
+import 'package:Hwa/pages/parts/chatting/chat_user_info_list.dart';
 
 class ChatUserList extends StatefulWidget {
     final List<ChatJoinInfo> userInfoList;

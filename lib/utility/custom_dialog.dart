@@ -169,11 +169,12 @@ class CustomDialog extends StatelessWidget {
                 )
             ),
             child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                     Container(
                         width: ScreenUtil().setWidth(211),
+                        height: ScreenUtil().setHeight(38.5),
                         margin: EdgeInsets.only(
+                            top: ScreenUtil().setHeight(15),
                             right: ScreenUtil().setWidth(9)
                         ),
                         child: new TextField(

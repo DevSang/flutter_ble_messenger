@@ -1,16 +1,16 @@
-import 'package:Hwa/pages/profile_page.dart';
-import 'package:Hwa/pages/signup_name.dart';
-import 'package:Hwa/pages/signup_page.dart';
-import 'package:Hwa/pages/trend_page.dart';
+import 'package:Hwa/pages/profile/profile_page.dart';
+import 'package:Hwa/pages/signin/signup_name.dart';
+import 'package:Hwa/pages/signin/signup_page.dart';
+import 'package:Hwa/pages/trend/trend_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:Hwa/home.dart';
-import 'package:Hwa/pages/signin_page.dart';
-import 'package:Hwa/pages/bottom_navigation.dart';
-import 'package:Hwa/pages/chatroom_page.dart';
-import 'package:Hwa/pages/notice_page.dart';
-import 'package:Hwa/pages/notice_write_page.dart';
-import 'package:Hwa/pages/notice_detail_page.dart';
+import 'package:Hwa/pages/signin/signin_page.dart';
+import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
+import 'package:Hwa/pages/chatting/chatroom_page.dart';
+import 'package:Hwa/pages/chatting/notice_page.dart';
+import 'package:Hwa/pages/chatting/notice_write_page.dart';
+import 'package:Hwa/pages/chatting/notice_detail_page.dart';
 
 //import 'package:kakao_flutter_sdk/auth.dart';
 
