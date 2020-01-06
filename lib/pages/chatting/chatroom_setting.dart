@@ -35,6 +35,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     final ChatInfo chatInfo;
     ChatInfo chatSettingUpdated = new ChatInfo();
 
+    int _selectedModeIdx;
     List<String> chatMode = ["누구나 단화", "방장만 공지", "방장과 대화"];
     List<String> inviteRange = ["좁게", "보통", "넓게"];
 
@@ -64,6 +65,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
         chatSettingUpdated.inviteRange = chatInfo.inviteRange;
         chatSettingUpdated.mode = chatInfo.mode;
 
+        _selectedModeIdx = 0;
         isLoading = false;
 	    super.initState();
     }
@@ -89,6 +91,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
             setState(() {
                 if (setType == "mode") {
                     chatSettingUpdated.mode = chatMode[selectedValue];
+                    _selectedModeIdx = selectedValue;
                 } else {
                     chatSettingUpdated.inviteRange = selectedValue;
                 }
@@ -574,14 +577,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
         List<String> setTypeList;
 
         if (setType == "mode") {
-            switch(value) {
-                case "ANYONE" : _selectedItemIdx = 0;
-                break;
-                case "ONLY_MASTER" : _selectedItemIdx = 1;
-                break;
-                case "M_TO_P" :_selectedItemIdx = 2;
-                break;
-            }
+            _selectedItemIdx = _selectedModeIdx;
             setTypeList = chatMode;
         } else {
             _selectedItemIdx = value;
@@ -647,7 +643,6 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                             );
                                         }
                                     ),
-
                                 ),
                             ),
                         )

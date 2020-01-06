@@ -12,6 +12,7 @@ import 'package:Hwa/pages/chatting/notice_page.dart';
 import 'package:Hwa/pages/chatting/notice_write_page.dart';
 import 'package:Hwa/pages/chatting/notice_detail_page.dart';
 import 'package:provider/provider.dart';
+import 'package:catcher/catcher_plugin.dart';
 
 //import 'package:kakao_flutter_sdk/auth.dart';
 
@@ -29,6 +30,22 @@ Future main() async {
 //    home = BottomNavigation();
 //  else
 //    home = SignInPage() ;
+
+    CatcherOptions debugOptions = CatcherOptions(
+        SilentReportMode(),
+        [
+            ConsoleHandler()
+        ]
+    );
+    CatcherOptions releaseOptions = CatcherOptions(
+        SilentReportMode(),
+        [
+            EmailManualHandler(["gjrjf@gmail.com"])
+        ]
+    );
+
+//    Catcher(HereWeAreApp(), debugConfig: debugOptions, releaseConfig: releaseOptions);
+
     runApp(new HereWeAreApp());
 }
 
@@ -45,6 +62,7 @@ class HereWeAreApp extends StatelessWidget {
             title: 'HWA',
             theme: ThemeData.light(),
             home: HomePage(),
+            navigatorKey: Catcher.navigatorKey,
             debugShowCheckedModeBanner: false,
             initialRoute: '/',
             routes: {

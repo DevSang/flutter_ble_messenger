@@ -23,6 +23,7 @@ dependencies:
     lazy_load_scrollview: 1.0.1
     sticky_headers: ^0.1.8+1
     flutter_screenutil: ^0.7.0
+    catcher: ^0.2.8
     json_annotation:
 
     ### Add by HK ###

@@ -31,7 +31,6 @@ import 'package:Hwa/utility/get_same_size.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 
-
 /*
  * @project : HWA - Mobile
  * @author : hk
@@ -530,17 +529,15 @@ class _HwaTabState extends State<HwaTab> {
                 hintText: _currentAddress == '위치 검색 중..'
                     ? '단화방 이름을 입력해주세요.'
                     : _currentAddress,
-                func: (String titleValue) {
-                    _createChat(titleValue);
-                    Navigator.of(context).pop();
-
-                    setState(() {
-                        isLoading = true;
-                    });
-                },
                 maxLength: 15,
             ),
-        );
+        ).then((onValue){
+            _createChat(onValue);
+
+            setState(() {
+                isLoading = true;
+            });
+        });
     }
 
     @override
