@@ -1,5 +1,3 @@
-import 'package:Hwa/data/models/gps_info.dart';
-import 'package:Hwa/data/models/loading_info.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/pages/signin/signup_page.dart';
@@ -43,30 +41,24 @@ class HereWeAreApp extends StatelessWidget {
         DeviceOrientation.portraitDown,
     ]);
 
-    return MultiProvider(
-            providers: [
-                ChangeNotifierProvider(create: (_) => GPSInfo()),       // 위치 정보
-                ChangeNotifierProvider(create: (_) => LoadingInfo()),   // 로딩 정보
-            ],
-            child: MaterialApp(
-                title: 'HWA',
-                theme: ThemeData.light(),
-                home: HomePage(),
-                debugShowCheckedModeBanner: false,
-                initialRoute: '/',
-                routes: {
-                    '/login': (context) => SignInPage(),                // login
-                    '/register': (context) => SignUpPage(),             // register
-                    '/register2': (context) => SignUpNamePage(),        // register name check
-                    '/main': (context) => BottomNavigation(),           // main
-                    '/profile': (context) => ProfilePage(),             // profile
-                    '/trend': (context) => TrendPage(),                 // trend
-                    '/chatroom': (context) => ChatroomPage(),
-                    '/notice': (context) => NoticePage(),
-                    '/notice_write': (context) => NoticeWritePage(),
-                    '/notice_detail': (context) => NoticeDetailPage(),
-                }
-            )
+    return MaterialApp(
+            title: 'HWA',
+            theme: ThemeData.light(),
+            home: HomePage(),
+            debugShowCheckedModeBanner: false,
+            initialRoute: '/',
+            routes: {
+                '/login': (context) => SignInPage(),                // login
+                '/register': (context) => SignUpPage(),             // register
+                '/register2': (context) => SignUpNamePage(),        // register name check
+                '/main': (context) => BottomNavigation(),           // main
+                '/profile': (context) => ProfilePage(),             // profile
+                '/trend': (context) => TrendPage(),                 // trend
+                '/chatroom': (context) => ChatroomPage(),
+                '/notice': (context) => NoticePage(),
+                '/notice_write': (context) => NoticeWritePage(),
+                '/notice_detail': (context) => NoticeDetailPage(),
+            }
         );
     }
 }
