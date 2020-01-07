@@ -28,9 +28,9 @@
         }
     },
     "tapMenuTitle": {
-        "hwa": "DanwhaRoom",
-        "friend": "Danwha Friend",
-        "chat": "Danwha ChatList"
+        "hwa": "DanhwaRoom",
+        "friend": "Danhwa Friend",
+        "chat": "Danhwa ChatList"
     },
 
     "tabNavigation": {
@@ -70,7 +70,7 @@
             },
 
             "createRoom" : {
-                "title": "Danwha Create",
+                "title": "Danhwa Create",
                 "cancel": "Cancel",
                 "create": "Create",
                 "searchLocation": "Searching for locations..",
@@ -89,7 +89,7 @@
         "chat": {
             "noMsg": "No Message",
             "noChat": "No single room was involved.",
-            "joinChat": "Would you like to join DanwhaRoom?",
+            "joinChat": "Would you like to join DanhwaRoom?",
             "searchChat": "Explore the DanhwaRoom Now",
             "people": "People"
         }
