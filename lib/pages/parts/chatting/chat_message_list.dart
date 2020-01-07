@@ -540,8 +540,9 @@ class ChatMessageListState extends State<ChatMessageList> {
                                     child: Image.file(
                                         chatMessage.thumbnailFile,
                                         gaplessPlayback: true,
-                                        cacheWidth: ScreenUtil().setWidth(230),
-                                        cacheHeight: ScreenUtil().setWidth(230),
+                                        fit: BoxFit.cover,
+                                        cacheWidth: ScreenUtil().setWidth(230).toInt(),
+                                        cacheHeight: ScreenUtil().setWidth(230).toInt(),
                                     ),
                                 ),
                                 Positioned.fill(
