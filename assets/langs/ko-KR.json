@@ -1,5 +1,5 @@
 {
-    "signIn": {
+    "sign": {
         "signIn": {
             "phoneNumber": "휴대폰번호 ( - 없이 숫자만 입력)",
             "getAuthCode": "인증문자 받기",
@@ -8,8 +8,26 @@
             "notHaveAccount": "계정이 없으세요? ",
             "signUp": "회원가입",
             "snsSignIn": "SNS 계정으로 간편 로그인 하세요."
+        },
+        "signUp": {
+            "signUpAppbar": "회원가입",
+            "textPhoneNumber": "휴대폰 번호 입력",
+            "phoneNumber": "휴대폰번호 ( - 없이 숫자만 입력)",
+            "getAuthCode": "인증문자 받기",
+            "textAuthCode": "인증번호 입력",
+            "authCode": "인증번호",
+            "nextBtn": "다음"
+        },
+        "signUpName": {
+            "signUpAppbar": "회원가입",
+            "textNickname": "닉네임 입력",
+            "NicknameValidator": "닉네임을 입력해주세요",
+            "NicknameAlready": "이미 사용중인 닉네임입니다",
+            "nickName": "닉네임을 입력하세요",
+            "startBtn": "시작하기"
         }
     },
+
     "tapMenuTitle": {
         "hwa": "단화방",
         "friend": "단화 친구",

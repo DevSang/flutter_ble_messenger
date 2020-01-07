@@ -1,5 +1,5 @@
 {
-    "signIn": {
+    "sign": {
         "signIn": {
             "phoneNumber": "Mobile number(without -)",
             "getAuthCode": "Get Code",
@@ -8,6 +8,23 @@
             "notHaveAccount": "Don't have an account? ",
             "signUp": "Sign Up",
             "snsSignIn": "Easy login with your SNS account."
+        },
+        "signUp": {
+            "signUpAppbar": "Sign In",
+            "textPhoneNumber": "Enter your mobile number",
+            "phoneNumber": "Mobile number(without -)",
+            "getAuthCode": "Get Code",
+            "textAuthCode": "Enter your Auth Code",
+            "authCode": "Auth Code",
+            "nextBtn": "Next"
+        },
+        "signUpName": {
+            "signUpAppbar": "Sign In",
+            "textNickname": "Enter your nickname",
+            "NicknameValidator": "Please enter a nickname",
+            "NicknameAlready": "This nickname is already using",
+            "nickName": "Please enter your nickname",
+            "startBtn": "Start"
         }
     }
 }

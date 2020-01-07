@@ -15,8 +15,6 @@ import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
-
-
 import 'package:easy_localization/easy_localization.dart';
 
 /*
@@ -394,7 +392,7 @@ class _SignInPageState extends State<SignInPage> {
                                 border: InputBorder.none,
                                 counterText: "",
                                 hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
-                                hintText: AppLocalizations.of(context).tr('signIn.signIn.phoneNumber')
+                                hintText: AppLocalizations.of(context).tr('sign.signIn.phoneNumber')
                             ),
                         )
                     ),
@@ -408,7 +406,7 @@ class _SignInPageState extends State<SignInPage> {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
                             ),
-                            child: Text(AppLocalizations.of(context).tr('signIn.signIn.getAuthCode'),
+                            child: Text(AppLocalizations.of(context).tr('sign.signIn.getAuthCode'),
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontFamily: 'NotoSans',
@@ -471,7 +469,7 @@ class _SignInPageState extends State<SignInPage> {
                         border: InputBorder.none,
                         counterText: "",
                         hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
-                        hintText: AppLocalizations.of(context).tr('signIn.signIn.authCode')
+                        hintText: AppLocalizations.of(context).tr('sign.signIn.authCode')
                     ),
                 )
             )
@@ -496,7 +494,7 @@ class _SignInPageState extends State<SignInPage> {
                     authCodeLoginRequest();
                 },
                 color: color,
-                child: Text(AppLocalizations.of(context).tr('signIn.signIn.signIn'), style: TextStyle(
+                child: Text(AppLocalizations.of(context).tr('sign.signIn.signIn'), style: TextStyle(
                     color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')
                 ),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenUtil().setHeight(10.0))),
@@ -521,7 +519,7 @@ class _SignInPageState extends State<SignInPage> {
                 children: <Widget>[
                     InkWell(
                         child: Text(
-		                        AppLocalizations.of(context).tr('signIn.signIn.notHaveAccount'),
+		                        AppLocalizations.of(context).tr('sign.signIn.notHaveAccount'),
                             style: TextStyle(
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
@@ -529,7 +527,7 @@ class _SignInPageState extends State<SignInPage> {
                         )
                     ),
                     InkWell(
-                        child: Text(AppLocalizations.of(context).tr('signIn.signIn.signUp'), style: TextStyle(
+                        child: Text(AppLocalizations.of(context).tr('sign.signIn.signUp'), style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
@@ -559,7 +557,7 @@ class _SignInPageState extends State<SignInPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                     Text(
-	                    AppLocalizations.of(context).tr('signIn.signIn.snsSignIn'),
+	                    AppLocalizations.of(context).tr('sign.signIn.snsSignIn'),
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 15,
