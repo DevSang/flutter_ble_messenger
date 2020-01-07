@@ -14,6 +14,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:Hwa/constant.dart';
 
 
+final hwaTabStateKey = new GlobalKey<HwaTabState>();
+
 /*
  * @project : HWA - Mobile
  * @author : hs
@@ -46,7 +48,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
         _currentIndex = widget.activeIndex ?? 0;
 
         list
-            ..add(HwaTab())
+            ..add(HwaTab(key: hwaTabStateKey))
             ..add(FriendTab())
             ..add(new ChatTab( setCurrentIndex:setCurrentIndex));
 
@@ -73,8 +75,8 @@ class _BottomNavigationState extends State<BottomNavigation>{
         });
     }
 
-    _displayDialog(){
-
+    displayDialog(){
+		hwaTabStateKey.currentState.displayDialog();
     }
 
     /*
@@ -302,7 +304,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 					    child: Image.asset(
 							    'assets/images/icon/navIconNew.png'),
 					    onTap: (){
-						    _displayDialog();
+						    displayDialog();
 					    }
 				    )
 			    ),
