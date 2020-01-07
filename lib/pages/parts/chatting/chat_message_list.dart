@@ -491,10 +491,23 @@ class ChatMessageListState extends State<ChatMessageList> {
                                             base64Decode(chatMessage.placeholderSrc),
                                             fit: BoxFit.fitWidth,
                                         )
-                                        : Image.asset(
-                                            'assets/images/splash.png'
-                                            ,fit: BoxFit.fitWidth
-                                    ),
+                                        : Container(
+                                            width: ScreenUtil().setWidth(230),
+                                            height: ScreenUtil().setWidth(230),
+                                            color: Colors.transparent,
+                                            child: Center(
+                                                child: Container(
+                                                    width: ScreenUtil().setWidth(30),
+                                                    height: ScreenUtil().setWidth(30),
+                                                    child: const CircularProgressIndicator(
+                                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                                            Color.fromRGBO(76, 96, 191, 1),
+                                                        )
+                                                    ),
+                                                ),
+                                            ),
+                                        )
+                                    ,
                                     httpHeaders: header
                                 )
                             ),

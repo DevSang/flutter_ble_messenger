@@ -416,9 +416,9 @@ class ChatScreenState extends State<ChatroomPage> {
 
         // Resize and String 으로 변환 작업--
         var byteImage = await imageFile.readAsBytesSync();
-        Im.Image thumbnail = Im.copyResize(
+        Im.Image thumbnail = Im.copyResizeCropSquare(
             Im.decodeImage(byteImage),
-            width: ScreenUtil().setWidth(230).toInt(),
+            ScreenUtil().setWidth(230).toInt(),
         );
 
         String base64Image = base64Encode(
