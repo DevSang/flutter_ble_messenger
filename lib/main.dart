@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:catcher/catcher_plugin.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/data/state/friend_count.dart';
 
 //import 'package:kakao_flutter_sdk/auth.dart';
 
@@ -49,11 +50,11 @@ class HereWeAreApp extends StatelessWidget {
 
 	    var data = EasyLocalizationProvider.of(context).data;
 
-	    return //MultiProvider(
-//            providers: [
-//
-//            ],
-            EasyLocalizationProvider(
+	    return MultiProvider(
+            providers: [
+	            ChangeNotifierProvider(create: (_) => FriendCount(),)
+            ],
+            child: EasyLocalizationProvider(
 				data: data,
 	            child: MaterialApp(
 		            title: 'HWA',
@@ -84,7 +85,7 @@ class HereWeAreApp extends StatelessWidget {
                     supportedLocales: [Locale('en', 'US'), Locale('ko', 'KR')],
                     locale: data.locale,
 	            ),
-            );
-//        );
+            )
+        );
     }
 }

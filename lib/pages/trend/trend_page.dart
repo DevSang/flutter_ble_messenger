@@ -3,7 +3,6 @@ import 'dart:developer' as developer;
 
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
-import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/trend_chat_list_item.dart';
 import 'package:Hwa/pages/chatting/chatroom_page.dart';
@@ -16,7 +15,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:Hwa/constant.dart';
 
 
@@ -56,7 +54,6 @@ class _TrendPageState extends State<TrendPage> {
 
           final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
           TrendChatListItem chatInfo;
-          Map<String, dynamic> jsonParse;
           List<dynamic> jsonParseList = json.decode(response.body);
 
           for (var index = jsonParseList.length; index > 0; index--) {
