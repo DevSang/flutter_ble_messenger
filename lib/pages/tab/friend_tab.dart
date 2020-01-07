@@ -363,7 +363,7 @@ class _FriendTabState extends State<FriendTab> {
 //                        ),
 //                        child: Row(
 //                            children: <Widget>[
-//                                Text(ㅋ
+//                                Text(
 //                                    friendList != null ? friendList.length.toString() : 0.toString(),
 //                                    style: TextStyle(
 //                                        height: 1,
