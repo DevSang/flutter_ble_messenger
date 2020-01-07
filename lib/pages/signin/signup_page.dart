@@ -10,7 +10,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
-import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
@@ -75,6 +74,7 @@ class _SignUpPageState extends State<SignUpPage>{
             FocusScope.of(context).requestFocus(new FocusNode());
             developer.log("# Phone number : " +  phoneRegController.text);
             String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
+
             await http.post(url,
                 headers: {
                     'Content-Type':'application/json'
@@ -100,7 +100,7 @@ class _SignUpPageState extends State<SignUpPage>{
                         developer.log("# Confirm auth code success.");
                         developer.log("# Already exist user.");
 
-                        ///최종 Signup
+                        ///최종 Social로 Re-Signup
                         String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
                         await http.post(url,
                             headers: {
@@ -113,7 +113,7 @@ class _SignUpPageState extends State<SignUpPage>{
                                 "token": accessToken
                             })
                         ).then((http.Response response) async {
-                            SetUserInfo.set(data['data']['userInfo'],profileURL);
+//                            SetUserInfo.set(data['data']['userInfo'],profileURL);
 
                             var token = data['data']['token'];
                             var userIdx = data['data']['userInfo']['idx'];
@@ -131,7 +131,7 @@ class _SignUpPageState extends State<SignUpPage>{
 
                             developer.log('# [Navigator] SignUpPage -> MainPage');
                             RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
-                            RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+                            RedToast.toast("Here we are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
                             Navigator.pushNamed(context, '/main');
                         });
                     }
