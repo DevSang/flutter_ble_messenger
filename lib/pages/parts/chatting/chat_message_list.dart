@@ -490,6 +490,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                     chatMessage.placeholderSrc != null
                                         ? Image.memory(
                                             base64Decode(chatMessage.placeholderSrc),
+                                            gaplessPlayback: true,
                                             fit: BoxFit.fitWidth,
                                         )
                                         : Container(
@@ -509,8 +510,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                             ),
                                         )
                                     ,
-                                    httpHeaders: header
-                                    ,
+                                    httpHeaders: header,
                                     fit: BoxFit.fitWidth,
                                 )
                             ),
@@ -545,6 +545,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
                                     child: Image.memory(
                                         base64Decode(chatMessage.message),
+                                        gaplessPlayback: true,
                                         fit: BoxFit.fitWidth,
                                     )
                                 ),
