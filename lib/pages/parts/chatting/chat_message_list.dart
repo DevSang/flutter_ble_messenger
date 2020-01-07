@@ -482,9 +482,16 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 child: CachedNetworkImage(
                                     width: ScreenUtil().setWidth(230),
                                     imageUrl: chatMessage.message,
-                                    placeholder: (context, url) => chatMessage.placeholderSrc != null
-                                                                        ? Image.memory(base64Decode(chatMessage.placeholderSrc))
-                                                                        : Image.asset('assets/images/splash.png',fit: BoxFit.cover),
+                                    placeholder: (context, url) =>
+                                    chatMessage.placeholderSrc != null
+                                        ? Image.memory(
+                                            base64Decode(chatMessage.placeholderSrc),
+                                            fit: BoxFit.fitWidth,
+                                        )
+                                        : Image.asset(
+                                            'assets/images/splash.png'
+                                            ,fit: BoxFit.fitWidth
+                                    ),
                                     httpHeaders: header
                                 )
                             ),
@@ -517,7 +524,10 @@ class ChatMessageListState extends State<ChatMessageList> {
                             children: <Widget>[
                                 ClipRRect(
                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
-                                    child: Image.memory(base64Decode(chatMessage.message))
+                                    child: Image.memory(
+                                        base64Decode(chatMessage.message),
+                                        fit: BoxFit.fitWidth,
+                                    )
                                 ),
                                 Positioned.fill(
                                     child: Align(
