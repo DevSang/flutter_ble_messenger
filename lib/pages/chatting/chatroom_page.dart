@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:collection';
+import 'package:Hwa/package/gauge/gauge_driver.dart';
+import 'package:image/image.dart' as Im;
 
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
@@ -67,22 +69,22 @@ class ChatScreenState extends State<ChatroomPage> {
 
     ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList});
 
-    SharedPreferences prefs;
-    File imageFile;
-    bool isLoading;
-    bool isShowMenu;
-    String imageUrl;
-    bool disable;
+    // 실시간 입장 유저 리스트
     List<ChatJoinInfo> joinedUserNow;
-
-    final TextEditingController textEditingController = new TextEditingController();
-    final ScrollController listScrollController = new ScrollController();
-    final FocusNode focusNode = new FocusNode();
-
-    // 채팅방 메세지 View 리스트
+    // 채팅방 메세지 리스트
     final List<ChatMessage> messageList = <ChatMessage>[];
     // 받은 메세지
     ChatMessage message;
+    // 업로드 중인 이미지 갯수
+    int uploadingImageCount;
+    SharedPreferences prefs;
+    File imageFile;
+    // 로딩
+    bool isLoading;
+    // 하단 메뉴 관련
+    bool isShowMenu;
+    // 온라인 입장 유저 입력 불가
+    bool disable;
 
     // 현재 채팅 Advertising condition
     BoxDecoration adCondition;
@@ -103,12 +105,15 @@ class ChatScreenState extends State<ChatroomPage> {
 
     // Stomp 관련
     StompClient s;
-    bool isReceived;
 
     // BLE 관련
     bool _activateBeacon = false;
     int _ttl = 1;
     bool advertising;
+
+    final TextEditingController textEditingController = new TextEditingController();
+    final ScrollController listScrollController = new ScrollController();
+    final FocusNode focusNode = new FocusNode();
 
     @override
     void initState() {
@@ -119,24 +124,17 @@ class ChatScreenState extends State<ChatroomPage> {
         connectStomp();
 
         disable = widget.disable ?? false;
-
-        isReceived = false;
-
         focusNode.addListener(onFocusChange);
-
         isLoading = false;
         isShowMenu = false;
-        imageUrl = '';
-
         advertising = true;
-
         isFocused = false;
         openedNf = true;
         isLike = false;
         isEmpty = true;
         inputLineCount = 1;
         _inputHeight = 36;
-
+        uploadingImageCount = 0;
         joinedUserNow = <ChatJoinInfo>[];
 
         if (widget.isP2P != null && widget.isP2P == true) {
@@ -293,24 +291,12 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2019-12-22
      * @description : 메세지 수신 후 처리
     */
-    void messageReceieved(HashMap data) {
+    void messageReceieved(HashMap data) async {
         message = new ChatMessage.fromJSON(json.decode(data['contents']));
+        // TODO: 추후 Image Idx 활용하여 해당 src 할당
+        String imgSrc;
 
         developer.log("# messageReceieved : " + json.decode(data['contents']).toString());
-
-        ChatMessage cmb = ChatMessage(
-            chatType: message.chatType,
-            roomIdx: message.roomIdx,
-            senderIdx: message.senderIdx,
-            nickName: message.nickName,
-            message: message.message,
-            chatTime: message.chatTime,
-        );
-
-        setState(() {
-            messageList.insert(0, cmb);
-            isReceived = true;
-        });
 
         if (message.chatType == "ENTER") {
             joinedUserNow.add(
@@ -320,17 +306,75 @@ class ChatScreenState extends State<ChatroomPage> {
                     userNick: message.nickName
                 )
             );
+        } else if (message.chatType == "IMAGE" && message.senderIdx == Constant.USER_IDX) {
+            // 업로드 완료된 항목 삭제
+            for(var i=0; i<uploadingImageCount; i++) {
+                if (messageList[i].uploaded == true) {
+                    imgSrc = messageList[i].message;
+                    messageList.removeAt(i);
+                    uploadingImageCount --;
+                }
+            }
         }
+
+        ChatMessage cmb = ChatMessage(
+            chatType: message.chatType,
+            roomIdx: message.roomIdx,
+            senderIdx: message.senderIdx,
+            nickName: message.nickName,
+            message: message.message,
+            chatTime: message.chatTime,
+            placeholderSrc: imgSrc
+        );
+
+        messageList.insert(uploadingImageCount, cmb);
+
+        setState(() {});
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-07
+     * @description : Image 업로드 전 Thumbnail 말풍선에 맵핑
+    */
+    void thumbnailMessage(String imgSrc, GaugeDriver gaugeDriver) {
+        ChatMessage cmb = ChatMessage(
+            chatType: "UPLOADING_IMG",
+            roomIdx: chatInfo.chatIdx,
+            senderIdx: Constant.USER_IDX,
+            nickName: "마이런",     /// 자신의 닉네임 맵핑
+            message: imgSrc,
+            chatTime: new DateTime.now().millisecondsSinceEpoch,
+            gaugeDriver: gaugeDriver,
+            uploaded: false
+        );
+
+        setState(() {
+            messageList.insert(0, cmb);
+        });
     }
 
     /*
      * @author : hs
      * @date : 2019-12-24
-     * @description : Image 받아오기
+     * @description : 앨범에서 이미지 선택 후 업로드
     */
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-//        Image image = decodeImage(imageFile.readAsBytesSync());
+
+        // Resize and String 으로 변환 작업--
+        var byteImage = await imageFile.readAsBytesSync();
+        Im.Image thumbnail = Im.copyResize(
+            Im.decodeImage(byteImage),
+            width: ScreenUtil().setWidth(230).toInt(),
+        );
+
+        String base64Image = base64Encode(
+            Im.encodeJpg(thumbnail, quality: 62)
+        );
+        // Resize and String 으로 변환 작업--
+//        thumbnailMessage(base64Image);
+        uploadingImageCount ++;
 
         if (imageFile != null) {
 
@@ -342,6 +386,17 @@ class ChatScreenState extends State<ChatroomPage> {
 	        // 파일 업로드 API 호출
 	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
                 developer.log("$sent : $total");
+
+                if(sent == total) {
+                    for(var i=0; i<uploadingImageCount; i++) {
+                        if (messageList[i].message == base64Image) {
+                            setState(() {
+                                messageList.removeAt(i);
+                            });
+                        }
+                    }
+                    uploadingImageCount --;
+                }
 	        });
 
 	        if(response.statusCode == 200){
@@ -353,10 +408,26 @@ class ChatScreenState extends State<ChatroomPage> {
     /*
      * @author : hs
      * @date : 2019-12-25
-     * @description : 카메라 촬영
+     * @description : 카메라 촬영 후 업로드
     */
     Future getCamera() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+        GaugeDriver gaugeDriver = new GaugeDriver();
+
+        // Resize and String 으로 변환 작업--
+        var byteImage = await imageFile.readAsBytesSync();
+        Im.Image thumbnail = Im.copyResize(
+            Im.decodeImage(byteImage),
+            width: ScreenUtil().setWidth(230).toInt(),
+        );
+
+        String base64Image = base64Encode(
+            Im.encodeJpg(thumbnail, quality: 62)
+        );
+        // Resize and String 으로 변환 작업--
+        thumbnailMessage(base64Image, gaugeDriver);
+        uploadingImageCount ++;
+
         if (imageFile != null) {
             // 파일 이외의 추가 파라미터 셋팅
             Map<String, dynamic> param = {
@@ -366,6 +437,15 @@ class ChatScreenState extends State<ChatroomPage> {
             // 파일 업로드 API 호출
             Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
                 developer.log("$sent : $total");
+                for(var i=0; i<uploadingImageCount; i++) {
+                    if (messageList[i].message == base64Image) {
+                        messageList[i].gaugeDriver.drive(sent/total);
+
+                        if(sent == total) {
+                            messageList[i].uploaded = true;
+                        }
+                    }
+                }
             });
 
             if(response.statusCode == 200){
@@ -433,7 +513,6 @@ class ChatScreenState extends State<ChatroomPage> {
             message: message
         );
     }
-
 
     /*
      * @author : hs

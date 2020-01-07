@@ -450,6 +450,7 @@ class _FriendTabState extends State<FriendTab> {
                 decoration: InputDecoration(
                     contentPadding: EdgeInsets.only(
                         left: ScreenUtil().setWidth(7),
+                        top: ScreenUtil().setHeight(5.5),
                     ),
                     border: InputBorder.none,
                     prefixIcon: Icon(

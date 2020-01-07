@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:Hwa/package/fullPhoto.dart';
+import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/gauge_animate.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
+import 'package:image/image.dart' as Im;
 
 
 /*
@@ -14,18 +20,18 @@ import 'package:Hwa/constant.dart';
  * @description : 단화방 채팅 요소 맵핑
  */
 class ChatMessageList extends StatefulWidget {
-    final List<ChatMessage> messageList;
+    final List<ChatMessage> messageList;    // 단화방 메세지 리스트
 
     ChatMessageList({this.messageList});
 
     @override
-    State createState() => new ChatMessageElementsState(messageList: messageList);
+    State createState() => new ChatMessageListState(messageList: messageList);
 }
 
-class ChatMessageElementsState extends State<ChatMessageList> {
+class ChatMessageListState extends State<ChatMessageList> {
     final List<ChatMessage> messageList;
 
-    ChatMessageElementsState({this.messageList});
+    ChatMessageListState({this.messageList});
 
     int clickedMessage;
 
@@ -172,7 +178,9 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                                 ? sendText(chatIndex, chatMessage, isLastSendMessage)
                                 : chatMessage.chatType == "IMAGE"
                                 ? imageBubble(chatMessage, isLastSendMessage, false)
-                                : businessCardBubble(chatMessage, isLastSendMessage, false)
+                                : chatMessage.chatType == "UPLOADING_IMG"
+                                    ? uploadingImageBubble(chatMessage, isLastSendMessage)
+                                    : businessCardBubble(chatMessage, isLastSendMessage, false)
                         ],
                     )
                 )
@@ -468,12 +476,16 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                     !receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container() ,
                     GestureDetector(
                         child: Container(
+                            width: ScreenUtil().setWidth(230),
                             child: ClipRRect(
                                 borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
-                                child: Image.network(
-		                                chatMessage.message,
-                                        width: ScreenUtil().setWidth(230),
-		                                headers: header
+                                child: CachedNetworkImage(
+                                    width: ScreenUtil().setWidth(230),
+                                    imageUrl: chatMessage.message,
+                                    placeholder: (context, url) => chatMessage.placeholderSrc != null
+                                                                        ? Image.memory(base64Decode(chatMessage.placeholderSrc))
+                                                                        : Image.asset('assets/images/splash.png',fit: BoxFit.cover),
+                                    httpHeaders: header
                                 )
                             ),
                         ),
@@ -483,6 +495,39 @@ class ChatMessageElementsState extends State<ChatMessageList> {
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
+                ],
+            ),
+        );
+    }
+
+    // 업로드 중 이미지 메세지 스타일
+    Widget uploadingImageBubble(ChatMessage chatMessage, bool isLastSendMessage) {
+        return Container(
+            margin: EdgeInsets.only(
+                bottom: ScreenUtil.getInstance().setHeight(14)
+            ),
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: <Widget>[
+                    msgTime(chatMessage.chatTime, false) ,
+                    Container(
+                        width: ScreenUtil().setWidth(230),
+                        child: Stack(
+                            children: <Widget>[
+                                ClipRRect(
+                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
+                                    child: Image.memory(base64Decode(chatMessage.message))
+                                ),
+                                Positioned.fill(
+                                    child: Align(
+                                        alignment: Alignment.center,
+                                        child: GaugeAnimate(driver: chatMessage.gaugeDriver)
+                                    )
+                                )
+                            ],
+                        )
+                    )
                 ],
             ),
         );
