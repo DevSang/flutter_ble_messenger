@@ -34,6 +34,73 @@
     },
 
 
+    "tabNavigation": {
+        "hwa": {
+            "main": {
+                "roomFlag": {
+                    "titleText": "현재 위치 단화방이 없습니다.",
+                    "subTitle": "원하는 방을 만들어 보실래요?",
+                    "buttonText": "방 만들기"
+                },
+                "authBle": {
+                    "titleText": "블루투스 권한이 필요합니다.",
+                    "subTitle": "설정 > 앱 > 앱 권한",
+                    "buttonText": "설정으로 이동"
+                },
+                "allowedBle": {
+                    "titleText": "블루투스가 꺼져있습니다.",
+                    "subTitle": "설정 > 블루투스 켜기",
+                    "buttonText": "설정으로 이동"
+                },
+                "authGps": {
+                    "titleText": "위치 접근 권한이 필요합니다.",
+                    "subTitle": "설정 > 앱 > 앱 권한",
+                    "buttonText": "설정으로 이동"
+                },
+                "allowedGps": {
+                    "titleText": "GPS가 꺼져있습니다.",
+                    "subTitle": "설정 > GPS 켜기",
+                    "buttonText": "설정으로 이동"
+
+                }
+            },
+
+            "location" : {
+                "nowLocation": "현재 위치",
+                "searchLocation": "위치 검색 중.."
+            },
+
+            "createRoom" : {
+                "title": "단화 생성하기",
+                "cancel": "취소",
+                "create": "생성하기",
+                "searchLocation": "위치 검색 중..",
+                "pleaseRoomName" : "단화방 이름을 입력해주세요"
+            }
+        },
+
+
+        "friend": {
+            "search": "검색",
+            "friendRequest": "친구 요청",
+            "friendList": " 친구 목록",
+            "noNewRequest": "새로운 친구 요청이 없어요",
+            "noFriend": "아직 추가된 친구가 없어요",
+            "accept": "수락",
+            "delete": "삭제"
+        },
+        "chat": {
+            "noMsg": "메시지 없음",
+            "noChat": "참여했던 단화방이 없습니다.",
+            "joinChat": "단화방에 참여해 보실래요?",
+            "searchChat": "지금 단화방 탐색하기",
+            "people": "명"
+        }
+
+
+    },
+
+
     "profile": {
            "profileAppbar": "프로필 설정",
            "profile": "프로필",

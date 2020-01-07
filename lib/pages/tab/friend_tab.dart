@@ -19,6 +19,8 @@ import 'package:Hwa/pages/parts/common/tab_app_bar.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/home.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -361,7 +363,7 @@ class _FriendTabState extends State<FriendTab> {
 //                        ),
 //                        child: Row(
 //                            children: <Widget>[
-//                                Text(
+//                                Text(ㅋ
 //                                    friendList != null ? friendList.length.toString() : 0.toString(),
 //                                    style: TextStyle(
 //                                        height: 1,
@@ -408,10 +410,10 @@ class _FriendTabState extends State<FriendTab> {
                             child: ListView(
                                 children: <Widget>[
                                     // 친구 요청리스트
-                                    buildFriendList('친구 요청', requestList, false),
+                                    buildFriendList((AppLocalizations.of(context).tr('tabNavigation.friend.friendRequest')), requestList, false),
 
                                     // 친구 리스트
-                                    buildFriendList('친구 목록', friendList, true)
+                                    buildFriendList((AppLocalizations.of(context).tr('tabNavigation.friend.friendList')), friendList, true)
 
                                 ],
                             ),
@@ -457,7 +459,7 @@ class _FriendTabState extends State<FriendTab> {
                         Icons.search,
                         color: Color.fromRGBO(39, 39, 39, 0.5),
                     ),
-                    hintText: "검색",
+                    hintText: (AppLocalizations.of(context).tr('tabNavigation.friend.search')),
                     hintStyle: TextStyle(
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
@@ -493,7 +495,7 @@ class _FriendTabState extends State<FriendTab> {
                                             right: ScreenUtil().setWidth(8)
                                         ),
                                         child: Image.asset(
-                                            title == '친구 목록'
+                                            title == (AppLocalizations.of(context).tr('tabNavigation.friend.friendList'))
                                                 ?'assets/images/icon/iconMasterBadge.png'
                                                 : 'assets/images/icon/iconAttachMore.png'
                                                 ,
@@ -518,13 +520,13 @@ class _FriendTabState extends State<FriendTab> {
                         Column(
                             children: <Widget>[
                                 Container(
-                                    height: title == '친구 목록' ? ScreenUtil().setHeight( (5 - requestList.length) * 62 ) : ScreenUtil().setHeight(62),
+                                    height: title == (AppLocalizations.of(context).tr('tabNavigation.friend.friendList')) ? ScreenUtil().setHeight( (5 - requestList.length) * 62 ) : ScreenUtil().setHeight(62),
                                     child: Center(
                                         child:Column(
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: <Widget>[
                                                 Text(
-                                                    title == '친구 목록' ? "아직 추가된 친구가 없어요." : "새로운 친구 요청이 없어요.",
+                                                    title == (AppLocalizations.of(context).tr('tabNavigation.friend.friendList')) ? (AppLocalizations.of(context).tr('tabNavigation.friend.noFriend')) : (AppLocalizations.of(context).tr('tabNavigation.friend.noNewRequest')),
                                                     style: TextStyle(
                                                         fontFamily: "NotoSans",
                                                         fontWeight: FontWeight.w400,
@@ -533,7 +535,7 @@ class _FriendTabState extends State<FriendTab> {
                                                         color: Color.fromRGBO(39, 39, 39, 0.2),
                                                     ),
                                                 ),
-                                                title == '친구 목록' ? Column(
+                                                title == (AppLocalizations.of(context).tr('tabNavigation.friend.friendList')) ? Column(
                                                     mainAxisAlignment: MainAxisAlignment.end,
                                                     children: <Widget>[
                                                         Image.asset(
@@ -677,7 +679,7 @@ class _FriendTabState extends State<FriendTab> {
                 ),
                 child: Center (
                     child: Text(
-                        index == 0 ? '삭제' : '수락',
+                        index == 0 ? (AppLocalizations.of(context).tr('tabNavigation.friend.delete')) : (AppLocalizations.of(context).tr('tabNavigation.friend.accept')),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                             height: 1,
