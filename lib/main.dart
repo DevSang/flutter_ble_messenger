@@ -39,7 +39,8 @@ Future main() async {
     );
 
 
-    Catcher(EasyLocalization(child:HereWeAreApp()), debugConfig: debugOptions, releaseConfig: releaseOptions);
+//    Catcher(EasyLocalization(child:HereWeAreApp()), debugConfig: debugOptions, releaseConfig: releaseOptions);
+    runApp(EasyLocalization(child:HereWeAreApp()));
 }
 
 class HereWeAreApp extends StatelessWidget {

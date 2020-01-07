@@ -480,6 +480,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                     GestureDetector(
                         child: Container(
                             width: ScreenUtil().setWidth(230),
+                            height: ScreenUtil().setWidth(230),
                             child: ClipRRect(
                                 borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
                                 child: CachedNetworkImage(
@@ -509,6 +510,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                                         )
                                     ,
                                     httpHeaders: header
+                                    ,
+                                    fit: BoxFit.fitWidth,
                                 )
                             ),
                         ),
