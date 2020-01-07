@@ -26,5 +26,21 @@
             "nickName": "Please enter your nickname",
             "startBtn": "Start"
         }
+    },
+    "profile": {
+        "profileAppbar": "Profile Setting",
+        "profile": "Profile",
+        "username": "Username",
+        "introduce": "Introduce one line",
+        "phoneNumber": "Contact",
+        "appSetting": "App Setting",
+        "pushAlarm": "Push Notification",
+        "friendAllow": "Allow friend requests",
+        "account": "Account",
+        "logout": "Logout",
+        "leave": "Account delete",
+        "cancel": "Cancel",
+        "save": "Save",
+        "textIntroduce": "Please enter an introduction. :)"
     }
 }

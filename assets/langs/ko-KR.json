@@ -27,10 +27,27 @@
             "startBtn": "시작하기"
         }
     },
-
     "tapMenuTitle": {
         "hwa": "단화방",
         "friend": "단화 친구",
         "chat": "참여했던 단화방"
+    },
+
+
+    "profile": {
+           "profileAppbar": "프로필 설정",
+           "profile": "프로필",
+           "username": "사용자 이름",
+           "introduce": "한 줄 소개",
+           "phoneNumber": "연락처",
+           "appSetting": "앱 설정",
+           "pushAlarm": "푸시 알림",
+           "friendAllow": "친구 요청 허용",
+           "account": "계정",
+           "logout": "로그아웃",
+           "leave": "탈퇴하기",
+           "cancel": "취소",
+           "save": "저장하기",
+           "textIntroduce": "소개글을 입력해 보세요 :)",
     }
 }
