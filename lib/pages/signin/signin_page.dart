@@ -12,7 +12,6 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
-import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
@@ -271,7 +270,7 @@ class _SignInPageState extends State<SignInPage> {
                 if (response.statusCode == 200) {
                     developer.log("# 로그인에 성공하였습니다.");
                     developer.log("# 로그인정보 :" + response.body);
-                    SetUserInfo.set(data['userInfo'], "");
+//                    SetUserInfo.set(data['userInfo'], "");
 
                     var token = data['token'];
                     var userIdx = data['userInfo']['idx'];

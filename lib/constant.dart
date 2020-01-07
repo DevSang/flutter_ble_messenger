@@ -18,6 +18,7 @@ class Constant {
 	static bool isUserLogin = false;
 
     static int USER_IDX;
+    static String USER_NICK;
     static List<FriendInfo> FRIEND_LIST;
     static List<FriendRequestInfo> FRIEND_REQUEST_LIST;
     static Map<String, String> HEADER;
@@ -81,7 +82,7 @@ class Constant {
 	    if(USER_IDX != null && token != 'null') isUserLogin = true;
 
 	    if(isUserLogin){
-		    PROFILE_IMG_URI = API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + USER_IDX.toString() + "&type=SMALL";
+//		    PROFILE_IMG_URI = API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + USER_IDX.toString() + "&type=SMALL";
 
 		    // Http API 호출시 붙는 기본 Header, JWT 토큰 포함
 		    HEADER = {
@@ -91,5 +92,29 @@ class Constant {
 	    }
 
 	    return;
+    }
+
+    /*
+	 * @author : sh
+	 * @date : 2020-01-07
+	 * @description : 사용자 로그인 여부 판별 및 기본정보 메모리로 올리기
+	 */
+    static Future<void> setUserInfo(String token, nickname, profileUrl, int userIdx) async {
+        spf = await getSPF();
+
+
+        if(USER_IDX != null && token != 'null') isUserLogin = true;
+
+        if(isUserLogin){
+//		    PROFILE_IMG_URI = API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + USER_IDX.toString() + "&type=SMALL";
+
+            // Http API 호출시 붙는 기본 Header, JWT 토큰 포함
+            HEADER = {
+                'Content-Type': 'application/json',
+                'X-Authorization': 'Bearer ' + token
+            };
+        }
+
+        return;
     }
 }

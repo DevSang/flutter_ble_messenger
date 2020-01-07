@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,7 +12,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:Hwa/utility/red_toast.dart';
-import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
@@ -104,7 +104,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         if (response.statusCode == 200) {
             developer.log("# 회원가입에 성공하였습니다.");
             developer.log("# Response : " + response.body);
-            SetUserInfo.set(data['data']['userInfo'],profileURL);
+//            SetUserInfo.set(data['data']['userInfo'],profileURL);
 
             var token = data['data']['token'];
             var userIdx = data['data']['userInfo']['idx'];
@@ -112,12 +112,17 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             loginPref.setString('token', token);
             loginPref.setInt('userIdx', userIdx);
 
+            if(profileURL != null){
+                Constant.PROFILE_IMG_URI = profileURL;
+                loginPref.setString('profileUri', profileURL);
+            }
+
             SetFCM.firebaseCloudMessagingListeners();
 
             await Constant.initUserInfo();
             HomePageState.initApiCall();
 
-            RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+            RedToast.toast("Here we are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
 
             Navigator.pushNamed(context, '/main');
         } else {
