@@ -1,5 +1,5 @@
 {
-    "signIn": {
+    "sign": {
         "signIn": {
             "phoneNumber": "휴대폰번호 ( - 없이 숫자만 입력)",
             "getAuthCode": "인증문자 받기",
@@ -8,11 +8,112 @@
             "notHaveAccount": "계정이 없으세요? ",
             "signUp": "회원가입",
             "snsSignIn": "SNS 계정으로 간편 로그인 하세요."
+        },
+        "signUp": {
+            "signUpAppbar": "회원가입",
+            "textPhoneNumber": "휴대폰 번호 입력",
+            "phoneNumber": "휴대폰번호 ( - 없이 숫자만 입력)",
+            "getAuthCode": "인증문자 받기",
+            "textAuthCode": "인증번호 입력",
+            "authCode": "인증번호",
+            "nextBtn": "다음"
+        },
+        "signUpName": {
+            "signUpAppbar": "회원가입",
+            "textNickname": "닉네임 입력",
+            "NicknameValidator": "닉네임을 입력해주세요",
+            "NicknameAlready": "이미 사용중인 닉네임입니다",
+            "nickName": "닉네임을 입력하세요",
+            "startBtn": "시작하기"
         }
     },
     "tapMenuTitle": {
         "hwa": "단화방",
         "friend": "단화 친구",
         "chat": "참여했던 단화방"
+    },
+
+    "tabNavigation": {
+        "hwa": {
+            "main": {
+                "roomFlag": {
+                    "titleText": "현재 위치 단화방이 없습니다.",
+                    "subTitle": "원하는 방을 만들어 보실래요?",
+                    "buttonText": "방 만들기"
+                },
+                "authBle": {
+                    "titleText": "블루투스 권한이 필요합니다.",
+                    "subTitle": "설정 > 앱 > 앱 권한",
+                    "buttonText": "설정으로 이동"
+                },
+                "allowedBle": {
+                    "titleText": "블루투스가 꺼져있습니다.",
+                    "subTitle": "설정 > 블루투스 켜기",
+                    "buttonText": "설정으로 이동"
+                },
+                "authGps": {
+                    "titleText": "위치 접근 권한이 필요합니다.",
+                    "subTitle": "설정 > 앱 > 앱 권한",
+                    "buttonText": "설정으로 이동"
+                },
+                "allowedGps": {
+                    "titleText": "GPS가 꺼져있습니다.",
+                    "subTitle": "설정 > GPS 켜기",
+                    "buttonText": "설정으로 이동"
+
+                }
+            },
+
+            "location" : {
+                "nowLocation": "현재 위치",
+                "searchLocation": "위치 검색 중.."
+            },
+
+            "createRoom" : {
+                "title": "단화 생성하기",
+                "cancel": "취소",
+                "create": "생성하기",
+                "searchLocation": "위치 검색 중..",
+                "pleaseRoomName" : "단화방 이름을 입력해주세요"
+            }
+        },
+
+
+        "friend": {
+            "search": "검색",
+            "friendRequest": "친구 요청",
+            "friendList": " 친구 목록",
+            "noNewRequest": "새로운 친구 요청이 없어요",
+            "noFriend": "아직 추가된 친구가 없어요",
+            "accept": "수락",
+            "delete": "삭제"
+        },
+        "chat": {
+            "noMsg": "메시지 없음",
+            "noChat": "참여했던 단화방이 없습니다.",
+            "joinChat": "단화방에 참여해 보실래요?",
+            "searchChat": "지금 단화방 탐색하기",
+            "people": "명"
+        }
+
+
+    },
+
+
+    "profile": {
+           "profileAppbar": "프로필 설정",
+           "profile": "프로필",
+           "username": "사용자 이름",
+           "introduce": "한 줄 소개",
+           "phoneNumber": "연락처",
+           "appSetting": "앱 설정",
+           "pushAlarm": "푸시 알림",
+           "friendAllow": "친구 요청 허용",
+           "account": "계정",
+           "logout": "로그아웃",
+           "leave": "탈퇴하기",
+           "cancel": "취소",
+           "save": "저장하기",
+           "textIntroduce": "소개글을 입력해 보세요 :)"
     }
 }

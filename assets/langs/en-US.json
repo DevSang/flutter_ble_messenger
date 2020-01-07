@@ -1,5 +1,5 @@
 {
-    "signIn": {
+    "sign": {
         "signIn": {
             "phoneNumber": "Mobile number(without -)",
             "getAuthCode": "Get Code",
@@ -8,6 +8,107 @@
             "notHaveAccount": "Don't have an account? ",
             "signUp": "Sign Up",
             "snsSignIn": "Easy login with your SNS account."
+        },
+        "signUp": {
+            "signUpAppbar": "Sign In",
+            "textPhoneNumber": "Enter your mobile number",
+            "phoneNumber": "Mobile number(without -)",
+            "getAuthCode": "Get Code",
+            "textAuthCode": "Enter your Auth Code",
+            "authCode": "Auth Code",
+            "nextBtn": "Next"
+        },
+        "signUpName": {
+            "signUpAppbar": "Sign In",
+            "textNickname": "Enter your nickname",
+            "NicknameValidator": "Please enter a nickname",
+            "NicknameAlready": "This nickname is already using",
+            "nickName": "Please enter your nickname",
+            "startBtn": "Start"
         }
+    },
+    "tapMenuTitle": {
+        "hwa": "DanwhaRoom",
+        "friend": "Danwha Friend",
+        "chat": "Danwha ChatList"
+    },
+
+    "tabNavigation": {
+        "hwa": {
+            "main": {
+                "roomFlag": {
+                    "titleText": "There is currently no location single room.",
+                    "subTitle": "Would you like to make the room you want?",
+                    "buttonText": "Creating a room"
+                },
+                "authBle": {
+                    "titleText": "Bluetooth permission is required.",
+                    "subTitle": "Settings > Apps > App Permissions",
+                    "buttonText": "Go to Settings"
+                },
+                "allowedBle": {
+                    "titleText": "Bluetooth permission is required.",
+                    "subTitle": "Settings > Bluetooth ON",
+                    "buttonText": "Go to Settings"
+                },
+                "authGps": {
+                    "titleText": "Location permission is required.",
+                    "subTitle": "Settings > Apps > App Permissions",
+                    "buttonText": "Go to Settings"
+                },
+                "allowedGps": {
+                    "titleText": "gps is off.",
+                    "subTitle": "Settings > Gps ON",
+                    "buttonText": "Go to Settings"
+
+                }
+            },
+
+            "location" : {
+                "nowLocation": "Current Location",
+                "searchLocation": "Searching for locations.."
+            },
+
+            "createRoom" : {
+                "title": "Danwha Create",
+                "cancel": "Cancel",
+                "create": "Create",
+                "searchLocation": "Searching for locations..",
+                "pleaseRoomName" : "Please enter the name of the Danhwabang."
+            }
+        },
+        "friend": {
+            "search": "Search",
+            "friendRequest": "Friend Request",
+            "friendList": "Friend List",
+            "noNewRequest": "There's no new friend request.",
+            "noFriend": "No friends added yet",
+            "accept": "Accept",
+            "delete": "Delete"
+        },
+        "chat": {
+            "noMsg": "No Message",
+            "noChat": "No single room was involved.",
+            "joinChat": "Would you like to join DanwhaRoom?",
+            "searchChat": "Explore the DanhwaRoom Now",
+            "people": "People"
+        }
+    },
+
+    "profile": {
+        "profileAppbar": "Profile Setting",
+        "profile": "Profile",
+        "username": "Username",
+        "introduce": "Introduce one line",
+        "phoneNumber": "Contact",
+        "appSetting": "App Setting",
+        "pushAlarm": "Push Notification",
+        "friendAllow": "Allow friend requests",
+        "account": "Account",
+        "logout": "Logout",
+        "leave": "Account delete",
+        "cancel": "Cancel",
+        "save": "Save",
+        "textIntroduce": "Please enter an introduction. :)"
     }
 }

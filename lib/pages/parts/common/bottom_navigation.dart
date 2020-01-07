@@ -7,6 +7,7 @@ import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/trend/trend_page.dart';
+import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +16,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 
+
+final hwaTabStateKey = new GlobalKey<HwaTabState>();
 
 /*
  * @project : HWA - Mobile
@@ -50,7 +53,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 		_currentIndex = widget.activeIndex ?? 0;
 
         list
-            ..add(HwaTab())
+            ..add(HwaTab(key: hwaTabStateKey))
             ..add(FriendTab())
             ..add(new ChatTab( setCurrentIndex:setCurrentIndex));
 
@@ -77,8 +80,8 @@ class _BottomNavigationState extends State<BottomNavigation>{
         });
     }
 
-    _displayDialog(){
-
+    displayDialog(){
+		hwaTabStateKey.currentState.displayDialog();
     }
 
     /*
@@ -306,7 +309,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 					    child: Image.asset(
 							    'assets/images/icon/navIconNew.png'),
 					    onTap: (){
-						    _displayDialog();
+						    displayDialog();
 					    }
 				    )
 			    ),

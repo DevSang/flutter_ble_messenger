@@ -21,6 +21,7 @@ import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:Hwa/constant.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 
 /*
@@ -229,7 +230,7 @@ class _ChatTabState extends State<ChatTab> {
                                         margin: EdgeInsets.only(
                                             top: ScreenUtil().setHeight(50+89)
                                         ),
-                                        child:Text("참여했던 단화방이 없습니다.",
+                                        child: Text((AppLocalizations.of(context).tr('tabNavigation.chat.noChat')),
                                             style: TextStyle(
                                                 fontFamily: 'NotoSans',
                                                 color: Color(0xff272727),
@@ -245,7 +246,7 @@ class _ChatTabState extends State<ChatTab> {
                                             top:ScreenUtil().setHeight(10),
                                             bottom:ScreenUtil().setHeight(6),
                                         ),
-                                        child: Text("단화방에 참여해 보실래요?",
+                                        child: Text((AppLocalizations.of(context).tr('tabNavigation.chat.joinChat')),
                                             style: TextStyle(
                                                 fontFamily: 'NotoSans',
                                                 color: Color(0xff6b6b6b),
@@ -271,7 +272,7 @@ class _ChatTabState extends State<ChatTab> {
                                                 mainAxisAlignment: MainAxisAlignment.center,
                                                 children: <Widget>[
                                                     Text(
-                                                        "지금 단화방 탐색하기",
+                                                        (AppLocalizations.of(context).tr('tabNavigation.chat.searchChat')),
                                                         style: TextStyle(
                                                             fontFamily: 'NotoSans',
                                                             color: Colors.white,
@@ -446,7 +447,7 @@ class _ChatTabState extends State<ChatTab> {
                                                             ),
                                                         ),
                                                         Text(
-                                                            '명',
+                                                          (AppLocalizations.of(context).tr('tabNavigation.chat.people')),
                                                             style: TextStyle(
                                                                 height: 1,
                                                                 fontFamily: "NotoSans",
@@ -464,7 +465,7 @@ class _ChatTabState extends State<ChatTab> {
                                                     right: ScreenUtil().setWidth(5),
                                                 ),
                                                 child: Text(
-	                                                chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : "메시지 없음",
+	                                                chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : (AppLocalizations.of(context).tr('tabNavigation.chat.noMsg')),
                                                     style: TextStyle(
                                                         height: 1,
                                                         fontFamily: "NotoSans",

@@ -28,7 +28,7 @@ import 'package:Hwa/pages/trend/trend_page.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 /*
@@ -38,11 +38,14 @@ import 'package:cached_network_image/cached_network_image.dart';
  * @description : HWA 메인 Tab 화면
  */
 class HwaTab extends StatefulWidget {
+
+	HwaTab({Key key}) : super(key: key);
+
   @override
-  _HwaTabState createState() => _HwaTabState();
+  HwaTabState createState() => HwaTabState();
 }
 
-class _HwaTabState extends State<HwaTab> {
+class HwaTabState extends State<HwaTab> {
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];
@@ -515,7 +518,7 @@ class _HwaTabState extends State<HwaTab> {
     * @date : 2019-12-27
     * @description : 단화방 생성 Dialog
     */
-    void _displayDialog(BuildContext context) async {
+    void displayDialog() async {
         return showDialog(
             context: context,
             builder: (BuildContext context) => CustomDialog(
@@ -591,37 +594,37 @@ class _HwaTabState extends State<HwaTab> {
             String titleText = "현재 위치 단화방이 없습니다.";
             String subTitle = "원하는 방을 만들어 보실래요?";
             String buttonText = "방 만들기";
-            Function buttonClick = _displayDialog;
+            Function buttonClick = displayDialog;
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
-                titleText= "현재 위치 단화방이 없습니다.";
-                subTitle="원하는 방을 만들어 보실래요?";
-                buttonText="방 만들기";
-                buttonClick = _displayDialog;
+                titleText= (AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.titleText'));
+                subTitle=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.subTitle'));
+                buttonText=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.buttonText'));
+                buttonClick = displayDialog;
             } else if(!isAuthBLE) {
                 mainBackImg = "assets/images/background/noBleBackgroundImg.png";
-                titleText= "블루투스 권한이 필요합니다.";
-                subTitle="설정 > 앱 > 앱 권한";
-                buttonText="설정으로 이동";
+                titleText= (AppLocalizations.of(context).tr('tabNavigation.hwa.main.authBle.titleText'));
+                subTitle=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.authBle.subTitle'));
+                buttonText=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.authBle.buttonText'));
                 buttonClick = HwaBeacon().openBluetoothSettings;
 
                 if(!isAllowedBLE) {
-                    titleText= "블루투스가 꺼져있습니다.";
-                    subTitle="설정 > 블루투스 켜기";
-                    buttonText="설정으로 이동";
+                    titleText= (AppLocalizations.of(context).tr('tabNavigation.hwa.main.allowedBle.titleText'));
+                    subTitle=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.allowedBle.subTitle'));
+                    buttonText=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.allowedBle.buttonText'));
                     buttonClick = HwaBeacon().openBluetoothSettings;
                 }
             } else if(!isAuthGPS){
                 mainBackImg = "assets/images/background/noLocationBackgroundImg.png";
-                titleText= "위치 접근 권한이 필요합니다.";
-                subTitle="설정 > 앱 > 앱 권한";
-                buttonText="설정으로 이동";
+                titleText= (AppLocalizations.of(context).tr('tabNavigation.hwa.main.authGps.titleText'));
+                subTitle=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.authGps.subTitle'));
+                buttonText=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.authGps.buttonText'));
                 buttonClick = HwaBeacon().requestAuthorization;
 
                 if(!isAllowedGPS) {
-                    titleText= "GPS가 꺼져있습니다.";
-                    subTitle="설정 > GPS 켜기";
-                    buttonText="설정으로 이동";
+                    titleText= (AppLocalizations.of(context).tr('tabNavigation.hwa.main.allowedGps.titleText'));
+                    subTitle=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.allowedGps.subTitle'));
+                    buttonText=(AppLocalizations.of(context).tr('tabNavigation.hwa.main.allowedGps.buttonText'));
                     buttonClick = HwaBeacon().openLocationSettings;
                 }
             }
@@ -686,7 +689,7 @@ class _HwaTabState extends State<HwaTab> {
                                     padding: EdgeInsets.symmetric(horizontal: 15.0),
                                     child: RaisedButton(
                                         onPressed: (){
-                                            (buttonClick != _displayDialog) ? buttonClick() : buttonClick(context);
+                                            (buttonClick != displayDialog) ? buttonClick() : buttonClick(context);
                                         },
                                         color: Color.fromRGBO(77, 96, 191, 1),
                                         elevation: 0.0,

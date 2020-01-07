@@ -21,6 +21,12 @@ import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
+
+
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -86,6 +92,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
         return;
     }
+
     /*
      * @author : hs
      * @date : 2020-01-01
@@ -171,6 +178,7 @@ class _ProfilePageState extends State <ProfilePage>{
 		    // 카메라 열기
 		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
 	    }
+
 	    if(imageFile != null){
             setState(() {
                 isLoading = true;
@@ -206,13 +214,12 @@ class _ProfilePageState extends State <ProfilePage>{
 
     @override
     Widget build(BuildContext context) {
-        return new Scaffold(
-            appBar: new AppBar(
+        return  Scaffold(
+            appBar:  AppBar(
                 iconTheme: IconThemeData(
                     color: Color.fromRGBO(77, 96, 191, 1), //change your color here
                 ),
-                title: Text(
-                    "프로필 설정",
+                title: Text((AppLocalizations.of(context).tr('profile.profileAppbar')),
                     style: TextStyle(
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
@@ -220,8 +227,8 @@ class _ProfilePageState extends State <ProfilePage>{
                         fontSize: ScreenUtil.getInstance().setSp(16)
                     ),
                 ),
-                leading: new IconButton(
-                    icon: new Image.asset('assets/images/icon/navIconPrev.png'),
+                leading:  IconButton(
+                    icon:  Image.asset('assets/images/icon/navIconPrev.png'),
                     onPressed: (){
                         popNav();
                     }
@@ -331,10 +338,10 @@ class _ProfilePageState extends State <ProfilePage>{
         return Container(
             child: Column(
                 children: <Widget>[
-                    buildSettingHeader("프로필"),
+                    buildSettingHeader((AppLocalizations.of(context).tr('profile.profile'))),
 
                     buildTextItem(
-                        "사용자 이름",
+                        (AppLocalizations.of(context).tr('profile.username')),
                         nickName,
                         false,
                         (dynamic value)  {
@@ -345,7 +352,7 @@ class _ProfilePageState extends State <ProfilePage>{
                     ),
 
                     buildTextItem(
-                        "한 줄 소개",
+                        (AppLocalizations.of(context).tr('profile.introduce')),
                         intro,
                         false,
                         (dynamic value)  {
@@ -355,7 +362,7 @@ class _ProfilePageState extends State <ProfilePage>{
                         }
                     ),
 
-                    buildTextInfoItem("연락처", phoneNum, true),
+                    buildTextInfoItem((AppLocalizations.of(context).tr('profile.phoneNumber')), phoneNum, true),
 
 //                    buildTextItem("명함 관리", "", true)
                 ]
@@ -367,10 +374,10 @@ class _ProfilePageState extends State <ProfilePage>{
       return Container(
           child: Column(
               children: <Widget>[
-                  buildSettingHeader("앱 설정"),
+                  buildSettingHeader(AppLocalizations.of(context).tr('profile.appSetting')),
 
                   buildSwitchItem(
-                      "푸쉬 알림",
+                      (AppLocalizations.of(context).tr('profile.pushAlarm')),
                       allowedPush,
                       false,
                       (bool value) {
@@ -381,7 +388,7 @@ class _ProfilePageState extends State <ProfilePage>{
                   ),
 
                   buildSwitchItem(
-                      "친구 요청 허용",
+                      (AppLocalizations.of(context).tr('profile.friendAllow')),
                       allowedFriend,
                       true,
                       (bool value) {
@@ -401,16 +408,16 @@ class _ProfilePageState extends State <ProfilePage>{
       return Container(
           child: Column(
               children: <Widget>[
-                  buildSettingHeader("계정"),
+                  buildSettingHeader((AppLocalizations.of(context).tr('profile.account'))),
 
                   InkWell(
-                      child: buildTextItem("로그아웃", "", false, null),
+                      child: buildTextItem((AppLocalizations.of(context).tr('profile.logout')), "", false, null),
                       onTap:() {
                           logOut();
                       }
                   ),
 
-                  buildTextInfoItem("탈퇴하기", "", true),
+                  buildTextInfoItem((AppLocalizations.of(context).tr('profile.leave')), "", true),
 
               ]
           )
@@ -506,10 +513,10 @@ class _ProfilePageState extends State <ProfilePage>{
                                 builder: (BuildContext context) => CustomDialog(
                                     title: title,
                                     type: 1,
-                                    leftButtonText: "취소",
-                                    rightButtonText: "저장하기",
+                                    leftButtonText: (AppLocalizations.of(context).tr('profile.cancel')),
+                                    rightButtonText: (AppLocalizations.of(context).tr('save')),
                                     value: value,
-                                    hintText: value == null ? "소개글을 입력해 보세요 :)" : ""
+                                    hintText: value == null ? (AppLocalizations.of(context).tr('profile.textIntroduce')) : ""
                                 ),
                             ).then((onValue) {
                                 if (fn != null && onValue != null) fn(onValue);
