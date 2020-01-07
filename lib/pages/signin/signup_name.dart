@@ -8,13 +8,16 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+
+import 'package:Hwa/data/state/user_info.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
-import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -82,6 +85,8 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      * @description : 회원가입 완료 request
      */
     registerFinish(BuildContext context) async {
+        final userInfoProvider = Provider.of<UserInfo>(context, listen: false);
+
         SharedPreferences loginPref = await Constant.getSPF();
         String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
 
@@ -104,7 +109,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         if (response.statusCode == 200) {
             developer.log("# 회원가입에 성공하였습니다.");
             developer.log("# Response : " + response.body);
-//            SetUserInfo.set(data['data']['userInfo'],profileURL);
+            userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo'],profileURL);
 
             var token = data['data']['token'];
             var userIdx = data['data']['userInfo']['idx'];
