@@ -4,7 +4,7 @@ import 'dart:developer' as developer;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/data/models/friend_info.dart';
-import 'package:Hwa/data/state/user_info.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/data/models/friend_request_info.dart';
 
 
@@ -21,15 +21,14 @@ class Constant {
 	 */
 
 	// 사용자 로그인 여부
+    static int USER_IDX;
 	static bool isUserLogin = false;
 
-    static int USER_IDX;
-    static String USER_NICK;
     static List<FriendInfo> FRIEND_LIST;
     static List<FriendRequestInfo> FRIEND_REQUEST_LIST;
     static Map<String, String> HEADER;
 
-    static String PROFILE_IMG_URI;
+//    static String PROFILE_IMG_URI="";
 
     // 프로필 이미지 및 App bar 상태 관련, TODO 리팩터링 예정
     static bool IS_PROFILE_IMG = false;
@@ -60,7 +59,6 @@ class Constant {
     static final String PROFILE_DEFAULT_IMG = "assets/images/icon/profile.png";
 
 
-
     /*
      * 함수 영역
      */
@@ -75,28 +73,4 @@ class Constant {
 		return spf;
 	}
 
-	/*
-	 * @author : hk
-	 * @date : 2020-01-05
-	 * @description : 사용자 로그인 여부 판별 및 기본정보 메모리로 올리기
-	 */
-    static Future<void> initUserInfo() async {
-    	spf = await getSPF();
-	    USER_IDX = spf.getInt("userIdx");
-	    String token = spf.getString('token').toString();
-
-	    if(USER_IDX != null && token != 'null') isUserLogin = true;
-
-	    if(isUserLogin){
-//		    PROFILE_IMG_URI = API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + USER_IDX.toString() + "&type=SMALL";
-
-		    // Http API 호출시 붙는 기본 Header, JWT 토큰 포함
-		    HEADER = {
-			    'Content-Type': 'application/json',
-			    'X-Authorization': 'Bearer ' + token
-		    };
-	    }
-
-	    return;
-    }
 }

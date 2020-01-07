@@ -14,6 +14,7 @@ import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 // KV Store 전역 선언
 final kvStore = KvStore();
@@ -30,15 +31,16 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+    UserInfoProvider userInfoProvider;
     SharedPreferences _sharedPreferences;
-
     final int startTs = new DateTime.now().millisecondsSinceEpoch;
-
     // Splash screen Time (ms)
     final int splashTime = 1500;
 
     @override
     void initState() {
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+
         initApp();
         super.initState();
     }
@@ -49,12 +51,13 @@ class HomePageState extends State<HomePage> {
      * @description : initialize App
      */
     void initApp() async {
-    	// spf, kvStore init 후 로직 진행, 뒤에서 spf, kvStore 다시 얻기 불필요
+
+        // spf, kvStore init 후 로직 진행, 뒤에서 spf, kvStore 다시 얻기 불필요
 	    _sharedPreferences = await Constant.getSPF();
 	    await kvStore.onReady;
 
 	    // 사용자 로그인 여부 판별 및 사용자 정보 셋팅
-	    await Constant.initUserInfo();
+        await userInfoProvider.getUserInfoFromSPF();
 
 	    // 로그인된 사용자 처리
 	    if(Constant.isUserLogin){

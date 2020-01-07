@@ -9,12 +9,14 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:provider/provider.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 
 import 'package:easy_localization/easy_localization.dart';
@@ -39,6 +41,7 @@ class _SignInPageState extends State<SignInPage> {
     FocusNode contextFocus;
     String phone_number, auth_number;
     bool lengthConfirm = false;
+    UserInfoProvider userInfoProvider;
 
     //Social signin - Google
     GoogleSignInAccount _currentUser;
@@ -51,6 +54,8 @@ class _SignInPageState extends State<SignInPage> {
 
     @override
     void initState() {
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+
         googleAccountListner();
 	    super.initState();
     }
@@ -145,6 +150,7 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Social signin 이후 처리
      */
     socialSigninAfterProcess (String loginType, accessToken, profileId, photoUrl) async {
+
         String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
         final response = await http.post(url,
             headers: {
@@ -158,18 +164,28 @@ class _SignInPageState extends State<SignInPage> {
             })
         );
 
-        var data = jsonDecode(response.body);
-        var message = data['message'].toString();
-        var errorCode = data['errorCode'];
-        developer.log(data.toString());
+        var errorCode = jsonDecode(response.body)['errorCode'];
 
         if (response.statusCode == 200) {
-            developer.log("# 로그인에 성공하였습니다.");
-            developer.log("# 로그인정보 :" + response.body);
-            RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+            var data = jsonDecode(response.body)['data'];
+            var token = data['token'];
 
+            if(data['userInfo']['profile_picture_idx'] != null) {
+                photoUrl = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + data['userInfo']['idx'].toString() + "&type=SMALL";
+            }
+
+            data['userInfo']['profileURL'] = photoUrl;
+            data['userInfo']['token'] = token;
+            data['userInfo']['nickname'] = data['userInfo']['jb_user_info']['nickname'];
+
+            await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['userInfo']);
+            await userInfoProvider.getUserInfoFromSPF();
             SetFCM.firebaseCloudMessagingListeners();
+            HomePageState.initApiCall();
 
+            RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+            developer.log("# 로그인에 성공하였습니다.");
+            developer.log("# 로그인정보 :" + data.toString() );
             developer.log('# [Navigator] SignInPage -> MainPage');
             Navigator.pushNamed(context, '/main');
 
@@ -264,23 +280,22 @@ class _SignInPageState extends State<SignInPage> {
                 );
 
                 var data = jsonDecode(response.body)['data'];
-
-                print(data);
-
                 if (response.statusCode == 200) {
                     developer.log("# 로그인에 성공하였습니다.");
                     developer.log("# 로그인정보 :" + response.body);
-//                    SetUserInfo.set(data['userInfo'], "");
 
                     var token = data['token'];
-                    var userIdx = data['userInfo']['idx'];
+                    data['userInfo']['token'] = token;
 
-                    spf.setString('token', token.toString());
-                    spf.setInt('userIdx', userIdx);
+                    if(data['userInfo']['jb_user_info']['profile_picture_idx'] != null) {
+                        spf.setBool("IS_UPLOAD_PROFILE_IMG", true);
+                    } else {
+                        spf.setBool("IS_UPLOAD_PROFILE_IMG", false);
+                    }
 
+                    await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['userInfo']);
+                    await userInfoProvider.getUserInfoFromSPF();
                     SetFCM.firebaseCloudMessagingListeners();
-
-                    await Constant.initUserInfo();
                     HomePageState.initApiCall();
 
                     RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);

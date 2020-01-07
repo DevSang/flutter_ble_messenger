@@ -6,8 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
+import 'package:provider/provider.dart';
 
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 
 /*
@@ -26,16 +28,6 @@ enum HTTP_METHOD {
 }
 
 class CallApi {
-    static Future<Map<String, String>> setHeader() async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        var token = prefs.getString('token').toString();
-        Map<String, String> header = {
-            'Content-Type': 'application/json',
-            'X-Authorization': 'Bearer ' + token
-        };
-        return header;
-    }
-
     static setData(Map data) {
         if (data == null) {
             return {};
@@ -44,10 +36,9 @@ class CallApi {
         }
     }
 
-    static logRequest(String prefixUrl, method, header, url, data){
+    static logRequest(String prefixUrl, method, url, data){
 	    developer.log("#Request Url : " + url.toString());
 	    developer.log("#Method : " + method.toString());
-	    developer.log("#Headers : " + header.toString());
 	    developer.log("#Data : " + data.toString());
     }
 
@@ -68,10 +59,10 @@ class CallApi {
      * @description : 파일업로드 API 연동 util
      */
     static Future<Response> fileUploadCall({@required String url, @required String filePath, Map<String, dynamic> paramMap, String fileParameterName, Function onSendProgress}) async {
-	    String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
+        String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
 
 	    SharedPreferences prefs = await SharedPreferences.getInstance();
-	    var token = prefs.getString('token').toString();
+	    var token = jsonDecode(prefs.getString('userInfo'))['token'].toString();
 
 	    Response response;
 	    Dio dio = new Dio();
@@ -91,40 +82,40 @@ class CallApi {
 
     static commonApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
         var prefixUrl = Constant.API_SERVER_HTTP;
-        logRequest(prefixUrl, method.toString(),await setHeader(), url, setData(data));
-        var response = await setHttpCallType(prefixUrl, method.toString(),await setHeader(), url, setData(data));
+        logRequest(prefixUrl, method.toString(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(), url, setData(data));
         return await setResponse(response);
     }
 
     static messageApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
         var prefixUrl = Constant.CHAT_SERVER_HTTP;
-        logRequest(prefixUrl, method.toString(),await setHeader(), url, setData(data));
-        var response = await setHttpCallType(prefixUrl, method.toString(),await setHeader(), url, setData(data));
+        logRequest(prefixUrl, method.toString(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(), url, setData(data));
         return await setResponse(response);
     }
 
     static chattingApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
         var prefixUrl = Constant.CHAT_SERVER_WS;
-        logRequest(prefixUrl, method.toString(),await setHeader(), url, setData(data));
-        var response = await setHttpCallType(prefixUrl, method.toString(),await setHeader(), url, setData(data));
+        logRequest(prefixUrl, method.toString(), url, setData(data));
+        var response = await setHttpCallType(prefixUrl, method.toString(), url, setData(data));
         return await setResponse(response);
     }
 
-    static setHttpCallType(prefixUrl, method, headers, url, data) async {
+    static setHttpCallType(prefixUrl, method, url, data) async {
         switch(method) {
-            case "HTTP_METHOD.post": return await http.post(prefixUrl + url, headers: headers, body: jsonEncode(data));
+            case "HTTP_METHOD.post": return await http.post(prefixUrl + url, headers: Constant.HEADER, body: jsonEncode(data));
             break;
 
-            case "HTTP_METHOD.get": return await http.get(prefixUrl + url, headers: headers);
+            case "HTTP_METHOD.get": return await http.get(prefixUrl + url, headers: Constant.HEADER);
             break;
 
-            case "HTTP_METHOD.put": return await http.put(prefixUrl + url, headers: headers, body: jsonEncode(data));
+            case "HTTP_METHOD.put": return await http.put(prefixUrl + url, headers: Constant.HEADER, body: jsonEncode(data));
             break;
 
-            case "HTTP_METHOD.patch": return await http.patch(prefixUrl + url, headers: headers, body: jsonEncode(data));
+            case "HTTP_METHOD.patch": return await http.patch(prefixUrl + url, headers: Constant.HEADER, body: jsonEncode(data));
             break;
 
-            case "HTTP_METHOD.delete": return await http.delete(prefixUrl + url, headers: headers);
+            case "HTTP_METHOD.delete": return await http.delete(prefixUrl + url, headers: Constant.HEADER);
             break;
 
             default: { developer.log("# Invalid choice http call method"); }

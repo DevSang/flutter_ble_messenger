@@ -7,13 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
-
+import 'package:Hwa/data/state/user_info_provider.dart';
 /*
  * @project : HWA - Mobile
  * @author : sh
@@ -66,6 +67,8 @@ class _SignUpPageState extends State<SignUpPage>{
      * @description : 인증 문자 요청
      */
     registerCodeRequest() async {
+        final userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+
         SPF = await Constant.getSPF();
         if(phoneRegController.text == ''){
             developer.log("# Phone number is empty.");
@@ -113,20 +116,21 @@ class _SignUpPageState extends State<SignUpPage>{
                                 "token": accessToken
                             })
                         ).then((http.Response response) async {
-//                            SetUserInfo.set(data['data']['userInfo'],profileURL);
-
                             var token = data['data']['token'];
                             var userIdx = data['data']['userInfo']['idx'];
 
                             developer.log("# [SPF SAVE] token : " + token);
                             developer.log("# [SPF SAVE] userIdx : " + userIdx.toString());
+                            data['data']['userInfo']['token'] = token;
+                            data['data']['userInfo']['profileURL'] = profileURL;
+                            data['data']['userInfo']['nickname'] = data['data']['userInfo']['jb_user_info']['nickname'];
 
                             SPF.setString('token', token);
                             SPF.setInt('userIdx', userIdx);
 
+                            await userInfoProvider.getUserInfoFromSPF();
+                            await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo']);
                             SetFCM.firebaseCloudMessagingListeners();
-
-                            await Constant.initUserInfo();
                             HomePageState.initApiCall();
 
                             developer.log('# [Navigator] SignUpPage -> MainPage');

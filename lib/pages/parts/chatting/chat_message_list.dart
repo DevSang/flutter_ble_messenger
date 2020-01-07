@@ -52,12 +52,6 @@ class ChatMessageElementsState extends State<ChatMessageList> {
     @override
     void initState() {
     	super.initState();
-	    getHeader();
-    }
-
-    void getHeader() async {
-	    Map<String, String> map = await CallApi.setHeader();
-	    header = map;
     }
 
     /*

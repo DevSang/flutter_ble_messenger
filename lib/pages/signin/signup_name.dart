@@ -7,14 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
-import 'package:Hwa/data/state/user_info.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
-import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
 
@@ -39,6 +37,7 @@ class SignUpNamePage extends StatefulWidget{
 }
 
 class _SignUpNamePageState extends State<SignUpNamePage>{
+    UserInfoProvider userInfoProvider;
     //Parameters var
     final String socialId;
     final String socialType;
@@ -52,6 +51,8 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
 
     @override
     void initState() {
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+
         super.initState();
         availNick = false;
     }
@@ -85,11 +86,8 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      * @description : 회원가입 완료 request
      */
     registerFinish(BuildContext context) async {
-        final userInfoProvider = Provider.of<UserInfo>(context, listen: false);
 
-        SharedPreferences loginPref = await Constant.getSPF();
         String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
-
         final response = await http.post(url,
             headers: {
                 'Content-Type': 'application/json'
@@ -104,27 +102,18 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         );
 
         var data = jsonDecode(response.body);
-        var message =data['message'];
 
         if (response.statusCode == 200) {
             developer.log("# 회원가입에 성공하였습니다.");
             developer.log("# Response : " + response.body);
-            userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo'],profileURL);
 
-            var token = data['data']['token'];
-            var userIdx = data['data']['userInfo']['idx'];
+            data['data']['userInfo']['token'] = data['data']['token'];
+            data['data']['userInfo']['profileURL'] = profileURL;
+            data['data']['userInfo']['nickname'] = _regNameController.text;
 
-            loginPref.setString('token', token);
-            loginPref.setInt('userIdx', userIdx);
-
-            if(profileURL != null){
-                Constant.PROFILE_IMG_URI = profileURL;
-                loginPref.setString('profileUri', profileURL);
-            }
-
+            await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo']);
+            await userInfoProvider.getUserInfoFromSPF();
             SetFCM.firebaseCloudMessagingListeners();
-
-            await Constant.initUserInfo();
             HomePageState.initApiCall();
 
             RedToast.toast("Here we are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);

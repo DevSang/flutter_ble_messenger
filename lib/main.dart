@@ -18,7 +18,7 @@ import 'package:Hwa/pages/chatting/notice_write_page.dart';
 import 'package:Hwa/pages/chatting/notice_detail_page.dart';
 
 import 'package:Hwa/data/state/friend_count.dart';
-import 'package:Hwa/data/state/user_info.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 //import 'package:kakao_flutter_sdk/auth.dart';
 
@@ -55,7 +55,7 @@ class HereWeAreApp extends StatelessWidget {
 	    return MultiProvider(
             providers: [
 	            ChangeNotifierProvider(create: (_) => FriendCount()),
-	            ChangeNotifierProvider(create: (_) => UserInfo())
+	            ChangeNotifierProvider(create: (_) => UserInfoProvider())
             ],
             child: EasyLocalizationProvider(
 				data: data,

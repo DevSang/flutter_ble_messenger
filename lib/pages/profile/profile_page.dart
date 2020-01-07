@@ -3,21 +3,24 @@ import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:dio/dio.dart';
 
-import 'package:Hwa/constant.dart';
-import 'package:Hwa/pages/parts/common/loading.dart';
-import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/utility/custom_switch.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:Hwa/utility/get_same_size.dart';
-import 'package:Hwa/utility/custom_dialog.dart';
-import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/custom_switch.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/utility/custom_dialog.dart';
+import 'package:Hwa/pages/signin/signin_page.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   @override
@@ -38,13 +41,17 @@ class _ProfilePageState extends State <ProfilePage>{
     bool allowedFriend;
 
     bool isLoading;
+    UserInfoProvider userInfoProvider;
 
-    String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+    String profileImgUri;
 
     CachedNetworkImage cachedNetworkImage;
 
     @override
     void initState() {
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+        profileImgUri = userInfoProvider.profileURL;
+
         isLoading = false;
 
         cachedNetworkImage = CachedNetworkImage(
@@ -68,6 +75,7 @@ class _ProfilePageState extends State <ProfilePage>{
         SPF = await SharedPreferences.getInstance();
         await store.onReady;
         await SPF.remove('token');
+        await SPF.remove('userInfo');
         await store.delete("friendList");
         await store.delete("test");
 
@@ -78,7 +86,6 @@ class _ProfilePageState extends State <ProfilePage>{
 
         return;
     }
-
     /*
      * @author : hs
      * @date : 2020-01-01
@@ -87,9 +94,10 @@ class _ProfilePageState extends State <ProfilePage>{
     void getSettingInfo() async {
         try {
             /// 참여 타입 수정
-            String uri = "/api/v2/user/profile?target_user_idx=" + Constant.USER_IDX.toString();
+            String uri = "/api/v2/user/profile?target_user_idx=" +  Constant.USER_IDX.toString();
+            print(uri);
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-
+            print(response.body);
             Map<String, dynamic> jsonParse = json.decode(response.body);
             Map<String, dynamic> profile = jsonParse['data'];
 
@@ -153,6 +161,7 @@ class _ProfilePageState extends State <ProfilePage>{
 	 * @description : 프로필 사진 업로드
 	 */
     void uploadProfileImg(int flag) async {
+        SPF = await Constant.getSPF();
 	    File imageFile;
 
 	    if(flag == 1){
@@ -162,7 +171,6 @@ class _ProfilePageState extends State <ProfilePage>{
 		    // 카메라 열기
 		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
 	    }
-
 	    if(imageFile != null){
             setState(() {
                 isLoading = true;
@@ -175,10 +183,12 @@ class _ProfilePageState extends State <ProfilePage>{
 
 		    if(response.statusCode == 200){
 			    await DefaultCacheManager().removeFile(profileImgUri);
+			    SPF.setBool("IS_UPLOAD_PROFILE_IMG", true);
+			    userInfoProvider.profileURL = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
 
 			    setState(() {
 				    cachedNetworkImage = CachedNetworkImage(
-						    imageUrl: profileImgUri,
+						    imageUrl: userInfoProvider.profileURL,
 						    placeholder: (context, url) => CircularProgressIndicator(),
 						    errorWidget: (context, url, error) => Icon(Icons.error),
 						    httpHeaders: Constant.HEADER
