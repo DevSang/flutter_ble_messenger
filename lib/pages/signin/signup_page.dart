@@ -10,10 +10,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
-import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -75,6 +76,7 @@ class _SignUpPageState extends State<SignUpPage>{
             FocusScope.of(context).requestFocus(new FocusNode());
             developer.log("# Phone number : " +  phoneRegController.text);
             String url = "https://api.hwaya.net/api/v2/auth/A01-SignUpAuth";
+
             await http.post(url,
                 headers: {
                     'Content-Type':'application/json'
@@ -100,7 +102,7 @@ class _SignUpPageState extends State<SignUpPage>{
                         developer.log("# Confirm auth code success.");
                         developer.log("# Already exist user.");
 
-                        ///최종 Signup
+                        ///최종 Social로 Re-Signup
                         String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
                         await http.post(url,
                             headers: {
@@ -113,7 +115,7 @@ class _SignUpPageState extends State<SignUpPage>{
                                 "token": accessToken
                             })
                         ).then((http.Response response) async {
-                            SetUserInfo.set(data['data']['userInfo'],profileURL);
+//                            SetUserInfo.set(data['data']['userInfo'],profileURL);
 
                             var token = data['data']['token'];
                             var userIdx = data['data']['userInfo']['idx'];
@@ -131,7 +133,7 @@ class _SignUpPageState extends State<SignUpPage>{
 
                             developer.log('# [Navigator] SignUpPage -> MainPage');
                             RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
-                            RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+                            RedToast.toast("Here we are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
                             Navigator.pushNamed(context, '/main');
                         });
                     }
@@ -244,7 +246,7 @@ class _SignUpPageState extends State<SignUpPage>{
                     ),
                 ),
                 centerTitle: true,
-                title: Text("회원가입",style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
+                title: Text(AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
                 ),
             ),
         );
@@ -262,7 +264,7 @@ class _SignUpPageState extends State<SignUpPage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text("휴대폰번호 입력",style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text(AppLocalizations.of(context).tr('sign.signUp.textPhoneNumber'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
                 ],
             )
         );
@@ -302,7 +304,7 @@ class _SignUpPageState extends State<SignUpPage>{
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                             ),
-                            child: Text("인증문자 받기",style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
+                            child: Text(AppLocalizations.of(context).tr('sign.signUp.getAuthCode'),style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
                             ),
                             color: Color.fromRGBO(77, 96, 191, 1),
                             onPressed: () {
@@ -310,7 +312,7 @@ class _SignUpPageState extends State<SignUpPage>{
                             })
                     ),
                     counterText:"",
-                    hintText: "휴대폰번호 ( -없이 숫자만 입력)",
+                    hintText: AppLocalizations.of(context).tr('sign.signUp.phoneNumber'),
                     hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
                     border:  OutlineInputBorder(
                         borderRadius:  BorderRadius.circular(10.0),
@@ -336,7 +338,7 @@ class _SignUpPageState extends State<SignUpPage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text("인증번호 입력",style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text(AppLocalizations.of(context).tr('sign.signUp.textAuthCode'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
                 ],
             )
         );
@@ -377,7 +379,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 style: TextStyle(color: Colors.black, fontFamily: "NotoSans",),
                 decoration: InputDecoration(
                     counterText: "",
-                    hintText: "인증번호",
+                    hintText: AppLocalizations.of(context).tr('sign.signUp.authCode'),
                     hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
                     border:  OutlineInputBorder(
                         borderRadius:  BorderRadius.circular(10.0),
@@ -410,9 +412,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 },
                 color: color,
                 elevation: 0.0,
-                child: Text(
-                    "다음",
-                    style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans')
+                child: Text(AppLocalizations.of(context).tr('sign.signUp.nextBtn'),style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans')
                 ),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)

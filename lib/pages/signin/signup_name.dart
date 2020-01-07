@@ -2,19 +2,23 @@ import 'dart:ui';
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+
+import 'package:Hwa/data/state/user_info.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
-import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:Hwa/utility/red_toast.dart';
-import 'package:Hwa/utility/set_user_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -82,6 +86,8 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      * @description : 회원가입 완료 request
      */
     registerFinish(BuildContext context) async {
+        final userInfoProvider = Provider.of<UserInfo>(context, listen: false);
+
         SharedPreferences loginPref = await Constant.getSPF();
         String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
 
@@ -104,7 +110,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         if (response.statusCode == 200) {
             developer.log("# 회원가입에 성공하였습니다.");
             developer.log("# Response : " + response.body);
-            SetUserInfo.set(data['data']['userInfo'],profileURL);
+            userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo'],profileURL);
 
             var token = data['data']['token'];
             var userIdx = data['data']['userInfo']['idx'];
@@ -112,12 +118,17 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             loginPref.setString('token', token);
             loginPref.setInt('userIdx', userIdx);
 
+            if(profileURL != null){
+                Constant.PROFILE_IMG_URI = profileURL;
+                loginPref.setString('profileUri', profileURL);
+            }
+
             SetFCM.firebaseCloudMessagingListeners();
 
             await Constant.initUserInfo();
             HomePageState.initApiCall();
 
-            RedToast.toast("Here you are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+            RedToast.toast("Here we are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
 
             Navigator.pushNamed(context, '/main');
         } else {
@@ -145,7 +156,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                     ),
                 ),
                 centerTitle: true,
-                title: Text("회원가입",style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'))
+                title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'))
             ),
             body: Container(
                 child: ListView(
@@ -171,7 +182,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text("닉네임 입력",style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text((AppLocalizations.of(context).tr('sign.signUpName.textNickname')),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
                 ],
             )
         );
@@ -191,9 +202,9 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 child: TextFormField(
                     validator: (value) {
                         if (value.isEmpty) {
-                            return '닉네임을 입력해주세요';
+                            return (AppLocalizations.of(context).tr('sign.signUpName.NicknameValidator'));
                         } else if(!availNick) {
-                            return '이미 사용중인 닉네임입니다.';
+                            return (AppLocalizations.of(context).tr('sign.signUpName.NicknameAlready'));
                         }
                         return null;
                     },
@@ -213,7 +224,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                         counterText: "",
-                        hintText: "닉네임을 입력하세요",
+                        hintText: (AppLocalizations.of(context).tr('sign.signUpName.nickName')),
                         suffixIcon: IconButton(
                             icon: Image.asset("assets/images/icon/iconDeleteSmall.png"),
                             onPressed: () => _regNameController.clear(),
@@ -253,7 +264,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 },
                 color: color,
                 elevation: 0.0,
-                child: Text("시작하기", style: TextStyle(color: Colors.white)),
+                child: Text((AppLocalizations.of(context).tr('sign.signUpName.startBtn')), style: TextStyle(color: Colors.white)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)
                 )

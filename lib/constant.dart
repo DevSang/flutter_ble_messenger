@@ -1,6 +1,12 @@
-import 'package:Hwa/data/models/friend_info.dart';
-import 'package:Hwa/data/models/friend_request_info.dart';
+import 'dart:convert';
+import 'dart:developer' as developer;
+
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:Hwa/data/models/friend_info.dart';
+import 'package:Hwa/data/state/user_info.dart';
+import 'package:Hwa/data/models/friend_request_info.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -18,6 +24,7 @@ class Constant {
 	static bool isUserLogin = false;
 
     static int USER_IDX;
+    static String USER_NICK;
     static List<FriendInfo> FRIEND_LIST;
     static List<FriendRequestInfo> FRIEND_REQUEST_LIST;
     static Map<String, String> HEADER;
@@ -81,7 +88,7 @@ class Constant {
 	    if(USER_IDX != null && token != 'null') isUserLogin = true;
 
 	    if(isUserLogin){
-		    PROFILE_IMG_URI = API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + USER_IDX.toString() + "&type=SMALL";
+//		    PROFILE_IMG_URI = API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + USER_IDX.toString() + "&type=SMALL";
 
 		    // Http API 호출시 붙는 기본 Header, JWT 토큰 포함
 		    HEADER = {
