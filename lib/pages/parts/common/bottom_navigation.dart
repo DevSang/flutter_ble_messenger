@@ -7,6 +7,7 @@ import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/trend/trend_page.dart';
+import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';

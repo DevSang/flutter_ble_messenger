@@ -38,11 +38,14 @@ import 'package:cached_network_image/cached_network_image.dart';
  * @description : HWA 메인 Tab 화면
  */
 class HwaTab extends StatefulWidget {
+
+	HwaTab({Key key}) : super(key: key);
+
   @override
-  _HwaTabState createState() => _HwaTabState();
+  HwaTabState createState() => HwaTabState();
 }
 
-class _HwaTabState extends State<HwaTab> {
+class HwaTabState extends State<HwaTab> {
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];
@@ -515,7 +518,7 @@ class _HwaTabState extends State<HwaTab> {
     * @date : 2019-12-27
     * @description : 단화방 생성 Dialog
     */
-    void _displayDialog(BuildContext context) async {
+    void displayDialog() async {
         return showDialog(
             context: context,
             builder: (BuildContext context) => CustomDialog(
@@ -591,13 +594,13 @@ class _HwaTabState extends State<HwaTab> {
             String titleText = "현재 위치 단화방이 없습니다.";
             String subTitle = "원하는 방을 만들어 보실래요?";
             String buttonText = "방 만들기";
-            Function buttonClick = _displayDialog;
+            Function buttonClick = displayDialog;
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
                 titleText= "현재 위치 단화방이 없습니다.";
                 subTitle="원하는 방을 만들어 보실래요?";
                 buttonText="방 만들기";
-                buttonClick = _displayDialog;
+                buttonClick = displayDialog;
             } else if(!isAuthBLE) {
                 mainBackImg = "assets/images/background/noBleBackgroundImg.png";
                 titleText= "블루투스 권한이 필요합니다.";
@@ -686,7 +689,7 @@ class _HwaTabState extends State<HwaTab> {
                                     padding: EdgeInsets.symmetric(horizontal: 15.0),
                                     child: RaisedButton(
                                         onPressed: (){
-                                            (buttonClick != _displayDialog) ? buttonClick() : buttonClick(context);
+                                            (buttonClick != displayDialog) ? buttonClick() : buttonClick(context);
                                         },
                                         color: Color.fromRGBO(77, 96, 191, 1),
                                         elevation: 0.0,

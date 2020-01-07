@@ -29,7 +29,7 @@ class Constant {
     static List<FriendRequestInfo> FRIEND_REQUEST_LIST;
     static Map<String, String> HEADER;
 
-    static String PROFILE_IMG_URI;
+    static String PROFILE_IMG_URI = "";
 
     // 프로필 이미지 및 App bar 상태 관련, TODO 리팩터링 예정
     static bool IS_PROFILE_IMG = false;
