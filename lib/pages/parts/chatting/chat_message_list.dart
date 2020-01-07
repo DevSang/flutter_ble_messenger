@@ -487,13 +487,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                     width: ScreenUtil().setWidth(230),
                                     imageUrl: chatMessage.message,
                                     placeholder: (context, url) =>
-                                    chatMessage.placeholderSrc != null
-                                        ? Image.memory(
-                                            base64Decode(chatMessage.placeholderSrc),
-                                            gaplessPlayback: true,
-                                            fit: BoxFit.fitWidth,
-                                        )
-                                        : Container(
+                                        Container(
                                             width: ScreenUtil().setWidth(230),
                                             height: ScreenUtil().setWidth(230),
                                             color: Colors.transparent,
@@ -508,8 +502,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                     ),
                                                 ),
                                             ),
-                                        )
-                                    ,
+                                        ),
                                     httpHeaders: header,
                                     fit: BoxFit.fitWidth,
                                 )
@@ -539,15 +532,17 @@ class ChatMessageListState extends State<ChatMessageList> {
                     msgTime(chatMessage.chatTime, false) ,
                     Container(
                         width: ScreenUtil().setWidth(230),
+                        height: ScreenUtil().setWidth(230),
                         child: Stack(
                             children: <Widget>[
                                 ClipRRect(
                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
-                                    child: Image.memory(
-                                        base64Decode(chatMessage.message),
+                                    child: Image.file(
+                                        chatMessage.thumbnailFile,
                                         gaplessPlayback: true,
-                                        fit: BoxFit.fitWidth,
-                                    )
+                                        cacheWidth: ScreenUtil().setWidth(230),
+                                        cacheHeight: ScreenUtil().setWidth(230),
+                                    ),
                                 ),
                                 Positioned.fill(
                                     child: Align(

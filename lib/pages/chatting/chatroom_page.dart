@@ -323,8 +323,7 @@ class ChatScreenState extends State<ChatroomPage> {
             senderIdx: message.senderIdx,
             nickName: message.nickName,
             message: message.message,
-            chatTime: message.chatTime,
-            placeholderSrc: imgSrc
+            chatTime: message.chatTime
         );
 
         messageList.insert(uploadingImageCount, cmb);
@@ -337,13 +336,13 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2020-01-07
      * @description : Image 업로드 전 Thumbnail 말풍선에 맵핑
     */
-    void thumbnailMessage(String imgSrc, GaugeDriver gaugeDriver) {
+    void thumbnailMessage(File imgFile, GaugeDriver gaugeDriver) {
         ChatMessage cmb = ChatMessage(
             chatType: "UPLOADING_IMG",
             roomIdx: chatInfo.chatIdx,
             senderIdx: Constant.USER_IDX,
             nickName: "마이런",     /// 자신의 닉네임 맵핑
-            message: imgSrc,
+            thumbnailFile: imgFile,
             chatTime: new DateTime.now().millisecondsSinceEpoch,
             gaugeDriver: gaugeDriver,
             uploaded: false
@@ -361,19 +360,9 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+        GaugeDriver gaugeDriver = new GaugeDriver();
 
-        // Resize and String 으로 변환 작업--
-        var byteImage = await imageFile.readAsBytesSync();
-        Im.Image thumbnail = Im.copyResize(
-            Im.decodeImage(byteImage),
-            width: ScreenUtil().setWidth(230).toInt(),
-        );
-
-        String base64Image = base64Encode(
-            Im.encodeJpg(thumbnail, quality: 62)
-        );
-        // Resize and String 으로 변환 작업--
-//        thumbnailMessage(base64Image);
+        thumbnailMessage(imageFile, gaugeDriver);
         uploadingImageCount ++;
 
         if (imageFile != null) {
@@ -386,16 +375,14 @@ class ChatScreenState extends State<ChatroomPage> {
 	        // 파일 업로드 API 호출
 	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
                 developer.log("$sent : $total");
+                for(var i=0; i<uploadingImageCount; i++) {
+                    if (messageList[i].thumbnailFile.path == imageFile.path) {
+                        messageList[i].gaugeDriver.drive(sent/total);
 
-                if(sent == total) {
-                    for(var i=0; i<uploadingImageCount; i++) {
-                        if (messageList[i].message == base64Image) {
-                            setState(() {
-                                messageList.removeAt(i);
-                            });
+                        if(sent == total) {
+                            messageList[i].uploaded = true;
                         }
                     }
-                    uploadingImageCount --;
                 }
 	        });
 
@@ -414,18 +401,7 @@ class ChatScreenState extends State<ChatroomPage> {
         imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
         GaugeDriver gaugeDriver = new GaugeDriver();
 
-        // Resize and String 으로 변환 작업--
-        var byteImage = await imageFile.readAsBytesSync();
-        Im.Image thumbnail = Im.copyResizeCropSquare(
-            Im.decodeImage(byteImage),
-            ScreenUtil().setWidth(230).toInt(),
-        );
-
-        String base64Image = base64Encode(
-            Im.encodeJpg(thumbnail, quality: 62)
-        );
-        // Resize and String 으로 변환 작업--
-        thumbnailMessage(base64Image, gaugeDriver);
+        thumbnailMessage(imageFile, gaugeDriver);
         uploadingImageCount ++;
 
         if (imageFile != null) {
@@ -438,7 +414,7 @@ class ChatScreenState extends State<ChatroomPage> {
             Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
                 developer.log("$sent : $total");
                 for(var i=0; i<uploadingImageCount; i++) {
-                    if (messageList[i].message == base64Image) {
+                    if (messageList[i].thumbnailFile.path == imageFile.path) {
                         messageList[i].gaugeDriver.drive(sent/total);
 
                         if(sent == total) {

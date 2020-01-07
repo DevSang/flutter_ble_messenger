@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:Hwa/data/models/chat_count_user.dart';
 import 'dart:collection';
 
@@ -15,9 +17,9 @@ class ChatMessage {
     // Thumbnail Message 관련 변수
     final GaugeDriver gaugeDriver;		// 업로드 Percentage 표현
     bool uploaded;		                // 업로드 완료 여부
-    final String placeholderSrc;        // Placeholder Image Source (Thumbnail)
+    final File thumbnailFile;        // Placeholder Image Source (Thumbnail)
 
-    ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickName, this.message, this.userCountObj, this.chatTime, this.gaugeDriver, this.uploaded, this.placeholderSrc});
+    ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickName, this.message, this.userCountObj, this.chatTime, this.gaugeDriver, this.uploaded, this.thumbnailFile});
 
     factory ChatMessage.fromJSON (Map<String, dynamic> json) {
         return ChatMessage (
