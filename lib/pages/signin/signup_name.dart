@@ -17,6 +17,7 @@ import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 
 /*
@@ -155,7 +156,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                     ),
                 ),
                 centerTitle: true,
-                title: Text("회원가입",style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'))
+                title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'))
             ),
             body: Container(
                 child: ListView(
@@ -181,7 +182,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text("닉네임 입력",style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text((AppLocalizations.of(context).tr('sign.signUpName.textNickname')),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
                 ],
             )
         );
@@ -201,9 +202,9 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 child: TextFormField(
                     validator: (value) {
                         if (value.isEmpty) {
-                            return '닉네임을 입력해주세요';
+                            return (AppLocalizations.of(context).tr('sign.signUpName.NicknameValidator'));
                         } else if(!availNick) {
-                            return '이미 사용중인 닉네임입니다.';
+                            return (AppLocalizations.of(context).tr('sign.signUpName.NicknameAlready'));
                         }
                         return null;
                     },
@@ -223,7 +224,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                     style: TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                         counterText: "",
-                        hintText: "닉네임을 입력하세요",
+                        hintText: (AppLocalizations.of(context).tr('sign.signUpName.nickName')),
                         suffixIcon: IconButton(
                             icon: Image.asset("assets/images/icon/iconDeleteSmall.png"),
                             onPressed: () => _regNameController.clear(),
@@ -263,7 +264,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 },
                 color: color,
                 elevation: 0.0,
-                child: Text("시작하기", style: TextStyle(color: Colors.white)),
+                child: Text((AppLocalizations.of(context).tr('sign.signUpName.startBtn')), style: TextStyle(color: Colors.white)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)
                 )
