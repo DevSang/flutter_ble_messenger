@@ -58,7 +58,15 @@ class CallApi {
      * @date : 2019-12-31
      * @description : 파일업로드 API 연동 util
      */
-    static Future<Response> fileUploadCall({@required String url, @required String filePath, Map<String, dynamic> paramMap, String fileParameterName, Function onSendProgress}) async {
+    static Future<Response> fileUploadCall({
+		    @required String url
+		    , @required String filePath
+		    , Map<String, dynamic> paramMap
+		    , String fileParameterName
+		    , String contentsType
+		    , Function onSendProgress
+		    , Function onError}) async {
+
         String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
 
 	    SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -67,11 +75,32 @@ class CallApi {
 	    Response response;
 	    Dio dio = new Dio();
 	    dio.options.headers['X-Authorization'] = 'Bearer ' + token;
-	    dio.options.headers['Content-Type'] = "multipart/form-data";
+
+	    contentsType = contentsType ?? "multipart/form-data";
+        dio.options.headers['Content-Type'] = contentsType;
+        dio.options.contentType = contentsType;
 
 	    paramMap = paramMap ?? Map<String, dynamic>();
 	    fileParameterName = fileParameterName ?? "file";
 	    paramMap[fileParameterName] = await MultipartFile.fromFile(filePath, filename: fileName);
+
+	    if(onError != null){
+			dio.interceptors.add(InterceptorsWrapper(
+				onRequest:(RequestOptions options) async {
+					// Do something before request is sent
+					return options; //continue
+				},
+				onResponse:(Response response) async {
+					// Do something with response data
+					return response; // continue
+				},
+				onError: (DioError e) async {
+					// Do something with response error
+					onError(e);
+					return  e;//continue
+				}
+			));
+	    }
 
 	    var formData = FormData.fromMap(paramMap);
 

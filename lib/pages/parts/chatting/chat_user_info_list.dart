@@ -175,7 +175,7 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
                 width: ScreenUtil().setWidth(20),
                 height: ScreenUtil().setHeight(20),
                 decoration: BoxDecoration(
-                    color: Colors.orange,
+                    color: Color.fromRGBO(239, 193, 0, 1),
                     shape: BoxShape.circle
                 ),
                 child: Align(

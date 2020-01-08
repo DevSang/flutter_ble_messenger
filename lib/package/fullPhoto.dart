@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:Hwa/constant.dart';
+
 
 class FullPhoto extends StatelessWidget {
     final String url;
@@ -31,6 +33,9 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
 
     @override
     void initState() {
+
+    	if(header == null) header = Constant.HEADER;
+
 	    super.initState();
     }
 

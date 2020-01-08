@@ -1,9 +1,8 @@
 import 'dart:io';
-
 import 'package:Hwa/data/models/chat_count_user.dart';
-import 'dart:collection';
-
 import 'package:Hwa/package/gauge/gauge_driver.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
 
 class ChatMessage {
     final String chatType; 			    // 메시지 타입
@@ -17,7 +16,8 @@ class ChatMessage {
     // Thumbnail Message 관련 변수
     final GaugeDriver gaugeDriver;		// 업로드 Percentage 표현
     bool uploaded;		                // 업로드 완료 여부
-    final File thumbnailFile;        // Placeholder Image Source (Thumbnail)
+    final File thumbnailFile;           // Placeholder Image Source (Thumbnail)
+    YoutubePlayer youtubePlayer;        // youtube video
 
     ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickName, this.message, this.userCountObj, this.chatTime, this.gaugeDriver, this.uploaded, this.thumbnailFile});
 

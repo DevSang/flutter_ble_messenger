@@ -1,32 +1,57 @@
 # HWA Mobile Client
 android/ios flutter project
 
-## FINISHED
-* 로그인 화면 UI 
-* 회원가입 화면 UI
-
-## TODOS
-* 많음 
-
 ## Installation
 ```
 flutter pub get 
 ```
 
+Ios
+```
+pod install
+```
+
+
 ## Use Library 
-* shared_preferences: https://pub.dev/packages/shared_preferences 간단한 값 저장
-* http: https://pub.dev/packages/http http 통신
-* json_annotation: https://pub.dev/packages/json_annotation json_serializable에서 JSON 직렬화 및 역직렬화를위한 코드를 작성하는데 사용
-* cached_network_image: https://pub.dev/packages/cached_network_image url 이미를 보여주고 캐시에 저장 
-* distinct_value_connectable_observable: https://pub.dev/packages/distinct_value_connectable_observable
-* rxdart: https://pub.dev/packages/rxdart reactive functional programming library
-* alphabet_list_scroll_view: https://pub.dev/packages/alphabet_list_scroll_view 알파벳 순서대로 스크롤
-* faker: https://pub.dev/packages/faker 더미 user 데이터 생성
-* flutter_slidable: https://pub.dev/packages/flutter_slidable 슬라이드 액션
-* flutter_provider: https://pub.dev/packages/flutter_provider provider 패키지
-* image_picker: https://pub.dev/packages/image_picker 사진 
-* built_value: https://pub.dev/packages/built_value Immutable value types; EnumClass, classes that behave like enums;JSON serialization 
-* tuple: https://pub.dev/packages/tuple 튜플 자료형을 사용할 수 있음
+### Dart API
+    flutter_localizations:          # MIT LICENSE
+    
+### External library    
+    intl:                           # BSD LICENSE
+    configurable_expansion_tile:    # BSD LICENSE
+    timeago:                        # MIT LICENSE
+    lazy_load_scrollview:           # BSD LICENSE
+    sticky_headers:                 # MIT LICENSE
+    flutter_screenutil:             # Apache 2.0 LICENSE
+    catcher:                        # Apache 2.0 LICENSE
+    json_annotation:                # BSD LICENSE
+    dio:                            # MIT LICENSE
+    http:                           # BSD LICENSE
+    cached_network_image:           # MIT LICENSE
+    firebase_messaging:             # BSD LICENSE
+    web_socket_channel:             # BSD LICENSE
+    geolocator:                     # MIT LICENSE
+    image_picker:                   # Apache 2.0 LICENSE
+    photo_view:                     # MIT LICENSE
+    easy_localization:              # MIT LICENSE
+    shared_preferences:             # BSD LICENSE
+    provider:                       # MIT LICENSE
+    kvsql:                          # MIT LICENSE
+    sqlcool:                        # MIT LICENSE
+    flutter_facebook_login:         # BSD LICENSE
+    google_sign_in:                 # BSD LICENSE
+    flutter_kakao_login:            # BSD LICENSE
+    kakao_flutter_sdk:              # BSD LICENSE
+    alphabet_list_scroll_view:      # MIT LICENSE
+    flutter_slidable:               # MIT LICENSE
+    expandable:                     # MIT LICENSE
+    fluttertoast:                   # MIT LICENSE 
+    
+### LICENSE
+
+* MIT License: BSD 라이선스를 기초로 MIT 대학에서 제정. MIT 라이선스를 따르는 소프트웨어 사용하여 개발 시, 만든 개발품을 꼭 오픈소스로 해야 할 필요는 없음. 물론 소스코드 공개 의무도 없음. 
+* Apache License: 아파치 소프트웨어 재단에서 제정. 소스코드 공개 의무 없음. 단, 아파치 라이선스 사용을 밝혀야 함. BSD보다 좀더 완화된 내용. 
+* BSD License: 버클리 캘리포니아 대학에서 제정. BSD 자체가 공공공기관에 만든 것이므로 공공환원의 의도가 강해서 저작권 및 라이선스 명시 이외엔 아무 제약이 없이 사용 가능한 자유로운 라이선스  
 
 ## Reference
 1. Flutter CI/CD

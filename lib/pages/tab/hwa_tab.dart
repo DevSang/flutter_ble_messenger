@@ -522,13 +522,13 @@ class HwaTabState extends State<HwaTab> {
         return showDialog(
             context: context,
             builder: (BuildContext context) => CustomDialog(
-                title: '단화 생성하기',
+                title: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.title')),
                 type: 1,
-                leftButtonText: "취소",
-                rightButtonText: "생성하기",
+                leftButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.cancel')),
+                rightButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.create')),
                 value: _currentAddress,
-                hintText: _currentAddress == '위치 검색 중..'
-                    ? '단화방 이름을 입력해주세요.'
+                hintText: _currentAddress == (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'))
+                    ? (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.pleaseRoomName'))
                     : _currentAddress,
                 maxLength: 15,
             ),
@@ -769,8 +769,8 @@ class HwaTabState extends State<HwaTab> {
                                 ),
                                 Container(
                                     child: Text(
-                                        '현재 위치',
-                                        style: TextStyle(
+                                      (AppLocalizations.of(context).tr('tabNavigation.hwa.location.nowLocation')),
+                                      style: TextStyle(
                                             height: 1,
                                             fontFamily: "NotoSans",
                                             fontWeight: FontWeight.w400,
@@ -825,7 +825,6 @@ class HwaTabState extends State<HwaTab> {
             child: Flexible(
                 child: ListView.builder(
                   itemCount: chatList.length,
-
                   itemBuilder: (BuildContext context, int index) => buildChatItem(chatList[index]))
             )
         );
@@ -847,9 +846,9 @@ class HwaTabState extends State<HwaTab> {
                         Radius.circular(10.0)
                     ),
                     boxShadow: [
-                        new BoxShadow(
+                         BoxShadow(
                             color: Color.fromRGBO(0, 0, 0, 0.1),
-                            offset: new Offset(
+                            offset: Offset(
                                 ScreenUtil().setWidth(0),
                                 ScreenUtil().setWidth(5)),
                             blurRadius: ScreenUtil().setWidth(10)
@@ -1013,7 +1012,7 @@ class HwaTabState extends State<HwaTab> {
     Widget popularBadge() {
         Color color = Color.fromRGBO(77, 96, 191, 1);
 
-        return new Container(
+        return Container(
             width: ScreenUtil().setWidth(43),
             height: ScreenUtil().setHeight(22),
             padding: EdgeInsets.only(

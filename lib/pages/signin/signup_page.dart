@@ -213,12 +213,12 @@ class _SignUpPageState extends State<SignUpPage>{
     @override
     Widget build(BuildContext context){
         return Scaffold(
-            body: new GestureDetector(
+            body:  GestureDetector(
                 //텍스트필드 클릭 후 키보드 올라와 있을때 다른영역 터치해서 포커싱 해제
                 onTap: (){
-                    FocusScope.of(context).requestFocus(new FocusNode());
+                    FocusScope.of(context).requestFocus( FocusNode());
                 },
-                child: new Container(
+                child:  Container(
                     decoration: BoxDecoration(
                         border: Border(
                             top: BorderSide(
@@ -251,7 +251,7 @@ class _SignUpPageState extends State<SignUpPage>{
                     ),
                 ),
                 centerTitle: true,
-                title: Text(AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
+                title: Text(AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w600),
                 ),
             ),
         );
@@ -269,7 +269,7 @@ class _SignUpPageState extends State<SignUpPage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text(AppLocalizations.of(context).tr('sign.signUp.textPhoneNumber'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text(AppLocalizations.of(context).tr('sign.signUp.textPhoneNumber'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans',fontWeight: FontWeight.w600))
                 ],
             )
         );
@@ -299,7 +299,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 controller: phoneRegController,
                 cursorColor: Colors.black,
                 obscureText: false,
-                style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
+                style: TextStyle(color: Colors.black, fontFamily: 'NanumSquare',fontWeight: FontWeight.w500
                 ),
                 decoration: InputDecoration(
                     suffixIcon:
@@ -318,7 +318,7 @@ class _SignUpPageState extends State<SignUpPage>{
                     ),
                     counterText:"",
                     hintText: AppLocalizations.of(context).tr('sign.signUp.phoneNumber'),
-                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15, fontFamily: 'NotoSans', fontWeight: FontWeight.w600),
                     border:  OutlineInputBorder(
                         borderRadius:  BorderRadius.circular(10.0),
                         borderSide:  BorderSide(
@@ -343,7 +343,7 @@ class _SignUpPageState extends State<SignUpPage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text(AppLocalizations.of(context).tr('sign.signUp.textAuthCode'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text(AppLocalizations.of(context).tr('sign.signUp.textAuthCode'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans', fontWeight: FontWeight.w600))
                 ],
             )
         );
@@ -381,11 +381,11 @@ class _SignUpPageState extends State<SignUpPage>{
                 controller: _regAuthCodeController,
                 cursorColor: Colors.black,
                 obscureText: true,
-                style: TextStyle(color: Colors.black, fontFamily: "NotoSans",),
+                style: TextStyle(color: Colors.black, fontFamily: 'NanumSquare',fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                     counterText: "",
                     hintText: AppLocalizations.of(context).tr('sign.signUp.authCode'),
-                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15, fontFamily: 'NotoSans', fontWeight: FontWeight.w600),
                     border:  OutlineInputBorder(
                         borderRadius:  BorderRadius.circular(10.0),
                         borderSide:  BorderSide(
@@ -417,7 +417,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 },
                 color: color,
                 elevation: 0.0,
-                child: Text(AppLocalizations.of(context).tr('sign.signUp.nextBtn'),style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans')
+                child: Text(AppLocalizations.of(context).tr('sign.signUp.nextBtn'),style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans', fontWeight: FontWeight.w600, fontSize: 16)
                 ),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)

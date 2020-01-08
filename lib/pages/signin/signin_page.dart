@@ -404,8 +404,8 @@ class _SignInPageState extends State<SignInPage> {
                                 WhitelistingTextInputFormatter.digitsOnly
                             ],
                             controller: _phoneController,
-                            style: TextStyle(color: Colors.black, fontFamily: 'NotoSans',  fontSize: 15),
-                            decoration: new InputDecoration(
+                            style: TextStyle(color: Colors.black, fontFamily: 'NotoSans', fontWeight: FontWeight.w500, fontSize: 15),
+                            decoration:  InputDecoration(
                                 border: InputBorder.none,
                                 counterText: "",
                                 hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
@@ -427,6 +427,7 @@ class _SignInPageState extends State<SignInPage> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontFamily: 'NotoSans',
+                                    fontWeight: FontWeight.w500,
                                     fontSize: ScreenUtil().setSp(13)
                                 ),
                             ),
@@ -512,7 +513,7 @@ class _SignInPageState extends State<SignInPage> {
                 },
                 color: color,
                 child: Text(AppLocalizations.of(context).tr('sign.signIn.signIn'), style: TextStyle(
-                    color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')
+                    color: Colors.white, fontSize: 16, fontFamily: 'NotoSans', fontWeight: FontWeight.w500)
                 ),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenUtil().setHeight(10.0))),
             ),
@@ -540,7 +541,9 @@ class _SignInPageState extends State<SignInPage> {
                             style: TextStyle(
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
-                                fontFamily: 'NotoSans')
+                                fontFamily: 'NotoSans',
+                                fontWeight: FontWeight.w400,
+                            )
                         )
                     ),
                     InkWell(
@@ -549,7 +552,7 @@ class _SignInPageState extends State<SignInPage> {
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
                                 fontFamily: 'NotoSans',
-                                fontWeight: FontWeight.w600
+                                fontWeight: FontWeight.w500
                             )
                         ),
                         onTap: () {

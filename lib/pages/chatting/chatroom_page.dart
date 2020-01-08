@@ -2,8 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:collection';
+import 'dart:typed_data';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
-import 'package:image/image.dart' as Im;
+import 'package:Hwa/utility/action_sheet.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
@@ -11,10 +14,8 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -23,17 +24,17 @@ import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
 
 import 'package:Hwa/data/models/chat_message.dart';
-import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 
 import 'package:Hwa/pages/chatting/notice_page.dart';
 import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:dio/dio.dart';
+import 'package:mime/mime.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 
 /*
@@ -80,7 +81,7 @@ class ChatScreenState extends State<ChatroomPage> {
     // 업로드 중인 이미지 갯수
     int uploadingImageCount;
     SharedPreferences prefs;
-    File imageFile;
+
     // 로딩
     bool isLoading;
     // 하단 메뉴 관련
@@ -104,6 +105,7 @@ class ChatScreenState extends State<ChatroomPage> {
     int inputLineCount;
     // 입력칸 높이
     int _inputHeight;
+    double sameSize;
 
     // Stomp 관련
     StompClient s;
@@ -138,6 +140,7 @@ class ChatScreenState extends State<ChatroomPage> {
         _inputHeight = 36;
         uploadingImageCount = 0;
         joinedUserNow = <ChatJoinInfo>[];
+        sameSize = GetSameSize().main();
 
         if (widget.isP2P != null && widget.isP2P == true) {
             getMyNick();
@@ -222,6 +225,9 @@ class ChatScreenState extends State<ChatroomPage> {
         }
 
         for (var recentMsg in recentMessageList) {
+
+	        if(recentMsg != null && recentMsg.message != null) checkYoutubeAndSetVideo(recentMsg);
+
             messageList.add(recentMsg);
         }
     }
@@ -308,7 +314,7 @@ class ChatScreenState extends State<ChatroomPage> {
                     userNick: message.nickName
                 )
             );
-        } else if (message.chatType == "IMAGE" && message.senderIdx == Constant.USER_IDX) {
+        } else if ((message.chatType == "IMAGE" || message.chatType == "VIDEO")  && message.senderIdx == Constant.USER_IDX) {
             // 업로드 완료된 항목 삭제
             for(var i=0; i<uploadingImageCount; i++) {
                 if (messageList[i].uploaded == true) {
@@ -328,9 +334,46 @@ class ChatScreenState extends State<ChatroomPage> {
             chatTime: message.chatTime
         );
 
+        // youtube 체크
+        checkYoutubeAndSetVideo(cmb);
+
         messageList.insert(uploadingImageCount, cmb);
 
         setState(() {});
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-08
+     * @description : youtube 공유인지 체크, 맞으면 비디오 생성 및 셋팅
+     */
+    void checkYoutubeAndSetVideo(ChatMessage cm){
+    	if(cm != null && cm.message != null){
+		    String lowerCase = cm.message.toLowerCase();
+
+		    if(lowerCase.contains("youtu.be") || lowerCase.contains("youtube")){
+			    // 우튜브 Video Id 추출
+			    String videoId = YoutubePlayer.convertUrlToId(cm.message);
+			    developer.log("### videoId: $videoId");
+
+			    if(videoId != null){
+				    YoutubePlayerController _controller = YoutubePlayerController(
+					    initialVideoId: videoId,
+					    flags: YoutubePlayerFlags(
+						    autoPlay: true,
+					    ),
+				    );
+
+				    String thumbnailUrl = YoutubePlayer.getThumbnail(videoId: videoId);
+
+				    YoutubePlayer video = YoutubePlayer(controller: _controller, thumbnailUrl: thumbnailUrl, showVideoProgressIndicator: true, onReady: (){
+					    developer.log("###### onReady");
+				    });
+
+				    cm.youtubePlayer = video;
+			    }
+		    }
+	    }
     }
 
     /*
@@ -343,7 +386,7 @@ class ChatScreenState extends State<ChatroomPage> {
             chatType: "UPLOADING_IMG",
             roomIdx: chatInfo.chatIdx,
             senderIdx: Constant.USER_IDX,
-            nickName: "마이런",     /// 자신의 닉네임 맵핑
+            nickName: null,     /// 자신의 닉네임 맵핑
             thumbnailFile: imgFile,
             chatTime: new DateTime.now().millisecondsSinceEpoch,
             gaugeDriver: gaugeDriver,
@@ -355,96 +398,93 @@ class ChatScreenState extends State<ChatroomPage> {
         });
     }
 
-    /*
-     * @author : hs
-     * @date : 2019-12-24
-     * @description : 앨범에서 이미지 선택 후 업로드
-    */
-    Future getImage() async {
-        imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-        GaugeDriver gaugeDriver = new GaugeDriver();
+	/*
+	 * @author : hk
+	 * @date : 2020-01-08
+	 * @description : 단화방 파일 공유
+	 */
+    Future<void> uploadContents(int type) async {
+	    File contentsFile;
 
-        thumbnailMessage(imageFile, gaugeDriver);
-        uploadingImageCount ++;
-
-        if (imageFile != null) {
-
-        	// 파일 이외의 추가 파라미터 셋팅
-	        Map<String, dynamic> param = {
-	        	"chat_idx" : chatInfo.chatIdx
-	        };
-
-	        // 파일 업로드 API 호출
-	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
-                developer.log("$sent : $total");
-                for(var i=0; i<uploadingImageCount; i++) {
-                    if (messageList[i].thumbnailFile.path == imageFile.path) {
-                        messageList[i].gaugeDriver.drive(sent/total);
-
-                        if(sent == total) {
-                            messageList[i].uploaded = true;
-                        }
-                    } else {
-	                    break;
-                    }
-                }
-	        });
-
-	        if(response.statusCode == 200){
-
-		        await precacheImage(
-				        CachedNetworkImageProvider(
-						        "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
-				        ), context);
-
-		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
-	        }
+	    switch(type) {
+	        case 0: contentsFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+	            break;
+            case 1: contentsFile = await ImagePicker.pickVideo(source: ImageSource.gallery);
+                break;
+            case 2: contentsFile = await ImagePicker.pickImage(source: ImageSource.camera);
+                break;
+            case 3: contentsFile = await ImagePicker.pickVideo(source: ImageSource.camera);
+                break;
         }
-    }
 
-    /*
-     * @author : hs
-     * @date : 2019-12-25
-     * @description : 카메라 촬영 후 업로드
-    */
-    Future getCamera() async {
-        imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
-        GaugeDriver gaugeDriver = new GaugeDriver();
+	    if (contentsFile != null) {
+		    GaugeDriver gaugeDriver = new GaugeDriver();
 
-        thumbnailMessage(imageFile, gaugeDriver);
-        uploadingImageCount ++;
+		    thumbnailMessage(contentsFile, gaugeDriver);
+		    uploadingImageCount ++;
 
-        if (imageFile != null) {
-            // 파일 이외의 추가 파라미터 셋팅
-            Map<String, dynamic> param = {
-	            "chat_idx" : chatInfo.chatIdx
-            };
+		    // 파일 이외의 추가 파라미터 셋팅
+		    Map<String, dynamic> param = {
+			    "chat_idx" : chatInfo.chatIdx
+		    };
 
-            // 파일 업로드 API 호출
-            Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
-                developer.log("$sent : $total");
-                for(var i=0; i<uploadingImageCount; i++) {
-                    if (messageList[i].thumbnailFile.path == imageFile.path) {
-                        messageList[i].gaugeDriver.drive(sent/total);
+		    String mimeStr = lookupMimeType(contentsFile.path);
 
-                        if(sent == total) {
-                            messageList[i].uploaded = true;
-                        }
-                    }
-                }
-            });
+		    // image, video... TODO 일반 파일 추가
+		    String fileType = (mimeStr != null ? mimeStr.split("/")[0] : null);
 
-            if(response.statusCode == 200){
+		    developer.log("####### uploadFile. mimeStr: $mimeStr, fileType: $fileType");
 
-	            await precacheImage(
-		            CachedNetworkImageProvider(
-			            "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
-		            ), context);
+            if (fileType == "video") {
+                Uint8List imageThumbnailString =  await VideoThumbnail.thumbnailData(
+                    video: contentsFile.path,
+                    imageFormat: ImageFormat.WEBP,
+                    timeMs: 0,
+                    quality: 50,
+                );
 
-            	// 썸네일 URI 전송
-	            onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
+                File thumbFile = File.fromRawPath(imageThumbnailString);
             }
-        }
+
+		    // 파일 업로드 API 호출
+		    Response response = await CallApi.fileUploadCall(
+				    url: "/api/v2/chat/share/file"
+				    , filePath: contentsFile.path
+				    , paramMap: param
+				    , contentsType: mimeStr
+				    , onSendProgress: (int sent, int total){
+
+			    developer.log("$sent : $total");
+
+			    for(var i=0; i<uploadingImageCount; i++) {
+				    if (messageList[i].thumbnailFile.path == contentsFile.path) {
+					    messageList[i].gaugeDriver.drive(sent/total);
+
+					    if(sent == total) {
+						    messageList[i].uploaded = true;
+					    }
+				    }
+
+				    break;
+			    }
+		    }, onError: (DioError e){
+			    // TODO 서버 에러일 경우 처리
+			    developer.log("########### DioError");
+			    developer.log(e.toString());
+			    developer.log(e.message);
+			    developer.log(e.type.toString());
+		    });
+
+		    if(response.statusCode == 200){
+			    await precacheImage(
+					    CachedNetworkImageProvider(
+							    "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
+					    ), context);
+
+			    // 썸네일 URI 전송
+			    onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", fileType.toUpperCase());
+		    }
+	    }
     }
 
     /*
@@ -479,25 +519,23 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2020-01-05
      * @description : 메세지 전송
     */
-    void onSendMessage(dynamic content, int type) {
+    void onSendMessage(dynamic content, String type) {
         String message;
         String sendType;
 
-        if (content.runtimeType == String) {
-            if (content.trim() != '') {
-                textEditingController.clear();
-                sendType = type == 0
-                    ? "TALK"
-                    : type == 1
-                    ? "IMAGE"
-                    : "SERVICE";
-            }
-        } else {
-            sendType = "IMAGE";
+        if (content.trim() != '') {
+            textEditingController.clear();
+//            switch(type){
+//	            case 0: sendType = "TALK"; break;
+//	            case 1: sendType = "IMAGE"; break;
+//	            case 2: sendType = "VIDEO"; break;
+//	            case 3: sendType = "SERVICE"; break;
+//	            case 4: sendType = "FILE"; break;
+//            }
         }
 
         final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
-        message = '{"type": "'+ sendType +'","roomIdx":' + chatInfo.chatIdx.toString() + ',"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
+        message = '{"type": "'+ type +'","roomIdx":' + chatInfo.chatIdx.toString() + ',"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
 
         /// MESSAGE SEND
         s.send(
@@ -626,7 +664,7 @@ class ChatScreenState extends State<ChatroomPage> {
                     children: <Widget>[
                         Container(
                             decoration: BoxDecoration(
-                                color: Color.fromRGBO(210, 217, 250, 1),
+                                color: Color.fromRGBO(250, 250, 251, 1),
                                 border: Border(
                                     top: BorderSide(
                                         width: ScreenUtil().setWidth(0.5),
@@ -800,36 +838,9 @@ class ChatScreenState extends State<ChatroomPage> {
         );
     }
 
-    Container chatIconClose() {
-        return Container(
-            child:
-            GestureDetector(
-                child: Container(
-                    padding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(4),
-                        right: ScreenUtil().setWidth(4),
-                        bottom: ScreenUtil().setHeight(16),
-                    ),
-                    width: ScreenUtil().setWidth(26),
-                    height: ScreenUtil().setHeight(50),
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image:AssetImage('assets/images/icon/iconAttachFold.png')
-                        ),
-                    )
-                ),
-                onTap:(){
-                    setState(() {
-                        isFocused = false;
-                    });
-                }
-            ),
-        );
-    }
-
     BoxDecoration setIcon(String iconPath) {
         return BoxDecoration(
-            color: Color.fromRGBO(77, 96, 191, 1),
+            color: Color.fromRGBO(245, 245, 245, 1),
             image: DecorationImage(
                 image:AssetImage(iconPath)
             ),
@@ -850,18 +861,17 @@ class ChatScreenState extends State<ChatroomPage> {
                     // Edit text
                     Container(
                         width: isFocused ? ScreenUtil().setWidth(343) :ScreenUtil().setWidth(230),
-                        margin: EdgeInsets.only(
-                            top: ScreenUtil().setHeight(6),
-                            bottom: ScreenUtil().setHeight(6)
+                        margin: EdgeInsets.symmetric(
+                            vertical: sameSize*6
                         ),
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(245, 245, 245, 1),
                             border: Border.all(
                                 color: Color.fromRGBO(214, 214, 214, 1),
-                                width: ScreenUtil().setWidth(1)
+                                width: sameSize*1
                             ),
                             borderRadius: BorderRadius.all(
-                                Radius.circular(ScreenUtil().setWidth(18))
+                                Radius.circular(sameSize*18)
                             )
                         ),
                         child: Row(
@@ -870,15 +880,14 @@ class ChatScreenState extends State<ChatroomPage> {
                                 Expanded (
                                     child: Container(
                                         width: isFocused ? ScreenUtil().setWidth(301) : ScreenUtil().setWidth(188),
-                                        height: ScreenUtil().setHeight(_inputHeight),
+                                        height: sameSize*(_inputHeight - 2),
                                         margin: EdgeInsets.only(right: ScreenUtil().setWidth(8)),
 
                                         child: new ConstrainedBox(
                                             constraints: BoxConstraints(
-                                                minHeight: ScreenUtil().setHeight(36),
-                                                maxHeight: ScreenUtil().setHeight(106)
+                                                minHeight: sameSize*34,
+                                                maxHeight: sameSize*106
                                             ),
-
 
                                             child: new SingleChildScrollView(
                                                 scrollDirection: Axis.vertical,
@@ -897,9 +906,9 @@ class ChatScreenState extends State<ChatroomPage> {
                                                     decoration: InputDecoration(
                                                         border: InputBorder.none,
                                                         contentPadding: EdgeInsets.only(
-                                                            left: ScreenUtil().setWidth(13),
-                                                            right: ScreenUtil().setWidth(9),
-                                                            bottom: ScreenUtil().setHeight(8)
+                                                            left: sameSize*13,
+                                                            right: sameSize*9,
+                                                            bottom: sameSize*8
                                                         )
                                                     ),
                                                     autofocus: false,
@@ -938,15 +947,15 @@ class ChatScreenState extends State<ChatroomPage> {
                                 // Button send message
                                 Container(
                                     margin: EdgeInsets.only(
-                                        right: ScreenUtil().setWidth(4),
-                                        bottom: ScreenUtil().setWidth(4),
-                                        top: ScreenUtil().setWidth(4)
+                                        right: ScreenUtil().setWidth(3),
+                                        bottom: ScreenUtil().setWidth(3),
+                                        top: ScreenUtil().setWidth(3)
                                     ),
                                     child:
                                     GestureDetector(
                                         child: Container(
-                                            width: ScreenUtil().setWidth(28),
-                                            height: ScreenUtil().setHeight(28),
+                                            width: sameSize*28,
+                                            height: sameSize*28,
                                             decoration: BoxDecoration(
                                                 color: isEmpty
                                                             ? Color.fromRGBO(204, 204, 204, 1)
@@ -959,12 +968,12 @@ class ChatScreenState extends State<ChatroomPage> {
                                             )
                                         ),
                                         onTap:(){
-                                            onSendMessage(textEditingController.text, 0);
+                                            onSendMessage(textEditingController.text, "TALK");
                                         }
                                     ),
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(ScreenUtil().setWidth(18))
+                                            Radius.circular(sameSize*18)
                                         )
                                     ),
                                 ),
@@ -972,6 +981,33 @@ class ChatScreenState extends State<ChatroomPage> {
                         )
                     ),
                 ],
+            ),
+        );
+    }
+
+    Container chatIconClose() {
+        return Container(
+            child:
+            GestureDetector(
+                child: Container(
+                    padding: EdgeInsets.only(
+                        left: sameSize*4,
+                        right: sameSize*4,
+                        bottom: sameSize*16,
+                    ),
+                    width: sameSize*26,
+                    height: sameSize*48,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image:AssetImage('assets/images/icon/iconAttachFold.png')
+                        ),
+                    )
+                ),
+                onTap:(){
+                    setState(() {
+                        isFocused = false;
+                    });
+                }
             ),
         );
     }
@@ -992,7 +1028,7 @@ class ChatScreenState extends State<ChatroomPage> {
                             child: Container(
                                 margin: EdgeInsets.only(right: ScreenUtil().setWidth(0)),
                                 width: ScreenUtil().setWidth(32),
-                                height: ScreenUtil().setHeight(32),
+                                height: ScreenUtil().setWidth(32),
                                 decoration: setIcon(
                                     /// 하단 메뉴 서비스 추가 시 코드 교체
 //                                    isShowMenu
@@ -1019,11 +1055,13 @@ class ChatScreenState extends State<ChatroomPage> {
                         GestureDetector(
                             child: Container(
                                 width: ScreenUtil().setWidth(32),
-                                height: ScreenUtil().setHeight(32),
+                                height: ScreenUtil().setWidth(32),
                                 decoration: setIcon('assets/images/icon/iconAttachCamera.png')
                             ),
                             onTap:(){
-                                getCamera();
+                                ActionSheetState().showActionSheet(
+                                    context: context, child: _buildActionSheet(true)
+                                );
                             }
                         ),
                         color: Colors.white,
@@ -1037,16 +1075,53 @@ class ChatScreenState extends State<ChatroomPage> {
                         GestureDetector(
                             child: Container(
                                 width: ScreenUtil().setWidth(32),
-                                height: ScreenUtil().setHeight(32),
+                                height: ScreenUtil().setWidth(32),
                                 decoration: setIcon('assets/images/icon/iconAttachPhoto.png')
                             ),
                             onTap:(){
-                                getImage();
+                                ActionSheetState().showActionSheet(
+                                    context: context, child: _buildActionSheet(false)
+                                );
                             }
                         ),
                         color: Colors.white,
                     ),
                 ],
+            ),
+        );
+    }
+
+    Widget _buildActionSheet(bool fromCamera) {
+        return CupertinoActionSheet(
+            message: Text(
+                "단화방에 공유할 미디어를 선택해주세요.",
+                style: TextStyle(
+                    fontFamily: "NotoSans",
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenUtil().setSp(14),
+                ),
+            ),
+            actions: <Widget>[
+                CupertinoActionSheetAction(
+                    child: Text("사진"),
+                    onPressed: () {
+                        fromCamera ?  uploadContents(2) : uploadContents(0);
+                        Navigator.pop(context);
+                    },
+                ),
+                CupertinoActionSheetAction(
+                    child: Text("동영상"),
+                    onPressed: () {
+                        fromCamera ?  uploadContents(3) : uploadContents(1);
+                        Navigator.pop(context);
+                    },
+                )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+                child: Text("취소"),
+                onPressed: () {
+                    Navigator.pop(context);
+                },
             ),
         );
     }
@@ -1143,7 +1218,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                             }),
                                             cardShareButton(2, (){
                                                 /// FileUpload 명함
-                                                onSendMessage('assets/images/businesscard.png',2);
+                                                onSendMessage('assets/images/businesscard.png', "SERVICE");
                                                 Navigator.of(context, rootNavigator: true).pop('dialog');
                                             }),
                                         ],

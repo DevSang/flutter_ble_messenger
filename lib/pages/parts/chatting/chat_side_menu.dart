@@ -9,6 +9,7 @@ import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/get_same_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,6 +49,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     bool isCreated;
     bool isLiked;
     int likeCount;
+    double sameSize;
     final List<ChatJoinInfo> chatJoinInfoList;
     final List<ChatJoinInfo> joinedUserNow;
 
@@ -59,6 +61,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     void initState() {
         super.initState();
         isCreated = widget.isCreated ?? false;
+        sameSize = GetSameSize().main();
         _getChatJoinInfo();
     }
 
@@ -216,8 +219,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                             Text(
                                                                 chatInfo.title.length > 13 ? chatInfo.title.substring(0, 13) + ".." : chatInfo.title,
                                                                 style: TextStyle(
-                                                                    fontFamily: "assets/fonts/NotoSansKR-Medium.otf",
                                                                     height: 1,
+                                                                    fontFamily: 'NotoSans',
+                                                                    fontWeight: FontWeight.w600,
                                                                     fontSize: ScreenUtil().setSp(16),
                                                                     letterSpacing: ScreenUtil().setWidth(-0.8),
                                                                     color: Color.fromRGBO(39, 39, 39, 1)
@@ -289,9 +293,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                         style: TextStyle(
                                                             height: 1,
                                                             fontFamily: 'NotoSans',
-                                                            fontWeight: FontWeight.w400,
+                                                            fontWeight: FontWeight.w500,
                                                             color:Color.fromRGBO(107, 107, 107, 1),
-                                                            fontSize: ScreenUtil().setSp(13),
+                                                            fontSize: ScreenUtil().setSp(12.5),
                                                             letterSpacing: ScreenUtil().setWidth(-0.33)
                                                         ),
                                                     ),
@@ -325,9 +329,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                             style: TextStyle(
                                                                 height: 1,
                                                                 fontFamily: 'NotoSans',
-                                                                fontWeight: FontWeight.w400,
+                                                                fontWeight: FontWeight.w500,
                                                                 color:Color.fromRGBO(107, 107, 107, 1),
-                                                                fontSize: ScreenUtil().setSp(13),
+                                                                fontSize: ScreenUtil().setSp(12.5),
                                                                 letterSpacing: ScreenUtil().setWidth(-0.33)
                                                             ),
                                                         ),
@@ -359,7 +363,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                         ),
                         Container(
                             width: ScreenUtil().setWidth(310),
-                            height: ScreenUtil().setHeight(48),
+                            height: sameSize*48,
                             padding: EdgeInsets.only(
                               left: ScreenUtil().setWidth(14),
                               right: ScreenUtil().setWidth(14)
@@ -372,8 +376,8 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                 children: <Widget>[
                                     InkWell(
                                         child: Container(
-                                            width: ScreenUtil().setWidth(28),
-                                            height: ScreenUtil().setHeight(28),
+                                            width: sameSize*28,
+                                            height: sameSize*28,
                                             decoration: BoxDecoration(
                                                 image: DecorationImage(
                                                     image:AssetImage("assets/images/icon/iconExit.png")
@@ -387,8 +391,8 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                     Constant.USER_IDX == chatInfo.createUser.userIdx
                                         ? InkWell(
                                             child: Container(
-                                                width: ScreenUtil().setWidth(28),
-                                                height: ScreenUtil().setHeight(28),
+                                                width: sameSize*28,
+                                                height: sameSize*28,
                                                 decoration: BoxDecoration(
                                                     image: DecorationImage(
                                                         image:AssetImage("assets/images/icon/iconSetting.png")
@@ -421,7 +425,15 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             image: DecorationImage(
                 image:AssetImage("assets/images/icon/iconLike.png")
             ),
-            shape: BoxShape.circle
+            shape: BoxShape.circle,
+            boxShadow: [
+                new BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.16),
+                    blurRadius: ScreenUtil().setWidth(3), // has the effect of softening the shadow
+                    spreadRadius: ScreenUtil().setWidth(0),
+                    offset: new Offset(0, ScreenUtil().setHeight(1.5))
+                )
+            ]
         );
 
     }
@@ -433,7 +445,15 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             image: DecorationImage(
                 image:AssetImage("assets/images/icon/iconLike.png")
             ),
-            shape: BoxShape.circle
+            shape: BoxShape.circle,
+            boxShadow: [
+                new BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.16),
+                    blurRadius: ScreenUtil().setWidth(3), // has the effect of softening the shadow
+                    spreadRadius: ScreenUtil().setWidth(0),
+                    offset: new Offset(0, ScreenUtil().setHeight(1.5))
+                )
+            ]
         );
 
     }
