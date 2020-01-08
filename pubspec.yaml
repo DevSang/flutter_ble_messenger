@@ -58,13 +58,10 @@ dependencies:
 
 
     ### Comment-HS : 본인이 추가한 Package는 아니지만 아래 목록 검토 필요해보임 (몇몇개는 쓰이는 것들)
-    rxdart:
     alphabet_list_scroll_view:
     flutter_slidable:
     expandable: ^4.0.1
     fluttertoast: ^3.1.3
-
-
 
 dev_dependencies:
     flutter_test:
