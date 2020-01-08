@@ -241,14 +241,14 @@ class _SignInPageState extends State<SignInPage> {
             if (response.statusCode == 200 || response.statusCode == 202) {
                 developer.log("# Auth code requset info :" + response.body);
                 developer.log("# 인증문자 요청에 성공하였습니다.");
-                RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
+                RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.request200') , ToastGravity.TOP);
             } else {
                 if(response.statusCode == 406){
                     developer.log("# This is not a HWA user.");
-                    RedToast.toast("가입 되어있지 않은 번호입니다. 번호를 다시 확인해주세요.",ToastGravity.TOP);
+                    RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.request406'),ToastGravity.TOP);
                 } else {
                     developer.log('# Request failed：${response.statusCode}');
-                    RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+                    RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.requestFail'),ToastGravity.TOP);
                 }
             }
         }
@@ -264,7 +264,7 @@ class _SignInPageState extends State<SignInPage> {
         try {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
-                RedToast.toast("인증번호를 입력해주세요.", ToastGravity.TOP);
+                RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.inputCode'), ToastGravity.TOP);
             } else {
                 developer.log("# Auth number : " + _authCodeController.text);
                 String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
@@ -298,11 +298,11 @@ class _SignInPageState extends State<SignInPage> {
                     SetFCM.firebaseCloudMessagingListeners();
                     HomePageState.initApiCall();
 
-                    RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+                    RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.loginSuccess'), ToastGravity.TOP);
                     developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
                 } else {
-                    RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
+                    RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.requestFail'), ToastGravity.TOP);
                     developer.log('#Request failed：${response.statusCode}');
                 }
             }
@@ -630,7 +630,6 @@ class _SignInPageState extends State<SignInPage> {
                     )
                 ],
             )
-
         );
     }
 }

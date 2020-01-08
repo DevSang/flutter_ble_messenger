@@ -7,7 +7,15 @@
             "signIn": "로그인",
             "notHaveAccount": "계정이 없으세요? ",
             "signUp": "회원가입",
-            "snsSignIn": "SNS 계정으로 간편 로그인 하세요."
+            "snsSignIn": "SNS 계정으로 간편 로그인 하세요.",
+            "toast": {
+                "request200" : "인증문자를 요청했습니다.",
+                "request406" : "가입 되어있지 않은 번호입니다. 번호를 다시 확인해주세요.",
+                "requestFail": "서버 요청에 실패하였습니다.",
+                "inputPhone": "휴대폰 번호를 입력해주세요.",
+                "inputCode": "인증번호를 입력해주세요.",
+                "loginSuccess": "로그인에 성공하였습니다."
+            }
         },
         "signUp": {
             "signUpAppbar": "회원가입",

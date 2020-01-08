@@ -7,7 +7,15 @@
             "signIn": "Sign In",
             "notHaveAccount": "Don't have an account? ",
             "signUp": "Sign Up",
-            "snsSignIn": "Easy login with your SNS account."
+            "snsSignIn": "Easy login with your SNS account.",
+          "toast": {
+            "request200" : "You have requested a verification code.",
+            "request406" : "This number is not registered. Please check the number again.",
+            "requestFail": "The server request failed.",
+            "inputPhone": "Please enter your mobile number.",
+            "inputCode": "Please enter the verification code.",
+            "loginSuccess": "You have been logged in"
+          }
         },
         "signUp": {
             "signUpAppbar": "Sign In",
