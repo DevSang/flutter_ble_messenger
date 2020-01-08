@@ -511,7 +511,83 @@ class ChatMessageListState extends State<ChatMessageList> {
         );
     }
 
-    // 업로드 중 이미지 메세지 스타일
+    // 이미지 메세지 스타일
+    Widget videoBubble(ChatMessage chatMessage, bool isLastSendMessage, bool receivedMsg) {
+        return Container(
+            margin: EdgeInsets.only(
+                top:
+                receivedMsg
+                    ? ScreenUtil.getInstance().setHeight(9)
+                    : ScreenUtil.getInstance().setHeight(0),
+                bottom: ScreenUtil.getInstance().setHeight(14)
+            ),
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: receivedMsg ? MainAxisAlignment.start : MainAxisAlignment.end,
+                children: <Widget>[
+                    !receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container() ,
+                    GestureDetector(
+                        child: Container(
+                            width: ScreenUtil().setWidth(230),
+                            height: ScreenUtil().setWidth(230),
+                            child: Stack(
+                                children: <Widget>[
+                                    ClipRRect(
+                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
+                                        child: CachedNetworkImage(
+                                            imageUrl: chatMessage.message,
+                                            fadeInDuration: const Duration(milliseconds: 0),
+                                            placeholder: (context, url) =>
+                                                Container(
+                                                    width: ScreenUtil().setWidth(230),
+                                                    height: ScreenUtil().setWidth(230),
+                                                    color: Colors.transparent,
+                                                    child: Center(
+                                                        child: Container(
+                                                            width: ScreenUtil().setWidth(30),
+                                                            height: ScreenUtil().setWidth(30),
+                                                            child: const CircularProgressIndicator(
+                                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                                    Color.fromRGBO(76, 96, 191, 1),
+                                                                )
+                                                            ),
+                                                        ),
+                                                    ),
+                                                ),
+                                            httpHeaders: header,
+                                            fit: BoxFit.cover,
+                                        )
+                                    ),
+                                    Positioned.fill(
+                                        child: Align(
+                                            alignment: Alignment.center,
+                                            child: Container(
+                                                width: ScreenUtil().setWidth(38),
+                                                height: ScreenUtil().setWidth(38),
+                                                decoration: BoxDecoration(
+                                                    image: DecorationImage(
+                                                        image:AssetImage("assets/images/icon/iconVideoPlay.png")
+                                                    ),
+                                                )
+                                            ),
+                                        )
+                                    )
+                                ],
+                            )
+                        ),
+                        onTap: () {
+//                            Navigator.push(
+//                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header))
+//                            );
+                        },
+                    ),
+                    receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
+                ],
+            ),
+        );
+    }
+
+    // 업로드 중 썸네일 스타일
     Widget uploadingImageBubble(ChatMessage chatMessage, bool isLastSendMessage) {
         return Container(
             margin: EdgeInsets.only(
@@ -525,9 +601,6 @@ class ChatMessageListState extends State<ChatMessageList> {
                     Container(
                         width: ScreenUtil().setWidth(230),
                         height: ScreenUtil().setWidth(230),
-                        decoration: BoxDecoration(
-                            borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
-                        ),
                         child: Stack(
                             children: <Widget>[
                                 ClipRRect(
