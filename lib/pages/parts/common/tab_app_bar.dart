@@ -167,7 +167,7 @@ class TabAppBarState extends State<TabAppBar> {
                     width: ScreenUtil().setWidth(375),
                     height: ScreenUtil().setHeight(61.5),
                     decoration: BoxDecoration(
-                        color: Color.fromRGBO(250, 250, 250, 1),
+                        color: Color.fromRGBO(255, 255, 255, 1),
                         boxShadow: [
                             new BoxShadow(
                                 color: Color.fromRGBO(178, 178, 178, 0.8),

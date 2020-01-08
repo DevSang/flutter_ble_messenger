@@ -117,7 +117,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 				        width: ScreenUtil().setWidth(375),
 				        height: ScreenUtil().setHeight(61.5),
 				        decoration: BoxDecoration(
-						        color: Color.fromRGBO(250, 250, 250, 1),
+						        color: Color.fromRGBO(255, 255, 255, 1),
 						        boxShadow: [
 							        new BoxShadow(
 									        color: Color.fromRGBO(178, 178, 178, 0.8),
@@ -235,7 +235,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
             bottomNavigationBar: Theme(
                 data: Theme.of(context).copyWith(
                 // sets the background color of the `BottomNavigationBar`
-                    canvasColor: Color.fromRGBO(250, 250, 250, 1)
+                    canvasColor: Color.fromRGBO(255, 255, 255, 1)
                 ),
                 child: new BottomNavigationBar(
                     currentIndex: _currentIndex,

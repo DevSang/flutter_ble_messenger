@@ -42,6 +42,7 @@ dependencies:
     provider:                       # Provider
 
     ### Add by SH ###
+    js: ^0.6.0
     kvsql: ^0.3.0
     sqlcool: ^4.2.0
     flutter_facebook_login: 3.0.0   # Social Login - Facebook
@@ -161,6 +162,7 @@ flutter:
     - assets/images/icon/iconWallet.png
     - assets/images/icon/iconLock.png
     - assets/images/icon/iconUnlock.png
+    - assets/images/icon/iconUnfold.png
     - assets/images/icon/iconSendMessage.png
     - assets/images/icon/iconSetting.png
     - assets/images/icon/navIconHot.png

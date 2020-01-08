@@ -110,7 +110,8 @@ class HomePageState extends State<HomePage> {
                         phone_number: friendInfo['phone_number'],
                         profile_picture_idx: friendInfo['profile_picture_idx'],
                         business_card_idx: friendInfo['business_card_idx'],
-                        user_status: friendInfo['user_status']
+                        user_status: friendInfo['user_status'],
+                        description: friendInfo['description']
                     )
                 );
             }
