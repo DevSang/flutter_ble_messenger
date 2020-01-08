@@ -114,6 +114,7 @@ flutter:
     - assets/images/background/noBleBackgroundImg.png
     - assets/images/background/noLocationBackgroundImg.png
     - assets/images/background/commonBackgroundImg.png
+    - assets/images/background/noFriendImg.png
     #SNS Image
     - assets/images/sns/snsIconFacebook.png
     - assets/images/sns/snsIconGoogle.png
