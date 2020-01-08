@@ -591,10 +591,12 @@ class HwaTabState extends State<HwaTab> {
 //            developer.log("##notAllowedLoc : " + notAllowedLoc.toString());
 
             String mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
-            String titleText = "현재 위치 단화방이 없습니다.";
-            String subTitle = "원하는 방을 만들어 보실래요?";
-            String buttonText = "방 만들기";
+            String titleText =(AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.titleText'));
+            String subTitle =(AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.subTitle'));
+            String buttonText = (AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.buttonText'));
             Function buttonClick = displayDialog;
+
+
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
                 titleText= (AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.titleText'));

@@ -7,7 +7,15 @@
             "signIn": "Sign In",
             "notHaveAccount": "Don't have an account? ",
             "signUp": "Sign Up",
-            "snsSignIn": "Easy login with your SNS account."
+            "snsSignIn": "Easy login with your SNS account.",
+          "toast": {
+            "request200" : "You have requested a verification code.",
+            "request406" : "This number is not registered. Please check the number again.",
+            "requestFail": "The server request failed.",
+            "inputPhone": "Please enter your mobile number.",
+            "inputCode": "Please enter the verification code.",
+            "loginSuccess": "You have been logged in"
+          }
         },
         "signUp": {
             "signUpAppbar": "Sign In",
@@ -16,7 +24,18 @@
             "getAuthCode": "Get Code",
             "textAuthCode": "Enter your Auth Code",
             "authCode": "Auth Code",
-            "nextBtn": "Next"
+            "nextBtn": "Next",
+            "toast": {
+            "request200": "You have requested a verification code.",
+            "inputPhone": "Please enter your mobile number",
+            "alreadyUser": "You are already an authenticated user.",
+            "alreadyPhone": "This phone number is already taken.",
+            "inputCode": "Please enter the verification code.",
+            "authFinish": "Certification completed.",
+            "authFail": "Authentication failed. Please check the verification number.",
+            "start": "Here we are. Start danhwa with friends around you.",
+            "fail": "Server request failed"
+          }
         },
         "signUpName": {
             "signUpAppbar": "Sign In",
@@ -24,7 +43,10 @@
             "NicknameValidator": "Please enter a nickname",
             "NicknameAlready": "This nickname is already using",
             "nickName": "Please enter your nickname",
-            "startBtn": "Start"
+            "startBtn": "Start",
+            "toast": {
+                "start": "Here we are. Start danhwa with friends around you."
+            }
         }
     },
     "tapMenuTitle": {
