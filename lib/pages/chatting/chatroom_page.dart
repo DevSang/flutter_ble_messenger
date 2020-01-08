@@ -31,12 +31,10 @@ import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 
 import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:path/path.dart' as p;
 import 'package:mime/mime.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 
 /*
@@ -227,6 +225,9 @@ class ChatScreenState extends State<ChatroomPage> {
         }
 
         for (var recentMsg in recentMessageList) {
+
+	        if(recentMsg != null && recentMsg.message != null) checkYoutubeAndSetVideo(recentMsg);
+
             messageList.add(recentMsg);
         }
     }
@@ -333,9 +334,46 @@ class ChatScreenState extends State<ChatroomPage> {
             chatTime: message.chatTime
         );
 
+        // youtube 체크
+        checkYoutubeAndSetVideo(cmb);
+
         messageList.insert(uploadingImageCount, cmb);
 
         setState(() {});
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-08
+     * @description : youtube 공유인지 체크, 맞으면 비디오 생성 및 셋팅
+     */
+    void checkYoutubeAndSetVideo(ChatMessage cm){
+    	if(cm != null && cm.message != null){
+		    String lowerCase = cm.message.toLowerCase();
+
+		    if(lowerCase.contains("youtu.be") || lowerCase.contains("youtube")){
+			    // 우튜브 Video Id 추출
+			    String videoId = YoutubePlayer.convertUrlToId(cm.message);
+			    developer.log("### videoId: $videoId");
+
+			    if(videoId != null){
+				    YoutubePlayerController _controller = YoutubePlayerController(
+					    initialVideoId: videoId,
+					    flags: YoutubePlayerFlags(
+						    autoPlay: true,
+					    ),
+				    );
+
+				    String thumbnailUrl = YoutubePlayer.getThumbnail(videoId: videoId);
+
+				    YoutubePlayer video = YoutubePlayer(controller: _controller, thumbnailUrl: thumbnailUrl, showVideoProgressIndicator: true, onReady: (){
+					    developer.log("###### onReady");
+				    });
+
+				    cm.youtubePlayer = video;
+			    }
+		    }
+	    }
     }
 
     /*
@@ -366,55 +404,53 @@ class ChatScreenState extends State<ChatroomPage> {
 	 * @description : 단화방 파일 공유
 	 */
     Future<void> uploadContents(int type) async {
-	    File imageFile;
+	    File contentsFile;
 
 	    switch(type) {
-	        case 0: imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+	        case 0: contentsFile = await ImagePicker.pickImage(source: ImageSource.gallery);
 	            break;
-            case 1: imageFile = await ImagePicker.pickVideo(source: ImageSource.gallery);
+            case 1: contentsFile = await ImagePicker.pickVideo(source: ImageSource.gallery);
                 break;
-            case 2: imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+            case 2: contentsFile = await ImagePicker.pickImage(source: ImageSource.camera);
                 break;
-            case 3: imageFile = await ImagePicker.pickVideo(source: ImageSource.camera);
+            case 3: contentsFile = await ImagePicker.pickVideo(source: ImageSource.camera);
                 break;
         }
 
-	    if (imageFile != null) {
+	    if (contentsFile != null) {
 		    GaugeDriver gaugeDriver = new GaugeDriver();
 
-            String mimeStr = lookupMimeType(imageFile.path);
-
-            // image, video... TODO 일반 파일 추가
-            String fileType = (mimeStr != null ? mimeStr.split("/")[0] : null);
-
-            developer.log("####### uploadFile. mimeStr: $mimeStr, fileType: $fileType");
-
-            print("path ?? "+imageFile.toString());
-
-            if (fileType == "video") {
-
-                Uint8List imageThumbnailString =  await VideoThumbnail.thumbnailData(
-                    video: imageFile.toString(),
-                    imageFormat: ImageFormat.JPEG,
-                    timeMs: 0,
-                    quality: 50,
-                );
-
-                imageFile = File(String.fromCharCodes(imageThumbnailString));
-            }
-
-            thumbnailMessage(imageFile, gaugeDriver);
-            uploadingImageCount ++;
+		    thumbnailMessage(contentsFile, gaugeDriver);
+		    uploadingImageCount ++;
 
 		    // 파일 이외의 추가 파라미터 셋팅
 		    Map<String, dynamic> param = {
 			    "chat_idx" : chatInfo.chatIdx
 		    };
 
+		    String mimeStr = lookupMimeType(contentsFile.path);
+
+		    // image, video... TODO 일반 파일 추가
+		    String fileType = (mimeStr != null ? mimeStr.split("/")[0] : null);
+
+		    developer.log("####### uploadFile. mimeStr: $mimeStr, fileType: $fileType");
+
+            if (fileType == "video") {
+
+                Uint8List imageThumbnailString =  await VideoThumbnail.thumbnailData(
+                    video: contentsFile.toString(),
+                    imageFormat: ImageFormat.JPEG,
+                    timeMs: 0,
+                    quality: 50,
+                );
+
+                contentsFile = File(String.fromCharCodes(imageThumbnailString));
+            }
+
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(
 				    url: "/api/v2/chat/share/file"
-				    , filePath: imageFile.path
+				    , filePath: contentsFile.path
 				    , paramMap: param
 				    , contentsType: mimeStr
 				    , onSendProgress: (int sent, int total){
@@ -422,7 +458,7 @@ class ChatScreenState extends State<ChatroomPage> {
 			    developer.log("$sent : $total");
 
 			    for(var i=0; i<uploadingImageCount; i++) {
-				    if (messageList[i].thumbnailFile.path == imageFile.path) {
+				    if (messageList[i].thumbnailFile.path == contentsFile.path) {
 					    messageList[i].gaugeDriver.drive(sent/total);
 
 					    if(sent == total) {
