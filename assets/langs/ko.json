@@ -136,6 +136,7 @@
            "leave": "탈퇴하기",
            "cancel": "취소",
            "save": "저장하기",
-           "textIntroduce": "소개글을 입력해 보세요 :)"
+           "textIntroduce": "소개글을 입력해 보세요 :)",
+           "opensource": "오픈소스"
     }
 }

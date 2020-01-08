@@ -25,6 +25,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/pages/policy/opensource_policy.dart';
 
 
 
@@ -419,6 +420,12 @@ class _ProfilePageState extends State <ProfilePage>{
 
                   buildTextInfoItem((AppLocalizations.of(context).tr('profile.leave')), "", true),
 
+                InkWell(
+                    child: policyBtn((AppLocalizations.of(context).tr('profile.opensource')), "", false),
+                    onTap:() {
+                      Navigator.pushNamed(context, "/opensource");
+                    }
+                ),
               ]
           )
       );
@@ -626,5 +633,41 @@ class _ProfilePageState extends State <ProfilePage>{
                 ],
             )
         );
+    }
+
+    Widget policyBtn(String tr, String value, bool isLast,) {
+      return Container(
+          height: ScreenUtil().setHeight(49),
+          margin: EdgeInsets.only(
+              left: ScreenUtil().setWidth(16)
+          ),
+          padding: EdgeInsets.only(
+              right: ScreenUtil().setWidth(8)
+          ),
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      width: ScreenUtil().setWidth(1),
+                      color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                  )
+              )
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                  "오픈소스",
+                  style: TextStyle(
+                      height: 1,
+                      fontFamily: "NotoSans",
+                      fontWeight: FontWeight.w500,
+                      color: Color.fromRGBO(39, 39, 39, 1),
+                      fontSize: ScreenUtil.getInstance().setSp(15),
+                      letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                  )
+              ),
+            ],
+          )
+      );
     }
 }

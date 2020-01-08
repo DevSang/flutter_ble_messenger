@@ -131,6 +131,7 @@
         "leave": "Account delete",
         "cancel": "Cancel",
         "save": "Save",
-        "textIntroduce": "Please enter an introduction. :)"
+        "textIntroduce": "Please enter an introduction. :)",
+        "opensource": "opensource"
     }
 }
