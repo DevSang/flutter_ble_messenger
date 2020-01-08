@@ -35,7 +35,7 @@ class ChatMessageListState extends State<ChatMessageList> {
 
     int clickedMessage;
 
-    Map<String, String> header;
+    Map<String, String> header = Constant.HEADER;
 
     @override
     Widget build(BuildContext context) {
@@ -486,6 +486,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 child: CachedNetworkImage(
                                     width: ScreenUtil().setWidth(230),
                                     imageUrl: chatMessage.message,
+                                    fadeInDuration: const Duration(milliseconds: 0),
                                     placeholder: (context, url) =>
                                         Container(
                                             width: ScreenUtil().setWidth(230),
@@ -504,7 +505,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                             ),
                                         ),
                                     httpHeaders: header,
-                                    fit: BoxFit.fitWidth,
+                                    fit: BoxFit.cover,
                                 )
                             ),
                         ),
@@ -533,17 +534,17 @@ class ChatMessageListState extends State<ChatMessageList> {
                     Container(
                         width: ScreenUtil().setWidth(230),
                         height: ScreenUtil().setWidth(230),
+                        decoration: BoxDecoration(
+                            borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
+                        ),
                         child: Stack(
                             children: <Widget>[
-                                ClipRRect(
-                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
-                                    child: Image.file(
-                                        chatMessage.thumbnailFile,
-                                        gaplessPlayback: true,
-                                        fit: BoxFit.cover,
-                                        cacheWidth: ScreenUtil().setWidth(230).toInt(),
-                                        cacheHeight: ScreenUtil().setWidth(230).toInt(),
-                                    ),
+                                Image.file(
+                                    chatMessage.thumbnailFile,
+                                    gaplessPlayback: true,
+                                    fit: BoxFit.cover,
+                                    width: ScreenUtil().setWidth(230),
+                                    height: ScreenUtil().setWidth(230),
                                 ),
                                 Positioned.fill(
                                     child: Align(
