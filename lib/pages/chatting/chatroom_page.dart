@@ -80,7 +80,7 @@ class ChatScreenState extends State<ChatroomPage> {
     // 업로드 중인 이미지 갯수
     int uploadingImageCount;
     SharedPreferences prefs;
-    File imageFile;
+
     // 로딩
     bool isLoading;
     // 하단 메뉴 관련
@@ -355,98 +355,56 @@ class ChatScreenState extends State<ChatroomPage> {
         });
     }
 
-    /*
-     * @author : hs
-     * @date : 2019-12-24
-     * @description : 앨범에서 이미지 선택 후 업로드
-    */
-    Future getImage() async {
-        imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+	/*
+	 * @author : hk
+	 * @date : 2020-01-08
+	 * @description : 단화방 파일 공유
+	 */
+    Future<void> uploadContents(int type) async {
+	    File imageFile;
 
-        if (imageFile != null) {
-	        GaugeDriver gaugeDriver = new GaugeDriver();
+	    if(type == 0){
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+	    } else if(type == 1){
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+	    }
 
-	        thumbnailMessage(imageFile, gaugeDriver);
-	        uploadingImageCount ++;
+	    if (imageFile != null) {
+		    GaugeDriver gaugeDriver = new GaugeDriver();
 
-        	// 파일 이외의 추가 파라미터 셋팅
-	        Map<String, dynamic> param = {
-	        	"chat_idx" : chatInfo.chatIdx
-	        };
+		    thumbnailMessage(imageFile, gaugeDriver);
+		    uploadingImageCount ++;
 
-	        // 파일 업로드 API 호출
-	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
-                developer.log("$sent : $total");
-                for(var i=0; i<uploadingImageCount; i++) {
-                    if (messageList[i].thumbnailFile.path == imageFile.path) {
-                        messageList[i].gaugeDriver.drive(sent/total);
+		    // 파일 이외의 추가 파라미터 셋팅
+		    Map<String, dynamic> param = {
+			    "chat_idx" : chatInfo.chatIdx
+		    };
 
-                        if(sent == total) {
-                            messageList[i].uploaded = true;
-                        }
-                    } else {
-	                    break;
-                    }
-                }
-	        });
+		    // 파일 업로드 API 호출
+		    Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
+			    developer.log("$sent : $total");
+			    for(var i=0; i<uploadingImageCount; i++) {
+				    if (messageList[i].thumbnailFile.path == imageFile.path) {
+					    messageList[i].gaugeDriver.drive(sent/total);
 
-	        if(response.statusCode == 200){
+					    if(sent == total) {
+						    messageList[i].uploaded = true;
+					    }
+				    }
+			    }
+		    });
 
-		        await precacheImage(
-				        CachedNetworkImageProvider(
-						        "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
-				        ), context);
+		    if(response.statusCode == 200){
 
-		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
-	        }
-        }
-    }
+			    await precacheImage(
+					    CachedNetworkImageProvider(
+							    "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
+					    ), context);
 
-    /*
-     * @author : hs
-     * @date : 2019-12-25
-     * @description : 카메라 촬영 후 업로드
-    */
-    Future getCamera() async {
-        imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
-
-
-        if (imageFile != null) {
-	        GaugeDriver gaugeDriver = new GaugeDriver();
-
-	        thumbnailMessage(imageFile, gaugeDriver);
-	        uploadingImageCount ++;
-
-            // 파일 이외의 추가 파라미터 셋팅
-            Map<String, dynamic> param = {
-	            "chat_idx" : chatInfo.chatIdx
-            };
-
-            // 파일 업로드 API 호출
-            Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
-                developer.log("$sent : $total");
-                for(var i=0; i<uploadingImageCount; i++) {
-                    if (messageList[i].thumbnailFile.path == imageFile.path) {
-                        messageList[i].gaugeDriver.drive(sent/total);
-
-                        if(sent == total) {
-                            messageList[i].uploaded = true;
-                        }
-                    }
-                }
-            });
-
-            if(response.statusCode == 200){
-
-	            await precacheImage(
-		            CachedNetworkImageProvider(
-			            "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
-		            ), context);
-
-            	// 썸네일 URI 전송
-	            onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
-            }
-        }
+			    // 썸네일 URI 전송
+			    onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
+		    }
+	    }
     }
 
     /*
@@ -1025,7 +983,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                 decoration: setIcon('assets/images/icon/iconAttachCamera.png')
                             ),
                             onTap:(){
-                                getCamera();
+	                            uploadContents(1);
                             }
                         ),
                         color: Colors.white,
@@ -1043,7 +1001,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                 decoration: setIcon('assets/images/icon/iconAttachPhoto.png')
                             ),
                             onTap:(){
-                                getImage();
+	                            uploadContents(0);
                             }
                         ),
                         color: Colors.white,
