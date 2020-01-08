@@ -4,6 +4,7 @@ import 'package:Hwa/package/fullPhoto.dart';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/gauge_animate.dart';
+import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -34,6 +35,7 @@ class ChatMessageListState extends State<ChatMessageList> {
     ChatMessageListState({this.messageList});
 
     int clickedMessage;
+    double sameSize;
 
     Map<String, String> header = Constant.HEADER;
 
@@ -43,8 +45,8 @@ class ChatMessageListState extends State<ChatMessageList> {
             child: ListView.builder(
                 padding: EdgeInsets.only(
                     top: ScreenUtil.getInstance().setHeight(50),
-                    left: ScreenUtil.getInstance().setWidth(8),
-                    right: ScreenUtil.getInstance().setWidth(8)
+                    left: ScreenUtil.getInstance().setWidth(13),
+                    right: ScreenUtil.getInstance().setWidth(13)
                 ),
                 reverse: true,
 
@@ -57,6 +59,7 @@ class ChatMessageListState extends State<ChatMessageList> {
 
     @override
     void initState() {
+        sameSize = GetSameSize().main();
     	super.initState();
     }
 
@@ -85,13 +88,16 @@ class ChatMessageListState extends State<ChatMessageList> {
     */
     bool checkMessage(int index) {
 
-        if ((index > 0 && messageList != null && messageList[index - 1].senderIdx != Constant.USER_IDX)
-            || index == 0
-            || (index > 0 && messageList != null && messageList[index - 1].chatType != "TALK") ) {
-            return true;
-        } else {
-            return false;
-        }
+        if (index == 0) { return true; }
+        else if (index > 0 && messageList != null) {
+
+            if (((messageList[index].chatType == "TALK") && (messageList[index - 1].senderIdx != Constant.USER_IDX))
+                || ((messageList[index].chatType == "TALK") && (messageList[index - 1].chatType != "TALK"))
+                || ((messageList[index].chatType == "ENTER" || messageList[index].chatType == "QUIT") && (messageList[index - 1].chatType != "ENTER") && (messageList[index - 1].chatType != "QUIT"))) {
+                return true;
+            }
+            else { return false; }
+        } else { return false; }
     }
 
     // 메세지 맵핑
@@ -106,9 +112,9 @@ class ChatMessageListState extends State<ChatMessageList> {
 
         // chatType(TALK, ENTER, QUIT)에 따른 화면 처리
         Widget chatElement = chatMessage.chatType == "ENTER"
-            ? enterNotice(chatMessage)                                          // 입장 메세지
+            ? eqNotice(chatMessage, true, isLastSendMessage)                 // 입장 메세지
             : chatMessage.chatType == "QUIT"
-                ? quitNotice(chatMessage)                                       // 퇴장 메세지
+                ? eqNotice(chatMessage, false, isLastSendMessage)            // 퇴장 메세지
                 : receivedMsg
                     ? receivedLayout(chatIndex, chatMessage, isLastSendMessage) // 받은 메세지
                     : sendLayout(chatIndex, chatMessage, isLastSendMessage);    // 보낸 메세지
@@ -149,8 +155,10 @@ class ChatMessageListState extends State<ChatMessageList> {
                             chatMessage.chatType == "TALK"
                                 ? receivedText(chatIndex, chatMessage)
                                 : chatMessage.chatType == "IMAGE"
-                                    ? imageBubble(chatMessage, isLastSendMessage, true)
-                                    : businessCardBubble(chatMessage, isLastSendMessage, true)
+                                ? imageBubble(chatMessage, isLastSendMessage, true)
+                                : chatMessage.chatType == "VIDEO"
+                                ? videoBubble(chatMessage, isLastSendMessage, true)
+                                : businessCardBubble(chatMessage, isLastSendMessage, true)
                         ],
                     )
                 )
@@ -171,10 +179,12 @@ class ChatMessageListState extends State<ChatMessageList> {
                             chatMessage.chatType == "TALK"
                                 ? sendText(chatIndex, chatMessage, isLastSendMessage)
                                 : chatMessage.chatType == "IMAGE"
-                                ? imageBubble(chatMessage, isLastSendMessage, false)
-                                : chatMessage.chatType == "UPLOADING_IMG"
-                                    ? uploadingImageBubble(chatMessage, isLastSendMessage)
-                                    : businessCardBubble(chatMessage, isLastSendMessage, false)
+                                    ? imageBubble(chatMessage, isLastSendMessage, false)
+                                    : chatMessage.chatType == "VIDEO"
+                                        ? videoBubble(chatMessage, isLastSendMessage, false)
+                                        : chatMessage.chatType == "UPLOADING_IMG"
+                                            ? uploadingImageBubble(chatMessage, isLastSendMessage)
+                                            : businessCardBubble(chatMessage, isLastSendMessage, false)
                         ],
                     )
                 )
@@ -213,6 +223,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                     fontFamily: "NanumSquare",
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                    letterSpacing: ScreenUtil.getInstance().setWidth(-0.28),
                     color: Color.fromRGBO(39, 39, 39, 0.7)
                 )
             ),
@@ -243,14 +254,14 @@ class ChatMessageListState extends State<ChatMessageList> {
                                     ScreenUtil().setWidth(10)
                                 )
                             ),
-                            color: Color.fromRGBO(210, 217, 250, 1)
+                            color: Color.fromRGBO(250, 250, 251, 1)
                         )
                     ),
                 ),
                 // Bubble
                 Container(
                     margin: EdgeInsets.only(
-                        bottom: ScreenUtil.getInstance().setHeight(14)
+                        bottom: sameSize*14
                     ),
                     child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -259,10 +270,10 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 child: Container(
                                     constraints: BoxConstraints(maxWidth: 230),
                                     padding: EdgeInsets.only(
-                                        top: ScreenUtil().setHeight(10.5),
-                                        bottom: ScreenUtil().setHeight(10.5),
-                                        left: ScreenUtil().setWidth(14.5),
-                                        right: ScreenUtil().setWidth(14.5),
+                                        top: sameSize*10.5,
+                                        bottom: sameSize*10.5,
+                                        left: sameSize*14.5,
+                                        right: sameSize*14.5,
                                     ),
                                     child: Text(
                                         chatMessage.message,
@@ -311,7 +322,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                             Container(
-                                color: Color.fromRGBO(166, 181, 255, 1),
+                                color: Color.fromRGBO(76, 96, 191, 1),
                                 alignment: AlignmentDirectional(0.0, 0.0),
                                 width: ScreenUtil.getInstance().setWidth(15),
                                 height: ScreenUtil.getInstance().setHeight(5),
@@ -322,7 +333,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                 ScreenUtil().setWidth(10)
                                             )
                                         ),
-                                        color: Color.fromRGBO(210, 217, 250, 1)
+                                        color: Color.fromRGBO(250, 250, 251, 1)
                                     )
                                 ),
                             ),
@@ -341,10 +352,10 @@ class ChatMessageListState extends State<ChatMessageList> {
                                         Container(
                                             constraints: BoxConstraints(maxWidth: 230),
                                             padding: EdgeInsets.only(
-                                                top: ScreenUtil().setHeight(10.5),
-                                                bottom: ScreenUtil().setHeight(10.5),
-                                                left: ScreenUtil().setWidth(14.5),
-                                                right: ScreenUtil().setWidth(14.5),
+                                                top: sameSize*10.5,
+                                                bottom: sameSize*10.5,
+                                                left: sameSize*14.5,
+                                                right: sameSize*14.5,
                                             ),
                                             child: Text(
                                                 chatMessage.message,
@@ -352,12 +363,12 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                     fontFamily: "NotoSans",
                                                     fontWeight: FontWeight.w500,
                                                     fontSize: ScreenUtil().setSp(15),
-                                                    color: Color.fromRGBO(39, 39, 39, 0.96),
+                                                    color: Color.fromRGBO(255, 255, 255, 1),
                                                     height: 1.14
                                                 ),
                                             ),
                                             decoration: BoxDecoration(
-                                                color: Color.fromRGBO(166, 181, 255, 1),
+                                                color: Color.fromRGBO(76, 96, 191, 1),
                                                 borderRadius: BorderRadius.only(
                                                     topLeft: Radius.circular(ScreenUtil().setWidth(10)),
                                                     bottomLeft: Radius.circular(ScreenUtil().setWidth(10)),
@@ -376,79 +387,45 @@ class ChatMessageListState extends State<ChatMessageList> {
         );
     }
 
-    // 단화방 입장 UI
-    Widget enterNotice(ChatMessage chatMessage) {
+    // 단화방 입장/퇴장 UI
+    Widget eqNotice(ChatMessage chatMessage, bool isEnter, bool isLastMessage) {
+        print(isLastMessage);
         return new Container(
-            child: Container(
-                margin: EdgeInsets.only(
-                    top: ScreenUtil.getInstance().setHeight(9),
-                    bottom: ScreenUtil.getInstance().setHeight(9)
-                ),
-                width: ScreenUtil().setWidth(359),
-                height: ScreenUtil().setHeight(24),
-                decoration: BoxDecoration(
-                    color: Color.fromRGBO(0, 0, 0, 0.16),
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(ScreenUtil.getInstance().setWidth(4))
-                    )
-                ),
-                child: new Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                        Text(
-                            chatMessage.nickName.toString(),
-                            style: TextStyle(
-                                fontFamily: "NotoSans",
-                                fontWeight: FontWeight.w600,
-                                fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                                color: Colors.white
-                            ),
+            margin: EdgeInsets.only(
+                top: sameSize*9,
+                bottom: isLastMessage ? sameSize*20 : 0
+            ),
+            width: ScreenUtil().setWidth(359),
+            height: sameSize*24,
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(0, 0, 0, 0.25),
+                borderRadius: BorderRadius.all(
+                    Radius.circular(ScreenUtil.getInstance().setWidth(4))
+                )
+            ),
+            child: new Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                    Text(
+                        chatMessage.nickName.toString(),
+                        style: TextStyle(
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w600,
+                            fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                            color: Colors.white
                         ),
-                        Text(
-                            "님이 입장하였습니다.",
-                            style: TextStyle(
-                                fontFamily: "NotoSans",
-                                fontWeight: FontWeight.w400,
-                                fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                                color: Colors.white
-                            ),
-                        )
-                    ],
-                )
-            )
-        );
-    }
-
-    // 단화방 퇴장 UI
-    Widget quitNotice(ChatMessage chatMessage) {
-        return new Container(
-            child: Container(
-                margin: EdgeInsets.only(
-                    top: ScreenUtil.getInstance().setHeight(9),
-                    bottom: ScreenUtil.getInstance().setHeight(9)
-                ),
-                width: ScreenUtil().setWidth(359),
-                height: ScreenUtil().setHeight(24),
-                decoration: BoxDecoration(
-                    color: Color.fromRGBO(0, 0, 0, 0.16),
-                    borderRadius: BorderRadius.all(
-                        Radius.circular(ScreenUtil.getInstance().setWidth(4))
+                    ),
+                    Text(
+                        isEnter ? "님이 입장하였습니다." : "님이 단화방을 떠났습니다.",
+                        style: TextStyle(
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w400,
+                            fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                            color: Colors.white
+                        ),
                     )
-                ),
-                child: new Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                        Text(
-                            chatMessage.nickName.toString() + "님이 단화방을 떠났습니다.",
-                            style: TextStyle(
-                                fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                                color: Colors.white
-                            ),
-                        )
-                    ],
-                )
+                ],
             )
         );
     }

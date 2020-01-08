@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:collection';
+import 'dart:typed_data';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:Hwa/utility/action_sheet.dart';
+import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:Hwa/data/models/chat_join_info.dart';
@@ -32,6 +34,7 @@ import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:mime/mime.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 
 
@@ -104,6 +107,7 @@ class ChatScreenState extends State<ChatroomPage> {
     int inputLineCount;
     // 입력칸 높이
     int _inputHeight;
+    double sameSize;
 
     // Stomp 관련
     StompClient s;
@@ -138,6 +142,7 @@ class ChatScreenState extends State<ChatroomPage> {
         _inputHeight = 36;
         uploadingImageCount = 0;
         joinedUserNow = <ChatJoinInfo>[];
+        sameSize = GetSameSize().main();
 
         if (widget.isP2P != null && widget.isP2P == true) {
             getMyNick();
@@ -343,7 +348,7 @@ class ChatScreenState extends State<ChatroomPage> {
             chatType: "UPLOADING_IMG",
             roomIdx: chatInfo.chatIdx,
             senderIdx: Constant.USER_IDX,
-            nickName: "마이런",     /// 자신의 닉네임 맵핑
+            nickName: null,     /// 자신의 닉네임 맵핑
             thumbnailFile: imgFile,
             chatTime: new DateTime.now().millisecondsSinceEpoch,
             gaugeDriver: gaugeDriver,
@@ -364,31 +369,47 @@ class ChatScreenState extends State<ChatroomPage> {
 	    File imageFile;
 
 	    switch(type) {
-	        case 0: imageFile = await FilePicker.getFile(type: FileType.ANY);
+	        case 0: imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
 	            break;
-            case 1: imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+            case 1: imageFile = await ImagePicker.pickVideo(source: ImageSource.gallery);
                 break;
-            case 2: imageFile = await ImagePicker.pickVideo(source: ImageSource.camera);
+            case 2: imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+                break;
+            case 3: imageFile = await ImagePicker.pickVideo(source: ImageSource.camera);
                 break;
         }
 
 	    if (imageFile != null) {
 		    GaugeDriver gaugeDriver = new GaugeDriver();
 
-		    thumbnailMessage(imageFile, gaugeDriver);
-		    uploadingImageCount ++;
+            String mimeStr = lookupMimeType(imageFile.path);
+
+            // image, video... TODO 일반 파일 추가
+            String fileType = (mimeStr != null ? mimeStr.split("/")[0] : null);
+
+            developer.log("####### uploadFile. mimeStr: $mimeStr, fileType: $fileType");
+
+            print("path ?? "+imageFile.toString());
+
+            if (fileType == "video") {
+
+                Uint8List imageThumbnailString =  await VideoThumbnail.thumbnailData(
+                    video: imageFile.toString(),
+                    imageFormat: ImageFormat.JPEG,
+                    timeMs: 0,
+                    quality: 50,
+                );
+
+                imageFile = File(String.fromCharCodes(imageThumbnailString));
+            }
+
+            thumbnailMessage(imageFile, gaugeDriver);
+            uploadingImageCount ++;
 
 		    // 파일 이외의 추가 파라미터 셋팅
 		    Map<String, dynamic> param = {
 			    "chat_idx" : chatInfo.chatIdx
 		    };
-
-		    String mimeStr = lookupMimeType(imageFile.path);
-
-		    // image, video... TODO 일반 파일 추가
-		    String fileType = (mimeStr != null ? mimeStr.split("/")[0] : null);
-
-		    developer.log("####### uploadFile. mimeStr: $mimeStr, fileType: $fileType");
 
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(
@@ -608,7 +629,7 @@ class ChatScreenState extends State<ChatroomPage> {
                     children: <Widget>[
                         Container(
                             decoration: BoxDecoration(
-                                color: Color.fromRGBO(210, 217, 250, 1),
+                                color: Color.fromRGBO(250, 250, 251, 1),
                                 border: Border(
                                     top: BorderSide(
                                         width: ScreenUtil().setWidth(0.5),
@@ -782,36 +803,9 @@ class ChatScreenState extends State<ChatroomPage> {
         );
     }
 
-    Container chatIconClose() {
-        return Container(
-            child:
-            GestureDetector(
-                child: Container(
-                    padding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(4),
-                        right: ScreenUtil().setWidth(4),
-                        bottom: ScreenUtil().setHeight(16),
-                    ),
-                    width: ScreenUtil().setWidth(26),
-                    height: ScreenUtil().setHeight(50),
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image:AssetImage('assets/images/icon/iconAttachFold.png')
-                        ),
-                    )
-                ),
-                onTap:(){
-                    setState(() {
-                        isFocused = false;
-                    });
-                }
-            ),
-        );
-    }
-
     BoxDecoration setIcon(String iconPath) {
         return BoxDecoration(
-            color: Color.fromRGBO(77, 96, 191, 1),
+            color: Color.fromRGBO(245, 245, 245, 1),
             image: DecorationImage(
                 image:AssetImage(iconPath)
             ),
@@ -832,18 +826,17 @@ class ChatScreenState extends State<ChatroomPage> {
                     // Edit text
                     Container(
                         width: isFocused ? ScreenUtil().setWidth(343) :ScreenUtil().setWidth(230),
-                        margin: EdgeInsets.only(
-                            top: ScreenUtil().setHeight(6),
-                            bottom: ScreenUtil().setHeight(6)
+                        margin: EdgeInsets.symmetric(
+                            vertical: sameSize*6
                         ),
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(245, 245, 245, 1),
                             border: Border.all(
                                 color: Color.fromRGBO(214, 214, 214, 1),
-                                width: ScreenUtil().setWidth(1)
+                                width: sameSize*1
                             ),
                             borderRadius: BorderRadius.all(
-                                Radius.circular(ScreenUtil().setWidth(18))
+                                Radius.circular(sameSize*18)
                             )
                         ),
                         child: Row(
@@ -852,15 +845,14 @@ class ChatScreenState extends State<ChatroomPage> {
                                 Expanded (
                                     child: Container(
                                         width: isFocused ? ScreenUtil().setWidth(301) : ScreenUtil().setWidth(188),
-                                        height: ScreenUtil().setHeight(_inputHeight),
+                                        height: sameSize*(_inputHeight - 2),
                                         margin: EdgeInsets.only(right: ScreenUtil().setWidth(8)),
 
                                         child: new ConstrainedBox(
                                             constraints: BoxConstraints(
-                                                minHeight: ScreenUtil().setHeight(36),
-                                                maxHeight: ScreenUtil().setHeight(106)
+                                                minHeight: sameSize*34,
+                                                maxHeight: sameSize*106
                                             ),
-
 
                                             child: new SingleChildScrollView(
                                                 scrollDirection: Axis.vertical,
@@ -879,9 +871,9 @@ class ChatScreenState extends State<ChatroomPage> {
                                                     decoration: InputDecoration(
                                                         border: InputBorder.none,
                                                         contentPadding: EdgeInsets.only(
-                                                            left: ScreenUtil().setWidth(13),
-                                                            right: ScreenUtil().setWidth(9),
-                                                            bottom: ScreenUtil().setHeight(8)
+                                                            left: sameSize*13,
+                                                            right: sameSize*9,
+                                                            bottom: sameSize*8
                                                         )
                                                     ),
                                                     autofocus: false,
@@ -920,15 +912,15 @@ class ChatScreenState extends State<ChatroomPage> {
                                 // Button send message
                                 Container(
                                     margin: EdgeInsets.only(
-                                        right: ScreenUtil().setWidth(4),
-                                        bottom: ScreenUtil().setWidth(4),
-                                        top: ScreenUtil().setWidth(4)
+                                        right: ScreenUtil().setWidth(3),
+                                        bottom: ScreenUtil().setWidth(3),
+                                        top: ScreenUtil().setWidth(3)
                                     ),
                                     child:
                                     GestureDetector(
                                         child: Container(
-                                            width: ScreenUtil().setWidth(28),
-                                            height: ScreenUtil().setHeight(28),
+                                            width: sameSize*28,
+                                            height: sameSize*28,
                                             decoration: BoxDecoration(
                                                 color: isEmpty
                                                             ? Color.fromRGBO(204, 204, 204, 1)
@@ -946,7 +938,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                     ),
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(ScreenUtil().setWidth(18))
+                                            Radius.circular(sameSize*18)
                                         )
                                     ),
                                 ),
@@ -954,6 +946,33 @@ class ChatScreenState extends State<ChatroomPage> {
                         )
                     ),
                 ],
+            ),
+        );
+    }
+
+    Container chatIconClose() {
+        return Container(
+            child:
+            GestureDetector(
+                child: Container(
+                    padding: EdgeInsets.only(
+                        left: sameSize*4,
+                        right: sameSize*4,
+                        bottom: sameSize*16,
+                    ),
+                    width: sameSize*26,
+                    height: sameSize*48,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image:AssetImage('assets/images/icon/iconAttachFold.png')
+                        ),
+                    )
+                ),
+                onTap:(){
+                    setState(() {
+                        isFocused = false;
+                    });
+                }
             ),
         );
     }
@@ -974,7 +993,7 @@ class ChatScreenState extends State<ChatroomPage> {
                             child: Container(
                                 margin: EdgeInsets.only(right: ScreenUtil().setWidth(0)),
                                 width: ScreenUtil().setWidth(32),
-                                height: ScreenUtil().setHeight(32),
+                                height: ScreenUtil().setWidth(32),
                                 decoration: setIcon(
                                     /// 하단 메뉴 서비스 추가 시 코드 교체
 //                                    isShowMenu
@@ -1001,12 +1020,12 @@ class ChatScreenState extends State<ChatroomPage> {
                         GestureDetector(
                             child: Container(
                                 width: ScreenUtil().setWidth(32),
-                                height: ScreenUtil().setHeight(32),
+                                height: ScreenUtil().setWidth(32),
                                 decoration: setIcon('assets/images/icon/iconAttachCamera.png')
                             ),
                             onTap:(){
                                 ActionSheetState().showActionSheet(
-                                    context: context, child: _buildActionSheet()
+                                    context: context, child: _buildActionSheet(true)
                                 );
                             }
                         ),
@@ -1021,11 +1040,13 @@ class ChatScreenState extends State<ChatroomPage> {
                         GestureDetector(
                             child: Container(
                                 width: ScreenUtil().setWidth(32),
-                                height: ScreenUtil().setHeight(32),
+                                height: ScreenUtil().setWidth(32),
                                 decoration: setIcon('assets/images/icon/iconAttachPhoto.png')
                             ),
                             onTap:(){
-	                            uploadContents(0);
+                                ActionSheetState().showActionSheet(
+                                    context: context, child: _buildActionSheet(false)
+                                );
                             }
                         ),
                         color: Colors.white,
@@ -1035,7 +1056,7 @@ class ChatScreenState extends State<ChatroomPage> {
         );
     }
 
-    Widget _buildActionSheet() {
+    Widget _buildActionSheet(bool fromCamera) {
         return CupertinoActionSheet(
             message: Text(
                 "단화방에 공유할 미디어를 선택해주세요.",
@@ -1049,14 +1070,14 @@ class ChatScreenState extends State<ChatroomPage> {
                 CupertinoActionSheetAction(
                     child: Text("사진"),
                     onPressed: () {
-                        uploadContents(1);
+                        fromCamera ?  uploadContents(2) : uploadContents(0);
                         Navigator.pop(context);
                     },
                 ),
                 CupertinoActionSheetAction(
                     child: Text("동영상"),
                     onPressed: () {
-                        uploadContents(2);
+                        fromCamera ?  uploadContents(3) : uploadContents(1);
                         Navigator.pop(context);
                     },
                 )

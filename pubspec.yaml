@@ -25,6 +25,7 @@ dependencies:
     flutter_screenutil: ^0.7.0
     catcher: ^0.2.8
     json_annotation:
+    video_thumbnail: ^0.2.0
 
     ### Add by HK ###
     dio: 3.0.8                      # Http, File Upload
