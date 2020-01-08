@@ -769,8 +769,8 @@ class HwaTabState extends State<HwaTab> {
                                 ),
                                 Container(
                                     child: Text(
-                                        '현재 위치',
-                                        style: TextStyle(
+                                      (AppLocalizations.of(context).tr('tabNavigation.hwa.location.nowLocation')),
+                                      style: TextStyle(
                                             height: 1,
                                             fontFamily: "NotoSans",
                                             fontWeight: FontWeight.w400,
