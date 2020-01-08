@@ -4,8 +4,6 @@ import 'dart:convert';
 import 'dart:collection';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:camera/camera.dart';
-import 'package:image/image.dart' as Im;
 
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
