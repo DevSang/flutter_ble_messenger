@@ -31,7 +31,7 @@ import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path/path.dart' as p;
-import 'package:mime_type/mime_type.dart';
+import 'package:mime/mime.dart';
 
 
 
@@ -308,7 +308,7 @@ class ChatScreenState extends State<ChatroomPage> {
                     userNick: message.nickName
                 )
             );
-        } else if (message.chatType == "IMAGE" && message.senderIdx == Constant.USER_IDX) {
+        } else if ((message.chatType == "IMAGE" || message.chatType == "VIDEO")  && message.senderIdx == Constant.USER_IDX) {
             // 업로드 완료된 항목 삭제
             for(var i=0; i<uploadingImageCount; i++) {
                 if (messageList[i].uploaded == true) {
@@ -383,19 +383,19 @@ class ChatScreenState extends State<ChatroomPage> {
 			    "chat_idx" : chatInfo.chatIdx
 		    };
 
-		    String extension = p.extension(imageFile.path);
-		    extension = extension.replaceFirst(".", "").toLowerCase();
+		    String mimeStr = lookupMimeType(imageFile.path);
 
-		    String mimeType = mimeFromExtension(extension);
+		    // image, video... TODO 일반 파일 추가
+		    String fileType = (mimeStr != null ? mimeStr.split("/")[0] : null);
 
-		    developer.log("####### uploadFile. extension: $extension, mimeType: $mimeType");
+		    developer.log("####### uploadFile. mimeStr: $mimeStr, fileType: $fileType");
 
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(
 				    url: "/api/v2/chat/share/file"
 				    , filePath: imageFile.path
 				    , paramMap: param
-				    , contentsType: mimeType
+				    , contentsType: mimeStr
 				    , onSendProgress: (int sent, int total){
 
 			    developer.log("$sent : $total");
@@ -426,7 +426,7 @@ class ChatScreenState extends State<ChatroomPage> {
 					    ), context);
 
 			    // 썸네일 URI 전송
-			    onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
+			    onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", fileType.toUpperCase());
 		    }
 	    }
     }
@@ -463,25 +463,23 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2020-01-05
      * @description : 메세지 전송
     */
-    void onSendMessage(dynamic content, int type) {
+    void onSendMessage(dynamic content, String type) {
         String message;
         String sendType;
 
-        if (content.runtimeType == String) {
-            if (content.trim() != '') {
-                textEditingController.clear();
-                sendType = type == 0
-                    ? "TALK"
-                    : type == 1
-                    ? "IMAGE"
-                    : "SERVICE";
-            }
-        } else {
-            sendType = "IMAGE";
+        if (content.trim() != '') {
+            textEditingController.clear();
+//            switch(type){
+//	            case 0: sendType = "TALK"; break;
+//	            case 1: sendType = "IMAGE"; break;
+//	            case 2: sendType = "VIDEO"; break;
+//	            case 3: sendType = "SERVICE"; break;
+//	            case 4: sendType = "FILE"; break;
+//            }
         }
 
         final int now = new DateTime.now().microsecondsSinceEpoch ~/ 1000;
-        message = '{"type": "'+ sendType +'","roomIdx":' + chatInfo.chatIdx.toString() + ',"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
+        message = '{"type": "'+ type +'","roomIdx":' + chatInfo.chatIdx.toString() + ',"senderIdx":' + Constant.USER_IDX.toString() + ',"message": "' + content.toString() + '","userCountObj":null,"createTs":' + now.toString() + '}';
 
         /// MESSAGE SEND
         s.send(
@@ -943,7 +941,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                             )
                                         ),
                                         onTap:(){
-                                            onSendMessage(textEditingController.text, 0);
+                                            onSendMessage(textEditingController.text, "TALK");
                                         }
                                     ),
                                     decoration: BoxDecoration(
@@ -1164,7 +1162,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                             }),
                                             cardShareButton(2, (){
                                                 /// FileUpload 명함
-                                                onSendMessage('assets/images/businesscard.png',2);
+                                                onSendMessage('assets/images/businesscard.png', "SERVICE");
                                                 Navigator.of(context, rootNavigator: true).pop('dialog');
                                             }),
                                         ],

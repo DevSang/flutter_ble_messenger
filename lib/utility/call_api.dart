@@ -75,9 +75,10 @@ class CallApi {
 	    Response response;
 	    Dio dio = new Dio();
 	    dio.options.headers['X-Authorization'] = 'Bearer ' + token;
-//	    dio.options.headers['Content-Type'] = "multipart/form-data";
 
-        if(contentsType != null ) dio.options.contentType = contentsType;
+	    contentsType = contentsType ?? "multipart/form-data";
+        dio.options.headers['Content-Type'] = contentsType;
+        dio.options.contentType = contentsType;
 
 	    paramMap = paramMap ?? Map<String, dynamic>();
 	    fileParameterName = fileParameterName ?? "file";
