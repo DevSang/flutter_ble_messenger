@@ -6,17 +6,23 @@ android/ios flutter project
 flutter pub get 
 ```
 
+Ios
+```
+pod install
+```
+
+
 ## Use Library 
 
-    flutter_localizations:
-    intl:
-    configurable_expansion_tile: 
-    timeago: 
-    lazy_load_scrollview: 
-    sticky_headers: 
-    flutter_screenutil:
-    catcher: 
-    json_annotation:
+    flutter_localizations:          #
+    intl:                           #
+    configurable_expansion_tile:    #
+    timeago:                        #
+    lazy_load_scrollview:           #
+    sticky_headers:                 #
+    flutter_screenutil:             # 
+    catcher:                        #
+    json_annotation:                #
     dio:                            # Http, File Upload
     http:                           # Http
     cached_network_image:           # Image Cache
@@ -28,16 +34,16 @@ flutter pub get
     easy_localization:              # localization(다국어)
     shared_preferences:             # SharedPreferences
     provider:                       # Provider
-    kvsql:
-    sqlcool: 
+    kvsql:                          #
+    sqlcool:                        #
     flutter_facebook_login:         # Social Login - Facebook
     google_sign_in:                 # Social Login - Google
-    #flutter_kakao_login:           # Social Login - Kakao
-    #kakao_flutter_sdk: 
-    alphabet_list_scroll_view:
-    flutter_slidable:
-    expandable: 
-    fluttertoast:
+    flutter_kakao_login:            # Social Login - Kakao
+    kakao_flutter_sdk:              #
+    alphabet_list_scroll_view:      #
+    flutter_slidable:               #  
+    expandable:                     #
+    fluttertoast:                   #
 
 ## Reference
 1. Flutter CI/CD
