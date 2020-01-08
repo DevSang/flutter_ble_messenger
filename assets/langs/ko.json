@@ -7,7 +7,15 @@
             "signIn": "로그인",
             "notHaveAccount": "계정이 없으세요? ",
             "signUp": "회원가입",
-            "snsSignIn": "SNS 계정으로 간편 로그인 하세요."
+            "snsSignIn": "SNS 계정으로 간편 로그인 하세요.",
+            "toast": {
+                "request200" : "인증문자를 요청했습니다.",
+                "request406" : "가입 되어있지 않은 번호입니다. 번호를 다시 확인해주세요.",
+                "requestFail": "서버 요청에 실패하였습니다.",
+                "inputPhone": "휴대폰 번호를 입력해주세요.",
+                "inputCode": "인증번호를 입력해주세요.",
+                "loginSuccess": "로그인에 성공하였습니다."
+            }
         },
         "signUp": {
             "signUpAppbar": "회원가입",
@@ -16,7 +24,18 @@
             "getAuthCode": "인증문자 받기",
             "textAuthCode": "인증번호 입력",
             "authCode": "인증번호",
-            "nextBtn": "다음"
+            "nextBtn": "다음",
+            "toast": {
+                "request200": "인증문자를 요청했습니다.",
+                "inputPhone": "휴대폰 번호를 입력해주세요.",
+                "alreadyUser": "이미 인증된 사용자입니다",
+                "alreadyPhone": "이미 사용중인 전화번호입니다.",
+                "inputCode": "인증번호를 입력해주세요.",
+                "authFinish": "인증이 완료되었습니다.",
+                "authFail": "인증이 실패하였습니다. 인증번호를 확인해주세요.",
+                "start": "Here we are. 주변 친구들과 단화를 시작해보세요.",
+                "fail": "서버 요청에 실패하였습니다"
+            }
         },
         "signUpName": {
             "signUpAppbar": "회원가입",
@@ -24,7 +43,10 @@
             "NicknameValidator": "닉네임을 입력해주세요",
             "NicknameAlready": "이미 사용중인 닉네임입니다",
             "nickName": "닉네임을 입력하세요",
-            "startBtn": "시작하기"
+            "startBtn": "시작하기",
+            "toast": {
+                "start": "Here we are. 주변 친구들과 단화를 시작해보세요."
+            }
         }
     },
     "tapMenuTitle": {
@@ -114,6 +136,7 @@
            "leave": "탈퇴하기",
            "cancel": "취소",
            "save": "저장하기",
-           "textIntroduce": "소개글을 입력해 보세요 :)"
+           "textIntroduce": "소개글을 입력해 보세요 :)",
+           "opensource": "오픈소스"
     }
 }

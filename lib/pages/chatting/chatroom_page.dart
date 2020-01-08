@@ -13,10 +13,8 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -25,7 +23,6 @@ import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
 
 import 'package:Hwa/data/models/chat_message.dart';
-import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 
 import 'package:Hwa/pages/chatting/notice_page.dart';
@@ -33,6 +30,10 @@ import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:mime_type/mime_type.dart';
+
 
 
 
@@ -80,7 +81,7 @@ class ChatScreenState extends State<ChatroomPage> {
     // 업로드 중인 이미지 갯수
     int uploadingImageCount;
     SharedPreferences prefs;
-    File imageFile;
+
     // 로딩
     bool isLoading;
     // 하단 메뉴 관련
@@ -355,93 +356,78 @@ class ChatScreenState extends State<ChatroomPage> {
         });
     }
 
-    /*
-     * @author : hs
-     * @date : 2019-12-24
-     * @description : 앨범에서 이미지 선택 후 업로드
-    */
-    Future getImage() async {
-        imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-        if (imageFile != null) {
-            GaugeDriver gaugeDriver = new GaugeDriver();
+	/*
+	 * @author : hk
+	 * @date : 2020-01-08
+	 * @description : 단화방 파일 공유
+	 */
+    Future<void> uploadContents(int type) async {
+	    File imageFile;
 
-            thumbnailMessage(imageFile, gaugeDriver);
-            uploadingImageCount ++;
+	    if(type == 0){
+//		    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+		    imageFile = await FilePicker.getFile(type: FileType.ANY);
+	    } else if(type == 1){
+		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+	    }
 
+	    if (imageFile != null) {
+		    GaugeDriver gaugeDriver = new GaugeDriver();
 
-            // 파일 이외의 추가 파라미터 셋팅
-	        Map<String, dynamic> param = {
-	        	"chat_idx" : chatInfo.chatIdx
-	        };
+		    thumbnailMessage(imageFile, gaugeDriver);
+		    uploadingImageCount ++;
 
-	        // 파일 업로드 API 호출
-	        Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
-                developer.log("$sent : $total");
-                for(var i=0; i<uploadingImageCount; i++) {
-                    if (messageList[i].thumbnailFile.path == imageFile.path) {
-                        messageList[i].gaugeDriver.drive(sent/total);
+		    // 파일 이외의 추가 파라미터 셋팅
+		    Map<String, dynamic> param = {
+			    "chat_idx" : chatInfo.chatIdx
+		    };
 
-                        if(sent == total) {
-                            messageList[i].uploaded = true;
-                        }
-                    }
-                }
-	        });
+		    String extension = p.extension(imageFile.path);
+		    extension = extension.replaceFirst(".", "").toLowerCase();
 
-	        if(response.statusCode == 200){
-                await precacheImage(
-                    CachedNetworkImageProvider(
-                        "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
-                    ), context);
+		    String mimeType = mimeFromExtension(extension);
 
-                onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
-	        }
-        }
-    }
+		    developer.log("####### uploadFile. extension: $extension, mimeType: $mimeType");
 
-    /*
-     * @author : hs
-     * @date : 2019-12-25
-     * @description : 카메라 촬영 후 업로드
-    */
-    Future getCamera() async {
-        imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+		    // 파일 업로드 API 호출
+		    Response response = await CallApi.fileUploadCall(
+				    url: "/api/v2/chat/share/file"
+				    , filePath: imageFile.path
+				    , paramMap: param
+				    , contentsType: mimeType
+				    , onSendProgress: (int sent, int total){
 
-        if (imageFile != null) {
-            GaugeDriver gaugeDriver = new GaugeDriver();
+			    developer.log("$sent : $total");
 
-            thumbnailMessage(imageFile, gaugeDriver);
-            uploadingImageCount ++;
+			    for(var i=0; i<uploadingImageCount; i++) {
+				    if (messageList[i].thumbnailFile.path == imageFile.path) {
+					    messageList[i].gaugeDriver.drive(sent/total);
 
-            // 파일 이외의 추가 파라미터 셋팅
-            Map<String, dynamic> param = {
-	            "chat_idx" : chatInfo.chatIdx
-            };
+					    if(sent == total) {
+						    messageList[i].uploaded = true;
+					    }
+				    }
 
-            // 파일 업로드 API 호출
-            Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
-                developer.log("$sent : $total");
-                for(var i=0; i<uploadingImageCount; i++) {
-                    if (messageList[i].thumbnailFile.path == imageFile.path) {
-                        messageList[i].gaugeDriver.drive(sent/total);
+				    break;
+			    }
+		    }, onError: (DioError e){
+			    // TODO 서버 에러일 경우 처리
+			    developer.log("########### DioError");
+			    developer.log(e.toString());
+			    developer.log(e.message);
+			    developer.log(e.type.toString());
+		    });
 
-                        if(sent == total) {
-                            messageList[i].uploaded = true;
-                        }
-                    }
-                }
-            });
+		    if(response.statusCode == 200){
+			    await precacheImage(
+					    CachedNetworkImageProvider(
+							    "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
+					    ), context);
 
-            if(response.statusCode == 200){
-                await precacheImage(
-                    CachedNetworkImageProvider(
-                        "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
-                    ), context);
-
-            	// 썸네일 URI 전송
-	            onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
-            }
-        }
+			    // 썸네일 URI 전송
+			    onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
+		    }
+	    }
     }
 
     /*
@@ -1020,7 +1006,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                 decoration: setIcon('assets/images/icon/iconAttachCamera.png')
                             ),
                             onTap:(){
-                                getCamera();
+	                            uploadContents(1);
                             }
                         ),
                         color: Colors.white,
@@ -1038,7 +1024,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                 decoration: setIcon('assets/images/icon/iconAttachPhoto.png')
                             ),
                             onTap:(){
-                                getImage();
+	                            uploadContents(0);
                             }
                         ),
                         color: Colors.white,

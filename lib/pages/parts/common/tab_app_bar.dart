@@ -4,12 +4,14 @@ import "package:flutter/material.dart";
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:kvsql/kvsql.dart';
+import 'package:provider/provider.dart';
 
 import '../../profile/profile_page.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 /*
  * @project : HWA - Mobile
@@ -30,6 +32,8 @@ class TabAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class TabAppBarState extends State<TabAppBar> {
+    UserInfoProvider userInfoProvider;
+
     final String title;
     final Widget leftChild;
     SharedPreferences SPF;
@@ -46,6 +50,8 @@ class TabAppBarState extends State<TabAppBar> {
 
     @override
     void initState() {
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+
 //	    setUserInfo();
 	    _initState();
         super.initState();
@@ -76,7 +82,7 @@ class TabAppBarState extends State<TabAppBar> {
      */
     getCacheImg(){
 	    profileImg = CachedNetworkImage(
-            imageUrl: Constant.PROFILE_IMG_URI,
+            imageUrl: userInfoProvider.profileURL,
             placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
             errorWidget: (context, url, error) => getErrorWidget(),
             httpHeaders: Constant.HEADER
@@ -100,10 +106,10 @@ class TabAppBarState extends State<TabAppBar> {
      */
     void expireProfileImgCache() async {
 	    if(Constant.IS_CHANGE_PROFILE_IMG && Constant.APP_BAR_LOADING_ERROR == false){
-		    await DefaultCacheManager().removeFile(Constant.PROFILE_IMG_URI);
+		    await DefaultCacheManager().removeFile(userInfoProvider.profileURL);
 
 		    profileImg = CachedNetworkImage(
-			    imageUrl: Constant.PROFILE_IMG_URI,
+			    imageUrl: userInfoProvider.profileURL,
 			    placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
 			    errorWidget: (context, url, error) => getErrorWidget(),
 			    httpHeaders: Constant.HEADER

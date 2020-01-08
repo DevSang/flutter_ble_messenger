@@ -3,21 +3,29 @@ import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:dio/dio.dart';
 
-import 'package:Hwa/constant.dart';
-import 'package:Hwa/pages/parts/common/loading.dart';
-import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/utility/custom_switch.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/custom_switch.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/pages/policy/opensource_policy.dart';
 
 
 
@@ -40,13 +48,17 @@ class _ProfilePageState extends State <ProfilePage>{
     bool allowedFriend;
 
     bool isLoading;
+    UserInfoProvider userInfoProvider;
 
-    String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+    String profileImgUri;
 
     CachedNetworkImage cachedNetworkImage;
 
     @override
     void initState() {
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+        profileImgUri = userInfoProvider.profileURL;
+
         isLoading = false;
 
         cachedNetworkImage = CachedNetworkImage(
@@ -70,6 +82,7 @@ class _ProfilePageState extends State <ProfilePage>{
         SPF = await SharedPreferences.getInstance();
         await store.onReady;
         await SPF.remove('token');
+        await SPF.remove('userInfo');
         await store.delete("friendList");
         await store.delete("test");
 
@@ -89,9 +102,10 @@ class _ProfilePageState extends State <ProfilePage>{
     void getSettingInfo() async {
         try {
             /// 참여 타입 수정
-            String uri = "/api/v2/user/profile?target_user_idx=" + Constant.USER_IDX.toString();
+            String uri = "/api/v2/user/profile?target_user_idx=" +  Constant.USER_IDX.toString();
+            print(uri);
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-
+            print(response.body);
             Map<String, dynamic> jsonParse = json.decode(response.body);
             Map<String, dynamic> profile = jsonParse['data'];
 
@@ -155,6 +169,7 @@ class _ProfilePageState extends State <ProfilePage>{
 	 * @description : 프로필 사진 업로드
 	 */
     void uploadProfileImg(int flag) async {
+        SPF = await Constant.getSPF();
 	    File imageFile;
 
 	    if(flag == 1){
@@ -177,10 +192,12 @@ class _ProfilePageState extends State <ProfilePage>{
 
 		    if(response.statusCode == 200){
 			    await DefaultCacheManager().removeFile(profileImgUri);
+			    SPF.setBool("IS_UPLOAD_PROFILE_IMG", true);
+			    userInfoProvider.profileURL = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
 
 			    setState(() {
 				    cachedNetworkImage = CachedNetworkImage(
-						    imageUrl: profileImgUri,
+						    imageUrl: userInfoProvider.profileURL,
 						    placeholder: (context, url) => CircularProgressIndicator(),
 						    errorWidget: (context, url, error) => Icon(Icons.error),
 						    httpHeaders: Constant.HEADER
@@ -403,6 +420,12 @@ class _ProfilePageState extends State <ProfilePage>{
 
                   buildTextInfoItem((AppLocalizations.of(context).tr('profile.leave')), "", true),
 
+                InkWell(
+                    child: policyBtn((AppLocalizations.of(context).tr('profile.opensource')), "", false),
+                    onTap:() {
+                      Navigator.pushNamed(context, "/opensource");
+                    }
+                ),
               ]
           )
       );
@@ -610,5 +633,41 @@ class _ProfilePageState extends State <ProfilePage>{
                 ],
             )
         );
+    }
+
+    Widget policyBtn(String tr, String value, bool isLast,) {
+      return Container(
+          height: ScreenUtil().setHeight(49),
+          margin: EdgeInsets.only(
+              left: ScreenUtil().setWidth(16)
+          ),
+          padding: EdgeInsets.only(
+              right: ScreenUtil().setWidth(8)
+          ),
+          decoration: BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      width: ScreenUtil().setWidth(1),
+                      color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                  )
+              )
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Text(
+                  "오픈소스",
+                  style: TextStyle(
+                      height: 1,
+                      fontFamily: "NotoSans",
+                      fontWeight: FontWeight.w500,
+                      color: Color.fromRGBO(39, 39, 39, 1),
+                      fontSize: ScreenUtil.getInstance().setSp(15),
+                      letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                  )
+              ),
+            ],
+          )
+      );
     }
 }

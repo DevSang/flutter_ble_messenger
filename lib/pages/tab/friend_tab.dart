@@ -355,44 +355,6 @@ class _FriendTabState extends State<FriendTab> {
             debugShowCheckedModeBanner: false,
             home: Scaffold(
                 backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-//                appBar: TabAppBar(
-//                    title: '단화 친구',
-//                    leftChild: Container(
-//                        margin: EdgeInsets.only(
-//                            left: 8
-//                        ),
-//                        child: Row(
-//                            children: <Widget>[
-//                                Text(
-//                                    friendList != null ? friendList.length.toString() : 0.toString(),
-//                                    style: TextStyle(
-//                                        height: 1,
-//                                        fontFamily: "NanumSquare",
-//                                        fontWeight: FontWeight.w500,
-//                                        fontSize: ScreenUtil(
-//                                            allowFontScaling: true).setSp(13),
-//                                        color: Color.fromRGBO(107, 107, 107, 1),
-//                                        letterSpacing: ScreenUtil().setWidth(
-//                                            -0.33),
-//                                    ),
-//                                ),
-//                                Text(
-//                                    "명",
-//                                    style: TextStyle(
-//                                        height: 1,
-//                                        fontFamily: "NotoSans",
-//                                        fontWeight: FontWeight.w500,
-//                                        fontSize: ScreenUtil(
-//                                            allowFontScaling: true).setSp(13),
-//                                        color: Color.fromRGBO(107, 107, 107, 1),
-//                                        letterSpacing: ScreenUtil().setWidth(
-//                                            -0.33),
-//                                    ),
-//                                ),
-//                            ],
-//                        )
-//                    ),
-//                ),
                 body: buildBody(),
                 resizeToAvoidBottomPadding: false,
             )

@@ -9,10 +9,12 @@ import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/trend/trend_page.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 
 final hwaTabStateKey = new GlobalKey<HwaTabState>();
@@ -35,7 +37,8 @@ class BottomNavigation extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation>{
-    final List<Widget> list = <Widget>[];
+	UserInfoProvider userInfoProvider;
+	final List<Widget> list = <Widget>[];
     int _currentIndex;
     // 화면 비율에 따른 1:1 요소 사이즈 셋팅
     double sameSize;
@@ -46,7 +49,8 @@ class _BottomNavigationState extends State<BottomNavigation>{
 
     @override
     void initState() {
-        _currentIndex = widget.activeIndex ?? 0;
+		userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+		_currentIndex = widget.activeIndex ?? 0;
 
         list
             ..add(HwaTab(key: hwaTabStateKey))
@@ -56,7 +60,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
         sameSize  = GetSameSize().main();
 
         profileImg = CachedNetworkImage(
-		        imageUrl: Constant.PROFILE_IMG_URI,
+		        imageUrl: userInfoProvider.profileURL,
 		        placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
 		        errorWidget: (context, url, error) => getErrorWidget(),
 		        httpHeaders: Constant.HEADER

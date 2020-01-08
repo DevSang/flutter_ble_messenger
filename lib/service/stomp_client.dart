@@ -51,8 +51,7 @@ class StompClient {
    * @description : WebSocket 연결
   */
   Future<void> connectWebSocket() async {
-    var header = await setHeader();
-    channel = IOWebSocketChannel.connect(urlBackend, pingInterval: Duration(seconds: 30), headers: header);
+    channel = IOWebSocketChannel.connect(urlBackend, pingInterval: Duration(seconds: 30), headers: Constant.HEADER);
 
     channel.stream.listen((message) {
       _messageReceieved(message);
@@ -60,21 +59,6 @@ class StompClient {
 
     return;
 
-  }
-
-  /*
-   * @author : hs
-   * @date : 2019-12-28
-   * @description : Stomp header 생성
-  */
-  Future<Map<String, dynamic>> setHeader() async {
-    SharedPreferences prefs = await Constant.getSPF();
-    var token = prefs.getString('token').toString();
-    Map<String, dynamic> header = {
-      'Content-Type': 'application/json',
-      'X-Authorization': 'Bearer ' + token
-    };
-    return header;
   }
 
   /*

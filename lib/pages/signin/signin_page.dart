@@ -9,12 +9,16 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:provider/provider.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
+
+
 import 'package:easy_localization/easy_localization.dart';
 
 /*
@@ -37,6 +41,7 @@ class _SignInPageState extends State<SignInPage> {
     FocusNode contextFocus;
     String phone_number, auth_number;
     bool lengthConfirm = false;
+    UserInfoProvider userInfoProvider;
 
     //Social signin - Google
     GoogleSignInAccount _currentUser;
@@ -49,6 +54,8 @@ class _SignInPageState extends State<SignInPage> {
 
     @override
     void initState() {
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+
         googleAccountListner();
 	    super.initState();
     }
@@ -143,6 +150,7 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Social signin 이후 처리
      */
     socialSigninAfterProcess (String loginType, accessToken, profileId, photoUrl) async {
+
         String url = "https://api.hwaya.net/api/v2/auth/A08-SocialSignIn";
         final response = await http.post(url,
             headers: {
@@ -156,18 +164,28 @@ class _SignInPageState extends State<SignInPage> {
             })
         );
 
-        var data = jsonDecode(response.body);
-        var message = data['message'].toString();
-        var errorCode = data['errorCode'];
-        developer.log(data.toString());
+        var errorCode = jsonDecode(response.body)['errorCode'];
 
         if (response.statusCode == 200) {
-            developer.log("# 로그인에 성공하였습니다.");
-            developer.log("# 로그인정보 :" + response.body);
-            RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+            var data = jsonDecode(response.body)['data'];
+            var token = data['token'];
 
+            if(data['userInfo']['profile_picture_idx'] != null) {
+                photoUrl = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + data['userInfo']['idx'].toString() + "&type=SMALL";
+            }
+
+            data['userInfo']['profileURL'] = photoUrl;
+            data['userInfo']['token'] = token;
+            data['userInfo']['nickname'] = data['userInfo']['jb_user_info']['nickname'];
+
+            await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['userInfo']);
+            await userInfoProvider.getUserInfoFromSPF();
             SetFCM.firebaseCloudMessagingListeners();
+            HomePageState.initApiCall();
 
+            RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+            developer.log("# 로그인에 성공하였습니다.");
+            developer.log("# 로그인정보 :" + data.toString() );
             developer.log('# [Navigator] SignInPage -> MainPage');
             Navigator.pushNamed(context, '/main');
 
@@ -223,14 +241,14 @@ class _SignInPageState extends State<SignInPage> {
             if (response.statusCode == 200 || response.statusCode == 202) {
                 developer.log("# Auth code requset info :" + response.body);
                 developer.log("# 인증문자 요청에 성공하였습니다.");
-                RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
+                RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.request200') , ToastGravity.TOP);
             } else {
                 if(response.statusCode == 406){
                     developer.log("# This is not a HWA user.");
-                    RedToast.toast("가입 되어있지 않은 번호입니다. 번호를 다시 확인해주세요.",ToastGravity.TOP);
+                    RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.request406'),ToastGravity.TOP);
                 } else {
                     developer.log('# Request failed：${response.statusCode}');
-                    RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+                    RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.requestFail'),ToastGravity.TOP);
                 }
             }
         }
@@ -246,7 +264,7 @@ class _SignInPageState extends State<SignInPage> {
         try {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
-                RedToast.toast("인증번호를 입력해주세요.", ToastGravity.TOP);
+                RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.inputCode'), ToastGravity.TOP);
             } else {
                 developer.log("# Auth number : " + _authCodeController.text);
                 String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";
@@ -262,30 +280,29 @@ class _SignInPageState extends State<SignInPage> {
                 );
 
                 var data = jsonDecode(response.body)['data'];
-
-                print(data);
-
                 if (response.statusCode == 200) {
                     developer.log("# 로그인에 성공하였습니다.");
                     developer.log("# 로그인정보 :" + response.body);
-//                    SetUserInfo.set(data['userInfo'], "");
 
                     var token = data['token'];
-                    var userIdx = data['userInfo']['idx'];
+                    data['userInfo']['token'] = token;
 
-                    spf.setString('token', token.toString());
-                    spf.setInt('userIdx', userIdx);
+                    if(data['userInfo']['jb_user_info']['profile_picture_idx'] != null) {
+                        spf.setBool("IS_UPLOAD_PROFILE_IMG", true);
+                    } else {
+                        spf.setBool("IS_UPLOAD_PROFILE_IMG", false);
+                    }
 
+                    await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['userInfo']);
+                    await userInfoProvider.getUserInfoFromSPF();
                     SetFCM.firebaseCloudMessagingListeners();
-
-                    await Constant.initUserInfo();
                     HomePageState.initApiCall();
 
-                    RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
+                    RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.loginSuccess'), ToastGravity.TOP);
                     developer.log('# [Navigator] SignInPage -> MainPage');
                     Navigator.pushNamed(context, '/main');
                 } else {
-                    RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
+                    RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.requestFail'), ToastGravity.TOP);
                     developer.log('#Request failed：${response.statusCode}');
                 }
             }
@@ -387,8 +404,8 @@ class _SignInPageState extends State<SignInPage> {
                                 WhitelistingTextInputFormatter.digitsOnly
                             ],
                             controller: _phoneController,
-                            style: TextStyle(color: Colors.black, fontFamily: 'NotoSans',  fontSize: 15),
-                            decoration: new InputDecoration(
+                            style: TextStyle(color: Colors.black, fontFamily: 'NotoSans', fontWeight: FontWeight.w500, fontSize: 15),
+                            decoration:  InputDecoration(
                                 border: InputBorder.none,
                                 counterText: "",
                                 hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
@@ -401,7 +418,7 @@ class _SignInPageState extends State<SignInPage> {
                             right: ScreenUtil().setWidth(5)
                         ),
                         child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(13), horizontal: ScreenUtil().setWidth(15)),
+                            padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(10), horizontal: ScreenUtil().setWidth(15)),
                             focusNode: contextFocus,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
@@ -410,6 +427,7 @@ class _SignInPageState extends State<SignInPage> {
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontFamily: 'NotoSans',
+                                    fontWeight: FontWeight.w500,
                                     fontSize: ScreenUtil().setSp(13)
                                 ),
                             ),
@@ -434,9 +452,9 @@ class _SignInPageState extends State<SignInPage> {
             height: ScreenUtil().setHeight(50),
             width: ScreenUtil().setWidth(343),
             margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16), vertical: ScreenUtil().setHeight(3)),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
                 color: Color.fromRGBO(240, 240, 240, 1),
-                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
+                borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
             ),
             child:  Container(
                 margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
@@ -486,7 +504,7 @@ class _SignInPageState extends State<SignInPage> {
         return Container(
             margin: EdgeInsets.only(top:ScreenUtil().setHeight(3)),
             width: MediaQuery.of(context).size.width,
-            height: ScreenUtil().setHeight(50),
+            height: 50.0,
             padding: EdgeInsets.symmetric(horizontal: 15.0),
             color: Colors.white,
             child: RaisedButton(
@@ -495,7 +513,7 @@ class _SignInPageState extends State<SignInPage> {
                 },
                 color: color,
                 child: Text(AppLocalizations.of(context).tr('sign.signIn.signIn'), style: TextStyle(
-                    color: Colors.white, fontSize: 17, fontFamily: 'NotoSans')
+                    color: Colors.white, fontSize: 16, fontFamily: 'NotoSans', fontWeight: FontWeight.w500)
                 ),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenUtil().setHeight(10.0))),
             ),
@@ -509,8 +527,8 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _registerSection(BuildContext context) {
         return Container(
-            decoration: new BoxDecoration(
-                border: new Border(bottom: BorderSide(color:Color.fromRGBO(122, 122, 122, 1), width: 0.5)),
+            decoration:  BoxDecoration(
+                border:  Border(bottom: BorderSide(color:Color.fromRGBO(122, 122, 122, 1), width: 0.5)),
             ),
             padding: EdgeInsets.only(top: ScreenUtil().setHeight(16), bottom: ScreenUtil().setHeight(34)),
             margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16)),
@@ -523,7 +541,9 @@ class _SignInPageState extends State<SignInPage> {
                             style: TextStyle(
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
-                                fontFamily: 'NotoSans')
+                                fontFamily: 'NotoSans',
+                                fontWeight: FontWeight.w400,
+                            )
                         )
                     ),
                     InkWell(
@@ -532,7 +552,7 @@ class _SignInPageState extends State<SignInPage> {
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
                                 fontFamily: 'NotoSans',
-                                fontWeight: FontWeight.w600
+                                fontWeight: FontWeight.w500
                             )
                         ),
                         onTap: () {
@@ -613,7 +633,6 @@ class _SignInPageState extends State<SignInPage> {
                     )
                 ],
             )
-
         );
     }
 }

@@ -7,12 +7,14 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 
@@ -68,10 +70,12 @@ class _SignUpPageState extends State<SignUpPage>{
      * @description : 인증 문자 요청
      */
     registerCodeRequest() async {
+        final userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+
         SPF = await Constant.getSPF();
         if(phoneRegController.text == ''){
             developer.log("# Phone number is empty.");
-            RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
+            RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.inputPhone')), ToastGravity.TOP);
         } else {
             FocusScope.of(context).requestFocus(new FocusNode());
             developer.log("# Phone number : " +  phoneRegController.text);
@@ -95,7 +99,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 if (response.statusCode == 200 || response.statusCode == 202) {
 
                     if(data['message'] != null){
-                        RedToast.toast("인증문자를 요청하였습니다.", ToastGravity.TOP);
+                        RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.request200')), ToastGravity.TOP);
                         developer.log("# Code request success");
                     ///이미 가입된 사용자면
                     } else {
@@ -115,34 +119,35 @@ class _SignUpPageState extends State<SignUpPage>{
                                 "token": accessToken
                             })
                         ).then((http.Response response) async {
-//                            SetUserInfo.set(data['data']['userInfo'],profileURL);
-
                             var token = data['data']['token'];
                             var userIdx = data['data']['userInfo']['idx'];
 
                             developer.log("# [SPF SAVE] token : " + token);
                             developer.log("# [SPF SAVE] userIdx : " + userIdx.toString());
+                            data['data']['userInfo']['token'] = token;
+                            data['data']['userInfo']['profileURL'] = profileURL;
+                            data['data']['userInfo']['nickname'] = data['data']['userInfo']['jb_user_info']['nickname'];
 
                             SPF.setString('token', token);
                             SPF.setInt('userIdx', userIdx);
 
+                            await userInfoProvider.getUserInfoFromSPF();
+                            await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo']);
                             SetFCM.firebaseCloudMessagingListeners();
-
-                            await Constant.initUserInfo();
                             HomePageState.initApiCall();
 
                             developer.log('# [Navigator] SignUpPage -> MainPage');
-                            RedToast.toast("이미 인증된 사용자입니다.", ToastGravity.TOP);
-                            RedToast.toast("Here we are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+                            RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.alreadyUser')), ToastGravity.TOP);
+                            RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.start')), ToastGravity.TOP);
                             Navigator.pushNamed(context, '/main');
                         });
                     }
                 } else {
                     if(data['message'].indexOf('이미 사용중인 전화번호입니다') > -1){
-                        RedToast.toast("이미 사용중인 전화번호입니다.", ToastGravity.TOP);
+                        RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.alreadyPhone')), ToastGravity.TOP);
                         developer.log("# Already used phone number");
                     } else {
-                        RedToast.toast("서버 요청에 실패하였습니다.",ToastGravity.TOP);
+                        RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.fail')),ToastGravity.TOP);
                         developer.log('# Request failed ： ${response.statusCode}');
                     }
                 }
@@ -160,7 +165,7 @@ class _SignUpPageState extends State<SignUpPage>{
 
         if(_regAuthCodeController.text == ''){
             developer.log("# Auth code is empty.");
-            RedToast.toast("인증번호를 입력해주세요.", ToastGravity.TOP);
+            RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.inputCode')), ToastGravity.TOP);
         } else {
             developer.log("# Auth code : " +  _regAuthCodeController.text);
 
@@ -191,9 +196,9 @@ class _SignUpPageState extends State<SignUpPage>{
                     );
 
 
-                    RedToast.toast("인증이 완료 되었습니다.", ToastGravity.TOP);
+                    RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.authFinish')), ToastGravity.TOP);
                 } else {
-                    RedToast.toast("인증이 실패하였습니다. 인증번호를 확인해주세요.", ToastGravity.TOP);
+                    RedToast.toast((AppLocalizations.of(context).tr('sign.signUp.toast.authFail')), ToastGravity.TOP);
                     developer.log('failed：${response.statusCode}');
                 }
             });
@@ -208,12 +213,12 @@ class _SignUpPageState extends State<SignUpPage>{
     @override
     Widget build(BuildContext context){
         return Scaffold(
-            body: new GestureDetector(
+            body:  GestureDetector(
                 //텍스트필드 클릭 후 키보드 올라와 있을때 다른영역 터치해서 포커싱 해제
                 onTap: (){
-                    FocusScope.of(context).requestFocus(new FocusNode());
+                    FocusScope.of(context).requestFocus( FocusNode());
                 },
-                child: new Container(
+                child:  Container(
                     decoration: BoxDecoration(
                         border: Border(
                             top: BorderSide(
@@ -246,7 +251,7 @@ class _SignUpPageState extends State<SignUpPage>{
                     ),
                 ),
                 centerTitle: true,
-                title: Text(AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'),
+                title: Text(AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w600),
                 ),
             ),
         );
@@ -264,7 +269,7 @@ class _SignUpPageState extends State<SignUpPage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text(AppLocalizations.of(context).tr('sign.signUp.textPhoneNumber'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text(AppLocalizations.of(context).tr('sign.signUp.textPhoneNumber'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans',fontWeight: FontWeight.w600))
                 ],
             )
         );
@@ -294,7 +299,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 controller: phoneRegController,
                 cursorColor: Colors.black,
                 obscureText: false,
-                style: TextStyle(color: Colors.black, fontFamily: "NotoSans",
+                style: TextStyle(color: Colors.black, fontFamily: 'NanumSquare',fontWeight: FontWeight.w500
                 ),
                 decoration: InputDecoration(
                     suffixIcon:
@@ -313,7 +318,7 @@ class _SignUpPageState extends State<SignUpPage>{
                     ),
                     counterText:"",
                     hintText: AppLocalizations.of(context).tr('sign.signUp.phoneNumber'),
-                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15, fontFamily: 'NotoSans', fontWeight: FontWeight.w600),
                     border:  OutlineInputBorder(
                         borderRadius:  BorderRadius.circular(10.0),
                         borderSide:  BorderSide(
@@ -338,7 +343,7 @@ class _SignUpPageState extends State<SignUpPage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text(AppLocalizations.of(context).tr('sign.signUp.textAuthCode'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text(AppLocalizations.of(context).tr('sign.signUp.textAuthCode'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans', fontWeight: FontWeight.w600))
                 ],
             )
         );
@@ -376,11 +381,11 @@ class _SignUpPageState extends State<SignUpPage>{
                 controller: _regAuthCodeController,
                 cursorColor: Colors.black,
                 obscureText: true,
-                style: TextStyle(color: Colors.black, fontFamily: "NotoSans",),
+                style: TextStyle(color: Colors.black, fontFamily: 'NanumSquare',fontWeight: FontWeight.w500),
                 decoration: InputDecoration(
                     counterText: "",
                     hintText: AppLocalizations.of(context).tr('sign.signUp.authCode'),
-                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15, fontFamily: 'NotoSans', fontWeight: FontWeight.w600),
                     border:  OutlineInputBorder(
                         borderRadius:  BorderRadius.circular(10.0),
                         borderSide:  BorderSide(
@@ -412,7 +417,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 },
                 color: color,
                 elevation: 0.0,
-                child: Text(AppLocalizations.of(context).tr('sign.signUp.nextBtn'),style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans')
+                child: Text(AppLocalizations.of(context).tr('sign.signUp.nextBtn'),style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans', fontWeight: FontWeight.w600, fontSize: 16)
                 ),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)
