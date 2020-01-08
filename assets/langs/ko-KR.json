@@ -43,7 +43,10 @@
             "NicknameValidator": "닉네임을 입력해주세요",
             "NicknameAlready": "이미 사용중인 닉네임입니다",
             "nickName": "닉네임을 입력하세요",
-            "startBtn": "시작하기"
+            "startBtn": "시작하기",
+            "toast": {
+                "start": "Here we are. 주변 친구들과 단화를 시작해보세요."
+            }
         }
     },
     "tapMenuTitle": {

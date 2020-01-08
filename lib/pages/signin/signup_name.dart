@@ -117,7 +117,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             SetFCM.firebaseCloudMessagingListeners();
             HomePageState.initApiCall();
 
-            RedToast.toast("Here we are. 주변 친구들과 단화를 시작해보세요.", ToastGravity.TOP);
+            RedToast.toast((AppLocalizations.of(context).tr('sign.signUpName.toast.start')), ToastGravity.TOP);
 
             Navigator.pushNamed(context, '/main');
         } else {
