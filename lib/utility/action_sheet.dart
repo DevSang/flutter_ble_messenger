@@ -22,7 +22,7 @@ class ActionSheetState extends State<ActionSheet> {
         });
     }
 
-    void showDemoActionSheet({BuildContext context, Widget child}) {
+    void showActionSheet({BuildContext context, Widget child}) {
         showCupertinoModalPopup<String>(
             context: context,
             builder: (BuildContext context) => child,

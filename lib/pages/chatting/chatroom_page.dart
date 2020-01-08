@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:collection';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
+import 'package:Hwa/utility/action_sheet.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:Hwa/data/models/chat_join_info.dart';
@@ -362,12 +363,14 @@ class ChatScreenState extends State<ChatroomPage> {
     Future<void> uploadContents(int type) async {
 	    File imageFile;
 
-	    if(type == 0){
-//		    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-		    imageFile = await FilePicker.getFile(type: FileType.ANY);
-	    } else if(type == 1){
-		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
-	    }
+	    switch(type) {
+	        case 0: imageFile = await FilePicker.getFile(type: FileType.ANY);
+	            break;
+            case 1: imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+                break;
+            case 2: imageFile = await ImagePicker.pickVideo(source: ImageSource.camera);
+                break;
+        }
 
 	    if (imageFile != null) {
 		    GaugeDriver gaugeDriver = new GaugeDriver();
@@ -1004,7 +1007,9 @@ class ChatScreenState extends State<ChatroomPage> {
                                 decoration: setIcon('assets/images/icon/iconAttachCamera.png')
                             ),
                             onTap:(){
-	                            uploadContents(1);
+                                ActionSheetState().showActionSheet(
+                                    context: context, child: _buildActionSheet()
+                                );
                             }
                         ),
                         color: Colors.white,
@@ -1028,6 +1033,41 @@ class ChatScreenState extends State<ChatroomPage> {
                         color: Colors.white,
                     ),
                 ],
+            ),
+        );
+    }
+
+    Widget _buildActionSheet() {
+        return CupertinoActionSheet(
+            message: Text(
+                "단화방에 공유할 미디어를 선택해주세요.",
+                style: TextStyle(
+                    fontFamily: "NotoSans",
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenUtil().setSp(14),
+                ),
+            ),
+            actions: <Widget>[
+                CupertinoActionSheetAction(
+                    child: Text("사진"),
+                    onPressed: () {
+                        uploadContents(1);
+                        Navigator.pop(context);
+                    },
+                ),
+                CupertinoActionSheetAction(
+                    child: Text("동영상"),
+                    onPressed: () {
+                        uploadContents(2);
+                        Navigator.pop(context);
+                    },
+                )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+                child: Text("취소"),
+                onPressed: () {
+                    Navigator.pop(context);
+                },
             ),
         );
     }

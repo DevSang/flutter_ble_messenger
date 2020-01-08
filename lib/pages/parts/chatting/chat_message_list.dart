@@ -530,12 +530,16 @@ class ChatMessageListState extends State<ChatMessageList> {
                         ),
                         child: Stack(
                             children: <Widget>[
-                                Image.file(
-                                    chatMessage.thumbnailFile,
-                                    gaplessPlayback: true,
-                                    fit: BoxFit.cover,
-                                    width: ScreenUtil().setWidth(230),
-                                    height: ScreenUtil().setWidth(230),
+                                ClipRRect(
+                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
+                                    child:
+                                    Image.file(
+                                        chatMessage.thumbnailFile,
+                                        gaplessPlayback: true,
+                                        fit: BoxFit.cover,
+                                        width: ScreenUtil().setWidth(230),
+                                        height: ScreenUtil().setWidth(230),
+                                    )
                                 ),
                                 Positioned.fill(
                                     child: Align(
