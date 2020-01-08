@@ -30,6 +30,8 @@ import 'package:Hwa/pages/chatting/notice_page.dart';
 import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 
+import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:dio/dio.dart';
 
 
@@ -360,12 +362,12 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+        GaugeDriver gaugeDriver = new GaugeDriver();
+
+        thumbnailMessage(imageFile, gaugeDriver);
+        uploadingImageCount ++;
 
         if (imageFile != null) {
-	        GaugeDriver gaugeDriver = new GaugeDriver();
-
-	        thumbnailMessage(imageFile, gaugeDriver);
-	        uploadingImageCount ++;
 
         	// 파일 이외의 추가 파라미터 셋팅
 	        Map<String, dynamic> param = {
@@ -382,11 +384,19 @@ class ChatScreenState extends State<ChatroomPage> {
                         if(sent == total) {
                             messageList[i].uploaded = true;
                         }
+                    } else {
+	                    break;
                     }
                 }
 	        });
 
 	        if(response.statusCode == 200){
+
+		        await precacheImage(
+				        CachedNetworkImageProvider(
+						        "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
+				        ), context);
+
 		        onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
 	        }
         }
@@ -399,13 +409,12 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     Future getCamera() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+        GaugeDriver gaugeDriver = new GaugeDriver();
+
+        thumbnailMessage(imageFile, gaugeDriver);
+        uploadingImageCount ++;
 
         if (imageFile != null) {
-	        GaugeDriver gaugeDriver = new GaugeDriver();
-
-	        thumbnailMessage(imageFile, gaugeDriver);
-	        uploadingImageCount ++;
-
             // 파일 이외의 추가 파라미터 셋팅
             Map<String, dynamic> param = {
 	            "chat_idx" : chatInfo.chatIdx
@@ -426,6 +435,12 @@ class ChatScreenState extends State<ChatroomPage> {
             });
 
             if(response.statusCode == 200){
+
+	            await precacheImage(
+		            CachedNetworkImageProvider(
+			            "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
+		            ), context);
+
             	// 썸네일 URI 전송
 	            onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", 1);
             }

@@ -477,6 +477,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 child: CachedNetworkImage(
                                     width: ScreenUtil().setWidth(230),
                                     imageUrl: chatMessage.message,
+	                                fadeInDuration: const Duration(milliseconds: 100),
                                     placeholder: (context, url) =>
                                         Container(
                                             width: ScreenUtil().setWidth(230),
@@ -532,8 +533,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                                         chatMessage.thumbnailFile,
                                         gaplessPlayback: true,
                                         fit: BoxFit.cover,
-                                        cacheWidth: ScreenUtil().setWidth(230).toInt(),
-                                        cacheHeight: ScreenUtil().setWidth(230).toInt(),
+	                                    width: ScreenUtil().setWidth(230),
+	                                    height: ScreenUtil().setWidth(230),
                                     ),
                                 ),
                                 Positioned.fill(
