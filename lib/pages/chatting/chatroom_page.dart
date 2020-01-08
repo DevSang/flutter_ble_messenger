@@ -436,15 +436,14 @@ class ChatScreenState extends State<ChatroomPage> {
 		    developer.log("####### uploadFile. mimeStr: $mimeStr, fileType: $fileType");
 
             if (fileType == "video") {
-
                 Uint8List imageThumbnailString =  await VideoThumbnail.thumbnailData(
-                    video: contentsFile.toString(),
-                    imageFormat: ImageFormat.JPEG,
+                    video: contentsFile.path,
+                    imageFormat: ImageFormat.WEBP,
                     timeMs: 0,
                     quality: 50,
                 );
 
-                contentsFile = File(String.fromCharCodes(imageThumbnailString));
+                File thumbFile = File.fromRawPath(imageThumbnailString);
             }
 
 		    // 파일 업로드 API 호출
