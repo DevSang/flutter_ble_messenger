@@ -145,7 +145,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                     ),
                 ),
                 centerTitle: true,
-                title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans'))
+                title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w600))
             ),
             body: Container(
                 child: ListView(
@@ -171,7 +171,8 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text((AppLocalizations.of(context).tr('sign.signUpName.textNickname')),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans'))
+                    Text((AppLocalizations.of(context).tr('sign.signUpName.textNickname')),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans',fontWeight: FontWeight.w600,
+                    ))
                 ],
             )
         );
@@ -253,7 +254,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 },
                 color: color,
                 elevation: 0.0,
-                child: Text((AppLocalizations.of(context).tr('sign.signUpName.startBtn')), style: TextStyle(color: Colors.white)),
+                child: Text((AppLocalizations.of(context).tr('sign.signUpName.startBtn')), style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)
                 )
