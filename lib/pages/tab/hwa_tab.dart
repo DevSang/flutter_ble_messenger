@@ -522,13 +522,13 @@ class HwaTabState extends State<HwaTab> {
         return showDialog(
             context: context,
             builder: (BuildContext context) => CustomDialog(
-                title: '단화 생성하기',
+                title: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.title')),
                 type: 1,
-                leftButtonText: "취소",
-                rightButtonText: "생성하기",
+                leftButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.cancel')),
+                rightButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.create')),
                 value: _currentAddress,
-                hintText: _currentAddress == '위치 검색 중..'
-                    ? '단화방 이름을 입력해주세요.'
+                hintText: _currentAddress == (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'))
+                    ? (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.pleaseRoomName'))
                     : _currentAddress,
                 maxLength: 15,
             ),
