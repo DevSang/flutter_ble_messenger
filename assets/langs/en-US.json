@@ -24,7 +24,18 @@
             "getAuthCode": "Get Code",
             "textAuthCode": "Enter your Auth Code",
             "authCode": "Auth Code",
-            "nextBtn": "Next"
+            "nextBtn": "Next",
+          "toast": {
+            "request200": "You have requested a verification code.",
+            "inputPhone": "Please enter your mobile number",
+            "alreadyUser": "You are already an authenticated user.",
+            "alreadyPhone": "This phone number is already taken.",
+            "inputCode": "Please enter the verification code.",
+            "authFinish": "Certification completed.",
+            "authFail": "Authentication failed. Please check the verification number.",
+            "start": "Here we are. Start danhwa with friends around you.",
+            "fail": "Server request failed"
+          }
         },
         "signUpName": {
             "signUpAppbar": "Sign In",
