@@ -29,11 +29,7 @@ import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 
 import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:path/path.dart' as p;
 import 'package:mime/mime.dart';
-
-
 
 
 /*
@@ -361,21 +357,21 @@ class ChatScreenState extends State<ChatroomPage> {
 	 * @description : 단화방 파일 공유
 	 */
     Future<void> uploadContents(int type) async {
-	    File imageFile;
+	    File contentsFile;
 
 	    switch(type) {
-	        case 0: imageFile = await FilePicker.getFile(type: FileType.ANY);
+	        case 0: contentsFile = await ImagePicker.pickImage(source: ImageSource.gallery);
 	            break;
-            case 1: imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+            case 1: contentsFile = await ImagePicker.pickImage(source: ImageSource.camera);
                 break;
-            case 2: imageFile = await ImagePicker.pickVideo(source: ImageSource.camera);
+            case 2: contentsFile = await ImagePicker.pickVideo(source: ImageSource.camera);
                 break;
         }
 
-	    if (imageFile != null) {
+	    if (contentsFile != null) {
 		    GaugeDriver gaugeDriver = new GaugeDriver();
 
-		    thumbnailMessage(imageFile, gaugeDriver);
+		    thumbnailMessage(contentsFile, gaugeDriver);
 		    uploadingImageCount ++;
 
 		    // 파일 이외의 추가 파라미터 셋팅
@@ -383,7 +379,7 @@ class ChatScreenState extends State<ChatroomPage> {
 			    "chat_idx" : chatInfo.chatIdx
 		    };
 
-		    String mimeStr = lookupMimeType(imageFile.path);
+		    String mimeStr = lookupMimeType(contentsFile.path);
 
 		    // image, video... TODO 일반 파일 추가
 		    String fileType = (mimeStr != null ? mimeStr.split("/")[0] : null);
@@ -393,7 +389,7 @@ class ChatScreenState extends State<ChatroomPage> {
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(
 				    url: "/api/v2/chat/share/file"
-				    , filePath: imageFile.path
+				    , filePath: contentsFile.path
 				    , paramMap: param
 				    , contentsType: mimeStr
 				    , onSendProgress: (int sent, int total){
@@ -401,7 +397,7 @@ class ChatScreenState extends State<ChatroomPage> {
 			    developer.log("$sent : $total");
 
 			    for(var i=0; i<uploadingImageCount; i++) {
-				    if (messageList[i].thumbnailFile.path == imageFile.path) {
+				    if (messageList[i].thumbnailFile.path == contentsFile.path) {
 					    messageList[i].gaugeDriver.drive(sent/total);
 
 					    if(sent == total) {
