@@ -362,12 +362,12 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     Future getImage() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-        GaugeDriver gaugeDriver = new GaugeDriver();
-
-        thumbnailMessage(imageFile, gaugeDriver);
-        uploadingImageCount ++;
 
         if (imageFile != null) {
+	        GaugeDriver gaugeDriver = new GaugeDriver();
+
+	        thumbnailMessage(imageFile, gaugeDriver);
+	        uploadingImageCount ++;
 
         	// 파일 이외의 추가 파라미터 셋팅
 	        Map<String, dynamic> param = {
@@ -409,12 +409,14 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     Future getCamera() async {
         imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
-        GaugeDriver gaugeDriver = new GaugeDriver();
 
-        thumbnailMessage(imageFile, gaugeDriver);
-        uploadingImageCount ++;
 
         if (imageFile != null) {
+	        GaugeDriver gaugeDriver = new GaugeDriver();
+
+	        thumbnailMessage(imageFile, gaugeDriver);
+	        uploadingImageCount ++;
+
             // 파일 이외의 추가 파라미터 셋팅
             Map<String, dynamic> param = {
 	            "chat_idx" : chatInfo.chatIdx
