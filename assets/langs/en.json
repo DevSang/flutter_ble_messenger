@@ -25,7 +25,7 @@
             "textAuthCode": "Enter your Auth Code",
             "authCode": "Auth Code",
             "nextBtn": "Next",
-          "toast": {
+            "toast": {
             "request200": "You have requested a verification code.",
             "inputPhone": "Please enter your mobile number",
             "alreadyUser": "You are already an authenticated user.",
@@ -43,7 +43,10 @@
             "NicknameValidator": "Please enter a nickname",
             "NicknameAlready": "This nickname is already using",
             "nickName": "Please enter your nickname",
-            "startBtn": "Start"
+            "startBtn": "Start",
+            "toast": {
+                "start": "Here we are. Start danhwa with friends around you."
+            }
         }
     },
     "tapMenuTitle": {

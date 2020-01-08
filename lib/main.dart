@@ -84,9 +84,11 @@ class HereWeAreApp extends StatelessWidget {
 		                GlobalWidgetsLocalizations.delegate,
 		                EasylocaLizationDelegate(
 				            locale: data.locale,
-				            path: 'assets/langs'),
+				            path: 'assets/langs',
+							useOnlyLangCode: true
+						),
 		            ],
-                    supportedLocales: [Locale('en', 'US'), Locale('ko', 'KR')],
+                    supportedLocales: [Locale('en'), Locale('ko')],
                     locale: data.locale,
 	            ),
             )

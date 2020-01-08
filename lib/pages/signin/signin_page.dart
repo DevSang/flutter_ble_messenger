@@ -418,7 +418,7 @@ class _SignInPageState extends State<SignInPage> {
                             right: ScreenUtil().setWidth(5)
                         ),
                         child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(13), horizontal: ScreenUtil().setWidth(15)),
+                            padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(10), horizontal: ScreenUtil().setWidth(15)),
                             focusNode: contextFocus,
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
@@ -451,9 +451,9 @@ class _SignInPageState extends State<SignInPage> {
             height: ScreenUtil().setHeight(50),
             width: ScreenUtil().setWidth(343),
             margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16), vertical: ScreenUtil().setHeight(3)),
-            decoration: new BoxDecoration(
+            decoration: BoxDecoration(
                 color: Color.fromRGBO(240, 240, 240, 1),
-                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
+                borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
             ),
             child:  Container(
                 margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
@@ -503,7 +503,7 @@ class _SignInPageState extends State<SignInPage> {
         return Container(
             margin: EdgeInsets.only(top:ScreenUtil().setHeight(3)),
             width: MediaQuery.of(context).size.width,
-            height: ScreenUtil().setHeight(50),
+            height: 50.0,
             padding: EdgeInsets.symmetric(horizontal: 15.0),
             color: Colors.white,
             child: RaisedButton(
@@ -526,8 +526,8 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _registerSection(BuildContext context) {
         return Container(
-            decoration: new BoxDecoration(
-                border: new Border(bottom: BorderSide(color:Color.fromRGBO(122, 122, 122, 1), width: 0.5)),
+            decoration:  BoxDecoration(
+                border:  Border(bottom: BorderSide(color:Color.fromRGBO(122, 122, 122, 1), width: 0.5)),
             ),
             padding: EdgeInsets.only(top: ScreenUtil().setHeight(16), bottom: ScreenUtil().setHeight(34)),
             margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16)),
