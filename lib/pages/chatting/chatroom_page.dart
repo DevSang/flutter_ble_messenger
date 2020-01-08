@@ -31,6 +31,8 @@ import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -218,6 +220,9 @@ class ChatScreenState extends State<ChatroomPage> {
         }
 
         for (var recentMsg in recentMessageList) {
+
+	        if(recentMsg != null && recentMsg.message != null) checkYoutubeAndSetVideo(recentMsg);
+
             messageList.add(recentMsg);
         }
     }
@@ -324,9 +329,46 @@ class ChatScreenState extends State<ChatroomPage> {
             chatTime: message.chatTime
         );
 
+        // youtube 체크
+        checkYoutubeAndSetVideo(cmb);
+
         messageList.insert(uploadingImageCount, cmb);
 
         setState(() {});
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-08
+     * @description : youtube 공유인지 체크, 맞으면 비디오 생성 및 셋팅
+     */
+    void checkYoutubeAndSetVideo(ChatMessage cm){
+    	if(cm != null && cm.message != null){
+		    String lowerCase = cm.message.toLowerCase();
+
+		    if(lowerCase.contains("youtu.be") || lowerCase.contains("youtube")){
+			    // 우튜브 Video Id 추출
+			    String videoId = YoutubePlayer.convertUrlToId(cm.message);
+			    developer.log("### videoId: $videoId");
+
+			    if(videoId != null){
+				    YoutubePlayerController _controller = YoutubePlayerController(
+					    initialVideoId: videoId,
+					    flags: YoutubePlayerFlags(
+						    autoPlay: true,
+					    ),
+				    );
+
+				    String thumbnailUrl = YoutubePlayer.getThumbnail(videoId: videoId);
+
+				    YoutubePlayer video = YoutubePlayer(controller: _controller, thumbnailUrl: thumbnailUrl, showVideoProgressIndicator: true, onReady: (){
+					    developer.log("###### onReady");
+				    });
+
+				    cm.youtubePlayer = video;
+			    }
+		    }
+	    }
     }
 
     /*

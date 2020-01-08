@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
+import 'package:Hwa/pages/chatting/youtube_page.dart';
 import 'package:image/image.dart' as Im;
 
 
@@ -123,6 +124,21 @@ class ChatMessageListState extends State<ChatMessageList> {
                 ],
             )
         );
+    }
+
+    _playYoutube(ChatMessage chatMessage){
+    	// youtube 객체가 있으면 반응
+		if(chatMessage.youtubePlayer != null){
+			print("#### Exist Youtube");
+
+			GlobalKey key = GlobalKey();
+
+			Navigator.push(context,
+					MaterialPageRoute(builder: (context) {
+						return YoutubePage(chatMessage: chatMessage, key: key);
+					})
+			);
+		}
     }
 
     // 받은 메세지 레이아웃 (프로필이미지, 이름, 시간)
@@ -264,15 +280,20 @@ class ChatMessageListState extends State<ChatMessageList> {
                                         left: ScreenUtil().setWidth(14.5),
                                         right: ScreenUtil().setWidth(14.5),
                                     ),
-                                    child: Text(
-                                        chatMessage.message,
-                                        style: TextStyle(
-                                            fontFamily: "NotoSans",
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: ScreenUtil().setSp(15),
-                                            color: Color.fromRGBO(39, 39, 39, 0.96),
-                                            height: 1.14
-                                        )
+                                    child: Column(
+	                                    children: <Widget>[
+		                                    Text(
+				                                    chatMessage.message,
+				                                    style: TextStyle(
+						                                    fontFamily: "NotoSans",
+						                                    fontWeight: FontWeight.w500,
+						                                    fontSize: ScreenUtil().setSp(15),
+						                                    color: Color.fromRGBO(39, 39, 39, 0.96),
+						                                    height: 1.14
+				                                    )
+		                                    ),
+		                                    chatMessage.youtubePlayer != null ? Image.network(chatMessage.youtubePlayer.thumbnailUrl) : Container()
+	                                    ],
                                     ),
                                     decoration: BoxDecoration(
                                         color: isSelected
@@ -346,15 +367,25 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                 left: ScreenUtil().setWidth(14.5),
                                                 right: ScreenUtil().setWidth(14.5),
                                             ),
-                                            child: Text(
-                                                chatMessage.message,
-                                                style: TextStyle(
-                                                    fontFamily: "NotoSans",
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: ScreenUtil().setSp(15),
-                                                    color: Color.fromRGBO(39, 39, 39, 0.96),
-                                                    height: 1.14
-                                                ),
+                                            child: InkWell(
+	                                            child: Column(
+		                                            children: <Widget>[
+			                                            Text(
+				                                            chatMessage.message,
+				                                            style: TextStyle(
+						                                            fontFamily: "NotoSans",
+						                                            fontWeight: FontWeight.w500,
+						                                            fontSize: ScreenUtil().setSp(15),
+						                                            color: Color.fromRGBO(39, 39, 39, 0.96),
+						                                            height: 1.14
+				                                            ),
+			                                            ),
+			                                            chatMessage.youtubePlayer != null ? Image.network(chatMessage.youtubePlayer.thumbnailUrl) : Container()
+		                                            ],
+	                                            ),
+	                                            onTap: (){
+		                                            _playYoutube(chatMessage);
+	                                            },
                                             ),
                                             decoration: BoxDecoration(
                                                 color: Color.fromRGBO(166, 181, 255, 1),
