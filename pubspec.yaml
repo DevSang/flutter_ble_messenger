@@ -190,8 +190,8 @@ flutter:
     - assets/images/icon/howmanyIcon.png
 
     # langs
-    - assets/langs/en-US.json
-    - assets/langs/ko-KR.json
+    - assets/langs/en.json
+    - assets/langs/ko.json
 
   uses-material-design: true
 
