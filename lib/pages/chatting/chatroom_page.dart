@@ -3,7 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:collection';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
-import 'package:image/image.dart' as Im;
+import 'dart:developer' as developer;
 
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
@@ -11,10 +11,8 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -23,7 +21,6 @@ import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
 
 import 'package:Hwa/data/models/chat_message.dart';
-import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 
 import 'package:Hwa/pages/chatting/notice_page.dart';
@@ -31,8 +28,11 @@ import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:mime_type/mime_type.dart';
+
 
 
 
@@ -364,7 +364,8 @@ class ChatScreenState extends State<ChatroomPage> {
 	    File imageFile;
 
 	    if(type == 0){
-		    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+//		    imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+		    imageFile = await FilePicker.getFile(type: FileType.ANY);
 	    } else if(type == 1){
 		    imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
 	    }
@@ -380,9 +381,23 @@ class ChatScreenState extends State<ChatroomPage> {
 			    "chat_idx" : chatInfo.chatIdx
 		    };
 
+		    String extension = p.extension(imageFile.path);
+		    extension = extension.replaceFirst(".", "").toLowerCase();
+
+		    String mimeType = mimeFromExtension(extension);
+
+		    developer.log("####### uploadFile. extension: $extension, mimeType: $mimeType");
+
 		    // 파일 업로드 API 호출
-		    Response response = await CallApi.fileUploadCall(url: "/api/v2/chat/share/file", filePath: imageFile.path, paramMap: param, onSendProgress: (int sent, int total){
+		    Response response = await CallApi.fileUploadCall(
+				    url: "/api/v2/chat/share/file"
+				    , filePath: imageFile.path
+				    , paramMap: param
+				    , contentsType: mimeType
+				    , onSendProgress: (int sent, int total){
+
 			    developer.log("$sent : $total");
+
 			    for(var i=0; i<uploadingImageCount; i++) {
 				    if (messageList[i].thumbnailFile.path == imageFile.path) {
 					    messageList[i].gaugeDriver.drive(sent/total);
@@ -391,11 +406,18 @@ class ChatScreenState extends State<ChatroomPage> {
 						    messageList[i].uploaded = true;
 					    }
 				    }
+
+				    break;
 			    }
+		    }, onError: (DioError e){
+			    // TODO 서버 에러일 경우 처리
+			    developer.log("########### DioError");
+			    developer.log(e.toString());
+			    developer.log(e.message);
+			    developer.log(e.type.toString());
 		    });
 
 		    if(response.statusCode == 200){
-
 			    await precacheImage(
 					    CachedNetworkImageProvider(
 							    "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
