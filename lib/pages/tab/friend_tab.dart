@@ -150,7 +150,7 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
 
         String uri = "/api/v2/relation/relationship/all";
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-        if(response.body != null){
+        if(response != null){
             List<dynamic> friendListJson = jsonDecode(response.body)['data'];
 
             for(var i = 0; i < friendListJson.length; i++){
@@ -193,9 +193,7 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         String uri = "/api/v2/relation/request/all";
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
 
-        developer.log("#####" + response.body.toString());
-
-        if(response.body != null){
+        if(response != null){
             List<dynamic> friendRequest = jsonDecode(response.body)['data'];
 
             for(var i = 0; i < friendRequest.length; i++){
