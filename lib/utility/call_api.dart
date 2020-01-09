@@ -1,15 +1,11 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
-import 'package:provider/provider.dart';
-
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/data/state/user_info_provider.dart';
 
 
 /*
@@ -69,7 +65,7 @@ class CallApi {
 
         String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
 
-	    SharedPreferences prefs = await SharedPreferences.getInstance();
+	    SharedPreferences prefs = await Constant.getSPF();
 	    var token = jsonDecode(prefs.getString('userInfo'))['token'].toString();
 
 	    Response response;

@@ -41,6 +41,7 @@ dependencies:
     easy_localization: 1.3.1          # localization(다국어)
     mime: ^0.9.6+3                    # Mime Type
     youtube_player_flutter: ^6.0.3+2  # Youtube
+    path_provider: ^1.5.1             # file download
 
     ### Add by JH ###
     shared_preferences:             # SharedPreferences
