@@ -405,6 +405,7 @@ class ChatScreenState extends State<ChatroomPage> {
 	 */
     Future<void> uploadContents(int type) async {
 	    File contentsFile;
+	    File thumbNailFile;
 
 	    switch(type) {
 	        case 0: contentsFile = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -419,9 +420,6 @@ class ChatScreenState extends State<ChatroomPage> {
 
 	    if (contentsFile != null) {
 		    GaugeDriver gaugeDriver = new GaugeDriver();
-
-		    thumbnailMessage(contentsFile, gaugeDriver);
-		    uploadingImageCount ++;
 
 		    // 파일 이외의 추가 파라미터 셋팅
 		    Map<String, dynamic> param = {
@@ -443,8 +441,13 @@ class ChatScreenState extends State<ChatroomPage> {
                     quality: 50,
                 );
 
-                File thumbFile = File.fromRawPath(imageThumbnailString);
+                thumbNailFile = File.fromRawPath(imageThumbnailString);
+            } else {
+                thumbNailFile = contentsFile;
             }
+
+            thumbnailMessage(thumbNailFile, gaugeDriver);
+            uploadingImageCount ++;
 
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(
@@ -457,7 +460,7 @@ class ChatScreenState extends State<ChatroomPage> {
 			    developer.log("$sent : $total");
 
 			    for(var i=0; i<uploadingImageCount; i++) {
-				    if (messageList[i].thumbnailFile.path == contentsFile.path) {
+				    if (messageList[i].thumbnailFile.path == thumbNailFile.path) {
 					    messageList[i].gaugeDriver.drive(sent/total);
 
 					    if(sent == total) {

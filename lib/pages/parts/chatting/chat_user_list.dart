@@ -12,7 +12,7 @@ import 'dart:developer' as developer;
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
-import 'package:Hwa/package/fullPhoto.dart';
+import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:Hwa/utility/call_api.dart';

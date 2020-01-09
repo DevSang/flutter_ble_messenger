@@ -1,7 +1,8 @@
 import 'dart:convert';
 
-import 'package:Hwa/package/fullPhoto.dart';
+import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
+import 'package:Hwa/pages/parts/chatting/full_video_player.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/gauge_animate.dart';
 import 'package:Hwa/utility/get_same_size.dart';
@@ -445,7 +446,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                 mainAxisAlignment: receivedMsg ? MainAxisAlignment.start : MainAxisAlignment.end,
                 children: <Widget>[
                     !receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container() ,
-                    GestureDetector(
+                    InkWell(
                         child: Container(
                             width: ScreenUtil().setWidth(230),
                             height: ScreenUtil().setWidth(230),
@@ -479,7 +480,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                         ),
                         onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header)));
+                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header))
+                            );
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
@@ -544,7 +546,6 @@ class ChatMessageListState extends State<ChatMessageList> {
 
     // 링크 형 레이아웃
     Widget linkLayout(YoutubePlayer youtubePlayer) {
-        print("dd");
         return Container(
             margin: EdgeInsets.only(
                 top: ScreenUtil().setHeight(8),
@@ -576,7 +577,7 @@ class ChatMessageListState extends State<ChatMessageList> {
         );
     }
 
-    // 이미지 메세지 스타일
+    // 비디오 메세지 스타일
     Widget videoBubble(ChatMessage chatMessage, bool isLastSendMessage, bool receivedMsg) {
         return Container(
             margin: EdgeInsets.only(
@@ -591,7 +592,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                 mainAxisAlignment: receivedMsg ? MainAxisAlignment.start : MainAxisAlignment.end,
                 children: <Widget>[
                     !receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container() ,
-                    GestureDetector(
+                    InkWell(
                         child: Container(
                             width: ScreenUtil().setWidth(230),
                             height: ScreenUtil().setWidth(230),
@@ -641,9 +642,9 @@ class ChatMessageListState extends State<ChatMessageList> {
                             )
                         ),
                         onTap: () {
-//                            Navigator.push(
-//                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header))
-//                            );
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => FullVideoPlayer(videoUrl: getOriginImgUri(chatMessage.message), header: header))
+                            );
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
