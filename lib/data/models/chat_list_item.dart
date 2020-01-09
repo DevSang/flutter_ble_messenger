@@ -11,10 +11,12 @@ class ChatListItem {
     ChatMessage lastMsg;		// 마지막 메시지
     ChatCountUser userCount;	// 참여 사용자 수
     int adReceiveTs;	        // AD 받아서 chatList에 넣은 시간
+    int roomImgIdx;
 
     ChatListItem({
         this.chatIdx,
         this.chatImg,
+        this.roomImgIdx,
         this.title,
         this.lat,
         this.lon,
@@ -27,6 +29,7 @@ class ChatListItem {
         return ChatListItem (
             chatIdx : jsonData['roomIdx'],
             chatImg : jsonData['roomImg'] ?? 'assets/images/icon/thumbnailUnset1.png',
+	        roomImgIdx: jsonData['roomImgIdx'],
             title : jsonData['title'] ?? "단화방 제목입니다.",
             lat : jsonData['lat'],
             lon : jsonData['lon'],

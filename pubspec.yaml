@@ -14,7 +14,7 @@ dependencies:
     flutter_cupertino_localizations:
 
 
-  #채워주세요~~~ 쓸데없는거 지우게, indent 4칸으로 맞춰주세요
+    #채워주세요~~~ 쓸데없는거 지우게, indent 4칸으로 맞춰주세요
     ### Add by HS ###
     cupertino_icons: ^0.1.2
     intl:
