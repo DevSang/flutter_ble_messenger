@@ -1,25 +1,17 @@
 import 'dart:convert';
-
 import 'dart:developer' as developer;
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/pages/chatting/chatroom_page.dart';
-import 'package:Hwa/pages/parts/common/tab_app_bar.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
-
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:Hwa/constant.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -141,10 +133,6 @@ class _ChatTabState extends State<ChatTab> {
                 }
             }
 
-            developer.log("###########"+chatInfoJson.toString());
-
-
-
             setState(() {
                 isLoading = false;
             });
@@ -171,19 +159,6 @@ class _ChatTabState extends State<ChatTab> {
     Widget build(BuildContext context) {
       return Scaffold(
           body: setScreen()
-//          appBar: TabAppBar(title: '참여했던 단화방', leftChild: Container(height: 0)),
-//          body: Container(
-//              color: Color.fromRGBO(250, 250, 250, 1),
-//              padding: EdgeInsets.symmetric(
-//                  horizontal: ScreenUtil().setWidth(16),
-//              ),
-//              child: Column(
-//                  children: <Widget>[
-//                      // 채팅 리스트
-//                      buildChatList(),
-//                  ],
-//              ),
-//          )
       );
     }
 
@@ -308,9 +283,6 @@ class _ChatTabState extends State<ChatTab> {
                 )
             );
         }
-//        else {
-//            return Loading();
-//        }
     }
 
     /*
@@ -383,6 +355,7 @@ class _ChatTabState extends State<ChatTab> {
 //	                                    height: sameSize * 50,
 //	                                    fit: BoxFit.cover,
 //	                                ),
+		                            chatListItem.roomImgIdx == null ? Image.asset('assets/images/icon/thumbnailUnset1.png') :
 		                            CachedNetworkImage(
 				                            imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
 				                            placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),

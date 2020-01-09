@@ -1,35 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'dart:io' show Platform;
 import 'dart:developer' as developer;
 import 'dart:ui';
-
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
-
 import 'package:Hwa/pages/chatting/chatroom_page.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
-import 'package:Hwa/pages/parts/common/tab_app_bar.dart';
-import 'package:Hwa/pages/trend/trend_page.dart';
-
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -38,11 +31,10 @@ import 'package:cached_network_image/cached_network_image.dart';
  * @description : HWA 메인 Tab 화면
  */
 class HwaTab extends StatefulWidget {
-
 	HwaTab({Key key}) : super(key: key);
 
-  @override
-  HwaTabState createState() => HwaTabState();
+	@override
+	HwaTabState createState() => HwaTabState();
 }
 
 class HwaTabState extends State<HwaTab> {
@@ -111,7 +103,6 @@ class HwaTabState extends State<HwaTab> {
 	    if(Platform.isAndroid){
 		    HwaBeacon().stopRanging();
 	    }
-
 
 	    // 모든 타이머 정지
 	    stopAllTimer();
@@ -190,14 +181,12 @@ class HwaTabState extends State<HwaTab> {
 		    // 스캔(비콘 Listen) 시작
 		    HwaBeacon().startRanging();
 	    }
-
-
     }
 
     /*
     * @author : hs
     * @date : 2019-12-28
-    * @description : 채팅 리스트 받아오기 API 호출
+    * @description : 단화방 정보 받아오기 API 호출
     */
     void _setChatItem(int chatIdx) async {
 	    try {
@@ -241,10 +230,6 @@ class HwaTabState extends State<HwaTab> {
     }
 
     Future<bool> checkGPS() async {
-	    // Location 서비스 켜져있는지 확인
-//        bool isLocationAllowed = await HwaBeacon().checkLocationService();
-
-
 	    if(Platform.isAndroid) {
             bool isLocationAllowed = await HwaBeacon().checkLocationService();
             // 안드로이드 위치 서비스 처리
@@ -487,7 +472,6 @@ class HwaTabState extends State<HwaTab> {
             developer.log("#### Error :: "+ e.toString());
         }
     }
-
 
     /*
      * @author : hs
@@ -869,12 +853,7 @@ class HwaTabState extends State<HwaTab> {
                                     ScreenUtil().setWidth(10)
                                 ),
                                 child:
-//	                                Image.asset(
-//	                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-//	                                    width: sameSize * 50,
-//	                                    height: sameSize * 50,
-//	                                    fit: BoxFit.cover,
-//	                                ),
+		                            chatListItem.roomImgIdx == null ? Image.asset('assets/images/icon/thumbnailUnset1.png') :
 		                            CachedNetworkImage(
 				                            imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
 				                            placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
@@ -992,21 +971,6 @@ class HwaTabState extends State<HwaTab> {
             ),
             onTap: () => _joinChat(chatListItem.chatIdx),
         );
-    }
-
-    _getAddressFromLatLng() async {
-        try {
-            List<Placemark> p = await geolocator.placemarkFromCoordinates(
-                _currentPosition.latitude, _currentPosition.longitude);
-
-            Placemark place = p[0];
-
-            setState(() {
-                _currentAddress = "${place.locality}, ${place.postalCode}";
-            });
-        } catch (e) {
-            developer.log(e);
-        }
     }
 
     Widget popularBadge() {
