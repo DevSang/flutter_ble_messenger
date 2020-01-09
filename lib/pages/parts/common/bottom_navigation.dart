@@ -145,7 +145,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 													        style: TextStyle(
 														        height: 1,
 														        fontFamily: "NotoSans",
-														        fontWeight: FontWeight.w600,
+														        fontWeight: FontWeight.w700,
 														        fontSize: ScreenUtil(allowFontScaling: true).setSp(20),
 														        color: Color.fromRGBO(39, 39, 39, 1),
 														        letterSpacing: ScreenUtil().setWidth(-0.5),
@@ -276,7 +276,8 @@ class _BottomNavigationState extends State<BottomNavigation>{
                         //            )
                     ]
                 ),
-            )
+            ),
+            backgroundColor: Color.fromRGBO(255, 255, 255, 1)
         );
     }
 

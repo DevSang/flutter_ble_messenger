@@ -413,7 +413,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                         chatMessage.nickName.toString(),
                         style: TextStyle(
                             fontFamily: "NotoSans",
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
                             fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
                             color: Colors.white
                         ),
@@ -767,7 +767,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                                     chatMessage.nickName.toString(),
                                                                     style: TextStyle(
                                                                         fontFamily: "NotoSans",
-                                                                        fontWeight: FontWeight.w600,
+                                                                        fontWeight: FontWeight.w700,
                                                                         fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
                                                                         color: Color.fromRGBO(39, 39, 39, 1),
                                                                         letterSpacing: ScreenUtil().setWidth(-0.75)

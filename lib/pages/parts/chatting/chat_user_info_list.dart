@@ -84,8 +84,8 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
                                                 child: ClipRRect(
                                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
                                                     child: FadeInImage(
-                                                        width: ScreenUtil().setWidth(40),
-                                                        height: ScreenUtil().setWidth(40),
+                                                        width: ScreenUtil().setHeight(40),
+                                                        height: ScreenUtil().setHeight(40),
                                                         placeholder: AssetImage("assets/images/icon/profile.png"),
                                                         image: userInfo.profilePictureIdx == null ? AssetImage("assets/images/icon/profile.png") :
                                                                 CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=SMALL", headers: Constant.HEADER),
@@ -96,14 +96,16 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
                                             ),
                                             Container(
                                                 padding: EdgeInsets.only(
-                                                    left: ScreenUtil().setWidth(10.5)
+                                                    left: ScreenUtil().setWidth(10.1)
                                                 ),
                                                 child: Text(
                                                     userInfo.userNick ?? "",
                                                     style: TextStyle(
                                                         height: 1,
+                                                        fontFamily: 'NotoSans',
+                                                        fontWeight: FontWeight.w500,
                                                         fontSize: ScreenUtil().setSp(13),
-                                                        letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                        letterSpacing: ScreenUtil().setWidth(-0.32),
                                                         color: Color.fromRGBO(39, 39, 39, 1)
                                                     ),
                                                 )
@@ -141,16 +143,17 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
     );
 
     Widget badgeHost = new Positioned(
-        top: ScreenUtil().setHeight(20),
-        left: ScreenUtil().setWidth(7.5),
+        top: ScreenUtil().setHeight(17),
+        left: ScreenUtil().setWidth(12),
         child: GestureDetector(
             child: Container(
-                width: ScreenUtil().setWidth(20),
-                height: ScreenUtil().setHeight(20),
+                width: ScreenUtil().setHeight(18),
+                height: ScreenUtil().setHeight(18),
                 decoration: BoxDecoration(
                     color: Color.fromRGBO(77, 96, 191, 1),
                     image: DecorationImage(
-                        image:AssetImage("assets/images/icon/iconMasterBadge.png")
+                        image:AssetImage(
+                            "assets/images/icon/iconMasterBadge.png")
                     ),
                     shape: BoxShape.circle
                 )
@@ -159,12 +162,12 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
     );
 
     Widget badgeMe = new Positioned(
-        top: ScreenUtil().setHeight(20),
-        left: ScreenUtil().setWidth(7.5),
+        top: ScreenUtil().setHeight(17),
+        left: ScreenUtil().setWidth(12),
         child: GestureDetector(
             child: Container(
-                width: ScreenUtil().setWidth(20),
-                height: ScreenUtil().setHeight(20),
+                width: ScreenUtil().setHeight(18),
+                height: ScreenUtil().setHeight(18),
                 decoration: BoxDecoration(
                     color: Color.fromRGBO(239, 193, 0, 1),
                     shape: BoxShape.circle
@@ -174,7 +177,6 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
                     child: Text(
                         "나",
                         style: TextStyle(
-                            height: 1,
                             color: Colors.white,
                             fontSize: ScreenUtil().setWidth(10)
                         ),

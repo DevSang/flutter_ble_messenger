@@ -21,7 +21,7 @@ class _ServicePolicyPageState extends State<ServicePolicyPage> {
             ),
           ),
           centerTitle: true,
-          title: Text("서비스 정책", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w600),
+          title: Text("서비스 정책", style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w700),
           ),
         )
     );

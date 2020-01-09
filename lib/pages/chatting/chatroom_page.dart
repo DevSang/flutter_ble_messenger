@@ -99,6 +99,8 @@ class ChatScreenState extends State<ChatroomPage> {
     // 입력칸 높이
     int _inputHeight;
     double sameSize;
+    double dragGestureInit;
+    double dragGestureDistance;
 
     // Stomp 관련
     StompClient s;
@@ -134,6 +136,8 @@ class ChatScreenState extends State<ChatroomPage> {
         uploadingImageCount = 0;
         joinedUserNow = <ChatJoinInfo>[];
         sameSize = GetSameSize().main();
+        dragGestureInit = 0.0;
+        dragGestureDistance = 0.0;
 
         if (widget.isP2P != null && widget.isP2P == true) {
             getMyNick();
@@ -667,44 +671,62 @@ class ChatScreenState extends State<ChatroomPage> {
                     from: widget.from
                 )
             ),
-            body: GestureDetector(
-                child: Stack(
-                    children: <Widget>[
-                        Container(
-                            decoration: BoxDecoration(
-                                color: Color.fromRGBO(250, 250, 251, 1),
-                                border: Border(
-                                    top: BorderSide(
-                                        width: ScreenUtil().setWidth(0.5),
-                                        color: Color.fromRGBO(178, 178, 178, 0.8)
-                                    )
-                                )
-                            ),
-                            child: Column(
-                                children: <Widget>[
-                                    // List of messages
-                                    ChatMessageList(messageList: messageList),
+            body: new Builder(
+                builder: (context) {
+                    return GestureDetector(
+                        child: Stack(
+                            children: <Widget>[
+                                Container(
+                                    decoration: BoxDecoration(
+                                        color: Color.fromRGBO(250, 250, 251, 1),
+                                        border: Border(
+                                            top: BorderSide(
+                                                width: ScreenUtil().setWidth(0.5),
+                                                color: Color.fromRGBO(178, 178, 178, 0.8)
+                                            )
+                                        )
+                                    ),
+                                    child: Column(
+                                        children: <Widget>[
+                                            // List of messages
+                                            ChatMessageList(messageList: messageList),
 
-                                    // Input content
-                                    disable ? Container() : buildInput(),
+                                            // Input content
+                                            disable ? Container() : buildInput(),
 
-                                    /// 하단 메뉴 서비스 추가 시 코드 교체
-                                    // Menu
+                                            /// 하단 메뉴 서비스 추가 시 코드 교체
+                                            // Menu
 //                                            (isShowMenu && !isFocused ? buildMenu() : Container()),
-                                ],
-                            ),
+                                        ],
+                                    ),
+                                ),
+
+                                // Notification
+                                openedNf ? buildNoticeOpen() : buildNotice(),
+
+                                // Loading
+                                isLoading ? Loading() : Container()
+                            ],
                         ),
-
-                        // Notification
-                        openedNf ? buildNoticeOpen() : buildNotice(),
-
-                        // Loading
-                        isLoading ? Loading() : Container()
-                    ],
-                ),
-                onTap: () {
-                    FocusScope.of(context).requestFocus(focusNode);
-                },
+                        onTap: () {
+                            FocusScope.of(context).requestFocus(focusNode);
+                        },
+                        onPanStart: (DragStartDetails details) {
+                            dragGestureInit = details.globalPosition.dx;
+                        },
+                        onPanUpdate: (DragUpdateDetails details) {
+                            dragGestureDistance= details.globalPosition.dx - dragGestureInit;
+                        },
+                        onPanEnd: (DragEndDetails details) {
+                            dragGestureInit = 0.0;
+                            if (dragGestureDistance < 0) {
+                                Scaffold.of(context).openEndDrawer();
+                            } else if (dragGestureDistance > 0) {
+                                popPage();
+                            }
+                        }
+                    );
+                }
             )
         );
     }
@@ -1064,7 +1086,7 @@ class ChatScreenState extends State<ChatroomPage> {
                             child: Container(
                                 width: ScreenUtil().setWidth(32),
                                 height: ScreenUtil().setWidth(32),
-                                decoration: setIcon('assets/images/icon/iconAttachCamera.png')
+                                decoration: setIcon('assets/images/icon/iconAttachCameraChat.png')
                             ),
                             onTap:(){
                                 ActionSheetState().showActionSheet(

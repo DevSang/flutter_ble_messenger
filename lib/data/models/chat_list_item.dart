@@ -12,6 +12,7 @@ class ChatListItem {
     ChatCountUser userCount;	// 참여 사용자 수
     int adReceiveTs;	        // AD 받아서 chatList에 넣은 시간
     int roomImgIdx;
+    final bool isAlreadyJoin;
 
     ChatListItem({
         this.chatIdx,
@@ -22,7 +23,8 @@ class ChatListItem {
         this.lon,
         this.score,
         this.lastMsg,
-        this.userCount
+        this.userCount,
+        this.isAlreadyJoin
     });
 
     factory ChatListItem.fromJSON (Map<String, dynamic> jsonData) {
@@ -37,7 +39,8 @@ class ChatListItem {
             lastMsg : new ChatMessage.fromJSON(jsonData['lastMsg']
                 ?? {"type":null, "roomIdx":null, "msgIdx":null, "senderIdx":null, "nickname":null, "message":null, "userCountObj":null, "createTs": null}),
             userCount : new ChatCountUser.fromJSON(jsonData['userCount']
-                ?? {"roomIdx":null, "bleJoin":null, "bleOut":null, "online":null, "totalCount":null})
+                ?? {"roomIdx":null, "bleJoin":null, "bleOut":null, "online":null, "totalCount":null}),
+            isAlreadyJoin: jsonData['isAlreadyJoin']
         );
     }
     /*

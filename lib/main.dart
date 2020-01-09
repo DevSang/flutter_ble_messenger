@@ -27,7 +27,6 @@ Future main() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
     CatcherOptions debugOptions = CatcherOptions(
         DialogReportMode (),
         [ConsoleHandler()]

@@ -9,6 +9,7 @@ import 'package:Hwa/pages/chatting/chatroom_page.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/customRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -141,7 +142,7 @@ class _TrendPageState extends State<TrendPage> {
           });
 
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) {
+              CustomRoute(builder: (context) {
                   return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "Trend", disable: (!alreadyJoined || myJoinType == "ONLINE"));
               })
           );
