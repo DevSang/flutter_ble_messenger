@@ -642,7 +642,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                         ),
                         onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullVideoPlayer(videoUrl: getOriginImgUri(chatMessage.message), header: header, chatMessage: chatMessage))
+                                context, MaterialPageRoute(builder: (context) => FullVideoPlayer(videoUrl: getOriginImgUri(chatMessage.message), chatMessage: chatMessage))
                             );
                         },
                     ),
