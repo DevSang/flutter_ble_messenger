@@ -3,32 +3,35 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:collection';
 import 'dart:typed_data';
-import 'package:Hwa/package/gauge/gauge_driver.dart';
-import 'package:Hwa/utility/action_sheet.dart';
-import 'package:Hwa/utility/get_same_size.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:Hwa/data/models/chat_join_info.dart';
-import 'package:Hwa/pages/parts/common/loading.dart';
 import 'dart:developer' as developer;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Hwa/constant.dart';
-import 'package:Hwa/service/stomp_client.dart';
-import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/data/models/chat_message.dart';
-import 'package:Hwa/data/models/chat_info.dart';
-import 'package:Hwa/pages/chatting/notice_page.dart';
-import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
-import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
+import 'package:Hwa/package/gauge/gauge_driver.dart';
+import 'package:Hwa/data/models/chat_join_info.dart';
+import 'package:Hwa/data/models/chat_message.dart';
+import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/utility/action_sheet.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/service/stomp_client.dart';
+
+import 'package:Hwa/pages/chatting/notice_page.dart';
+import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
+import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 
 /*
  * @project : HWA - Mobile
@@ -692,7 +695,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                             ChatMessageList(messageList: messageList),
 
                                             // Input content
-                                            disable ? Container() : buildInput(),
+                                            buildInput(),
 
                                             /// 하단 메뉴 서비스 추가 시 코드 교체
                                             // Menu
@@ -879,6 +882,8 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     Widget buildInput() {
+        if (disable) { textEditingController.text = "관전 사용자는 채팅을 입력 할 수 없습니다 :("; }
+
         return Container(
             width: double.infinity,
             decoration: new BoxDecoration(
@@ -887,12 +892,18 @@ class ChatScreenState extends State<ChatroomPage> {
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
-                    isFocused ? chatIconClose() : chatIconOpen(),
+                    isFocused || disable ? chatIconClose() : chatIconOpen(),
                     // Edit text
                     Container(
-                        width: isFocused ? ScreenUtil().setWidth(343) :ScreenUtil().setWidth(230),
-                        margin: EdgeInsets.symmetric(
-                            vertical: sameSize*6
+                        width: disable
+                                ? ScreenUtil().setWidth(359)
+                                : isFocused
+                                    ? ScreenUtil().setWidth(343)
+                                    : ScreenUtil().setWidth(230),
+                        margin: EdgeInsets.only(
+                            top: sameSize*6,
+                            bottom: sameSize*6,
+                            left: disable ? ScreenUtil().setWidth(8) : 0
                         ),
                         decoration: BoxDecoration(
                             color: Color.fromRGBO(245, 245, 245, 1),
@@ -924,12 +935,15 @@ class ChatScreenState extends State<ChatroomPage> {
 
                                                 // here's the actual text box
                                                 child: new TextField(
+                                                    enabled: disable ? false : true,
                                                     keyboardType: TextInputType.multiline,
                                                     controller: textEditingController,
                                                     minLines: 1,
                                                     maxLines: null,
                                                     style: TextStyle(
-                                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                                        fontFamily: "NotoSans",
+                                                        fontWeight: FontWeight.w400,
+                                                        color: disable ? Color.fromRGBO(39, 39, 39, 0.25) : Color.fromRGBO(39, 39, 39, 1),
                                                         fontSize: ScreenUtil().setSp(15),
                                                         letterSpacing: ScreenUtil().setWidth(-1.15),
                                                     ),
@@ -938,8 +952,8 @@ class ChatScreenState extends State<ChatroomPage> {
                                                         contentPadding: EdgeInsets.only(
                                                             left: sameSize*13,
                                                             right: sameSize*9,
-                                                            bottom: sameSize*8
-                                                        )
+                                                            bottom: sameSize*10
+                                                        ),
                                                     ),
                                                     autofocus: false,
                                                     onTap: _onTapTextField,
@@ -982,7 +996,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                         top: ScreenUtil().setWidth(3)
                                     ),
                                     child:
-                                    GestureDetector(
+                                    InkWell(
                                         child: Container(
                                             width: sameSize*28,
                                             height: sameSize*28,
@@ -998,7 +1012,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                             )
                                         ),
                                         onTap:(){
-                                            onSendMessage(textEditingController.text, "TALK");
+                                            disable ? null : onSendMessage(textEditingController.text, "TALK");
                                         }
                                     ),
                                     decoration: BoxDecoration(
@@ -1016,7 +1030,7 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     Container chatIconClose() {
-        return Container(
+        return disable ? Container() : Container(
             child:
             GestureDetector(
                 child: Container(
