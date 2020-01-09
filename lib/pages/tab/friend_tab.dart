@@ -7,19 +7,18 @@ import 'package:Hwa/pages/chatting/chatroom_page.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
 
 import 'package:Hwa/constant.dart';
-import 'package:Hwa/data/models/friend_info.dart';
-import 'package:Hwa/data/models/friend_request_info.dart';
-import 'package:Hwa/pages/parts/friend/set_friend_data.dart';
-import 'package:Hwa/pages/parts/common/tab_app_bar.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/home.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/data/models/friend_info.dart';
+import 'package:Hwa/data/models/friend_request_info.dart';
+import 'package:Hwa/data/state/friend_list_info_provider.dart';
+import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 
 
 /*
@@ -47,7 +46,7 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
 //    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
     List<FriendInfo> originList;              // 원본 친구 리스트
     List<FriendInfo> friendList;              // 화면에 보이는 친구 리스트 (검색 용도)
-    List<FriendRequestInfo> requestList = [];
+    List<FriendRequestInfo> requestList;
 
     TextEditingController searchController = TextEditingController();
     double sameSize;
@@ -60,6 +59,7 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
 
     @override
     void initState() {
+
         _initState();
 
         _scrollController = new ScrollController()..addListener(_sc);
@@ -79,8 +79,7 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
             requestListHeight = 100;
             requestExpandFlag = true;
         });
-        await getFriendList();
-        await getFriendRequestList();
+        await setDefaultList();
 
         friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
     }
@@ -139,85 +138,14 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     }
 
     /*
-     * @author : hs
-     * @date : 2020-01-02
-     * @description : 친구목록 호출
+     * @author : sh
+     * @date : 2020-01-08
+     * @description : 친구목록 및 요청목록 셋팅
     */
-    getFriendList() async {
-        originList = [];
-        friendList = [];
-        List<FriendInfo> getFriendList = <FriendInfo>[];
-
-        String uri = "/api/v2/relation/relationship/all";
-        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-        if(response != null){
-            List<dynamic> friendListJson = jsonDecode(response.body)['data'];
-
-            for(var i = 0; i < friendListJson.length; i++){
-                var friendInfo = friendListJson[i]['related_user_data'];
-                getFriendList.add(
-                    FriendInfo(
-                        user_idx: friendInfo['user_idx'],
-                        nickname: friendInfo['nickname'],
-                        phone_number: friendInfo['phone_number'],
-                        profile_picture_idx: friendInfo['profile_picture_idx'],
-                        business_card_idx: friendInfo['business_card_idx'],
-                        user_status: friendInfo['user_status'],
-                        description: friendInfo['description'] ?? ""
-                    )
-                );
-            }
-            setState(() {
-                originList.addAll(getFriendList);
-                friendList.addAll(getFriendList);
-            });
-        } else {
-            setState(() {
-                originList = [];
-                friendList = [];
-            });
-        }
-    }
-
-    /*
-    * @author : sh
-    * @date : 2019-12-28
-    * @description : 친구요청 목록
-    */
-    getFriendRequestList () async {
-        List<FriendRequestInfo> friendRequestList = <FriendRequestInfo>[];
-
-        String uri = "/api/v2/relation/request/all";
-        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-
-        if(response != null){
-            List<dynamic> friendRequest = jsonDecode(response.body)['data'];
-
-            for(var i = 0; i < friendRequest.length; i++){
-                var friendInfo = friendRequest[i]['jb_request_user_data'];
-                if(!['5101','5102'].contains(friendRequest[i]['response_type']) && !friendRequest[i]['is_cancel']){
-                    friendRequestList.add(
-                        FriendRequestInfo(
-                            req_idx: friendRequest[i]['idx'],
-                            user_idx: friendInfo['user_idx'],
-                            nickname: friendInfo['nickname'],
-                            phone_number: friendInfo['phone_number'],
-                            profile_picture_idx: friendInfo['profile_picture_idx'],
-                            business_card_idx: friendInfo['business_card_idx'],
-                            user_status: friendInfo['user_status'],
-                            description: friendInfo['description'] ??  '안녕하세요! ' + friendInfo['nickname'] + "입니다! :)"
-                        )
-                    );
-                }
-            }
-            setState(() {
-                requestList = friendRequestList;
-            });
-        } else {
-            setState(() {
-                requestList = [];
-            });
-        }
+    setDefaultList() async {
+        originList = Provider.of<FriendListInfoProvider>(context, listen: true).friendList;
+        friendList = Provider.of<FriendListInfoProvider>(context, listen: true).friendList;
+        requestList = Provider.of<FriendRequestListInfoProvider>(context, listen: true).friendRequestList;
     }
 
     /*
@@ -397,47 +325,50 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                     ///친구가 한명도 없을때
                     friendList.length == 0 ? Positioned(
                         top : ScreenUtil().setHeight(170),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                                Image.asset('assets/images/background/noFriendImg.png'),
-                                Text(
-                                    "아직 추가된 친구가 없습니다.",
-                                    style: TextStyle(
-                                        fontFamily: "NotoSans",
-                                        fontWeight: FontWeight.w400,
-                                        fontSize: ScreenUtil().setSp(14),
-                                        letterSpacing: ScreenUtil().setWidth(-0.65),
-                                        color: Color.fromRGBO(107,107,107, 1),
-                                    ),
-                                ),
-                                Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                        Text(
-                                            "단화방 참여",
-                                            style: TextStyle(
-                                                fontFamily: "NotoSans",
-                                                fontWeight: FontWeight.w700,
-                                                fontSize: ScreenUtil().setSp(14),
-                                                letterSpacing: ScreenUtil().setWidth(-0.65),
-                                                color: Color.fromRGBO(107,107,107, 1),
-                                            ),
+                        child: Container(
+                            width: ScreenUtil().setWidth(375),
+                            child : Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                    Image.asset('assets/images/background/noFriendImg.png'),
+                                    Text(
+                                        "아직 추가된 친구가 없습니다.",
+                                        style: TextStyle(
+                                            fontFamily: "NotoSans",
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: ScreenUtil().setSp(14),
+                                            letterSpacing: ScreenUtil().setWidth(-0.65),
+                                            color: Color.fromRGBO(107,107,107, 1),
                                         ),
-                                        Text(
-                                            "를 통해 친구를 만들어 보세요.",
-                                            style: TextStyle(
-                                                fontFamily: "NotoSans",
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: ScreenUtil().setSp(14),
-                                                letterSpacing: ScreenUtil().setWidth(-0.65),
-                                                color: Color.fromRGBO(107,107,107, 1),
+                                    ),
+                                    Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: <Widget>[
+                                            Text(
+                                                "단화방 참여",
+                                                style: TextStyle(
+                                                    fontFamily: "NotoSans",
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: ScreenUtil().setSp(14),
+                                                    letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                    color: Color.fromRGBO(107,107,107, 1),
+                                                ),
                                             ),
-                                        )
-                                    ],
-                                ),
-                            ]
-                        ),
+                                            Text(
+                                                "를 통해 친구를 만들어 보세요.",
+                                                style: TextStyle(
+                                                    fontFamily: "NotoSans",
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: ScreenUtil().setSp(14),
+                                                    letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                    color: Color.fromRGBO(107,107,107, 1),
+                                                ),
+                                            )
+                                        ],
+                                    ),
+                                ]
+                            ),
+                        )
                     ) : Container(),
                     Column(
                         children: <Widget>[
@@ -499,6 +430,8 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                     ),
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.only(
+                            top: sameSize * 9,
+                            bottom: sameSize * 11,
                             left: ScreenUtil().setWidth(7)
                         ),
                         border: InputBorder.none,

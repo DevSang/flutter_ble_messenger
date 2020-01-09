@@ -8,8 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
+import 'package:contacts_service/contacts_service.dart';
 
-import 'package:Hwa/data/models/friend_info.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
@@ -51,6 +51,11 @@ class HomePageState extends State<HomePage> {
      * @description : initialize App
      */
     void initApp() async {
+        //TODO 연락처 연동 예제
+//        Iterable<Contact> johns = await ContactsService.getContacts(query : "상혁");
+//        developer.log("####" + johns.toList()[0].displayName.toString());
+//        developer.log("####" + johns.toList()[0].phones.toList()[0].value.toString());
+
 
         // spf, kvStore init 후 로직 진행, 뒤에서 spf, kvStore 다시 얻기 불필요
 	    _sharedPreferences = await Constant.getSPF();
@@ -82,46 +87,9 @@ class HomePageState extends State<HomePage> {
     * @description : 사용자에게 필요한 정보 및 필수 API 미리 호출, TODO JWT 토큰 - 서버와 통신해서 만료되었는지, 유효한지, 만료면 Refresh 로직
     */
     static Future<void> initApiCall () async {
-        await getFriendList();
         return;
     }
 
-    /*
-    * @author : sh
-    * @date : 2019-12-28
-    * @description : 친구목록이 Store에 없을 경우 api call 하여 저장
-    */
-    static Future<void> getFriendList () async {
-        List<FriendInfo> friendInfoList = <FriendInfo>[];
-
-        String uri = "/api/v2/relation/relationship/all";
-        final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-
-        if(response != null ? true : false){
-            List<dynamic> friendList = jsonDecode(response.body)['data'];
-
-            for(var i = 0; i < friendList.length; i++){
-                var friendInfo = friendList[i]['related_user_data'];
-
-                friendInfoList.add(
-                    FriendInfo(
-                        user_idx: friendInfo['user_idx'],
-                        nickname: friendInfo['nickname'],
-                        phone_number: friendInfo['phone_number'],
-                        profile_picture_idx: friendInfo['profile_picture_idx'],
-                        business_card_idx: friendInfo['business_card_idx'],
-                        user_status: friendInfo['user_status'],
-                        description: friendInfo['description']
-                    )
-                );
-            }
-            Constant.FRIEND_LIST = friendInfoList;
-        } else {
-            Constant.FRIEND_LIST = [];
-        }
-
-        return;
-    }
 
     /*
     * @author : sh
