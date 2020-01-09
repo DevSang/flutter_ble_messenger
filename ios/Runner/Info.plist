@@ -58,6 +58,11 @@
 	<string>This app requires access to the photo library.</string>
 	<key>NSContactsUsageDescription</key>
     <string>This app requires contacts access to function properly.</string>
+	<key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+    </dict>
 	<key>UIAppFonts</key>
 	<array>
 		<string>NotoSansKR-Regular.otf</string>

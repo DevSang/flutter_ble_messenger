@@ -19,13 +19,15 @@ dependencies:
     cupertino_icons: ^0.1.2
     intl:
     configurable_expansion_tile: ^1.0.0
-    timeago: ^2.0.22
-    lazy_load_scrollview: 1.0.1
-    sticky_headers: ^0.1.8+1
-    flutter_screenutil: ^0.7.0
-    catcher: ^0.2.8
+    timeago: ^2.0.22                  # Get Time Ago
+    lazy_load_scrollview: 1.0.1       # Lazy Loading
+    sticky_headers: ^0.1.8+1          # For Friend List Alphabet Scroll (추후 삭제 예정)
+    flutter_screenutil: ^0.7.0        # Screen Ratio
+    catcher: ^0.2.8                   # Error View Management
     json_annotation:
-    video_thumbnail: ^0.2.0
+    video_thumbnail: ^0.2.0           # Video Thumbnail
+    video_player:                     # Video Player Added Header
+    flutter_ijkplayer:                # Video Player Added Header
 
     ### Add by HK ###
     dio: 3.0.8                        # Http, File Upload

@@ -1,7 +1,9 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:Hwa/package/fullPhoto.dart';
+import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
+import 'package:Hwa/pages/parts/chatting/full_video_player.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/gauge_animate.dart';
 import 'package:Hwa/utility/get_same_size.dart';
@@ -13,6 +15,7 @@ import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/chatting/youtube_page.dart';
 import 'package:image/image.dart' as Im;
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 
 /*
@@ -169,7 +172,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 )
                             ),
                             chatMessage.chatType == "TALK"
-                                ? receivedText(chatIndex, chatMessage)
+                                ? receivedText(chatIndex, chatMessage, true)
                                 : chatMessage.chatType == "IMAGE"
                                 ? imageBubble(chatMessage, isLastSendMessage, true)
                                 : chatMessage.chatType == "VIDEO"
@@ -193,7 +196,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                             chatMessage.chatType == "TALK"
-                                ? sendText(chatIndex, chatMessage, isLastSendMessage)
+                                ? sendText(chatIndex, chatMessage, isLastSendMessage, false)
                                 : chatMessage.chatType == "IMAGE"
                                     ? imageBubble(chatMessage, isLastSendMessage, false)
                                     : chatMessage.chatType == "VIDEO"
@@ -247,7 +250,7 @@ class ChatMessageListState extends State<ChatMessageList> {
     }
 
     // 받은 메세지 말풍선 스타일
-    Widget receivedText(int chatIndex, ChatMessage chatMessage) {
+    Widget receivedText(int chatIndex, ChatMessage chatMessage, bool receivedMsg) {
        bool isSelected = clickedMessage == chatIndex
                             ? true
                             : false;
@@ -291,21 +294,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                                         left: sameSize*14.5,
                                         right: sameSize*14.5,
                                     ),
-                                    child: Column(
-	                                    children: <Widget>[
-		                                    Text(
-				                                    chatMessage.message,
-				                                    style: TextStyle(
-						                                    fontFamily: "NotoSans",
-						                                    fontWeight: FontWeight.w500,
-						                                    fontSize: ScreenUtil().setSp(15),
-						                                    color: Color.fromRGBO(39, 39, 39, 0.96),
-						                                    height: 1.14
-				                                    )
-		                                    ),
-		                                    chatMessage.youtubePlayer != null ? Image.network(chatMessage.youtubePlayer.thumbnailUrl) : Container()
-	                                    ],
-                                    ),
+
+                                    child: textLayout(chatMessage, receivedMsg),
                                     decoration: BoxDecoration(
                                         color: isSelected
                                             ? Color.fromRGBO(173, 173, 173, 1)
@@ -334,7 +324,7 @@ class ChatMessageListState extends State<ChatMessageList> {
     }
 
     // 보낸 메세지 말풍선 스타일
-    Widget sendText(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage) {
+    Widget sendText(int chatIndex, ChatMessage chatMessage, bool isLastSendMessage, bool receivedMsg) {
         return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -378,26 +368,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                 left: sameSize*14.5,
                                                 right: sameSize*14.5,
                                             ),
-                                            child: InkWell(
-                                                child: Column(
-                                                    children: <Widget>[
-                                                        Text(
-                                                            chatMessage.message,
-                                                            style: TextStyle(
-                                                                fontFamily: "NotoSans",
-                                                                fontWeight: FontWeight.w500,
-                                                                fontSize: ScreenUtil().setSp(15),
-                                                                color: Color.fromRGBO(255, 255, 255, 1),
-                                                                height: 1.14
-                                                            ),
-                                                        ),
-                                                        chatMessage.youtubePlayer != null ? Image.network(chatMessage.youtubePlayer.thumbnailUrl) : Container()
-                                                    ],
-                                                ),
-                                                onTap: (){
-                                                    _playYoutube(chatMessage);
-                                                },
-                                            ),
+                                            child: textLayout(chatMessage, receivedMsg),
                                             decoration: BoxDecoration(
                                                 color: Color.fromRGBO(76, 96, 191, 1),
                                                 borderRadius: BorderRadius.only(
@@ -476,7 +447,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                 mainAxisAlignment: receivedMsg ? MainAxisAlignment.start : MainAxisAlignment.end,
                 children: <Widget>[
                     !receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container() ,
-                    GestureDetector(
+                    InkWell(
                         child: Container(
                             width: ScreenUtil().setWidth(230),
                             height: ScreenUtil().setWidth(230),
@@ -510,7 +481,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                         ),
                         onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header)));
+                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header))
+                            );
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
@@ -519,7 +491,94 @@ class ChatMessageListState extends State<ChatMessageList> {
         );
     }
 
-    // 이미지 메세지 스타일
+    // 텍스트 레이아웃
+    Widget textLayout(ChatMessage chatMessage, bool receivedMsg) {
+        return InkWell(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                    Text(
+                        chatMessage.message,
+                        style: chatMessage.youtubePlayer != null
+                            ? TextStyle(
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            fontSize: ScreenUtil().setSp(13),
+                            letterSpacing: ScreenUtil().setWidth(-0.75),
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue,
+                            height: 1.14
+                        )
+                            : TextStyle(
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            fontSize: ScreenUtil().setSp(15),
+                            color: receivedMsg ? Color.fromRGBO(39, 39, 39, 1) : Color.fromRGBO(255, 255, 255, 1),
+                            letterSpacing: ScreenUtil().setWidth(-0.75),
+                            height: 1.14
+                        ),
+                    ),
+                    chatMessage.youtubePlayer != null
+                        ? linkLayout(chatMessage.youtubePlayer)
+                        : Container(
+                        width: 0
+                    ),
+                    chatMessage.youtubePlayer != null
+                        ? Text(
+                        "유튜브 제목제목",
+                        style: TextStyle(
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            fontSize: ScreenUtil().setSp(15),
+                            color: receivedMsg ? Color.fromRGBO(39, 39, 39, 1) : Color.fromRGBO(255, 255, 255, 1),
+                            height: 1.14
+                        ),
+                    )
+                        : Container(
+                        width: 0
+                    )
+                ],
+            ),
+            onTap: (){
+                _playYoutube(chatMessage);
+            },
+        );
+    }
+
+    // 링크 형 레이아웃
+    Widget linkLayout(YoutubePlayer youtubePlayer) {
+        return Container(
+            margin: EdgeInsets.only(
+                top: ScreenUtil().setHeight(8),
+                bottom: ScreenUtil().setHeight(6)
+            ),
+            child: Stack(
+                children: <Widget>[
+                    Container(
+                        child: Image.network(
+                            youtubePlayer.thumbnailUrl
+                        ),
+                    ),
+                    Positioned.fill(
+                        child: Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                                width: ScreenUtil().setWidth(38),
+                                height: ScreenUtil().setWidth(38),
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image:AssetImage("assets/images/icon/iconVideoPlay.png")
+                                    ),
+                                )
+                            ),
+                        )
+                    )
+                ],
+            ),
+        );
+    }
+
+    // 비디오 메세지 스타일
     Widget videoBubble(ChatMessage chatMessage, bool isLastSendMessage, bool receivedMsg) {
         return Container(
             margin: EdgeInsets.only(
@@ -534,10 +593,9 @@ class ChatMessageListState extends State<ChatMessageList> {
                 mainAxisAlignment: receivedMsg ? MainAxisAlignment.start : MainAxisAlignment.end,
                 children: <Widget>[
                     !receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container() ,
-                    GestureDetector(
+                    InkWell(
                         child: Container(
                             width: ScreenUtil().setWidth(230),
-                            height: ScreenUtil().setWidth(230),
                             child: Stack(
                                 children: <Widget>[
                                     ClipRRect(
@@ -548,7 +606,6 @@ class ChatMessageListState extends State<ChatMessageList> {
                                             placeholder: (context, url) =>
                                                 Container(
                                                     width: ScreenUtil().setWidth(230),
-                                                    height: ScreenUtil().setWidth(230),
                                                     color: Colors.transparent,
                                                     child: Center(
                                                         child: Container(
@@ -584,9 +641,9 @@ class ChatMessageListState extends State<ChatMessageList> {
                             )
                         ),
                         onTap: () {
-//                            Navigator.push(
-//                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header))
-//                            );
+                            Navigator.push(
+                                context, MaterialPageRoute(builder: (context) => FullVideoPlayer(videoUrl: getOriginImgUri(chatMessage.message), header: header))
+                            );
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
@@ -597,6 +654,13 @@ class ChatMessageListState extends State<ChatMessageList> {
 
     // 업로드 중 썸네일 스타일
     Widget uploadingImageBubble(ChatMessage chatMessage, bool isLastSendMessage) {
+        bool isFile;
+        if (chatMessage.thumbnailFile.runtimeType.toString() == '_File') {
+            isFile = true;
+        } else {
+            isFile = false;
+        }
+
         return Container(
             margin: EdgeInsets.only(
                 bottom: ScreenUtil.getInstance().setHeight(14)
@@ -614,13 +678,21 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 ClipRRect(
                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
                                     child:
-                                    Image.file(
-                                        chatMessage.thumbnailFile,
-                                        gaplessPlayback: true,
-                                        fit: BoxFit.cover,
-                                        width: ScreenUtil().setWidth(230),
-                                        height: ScreenUtil().setWidth(230),
-                                    )
+                                    isFile
+                                        ? Image.file(
+                                            chatMessage.thumbnailFile,
+                                            gaplessPlayback: true,
+                                            fit: BoxFit.cover,
+                                            width: ScreenUtil().setWidth(230),
+                                            height: ScreenUtil().setWidth(230),
+                                        )
+                                        : Image.memory(
+                                            chatMessage.thumbnailFile,
+                                            gaplessPlayback: true,
+                                            fit: BoxFit.cover,
+                                            width: ScreenUtil().setWidth(230),
+                                            height: ScreenUtil().setWidth(230),
+                                        )
                                 ),
                                 Positioned.fill(
                                     child: Align(

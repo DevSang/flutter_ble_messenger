@@ -1,6 +1,10 @@
 import 'dart:developer' as developer;
 import 'dart:convert';
 
+import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/pages/parts/chatting/full_photo.dart';
+import 'package:Hwa/pages/chatting/chatroom_page.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
@@ -428,7 +432,6 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                         letterSpacing: ScreenUtil().setWidth(-0.75),
                         color: Color.fromRGBO(39, 39, 39, 1),
                     ),
-
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.only(
                             top: sameSize * 9,

@@ -7,33 +7,26 @@ import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:Hwa/utility/action_sheet.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
 import 'dart:developer' as developer;
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
-
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/chat_info.dart';
-
 import 'package:Hwa/pages/chatting/notice_page.dart';
 import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
-
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 
@@ -381,7 +374,7 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2020-01-07
      * @description : Image 업로드 전 Thumbnail 말풍선에 맵핑
     */
-    void thumbnailMessage(File imgFile, GaugeDriver gaugeDriver) {
+    void thumbnailMessage(dynamic imgFile, GaugeDriver gaugeDriver) {
         ChatMessage cmb = ChatMessage(
             chatType: "UPLOADING_IMG",
             roomIdx: chatInfo.chatIdx,
@@ -405,6 +398,7 @@ class ChatScreenState extends State<ChatroomPage> {
 	 */
     Future<void> uploadContents(int type) async {
 	    File contentsFile;
+	    dynamic thumbNailFile;
 
 	    switch(type) {
 	        case 0: contentsFile = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -419,9 +413,6 @@ class ChatScreenState extends State<ChatroomPage> {
 
 	    if (contentsFile != null) {
 		    GaugeDriver gaugeDriver = new GaugeDriver();
-
-		    thumbnailMessage(contentsFile, gaugeDriver);
-		    uploadingImageCount ++;
 
 		    // 파일 이외의 추가 파라미터 셋팅
 		    Map<String, dynamic> param = {
@@ -443,8 +434,15 @@ class ChatScreenState extends State<ChatroomPage> {
                     quality: 50,
                 );
 
-                File thumbFile = File.fromRawPath(imageThumbnailString);
+                thumbNailFile = imageThumbnailString;
+                thumbnailMessage(imageThumbnailString, gaugeDriver);
+//                thumbNailFile = File.fromRawPath(imageThumbnailString);
+            } else {
+                thumbNailFile = contentsFile;
+                thumbnailMessage(thumbNailFile, gaugeDriver);
             }
+
+            uploadingImageCount ++;
 
 		    // 파일 업로드 API 호출
 		    Response response = await CallApi.fileUploadCall(
@@ -457,13 +455,23 @@ class ChatScreenState extends State<ChatroomPage> {
 			    developer.log("$sent : $total");
 
 			    for(var i=0; i<uploadingImageCount; i++) {
-				    if (messageList[i].thumbnailFile.path == contentsFile.path) {
-					    messageList[i].gaugeDriver.drive(sent/total);
+			        if (fileType == "video") {
+                        if (messageList[i].thumbnailFile == thumbNailFile) {
+                            messageList[i].gaugeDriver.drive(sent/total);
 
-					    if(sent == total) {
-						    messageList[i].uploaded = true;
-					    }
-				    }
+                            if(sent == total) {
+                                messageList[i].uploaded = true;
+                            }
+                        }
+                    } else {
+                        if (messageList[i].thumbnailFile.path == thumbNailFile.path) {
+                            messageList[i].gaugeDriver.drive(sent/total);
+
+                            if(sent == total) {
+                                messageList[i].uploaded = true;
+                            }
+                        }
+                    }
 
 				    break;
 			    }
