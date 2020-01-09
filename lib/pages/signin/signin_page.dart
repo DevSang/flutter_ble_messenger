@@ -181,7 +181,7 @@ class _SignInPageState extends State<SignInPage> {
             await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['userInfo']);
             await userInfoProvider.getUserInfoFromSPF();
             SetFCM.firebaseCloudMessagingListeners();
-            HomePageState.initApiCall();
+            HomePageState.initApiCall(context);
 
             RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
             developer.log("# 로그인에 성공하였습니다.");
@@ -296,7 +296,7 @@ class _SignInPageState extends State<SignInPage> {
                     await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['userInfo']);
                     await userInfoProvider.getUserInfoFromSPF();
                     SetFCM.firebaseCloudMessagingListeners();
-                    HomePageState.initApiCall();
+                    HomePageState.initApiCall(context);
 
                     RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.loginSuccess'), ToastGravity.TOP);
                     developer.log('# [Navigator] SignInPage -> MainPage');

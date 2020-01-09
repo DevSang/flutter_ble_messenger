@@ -143,9 +143,9 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
      * @description : 친구목록 및 요청목록 셋팅
     */
     setDefaultList() async {
-        originList = Provider.of<FriendListInfoProvider>(context, listen: true).friendList;
-        friendList = Provider.of<FriendListInfoProvider>(context, listen: true).friendList;
-        requestList = Provider.of<FriendRequestListInfoProvider>(context, listen: true).friendRequestList;
+        originList = Provider.of<FriendListInfoProvider>(context, listen: false).friendList;
+        friendList = Provider.of<FriendListInfoProvider>(context, listen: false).friendList;
+        requestList = Provider.of<FriendRequestListInfoProvider>(context, listen: false).friendRequestList;
     }
 
     /*

@@ -16,7 +16,7 @@ import 'package:Hwa/data/models/friend_info.dart';
  */
 
 class FriendListInfoProvider with ChangeNotifier{
-    List<FriendInfo> friendList;
+    List<FriendInfo> friendList = <FriendInfo>[];
 
     setFriendInfo(dynamic value) {
         notifyListeners();
@@ -36,36 +36,38 @@ class FriendListInfoProvider with ChangeNotifier{
         String uri = "/api/v2/relation/relationship/all";
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
 
-        if(response != null ? true : false){
-            List<dynamic> tempFriendList = jsonDecode(response.body)['data'];
+        if(response != null){
+            if(jsonDecode(response.body)['data'].toString() != '[]'){
+                developer.log("# Set friend list");
 
-            for(var i = 0; i < tempFriendList.length; i++){
-                var friendInfo = tempFriendList[i]['related_user_data'];
+                List<dynamic> tempFriendList = jsonDecode(response.body)['data'];
+                for(var i = 0; i < tempFriendList.length; i++){
+                    var friendInfo = tempFriendList[i]['related_user_data'];
 
-                friendList.add(
-                    FriendInfo(
-                        user_idx: friendInfo['user_idx'],
-                        nickname: friendInfo['nickname'],
-                        phone_number: friendInfo['phone_number'],
-                        profile_picture_idx: friendInfo['profile_picture_idx'],
-                        business_card_idx: friendInfo['business_card_idx'],
-                        user_status: friendInfo['user_status'],
-                        description: friendInfo['description']
-                    )
-                );
+                    friendList.add(
+                        FriendInfo(
+                            user_idx: friendInfo['user_idx'],
+                            nickname: friendInfo['nickname'],
+                            phone_number: friendInfo['phone_number'],
+                            profile_picture_idx: friendInfo['profile_picture_idx'],
+                            business_card_idx: friendInfo['business_card_idx'],
+                            user_status: friendInfo['user_status'],
+                            description: friendInfo['description']
+                        )
+                    );
+
+                    developer.log("# user_idx : " + friendInfo['user_idx'].toString() + " nickname : " + friendInfo['nickname'].toString());
+                    developer.log("# phone_number : " + friendInfo['phone_number'].toString() + " profile_picture_idx : " + friendInfo['profile_picture_idx'].toString());
+                    developer.log("# business_card_idx : " + friendInfo['business_card_idx'].toString() + " description : " + friendInfo['description'].toString());
+                }
+            } else {
+                developer.log("# No friend");
+                friendList = <FriendInfo>[];
             }
-
-            ///LOGGING
-            developer.log("# Set friend List");
-            friendList.map((friend){
-                developer.log("# user_idx : " + friend.user_idx.toString() + " nickname : " + friend.nickname.toString());
-                developer.log("# phone_number : " + friend.phone_number.toString() + " profile_picture_idx : " + friend.profile_picture_idx.toString());
-                developer.log("# description : " + friend.description.toString() + " business_card_idx : " + friend.business_card_idx.toString()+"\n");
-            });
-
         } else {
-            developer.log("# No friend");
-            friendList = [];
+            developer.log("# Server request failed.");
+            friendList = <FriendInfo>[];
         }
+        notifyListeners();
     }
 }
