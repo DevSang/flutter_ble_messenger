@@ -14,7 +14,7 @@ dependencies:
     flutter_cupertino_localizations:
 
 
-  #채워주세요~~~ 쓸데없는거 지우게, indent 4칸으로 맞춰주세요
+    #채워주세요~~~ 쓸데없는거 지우게, indent 4칸으로 맞춰주세요
     ### Add by HS ###
     cupertino_icons: ^0.1.2
     intl:
@@ -45,6 +45,7 @@ dependencies:
     provider:                       # Provider
 
     ### Add by SH ###
+    js: ^0.6.0
     kvsql: ^0.3.0
     sqlcool: ^4.2.0
     flutter_facebook_login: 3.0.0   # Social Login - Facebook
@@ -161,6 +162,7 @@ flutter:
     - assets/images/icon/iconWallet.png
     - assets/images/icon/iconLock.png
     - assets/images/icon/iconUnlock.png
+    - assets/images/icon/iconUnfold.png
     - assets/images/icon/iconSendMessage.png
     - assets/images/icon/iconSetting.png
     - assets/images/icon/navIconHot.png

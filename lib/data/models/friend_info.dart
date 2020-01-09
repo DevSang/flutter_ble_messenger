@@ -7,6 +7,7 @@ class FriendInfo {
     int profile_picture_idx;
     int business_card_idx;
     String user_status;
+    String description;
 
     FriendInfo({
         this.user_idx
@@ -15,6 +16,7 @@ class FriendInfo {
         , this.profile_picture_idx
         , this.business_card_idx
         , this.user_status
+        , this.description
     });
 
     factory FriendInfo.fromJSON (Map json) {
@@ -25,6 +27,7 @@ class FriendInfo {
             profile_picture_idx : json['profile_picture_idx'],
             business_card_idx : json['business_card_idx'],
             user_status : json['user_status'],
+            description : json['description'] ?? "",
         );
     }
 }

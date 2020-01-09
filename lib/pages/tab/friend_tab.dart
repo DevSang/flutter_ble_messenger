@@ -41,7 +41,7 @@ class FriendTab extends StatefulWidget {
     _FriendTabState createState() => _FriendTabState();
 }
 
-class _FriendTabState extends State<FriendTab> {
+class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     final store = KvStore();
 
 //    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
@@ -54,6 +54,9 @@ class _FriendTabState extends State<FriendTab> {
     bool isLoading;
 
     ScrollController _scrollController;
+
+    int requestListHeight;
+    bool requestExpandFlag;
 
     @override
     void initState() {
@@ -72,13 +75,31 @@ class _FriendTabState extends State<FriendTab> {
      * @description : 친구리스트 초기화
      */
     void _initState() async {
-//        friendList = Constant.FRIEND_LIST;
-//        originList = Constant.FRIEND_LIST;
-
+        setState(() {
+            requestListHeight = 100;
+            requestExpandFlag = true;
+        });
         await getFriendList();
         await getFriendRequestList();
 
         friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
+    }
+
+    /*
+     * @author :sh
+     * @date : 2020-01-08
+     * @description : Expand onclick
+     */
+    toggleExpand(){
+        setState(() {
+            requestExpandFlag = !requestExpandFlag;
+            if(requestExpandFlag){
+                requestListHeight = 97;
+            } else {
+                requestListHeight = 31;
+            }
+        });
+
     }
 
     @override
@@ -129,7 +150,7 @@ class _FriendTabState extends State<FriendTab> {
 
         String uri = "/api/v2/relation/relationship/all";
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-        if(response.body != null){
+        if(response != null){
             List<dynamic> friendListJson = jsonDecode(response.body)['data'];
 
             for(var i = 0; i < friendListJson.length; i++){
@@ -141,7 +162,8 @@ class _FriendTabState extends State<FriendTab> {
                         phone_number: friendInfo['phone_number'],
                         profile_picture_idx: friendInfo['profile_picture_idx'],
                         business_card_idx: friendInfo['business_card_idx'],
-                        user_status: friendInfo['user_status']
+                        user_status: friendInfo['user_status'],
+                        description: friendInfo['description'] ?? ""
                     )
                 );
             }
@@ -170,7 +192,8 @@ class _FriendTabState extends State<FriendTab> {
 
         String uri = "/api/v2/relation/request/all";
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-        if(response.body != null){
+
+        if(response != null){
             List<dynamic> friendRequest = jsonDecode(response.body)['data'];
 
             for(var i = 0; i < friendRequest.length; i++){
@@ -184,7 +207,8 @@ class _FriendTabState extends State<FriendTab> {
                             phone_number: friendInfo['phone_number'],
                             profile_picture_idx: friendInfo['profile_picture_idx'],
                             business_card_idx: friendInfo['business_card_idx'],
-                            user_status: friendInfo['user_status']
+                            user_status: friendInfo['user_status'],
+                            description: friendInfo['description'] ??  '안녕하세요! ' + friendInfo['nickname'] + "입니다! :)"
                         )
                     );
                 }
@@ -259,7 +283,7 @@ class _FriendTabState extends State<FriendTab> {
      * @date : 2020-01-02
      * @description : 친구 프로필
     */
-    _showModalSheet(BuildContext context, FriendInfo friendInfo) {
+    _showModalSheet(BuildContext context, dynamic friendInfo) {
         return showModalBottomSheet(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
@@ -354,7 +378,7 @@ class _FriendTabState extends State<FriendTab> {
         return MaterialApp(
             debugShowCheckedModeBanner: false,
             home: Scaffold(
-                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+                backgroundColor: friendList.length == 0 ? Color.fromRGBO(250, 250, 250, 1) : Color.fromRGBO(255, 255, 255, 1),
                 body: buildBody(),
                 resizeToAvoidBottomPadding: false,
             )
@@ -362,255 +386,375 @@ class _FriendTabState extends State<FriendTab> {
     }
 
     Widget buildBody() {
-        return Stack(
-            children: <Widget>[
-                Column(
-                    children: <Widget>[
-                        // 친구 검색
-                        buildSearch(),
-                        Flexible(
-                            child: ListView(
-                                children: <Widget>[
-                                    // 친구 요청리스트
-                                    buildFriendList((AppLocalizations.of(context).tr('tabNavigation.friend.friendRequest')), requestList, false),
-
-                                    // 친구 리스트
-                                    buildFriendList((AppLocalizations.of(context).tr('tabNavigation.friend.friendList')), friendList, true)
-
-                                ],
-                            ),
+        return GestureDetector(
+            child: Stack(
+                children: <Widget>[
+                    friendList.length == 0 ? Positioned(
+                        top : ScreenUtil().setHeight(170),
+                        child: Column(
+                            children: <Widget>[
+                                Image.asset('assets/images/background/noFriendImg.png'),
+                                Text(
+                                    "아직 추가된 친구가 없습니다.",
+                                    style: TextStyle(
+                                        fontFamily: "NotoSans",
+                                        fontWeight: FontWeight.w400,
+                                        fontSize: ScreenUtil().setSp(14),
+                                        letterSpacing: ScreenUtil().setWidth(-0.65),
+                                        color: Color.fromRGBO(107,107,107, 1),
+                                    ),
+                                ),
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                        Text(
+                                            "단화방 참여",
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w700,
+                                                fontSize: ScreenUtil().setSp(14),
+                                                letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                color: Color.fromRGBO(107,107,107, 1),
+                                            ),
+                                        ),
+                                        Text(
+                                            "를 통해 친구를 만들어 보세요.",
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: ScreenUtil().setSp(14),
+                                                letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                color: Color.fromRGBO(107,107,107, 1),
+                                            ),
+                                        )
+                                    ],
+                                ),
+                            ]
                         ),
-                    ],
-                ),
+                    ) : Container(),
+                    Column(
+                        children: <Widget>[
+                            // 친구 검색
+                            buildSearch(),
+                            Flexible(
+                                child: ListView(
+                                    padding: EdgeInsets.all(0),
+                                    children: <Widget>[
+                                        // 친구 요청리스트
+                                        buildFriendRequestList((AppLocalizations.of(context).tr('tabNavigation.friend.friendRequest')), requestList),
 
-                // Loading
-                isLoading ? Loading() : Container()
-            ]
+                                        // 친구 리스트
+                                        buildFriendList((AppLocalizations.of(context).tr('tabNavigation.friend.friendList')), friendList)
+
+                                    ],
+                                ),
+                            ),
+                        ],
+                    ),
+                    // Loding
+                    isLoading ? Loading() : Container()
+                ]
+            ),
+            onTap: (){
+                FocusScope.of(context).requestFocus(new FocusNode());
+            },
         );
     }
 
     Widget buildSearch() {
         return Container(
-            width: ScreenUtil().setWidth(343),
-            height: ScreenUtil().setHeight(36),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(ScreenUtil().setHeight(18)),
-                color: Color.fromRGBO(0, 0, 0, 0.06),
-            ),
-            margin: EdgeInsets.symmetric(
-                horizontal: ScreenUtil().setWidth(16.0),
-                vertical: ScreenUtil().setHeight(6),
-            ),
-            child: TextFormField(
-                controller: searchController,
-                maxLines: 1,
-                style: TextStyle(
-                    fontFamily: "NotoSans",
-                    fontWeight: FontWeight.w500,
-                    fontSize: ScreenUtil().setSp(15),
-                    letterSpacing: ScreenUtil().setWidth(-0.75),
-                    color: Color.fromRGBO(39, 39, 39, 1),
+            color: Color.fromRGBO(255, 255, 255, 1),
+            child:Container(
+                width: ScreenUtil().setWidth(343),
+                height: ScreenUtil().setHeight(36),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(ScreenUtil().setHeight(8)),
+                    color: Color.fromRGBO(0, 0, 0, 0.06),
                 ),
-                decoration: InputDecoration(
-                    contentPadding: EdgeInsets.only(
-                        left: ScreenUtil().setWidth(7),
-                        top: ScreenUtil().setHeight(5.5),
-                    ),
-                    border: InputBorder.none,
-                    prefixIcon: Icon(
-                        Icons.search,
-                        color: Color.fromRGBO(39, 39, 39, 0.5),
-                    ),
-                    hintText: (AppLocalizations.of(context).tr('tabNavigation.friend.search')),
-                    hintStyle: TextStyle(
+                margin: EdgeInsets.symmetric(
+                    horizontal: ScreenUtil().setWidth(16.0),
+                    vertical: ScreenUtil().setHeight(6),
+                ),
+                child: TextFormField(
+                    controller: searchController,
+                    maxLines: 1,
+                    style: TextStyle(
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
                         fontSize: ScreenUtil().setSp(15),
                         letterSpacing: ScreenUtil().setWidth(-0.75),
-                        color: Color.fromRGBO(39, 39, 39, 0.4),
+                        color: Color.fromRGBO(39, 39, 39, 1),
+                    ),
+                    decoration: InputDecoration(
+                        contentPadding: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(7)
+                        ),
+                        border: InputBorder.none,
+                        prefixIcon: Icon(
+                            Icons.search,
+                            color: Color.fromRGBO(39, 39, 39, 0.5),
+                        ),
+                        hintText: (AppLocalizations.of(context).tr('tabNavigation.friend.search')),
+                        hintStyle: TextStyle(
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w500,
+                            fontSize: ScreenUtil().setSp(15),
+                            letterSpacing: ScreenUtil().setWidth(-0.75),
+                            color: Color.fromRGBO(39, 39, 39, 0.4),
+                        ),
+                        suffixIcon: searchController.text != "" ? IconButton(
+                            icon: Image.asset("assets/images/icon/iconDeleteSmall.png"),
+                            onPressed: () => searchController.clear(),
+                        ) : null,
                     ),
                 ),
-            ),
+            )
         );
     }
 
-    Widget buildFriendList(String title, List<dynamic> friendInfoList, bool isFriend) {
+    Widget buildFriendRequestList(String title, List<dynamic> friendInfoList)  {
         return Container(
+            decoration: BoxDecoration(
+                border: Border(
+                    top: BorderSide(width: 1, color: Color.fromRGBO(235, 235, 235, 1)),
+                    bottom: BorderSide(width: 1, color: Color.fromRGBO(235, 235, 235, 1))
+                )
+            ),
             child: Column(
                 children: <Widget>[
-                    Container(
-                        width: ScreenUtil().setWidth(375),
-                        height: ScreenUtil().setHeight(30),
-                        decoration: BoxDecoration(
-                            color: Color.fromRGBO(214, 214, 214, 1),
-                        ),
-                        padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(10),
-                        ),
-                        child: Align(
-                            alignment: Alignment.centerLeft,
+                    InkWell(
+                        child:Container(
+                            width: ScreenUtil().setWidth(375),
+                            height: ScreenUtil().setHeight(29),
+                            color: Color.fromRGBO(255, 255, 255, 1),
                             child: Row(
                                 children: <Widget>[
                                     Container(
-                                        width: sameSize*30,
-                                        margin: EdgeInsets.only(
-                                            right: ScreenUtil().setWidth(8)
+                                        width: ScreenUtil().setWidth(375),
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: ScreenUtil().setWidth(16)
                                         ),
-                                        child: Image.asset(
-                                            title == (AppLocalizations.of(context).tr('tabNavigation.friend.friendList'))
-                                                ?'assets/images/icon/iconMasterBadge.png'
-                                                : 'assets/images/icon/iconAttachMore.png'
-                                                ,
-                                            fit: BoxFit.fitWidth,
+                                        child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                                Container(
+                                                    child: Row(
+                                                        children: <Widget>[
+                                                            Text(
+                                                                title,
+                                                                style: TextStyle(
+                                                                    fontFamily: "NotoSans",
+                                                                    fontWeight: FontWeight.w400,
+                                                                    fontSize: ScreenUtil().setSp(13),
+                                                                    letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                                    color: Color.fromRGBO(39, 39, 39, 1),
+                                                                ),
+                                                            ),
+                                                            Padding(
+                                                                padding: EdgeInsets.only(
+                                                                    left: ScreenUtil().setWidth(5)
+                                                                ),
+                                                                child: Text(
+                                                                    friendInfoList.length.toString(),
+                                                                    style: TextStyle(
+                                                                        fontFamily: "NotoSans",
+                                                                        fontWeight: FontWeight.w500,
+                                                                        fontSize: ScreenUtil().setSp(13),
+                                                                        letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                                        color: Color.fromRGBO(39, 39, 39, 0.4),
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                            friendInfoList.length != 0 ? Padding(
+                                                                padding: EdgeInsets.only(
+                                                                    left: ScreenUtil().setWidth(5)
+                                                                ),
+                                                                child: Container(
+                                                                    width: ScreenUtil().setWidth(6.5),
+                                                                    height: ScreenUtil().setHeight(6.5),
+                                                                    decoration: BoxDecoration(
+                                                                        color: Color.fromRGBO(76, 96, 191, 1),
+                                                                        borderRadius: new BorderRadius.circular(
+                                                                            ScreenUtil().setWidth(10)
+                                                                        ),
+                                                                    ),
+                                                                )
+                                                            ): Container()
+                                                        ],
+                                                    )
+                                                ),
+                                                requestExpandFlag ?
+                                                Image.asset('assets/images/icon/iconFold.png')
+                                                    :Image.asset('assets/images/icon/iconUnfold.png')
+                                            ],
                                         )
-                                    )
-                                    ,Text(
-                                        title,
-                                        style: TextStyle(
-                                            fontFamily: "NotoSans",
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: ScreenUtil().setSp(13),
-                                            letterSpacing: ScreenUtil().setWidth(-0.65),
-                                            color: Color.fromRGBO(39, 39, 39, 1),
-                                        ),
                                     )
                                 ],
                             )
-                        )
+                        ),
+                        onTap: (){
+                            toggleExpand();
+                        },
                     ),
                     friendInfoList.length == 0 ?
-                        Column(
-                            children: <Widget>[
-                                Container(
-                                    height: title == (AppLocalizations.of(context).tr('tabNavigation.friend.friendList')) ? ScreenUtil().setHeight( (5 - requestList.length) * 62 ) : ScreenUtil().setHeight(62),
-                                    child: Center(
-                                        child:Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                                Text(
-                                                    title == (AppLocalizations.of(context).tr('tabNavigation.friend.friendList')) ? (AppLocalizations.of(context).tr('tabNavigation.friend.noFriend')) : (AppLocalizations.of(context).tr('tabNavigation.friend.noNewRequest')),
-                                                    style: TextStyle(
-                                                        fontFamily: "NotoSans",
-                                                        fontWeight: FontWeight.w400,
-                                                        fontSize: ScreenUtil().setSp(14),
-                                                        letterSpacing: ScreenUtil().setWidth(-0.65),
-                                                        color: Color.fromRGBO(39, 39, 39, 0.2),
-                                                    ),
-                                                ),
-                                                title == (AppLocalizations.of(context).tr('tabNavigation.friend.friendList')) ? Column(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    children: <Widget>[
-                                                        Image.asset(
-                                                            'assets/images/icon/appIcon2.png',
-                                                            width: ScreenUtil().setWidth(50),
-                                                            height: ScreenUtil().setHeight(50),
-                                                        )
-                                                    ],
-                                                ) : Container()
-                                            ]
+                    AnimatedSize(
+                        curve: Curves.ease,
+                        vsync: this, duration: new Duration(milliseconds: 500),
+                        child:  Container(
+                            color: Color.fromRGBO(250, 250, 250, 1),
+                            height:ScreenUtil().setHeight(requestListHeight - 31),
+                            child: Center(
+                                child:Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                        Text(
+                                            (AppLocalizations.of(context).tr('tabNavigation.friend.noNewRequest')),
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: ScreenUtil().setSp(14),
+                                                letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                color: Color.fromRGBO(107, 107, 107, 1),
+                                            ),
                                         )
-                                    )
-                                ),
-                            ],
+                                    ]
+                                )
+                            )
                         )
-
-                        : ListView.builder(
+                    )
+                    : MediaQuery.removePadding(
+                        removeTop: true,
+                        child: ListView.builder(
                             physics: new NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
                             itemCount: friendInfoList.length,
-                            itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], isFriend, index == friendInfoList.length - 1, index)
-                        )
+                            itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], false, index == friendInfoList.length - 1, index)
+                        ),
+                        context: context,
+                    )
                 ],
             ),
         );
     }
 
+    Widget buildFriendList(String title, List<dynamic> friendInfoList) {
+        return MediaQuery.removePadding(
+            child: ListView.builder(
+                physics: new NeverScrollableScrollPhysics(),
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: friendInfoList.length,
+                itemBuilder: (BuildContext context, int index) => buildFriendItem(friendInfoList[index], true, index == friendInfoList.length - 1, index)
+            ),
+            context: context,
+        );
+    }
 
-    Widget buildFriendItem(dynamic friendInfo, bool isFriend, bool isLast, int index) {
+
+    //TODO 한개일때 여러개일때 패딩 차이
+    Widget buildFriendItem(dynamic friendInfo, bool isFriendList, bool isLast, int index) {
         developer.log("friendInfo" + friendInfo.user_idx.toString());
         String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=SMALL";
         return InkWell(
-            child: Container(
-                width: ScreenUtil().setWidth(375),
-                height: ScreenUtil().setHeight(62),
-                padding: EdgeInsets.only(
-                    left: ScreenUtil().setWidth(16)
-                ),
-                decoration: BoxDecoration(
-                    color: Color.fromRGBO(250, 250, 250, 1),
-                ),
-                child: Row(
-                    children: <Widget>[
-                        // 유저 이미지
-                        Container(
-                            width: sameSize * 50,
-                            height: sameSize * 50,
-                            margin: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(6),
-                                bottom: ScreenUtil().setHeight(6),
-                            ),
-                            child: ClipRRect(
-                                borderRadius: new BorderRadius.circular(
-                                    ScreenUtil().setWidth(300)
+            child: AnimatedSize(
+                curve: Curves.ease,
+                vsync: this, duration: new Duration(milliseconds: 500),
+                child: Container(
+                    width: ScreenUtil().setWidth(375),
+                    height: ScreenUtil().setHeight(
+                        isFriendList ?
+                            index == 0 ?
+                            74
+                            : 66
+                        : requestListHeight - 31),
+                    color: Color.fromRGBO(255, 255, 255, 1),
+                    padding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(16),
+                        top : isFriendList && index == 0 ?  ScreenUtil().setHeight(8) : 0,
+                        bottom: isLast && requestExpandFlag ? ScreenUtil().setHeight(4) : 0
+                    ),
+                    child: Row(
+                        children: <Widget>[
+                            // 유저 이미지
+                            Container(
+                                width: sameSize * 50,
+                                height: sameSize * 50,
+                                margin: EdgeInsets.only(
+                                    top: ScreenUtil().setHeight(6),
+                                    bottom: ScreenUtil().setHeight(6),
                                 ),
-                                child: CachedNetworkImage(
-                                    imageUrl: profileImgUri,
-                                    placeholder: (context, url) => CircularProgressIndicator(),
-                                    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
-                                    httpHeaders: Constant.HEADER
-                                )
-                            )
-                        ),
-                        // 유저 정보
-                        Container(
-                            width: ScreenUtil().setWidth(293),
-                            height: isLast ? ScreenUtil().setHeight(61) : ScreenUtil().setHeight(62),
-                            padding: EdgeInsets.only(
-                                left: ScreenUtil().setWidth(13.5),
-                            ),
-                            decoration: BoxDecoration(
-                                border: Border(
-                                    bottom: BorderSide(
-                                        width: isLast ? 0 : sameSize,
-                                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                                child: ClipRRect(
+                                    borderRadius: new BorderRadius.circular(
+                                        ScreenUtil().setWidth(300)
+                                    ),
+                                    child: CachedNetworkImage(
+                                        imageUrl: profileImgUri,
+                                        placeholder: (context, url) => CircularProgressIndicator(),
+                                        errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
+                                        httpHeaders: Constant.HEADER
                                     )
                                 )
                             ),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                            friendInfo.nickname,
-                                            style: TextStyle(
-                                                height: 1,
-                                                fontFamily: "NotoSans",
-                                                fontWeight: FontWeight.w500,
-                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
-                                                color: Color.fromRGBO(39, 39, 39, 1),
-                                                letterSpacing: ScreenUtil()
-                                                    .setWidth(-0.8),
-                                            ),
-                                        )
-                                    ),
-                                    !isFriend
+                            // 유저 정보
+                            Container(
+                                width: ScreenUtil().setWidth(293),
+                                height: ScreenUtil().setHeight(62),
+                                padding: EdgeInsets.only(
+                                    left: ScreenUtil().setWidth(13.5),
+                                ),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                        Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                                Text(
+                                                    friendInfo.nickname,
+                                                    style: TextStyle(
+                                                        height: 1,
+                                                        fontFamily: "NotoSans",
+                                                        fontWeight: FontWeight.w500,
+                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                                        letterSpacing: ScreenUtil()
+                                                            .setWidth(-0.8),
+                                                    ),
+                                                ),
+                                                !isFriendList ? Padding(
+                                                    padding: EdgeInsets.only(
+                                                        top: ScreenUtil().setHeight(8)
+                                                    ),
+                                                    child:  Text(
+                                                        friendInfo.description,
+                                                        style: TextStyle(
+                                                            height: 1,
+                                                            fontFamily: "NotoSans",
+                                                            fontWeight: FontWeight.w400,
+                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(14),
+                                                            color: Color.fromRGBO(107, 107, 107, 1),
+                                                            letterSpacing: ScreenUtil()
+                                                                .setWidth(-0.8),
+                                                        ),
+                                                    ),
+                                                ): Container()
+                                            ],
+                                        ),
+                                        !isFriendList
                                         ? Row(
-                                        mainAxisAlignment: MainAxisAlignment.end,
+                                            mainAxisAlignment: MainAxisAlignment.end,
                                             children: <Widget>[
                                                 Container(),
                                                 friendBtn(0, friendInfo, index),
                                                 friendBtn(1, friendInfo, index),
                                             ],
-                                        )
-                                        //TODO 주소록에 있는지 없는지
-    //                                    : contactIcon
-                                        : Container()
-                                ],
-                            ),
-                        )
-                    ],
+                                        ): Container()
+                                    ],
+                                ),
+                            )
+                        ],
+                    )
                 )
             ),
             onTap: () {
@@ -620,24 +764,21 @@ class _FriendTabState extends State<FriendTab> {
     }
 
     Widget friendBtn(int index, dynamic friendInfo, int listIdx) {
-        Color tabColor = index == 0 ? Color.fromRGBO(158, 158, 158, 1) : Color.fromRGBO(77, 96, 191, 1);
-        Color textColor = index == 0 ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(77, 96, 191, 1);
+        Color tabColor = index == 0 ? Color(0xffeaeaea) : Color.fromRGBO(77, 96, 191, 1);
+        Color textColor = index == 0 ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(255, 255, 255, 1);
 
         return new InkWell(
             child: Container(
-                width: ScreenUtil().setWidth(58),
+                width: ScreenUtil().setWidth(48),
                 height: ScreenUtil().setWidth(32),
                 margin: EdgeInsets.only(
                     left: index == 0 ? ScreenUtil().setWidth(10) : ScreenUtil().setWidth(8),
                 ),
                 decoration: BoxDecoration(
-                    border: Border.all(
-                        width: ScreenUtil().setWidth(1),
-                        color: tabColor,
-                    ),
                     borderRadius: BorderRadius.all(
-                        Radius.circular(ScreenUtil().setHeight(16))
-                    )
+                        Radius.circular(ScreenUtil().setWidth(10.5))
+                    ),
+                    color: tabColor
                 ),
                 child: Center (
                     child: Text(
@@ -677,7 +818,7 @@ class _FriendTabState extends State<FriendTab> {
         )
     );
 
-    Widget userProfileModal(BuildContext context, FriendInfo friendInfo ,StateSetter setStateBuild) {
+    Widget userProfileModal(BuildContext context, dynamic friendInfo ,StateSetter setStateBuild) {
         return Container(
             height: friendInfo.user_idx == Constant.USER_IDX ? ScreenUtil().setHeight(200) : ScreenUtil().setHeight(299),
             decoration: BoxDecoration(
@@ -787,8 +928,8 @@ class _FriendTabState extends State<FriendTab> {
                                 Container(
                                     child: Text(
                                         // TODO: 인삿말 맵핑
-//                                                userInfo.userIntro,
-                                        '안녕하세요! ' + friendInfo.nickname + "입니다! :)",
+                                        friendInfo.description.toString(),
+//                                        '안녕하세요! ' + friendInfo.nickname + "입니다! :)",
                                         style: TextStyle(
                                             height: 1,
                                             fontSize: ScreenUtil().setSp(13),
@@ -821,7 +962,7 @@ class _FriendTabState extends State<FriendTab> {
         );
     }
 
-    Widget userFunc(String iconSrc, String title,Function fn, FriendInfo friendInfo, StateSetter setStateBuild) {
+    Widget userFunc(String iconSrc, String title,Function fn, dynamic friendInfo, StateSetter setStateBuild) {
         return new Container(
             width: ScreenUtil().setWidth(85.75),
             child: Column(
@@ -842,7 +983,6 @@ class _FriendTabState extends State<FriendTab> {
                             )
                         ),
                         onTap:(){
-//                            fn(userIdx, setStateBuild);
                             fn(friendInfo);
                         }
                     ),
