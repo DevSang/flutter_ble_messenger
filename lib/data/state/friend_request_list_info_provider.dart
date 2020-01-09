@@ -59,9 +59,6 @@ class FriendRequestListInfoProvider with ChangeNotifier{
                                 description: friendRequest['description']
                             )
                         );
-
-                        print("됨");
-
                         developer.log("# req_idx : " + tempFriendRequestList[i]['idx'].toString());
                         developer.log("# user_idx : " + friendRequest['user_idx'].toString() + " nickname : " + friendRequest['nickname'].toString());
                         developer.log("# phone_number : " + friendRequest['phone_number'].toString() + " profile_picture_idx : " + friendRequest['profile_picture_idx'].toString());
