@@ -181,7 +181,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                 child: Column(
                     children: <Widget>[
                         Container(
-                            color: Color.fromRGBO(250, 250, 251, 1),
+                            color: Color.fromRGBO(255, 255, 255, 1),
                             height: ScreenUtil().setHeight(72),
                             padding: EdgeInsets.only(
                                 left: ScreenUtil().setWidth(20)
@@ -192,6 +192,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                     Container(
                                         width: ScreenUtil().setWidth(184),
                                         child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
                                                 Container (
@@ -230,17 +231,17 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                         ],
                                                     ),
                                                 ),
-                                                Container (
-                                                    child: Text(
-                                                        chatInfo.intro ?? "단화방 정보가 없습니다.",
-                                                        style: TextStyle(
-                                                            height: 1,
-                                                            fontSize: ScreenUtil().setSp(13),
-                                                            letterSpacing: ScreenUtil().setWidth(-0.33),
-                                                            color: Color.fromRGBO(107, 107, 107, 1)
-                                                        ),
-                                                    ),
-                                                )
+//                                                Container (
+//                                                    child: Text(
+//                                                        chatInfo.intro ?? "단화방 정보가 없습니다.",
+//                                                        style: TextStyle(
+//                                                            height: 1,
+//                                                            fontSize: ScreenUtil().setSp(13),
+//                                                            letterSpacing: ScreenUtil().setWidth(-0.33),
+//                                                            color: Color.fromRGBO(107, 107, 107, 1)
+//                                                        ),
+//                                                    ),
+//                                                )
                                             ],
                                         )
                                     ),
@@ -432,7 +433,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     @override
     BoxDecoration likeChat(BuildContext context) {
         return BoxDecoration(
-            color: Color.fromRGBO(240, 93, 72, 1),
+            color: Color.fromRGBO(221, 54, 67, 1),
             image: DecorationImage(
                 image:AssetImage("assets/images/icon/iconLike.png")
             ),

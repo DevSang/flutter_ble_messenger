@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
+import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/service/set_fcm.dart';
@@ -40,8 +41,10 @@ class _SignInPageState extends State<SignInPage> {
     bool _isLoading = false;
     FocusNode contextFocus;
     String phone_number, auth_number;
-    bool lengthConfirm = false;
+    bool lengthConfirmSMS = false;
+    bool lengthConfirmLogin = false;
     UserInfoProvider userInfoProvider;
+    double sameSize;
 
     //Social signin - Google
     GoogleSignInAccount _currentUser;
@@ -55,7 +58,7 @@ class _SignInPageState extends State<SignInPage> {
     @override
     void initState() {
         userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
-
+        sameSize = GetSameSize().main();
         googleAccountListner();
 	    super.initState();
     }
@@ -332,7 +335,7 @@ class _SignInPageState extends State<SignInPage> {
 	                child: new Container(
 	                    child: _isLoading
 	                        ? Center(child: CircularProgressIndicator())
-	                        : ListView(
+	                        : Column(
 	                        children: <Widget>[
 	                            _loginMainImage(),
 	                            _loginInputText(),
@@ -357,16 +360,15 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _loginMainImage() {
         return Container(
-            height: ScreenUtil().setHeight(232),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                    Image.asset(
-                        'assets/images/loginLogo.png',
-                        fit: BoxFit.cover,
-                        alignment: Alignment(0, -1),
-                    )
-                ]
+            width: ScreenUtil().setWidth(219.7),
+            height: ScreenUtil().setHeight(80.5),
+            margin: EdgeInsets.only(
+                top: ScreenUtil().setHeight(100.5),
+                bottom: ScreenUtil().setHeight(64),
+            ),
+            child: Image.asset(
+                'assets/images/loginLogo.png',
+                fit: BoxFit.contain,
             )
         );
     }
@@ -380,10 +382,15 @@ class _SignInPageState extends State<SignInPage> {
         return Container(
             height: ScreenUtil().setHeight(50),
             width: ScreenUtil().setWidth(343),
-            margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16), vertical: ScreenUtil().setHeight(3)),
+            margin: EdgeInsets.symmetric(
+                horizontal: ScreenUtil().setWidth(16),
+                vertical: ScreenUtil().setHeight(3)
+            ),
             decoration: new BoxDecoration(
-                color: Color.fromRGBO(240, 240, 240, 1),
-                borderRadius: new BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
+                color: Color.fromRGBO(245, 245, 245, 1),
+                borderRadius: new BorderRadius.all(
+                    Radius.circular(ScreenUtil().setHeight(8.0))
+                )
             ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -394,7 +401,15 @@ class _SignInPageState extends State<SignInPage> {
                         child: TextFormField(
                             maxLength: 11,
                             onChanged: (loginAuthCode) {
-                                developer.log(loginAuthCode);
+                                if(loginAuthCode.length == 11 && !lengthConfirmSMS) {
+                                    setState(() {
+                                        lengthConfirmSMS = true;
+                                    });
+                                } else if (loginAuthCode.length != 11 && lengthConfirmSMS){
+                                    setState(() {
+                                        lengthConfirmSMS = false;
+                                    });
+                                }
                             },
                             onFieldSubmitted: (loginAuthCode) {
                                 developer.log('login phone number 입력 :$loginAuthCode');
@@ -404,35 +419,56 @@ class _SignInPageState extends State<SignInPage> {
                                 WhitelistingTextInputFormatter.digitsOnly
                             ],
                             controller: _phoneController,
-                            style: TextStyle(color: Colors.black, fontFamily: 'NotoSans', fontWeight: FontWeight.w500, fontSize: 15),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'NotoSans',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 15
+                            ),
                             decoration:  InputDecoration(
                                 border: InputBorder.none,
                                 counterText: "",
-                                hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
+                                hintStyle: TextStyle(
+                                    color: Color.fromRGBO(39, 39, 39, 0.4),
+                                    fontSize: ScreenUtil().setSp(15),
+                                    fontFamily: 'NotoSans',
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: ScreenUtil().setWidth(-0.75)
+                                ),
                                 hintText: AppLocalizations.of(context).tr('sign.signIn.phoneNumber')
                             ),
                         )
                     ),
                     Container(
+                        height: ScreenUtil().setHeight(40),
+                        width: ScreenUtil().setWidth(100),
                         margin: EdgeInsets.only(
                             right: ScreenUtil().setWidth(5)
                         ),
-                        child: RaisedButton(
-                            padding: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(10), horizontal: ScreenUtil().setWidth(15)),
-                            focusNode: contextFocus,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(ScreenUtil().setWidth(10.0)),
-                            ),
-                            child: Text(AppLocalizations.of(context).tr('sign.signIn.getAuthCode'),
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontFamily: 'NotoSans',
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: ScreenUtil().setSp(13)
+                        child: InkWell(
+                            child: Container(
+                                decoration: BoxDecoration(
+                                    color: lengthConfirmSMS ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1),
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(ScreenUtil().setHeight(8.0))
+                                    )
                                 ),
+                                child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                        AppLocalizations.of(context).tr('sign.signIn.getAuthCode'),
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontFamily: 'NotoSans',
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ScreenUtil().setSp(13),
+                                            letterSpacing: ScreenUtil().setWidth(-0.65)
+                                        ),
+                                    )
+                                ),
+//                                focusNode: contextFocus,
                             ),
-                            color: Color.fromRGBO(77, 96, 191, 1),
-                            onPressed: () {
+                            onTap: () {
                                 loginCodeRequest();
                             }
                         )
@@ -451,45 +487,63 @@ class _SignInPageState extends State<SignInPage> {
         return Container(
             height: ScreenUtil().setHeight(50),
             width: ScreenUtil().setWidth(343),
-            margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16), vertical: ScreenUtil().setHeight(3)),
-            decoration: BoxDecoration(
-                color: Color.fromRGBO(240, 240, 240, 1),
-                borderRadius: BorderRadius.all(Radius.circular(ScreenUtil().setHeight(10.0)))
+            margin: EdgeInsets.symmetric(
+                horizontal: ScreenUtil().setWidth(16),
+                vertical: ScreenUtil().setHeight(3)
             ),
-            child:  Container(
-                margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
-                width: ScreenUtil().setWidth(215),
-                child: TextFormField(
-                    maxLength: 6,
-                    onChanged: (regAuthCode) {
-                        if(regAuthCode.length == 6 && !lengthConfirm) {
-                            setState(() {
-                                lengthConfirm = true;
-                            });
-                        } else if (regAuthCode.length != 6 && lengthConfirm){
-                            setState(() {
-                                lengthConfirm = false;
-                            });
-                        }
-                    },
-                    onFieldSubmitted: (loginAuthCode) {
-                        developer.log('login authcode 입력 :$loginAuthCode');
-                    },
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                        WhitelistingTextInputFormatter.digitsOnly
-                    ],
-                    controller: _authCodeController,
-                    obscureText: true,
-                    style: TextStyle(color: Colors.black, fontFamily: 'NotoSans',  fontSize: 15),
-                    decoration: new InputDecoration(
-                        contentPadding: EdgeInsets.only(top:ScreenUtil().setHeight(3)),
-                        border: InputBorder.none,
-                        counterText: "",
-                        hintStyle: TextStyle(color: Color.fromRGBO(39, 39, 39, 0.5), fontSize: ScreenUtil().setSp(15), fontWeight: FontWeight.w500),
-                        hintText: AppLocalizations.of(context).tr('sign.signIn.authCode')
-                    ),
+            decoration: new BoxDecoration(
+                color: Color.fromRGBO(245, 245, 245, 1),
+                borderRadius: new BorderRadius.all(
+                    Radius.circular(ScreenUtil().setHeight(8.0))
                 )
+            ),
+            child:  Align(
+                alignment: Alignment.centerLeft,
+                child: Container(
+                    margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
+                    width: ScreenUtil().setWidth(217),
+                    child: TextFormField(
+                        maxLength: 6,
+                        onChanged: (regAuthCode) {
+                            if(regAuthCode.length == 6 && !lengthConfirmLogin) {
+                                setState(() {
+                                    lengthConfirmLogin = true;
+                                });
+                            } else if (regAuthCode.length != 6 && lengthConfirmLogin){
+                                setState(() {
+                                    lengthConfirmLogin = false;
+                                });
+                            }
+                        },
+                        onFieldSubmitted: (loginAuthCode) {
+                            developer.log('login authcode 입력 :$loginAuthCode');
+                        },
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                            WhitelistingTextInputFormatter.digitsOnly
+                        ],
+                        controller: _authCodeController,
+                        obscureText: true,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontFamily: 'NotoSans',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 15
+                        ),
+                        decoration:  InputDecoration(
+                            border: InputBorder.none,
+                            counterText: "",
+                            hintStyle: TextStyle(
+                                color: Color.fromRGBO(39, 39, 39, 0.4),
+                                fontSize: ScreenUtil().setSp(15),
+                                fontFamily: 'NotoSans',
+                                fontWeight: FontWeight.w500,
+                                letterSpacing: ScreenUtil().setWidth(-0.75)
+                            ),
+                            hintText: AppLocalizations.of(context).tr('sign.signIn.authCode')
+                        ),
+                    )
+                ),
             )
         );
     }
@@ -500,22 +554,37 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Signin button widget
      */
     Widget _SignInButton() {
-        var color = lengthConfirm ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
+        var color = lengthConfirmLogin ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
         return Container(
-            margin: EdgeInsets.only(top:ScreenUtil().setHeight(3)),
-            width: MediaQuery.of(context).size.width,
-            height: 50.0,
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            color: Colors.white,
-            child: RaisedButton(
-                onPressed: () {
+            width: ScreenUtil().setWidth(343),
+            height: ScreenUtil().setHeight(50),
+            margin: EdgeInsets.only(
+                top:ScreenUtil().setHeight(3),
+                bottom:ScreenUtil().setHeight(16),
+            ),
+            decoration: BoxDecoration(
+                color: color,
+                borderRadius: new BorderRadius.all(
+                    Radius.circular(ScreenUtil().setHeight(8.0))
+                )
+            ),
+            child: InkWell(
+                onTap: () {
                     authCodeLoginRequest();
                 },
-                color: color,
-                child: Text(AppLocalizations.of(context).tr('sign.signIn.signIn'), style: TextStyle(
-                    color: Colors.white, fontSize: 16, fontFamily: 'NotoSans', fontWeight: FontWeight.w500)
+                child: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                        AppLocalizations.of(context).tr('sign.signIn.signIn'),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontFamily: 'NotoSans',
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: ScreenUtil().setWidth(-0.8)
+                        )
+                    )
                 ),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(ScreenUtil().setHeight(10.0))),
             ),
         );
     }
@@ -527,27 +596,37 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _registerSection(BuildContext context) {
         return Container(
+            height: ScreenUtil().setHeight(56.5),
             decoration:  BoxDecoration(
-                border:  Border(bottom: BorderSide(color:Color.fromRGBO(122, 122, 122, 1), width: 0.5)),
+                border:  Border(
+                    bottom: BorderSide(
+                        color:Color.fromRGBO(112, 112, 112, 1),
+                        width: ScreenUtil().setHeight(0.5)
+                    )
+                ),
             ),
-            padding: EdgeInsets.only(top: ScreenUtil().setHeight(16), bottom: ScreenUtil().setHeight(34)),
-            margin: EdgeInsets.symmetric(horizontal: ScreenUtil().setWidth(16)),
+            padding: EdgeInsets.only(
+                bottom: ScreenUtil().setHeight(34)
+            ),
+            margin: EdgeInsets.symmetric(
+                horizontal: ScreenUtil().setWidth(16)
+            ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                    InkWell(
-                        child: Text(
-		                        AppLocalizations.of(context).tr('sign.signIn.notHaveAccount'),
-                            style: TextStyle(
-                                color: Color.fromRGBO(107, 107, 107, 1),
-                                fontSize: ScreenUtil().setSp(15),
-                                fontFamily: 'NotoSans',
-                                fontWeight: FontWeight.w400,
-                            )
+                    Text(
+                        AppLocalizations.of(context).tr('sign.signIn.notHaveAccount'),
+                        style: TextStyle(
+                            color: Color.fromRGBO(107, 107, 107, 1),
+                            fontSize: ScreenUtil().setSp(15),
+                            fontFamily: 'NotoSans',
+                            fontWeight: FontWeight.w400,
                         )
                     ),
                     InkWell(
-                        child: Text(AppLocalizations.of(context).tr('sign.signIn.signUp'), style: TextStyle(
+                        child: Text(
+                            AppLocalizations.of(context).tr('sign.signIn.signUp'),
+                            style: TextStyle(
                                 decoration: TextDecoration.underline,
                                 color: Color.fromRGBO(107, 107, 107, 1),
                                 fontSize: ScreenUtil().setSp(15),
@@ -572,14 +651,18 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _signinText() {
         return Container(
-            margin: EdgeInsets.only(top:ScreenUtil().setHeight(34), bottom: ScreenUtil().setHeight(17)),
+            height: ScreenUtil().setHeight(22.5),
+            margin: EdgeInsets.only(
+                top: ScreenUtil().setHeight(34),
+                bottom: ScreenUtil().setHeight(22)
+            ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                     Text(
 	                    AppLocalizations.of(context).tr('sign.signIn.snsSignIn'),
                         style: TextStyle(
-                            color: Colors.black,
+                            color: Color.fromRGBO(107, 107, 107, 1),
                             fontSize: 15,
                             fontFamily: 'NotoSans',
                             fontWeight: FontWeight.w400,
@@ -598,33 +681,52 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _socialSignin() {
         return Container(
+            padding: EdgeInsets.only(
+              bottom:   ScreenUtil().setHeight(51),
+            ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                     Container(
-                        padding: EdgeInsets.all(ScreenUtil().setWidth(5)),
+                        width: ScreenUtil().setWidth(50),
+                        height: ScreenUtil().setHeight(50),
                         child: InkWell(
-                            child: Image.asset('assets/images/sns/snsIconKakao.png'),
+                            child: Image.asset(
+                                'assets/images/sns/snsIconKakao.png',
+                                fit: BoxFit.contain
+                            ),
                             onTap:(){
                                 RedToast.toast("카카오톡 로그인은 준비 중 입니다.", ToastGravity.TOP);
                             },
                         ),
                     ),
                     Container(
-                        padding: EdgeInsets.all(ScreenUtil().setWidth(5)),
-                        margin: EdgeInsets.only(left: ScreenUtil().setWidth(23)),
+                        width: ScreenUtil().setWidth(50),
+                        height: ScreenUtil().setHeight(50),
+                        margin: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(28)
+                        ),
                         child: InkWell(
-                            child: Image.asset('assets/images/sns/snsIconFacebook.png'),
+                            child: Image.asset(
+                                'assets/images/sns/snsIconFacebook.png',
+                                fit: BoxFit.contain
+                            ),
                             onTap:(){
                                 facebookLogin();
                             },
                         ),
                     ),
                     Container(
-                        padding: EdgeInsets.all(ScreenUtil().setWidth(5)),
-                        margin: EdgeInsets.only(left: ScreenUtil().setWidth(23)),
+                        width: ScreenUtil().setWidth(50),
+                        height: ScreenUtil().setHeight(50),
+                        margin: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(28)
+                        ),
                         child: InkWell(
-                            child: Image.asset('assets/images/sns/snsIconGoogle.png'),
+                            child: Image.asset(
+                                'assets/images/sns/snsIconGoogle.png',
+                                fit: BoxFit.contain,
+                            ),
                             onTap:() {
                                 googleSignin();
 //                                RedToast.toast("구글 로그인은 준비 중 입니다.", ToastGravity.TOP);
