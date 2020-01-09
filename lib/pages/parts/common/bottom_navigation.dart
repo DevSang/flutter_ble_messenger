@@ -72,16 +72,6 @@ class _BottomNavigationState extends State<BottomNavigation>{
 
     /*
      * @author : hk
-     * @date : 2020-01-02
-     * @description : 사용자 이미지 캐시 실패시 다음부터 기본 Asset 이미지 제공
-     */
-    getErrorWidget(){
-	    Constant.APP_BAR_LOADING_ERROR = true;
-	    return Image.asset('assets/images/icon/profile.png');
-    }
-
-    /*
-     * @author : hk
      * @date : 2020-01-06
      * @description : appBar title 설정
      */
