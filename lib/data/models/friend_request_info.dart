@@ -27,8 +27,8 @@ class FriendRequestInfo {
             req_idx : json['req_idx'],
             nickname : json['nickname'] ?? "닉네임 정보가 없습니다.",
             phone_number : json['phone_number'],
-            profile_picture_idx : json['profile_picture_idx'],
-            business_card_idx : json['business_card_idx'],
+            profile_picture_idx : json['profile_picture_idx'] ?? "",
+            business_card_idx : json['business_card_idx']?? "",
             user_status : json['user_status'],
             description : json['description'] ?? "",
         );

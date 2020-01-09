@@ -115,7 +115,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo']);
             await userInfoProvider.getUserInfoFromSPF();
             SetFCM.firebaseCloudMessagingListeners();
-            HomePageState.initApiCall();
+            HomePageState.initApiCall(context);
 
             RedToast.toast((AppLocalizations.of(context).tr('sign.signUpName.toast.start')), ToastGravity.TOP);
 

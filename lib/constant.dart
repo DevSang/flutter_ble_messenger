@@ -3,9 +3,7 @@ import 'dart:developer' as developer;
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:Hwa/data/models/friend_info.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
-import 'package:Hwa/data/models/friend_request_info.dart';
 
 
 /*
@@ -24,8 +22,6 @@ class Constant {
     static int USER_IDX;
 	static bool isUserLogin = false;
 
-    static List<FriendInfo> FRIEND_LIST;
-    static List<FriendRequestInfo> FRIEND_REQUEST_LIST;
     static Map<String, String> HEADER;
 
 //    static String PROFILE_IMG_URI="";

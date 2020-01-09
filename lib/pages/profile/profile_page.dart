@@ -421,7 +421,7 @@ class _ProfilePageState extends State <ProfilePage>{
                   buildTextInfoItem((AppLocalizations.of(context).tr('profile.leave')), "", true),
 
                 InkWell(
-                    child: policyBtn((AppLocalizations.of(context).tr('profile.opensource')), "", false),
+                    child: policyBtn((AppLocalizations.of(context).tr('profile.opensource')), false),
                     onTap:() {
                       Navigator.pushNamed(context, "/opensource");
                     }
@@ -601,7 +601,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 border: Border(
                     bottom: BorderSide(
                         width: ScreenUtil().setWidth(1),
-                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                        color: Color.fromRGBO(39, 39, 39, 0.15)
                     )
                 )
             ),
@@ -625,7 +625,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             height: 1,
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w400,
-                            color: Color.fromRGBO(107, 107, 107, 1),
+                            color: Color.fromRGBO(39, 39, 39, 1),
                             fontSize: ScreenUtil.getInstance().setSp(15),
                             letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
                         )
@@ -635,7 +635,7 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget policyBtn(String tr, String value, bool isLast,) {
+    Widget policyBtn(String tr, bool isLast) {
       return Container(
           height: ScreenUtil().setHeight(49),
           margin: EdgeInsets.only(
@@ -648,15 +648,16 @@ class _ProfilePageState extends State <ProfilePage>{
               border: Border(
                   bottom: BorderSide(
                       width: ScreenUtil().setWidth(1),
-                      color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                      color: Color.fromRGBO(39, 39, 39, 0.15)
                   )
               )
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Text(
-                  "오픈소스",
+
+             Text(
+                 (AppLocalizations.of(context).tr('profile.opensource')),
                   style: TextStyle(
                       height: 1,
                       fontFamily: "NotoSans",
