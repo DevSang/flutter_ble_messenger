@@ -2,17 +2,12 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
 import 'package:dio/dio.dart';
-
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:provider/provider.dart';
-
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:Hwa/utility/call_api.dart';
@@ -21,12 +16,7 @@ import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:Hwa/pages/policy/opensource_policy.dart';
-
 
 
 class ProfilePage extends StatefulWidget {
@@ -48,28 +38,11 @@ class _ProfilePageState extends State <ProfilePage>{
     bool allowedFriend;
 
     bool isLoading;
-    UserInfoProvider userInfoProvider;
-
-    String profileImgUri;
-
-    CachedNetworkImage cachedNetworkImage;
 
     @override
     void initState() {
-        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
-        profileImgUri = userInfoProvider.profileURL;
-
         isLoading = false;
-
-        cachedNetworkImage = CachedNetworkImage(
-            imageUrl: profileImgUri,
-            placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
-            httpHeaders: Constant.HEADER
-        );
-
         getSettingInfo();
-
 	    super.initState();
     }
 
@@ -79,7 +52,7 @@ class _ProfilePageState extends State <ProfilePage>{
     * @description : 로그아웃
     */
     Future<void> logOut() async {
-        SPF = await SharedPreferences.getInstance();
+        SPF = await Constant.getSPF();
         await store.onReady;
         await SPF.remove('token');
         await SPF.remove('userInfo');
@@ -127,7 +100,7 @@ class _ProfilePageState extends State <ProfilePage>{
      * @date : 2020-01-01
      * @description : 프로필 저장
     */
-    void saveSettingInfo() async {
+    Future<void> saveSettingInfo() async {
         try {
             String uri = "/api/v2/user/profile";
             final response = await CallApi.commonApiCall(
@@ -141,22 +114,20 @@ class _ProfilePageState extends State <ProfilePage>{
                 }
             );
 
+            return;
+
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
+            return;
         }
     }
 
-
     void popNav() async {
-        setState(() {
-            isLoading = true;
-        });
+        setState(() {isLoading = true;});
 
         await saveSettingInfo();
 
-        setState(() {
-            isLoading = false;
-        });
+        setState(() {isLoading = false;});
 
         Navigator.of(context).pop();
     }
@@ -189,21 +160,11 @@ class _ProfilePageState extends State <ProfilePage>{
 		    });
 
 		    if(response.statusCode == 200){
-			    await DefaultCacheManager().removeFile(profileImgUri);
-			    SPF.setBool("IS_UPLOAD_PROFILE_IMG", true);
-			    userInfoProvider.profileURL = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+			    Provider.of<UserInfoProvider>(context, listen: false).changedProfileImg();
+			    Provider.of<UserInfoProvider>(context, listen: false).createProfileCacheImg();
 
-			    setState(() {
-				    cachedNetworkImage = CachedNetworkImage(
-						    imageUrl: userInfoProvider.profileURL,
-						    placeholder: (context, url) => CircularProgressIndicator(),
-						    errorWidget: (context, url, error) => Icon(Icons.error),
-						    httpHeaders: Constant.HEADER
-				    );
-
-				    Constant.IS_CHANGE_PROFILE_IMG = true;
-
-                    isLoading = false;
+			    setState((){
+				    isLoading = false;
 			    });
 		    } else {
 			    developer.log("## 이미지파일 업로드에 실패하였습니다.");
@@ -296,7 +257,8 @@ class _ProfilePageState extends State <ProfilePage>{
                                   ),
                                   child: ClipRRect(
                                       borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
-                                      child: cachedNetworkImage
+//                                      child: Provider.of<UserInfoProvider>(context).getUserProfileImg()
+                                      child: Provider.of<UserInfoProvider>(context).getUserProfileImg()
 //	                                  child: proFileImgUri == null
 //	                                      ? Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
 //	                                      : Image.network(proFileImgUri, scale: 1.0, headers: header)

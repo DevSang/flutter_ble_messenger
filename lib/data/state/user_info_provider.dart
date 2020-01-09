@@ -5,6 +5,8 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:Hwa/constant.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 /*
@@ -30,6 +32,7 @@ class UserInfoProvider with ChangeNotifier{
     String profileURL;
     String nickname;
     String token;
+    CachedNetworkImage cacheProfileImg;
 
     setUserInfo(dynamic value) {
         notifyListeners();
@@ -89,12 +92,10 @@ class UserInfoProvider with ChangeNotifier{
                 'X-Authorization': 'Bearer ' + token
             };
 
-            bool IS_UPLOAD_PROFILE_IMG = spf.getBool("IS_UPLOAD_PROFILE_IMG");
-            if(IS_UPLOAD_PROFILE_IMG){
-                profileURL = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
-            }
+            profileURL = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
 
-            notifyListeners();
+            // 사용자 Cache 프로필 이미지 생성
+            createProfileCacheImg();
 
             developer.log("# userInfo is loaded from SPF.");
             developer.log("# userInfo : " + jsonDecode(spf.getString('userInfo')).toString());
@@ -117,6 +118,40 @@ class UserInfoProvider with ChangeNotifier{
         this.profileURL =  info['profileURL'] ?? "";
         this.nickname =  info['nickname'];
         this.token =  info['token'];
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-10
+     * @description : 사용자 프로필 이미지 return, 없으면 기본 이미지
+     */
+    Widget getUserProfileImg() {
+    	return cacheProfileImg ?? Image.asset('assets/images/icon/profile.png', fit: BoxFit.cover);
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-10
+     * @description : 사용자 Cache 프로필 이미지 생성
+     */
+    void createProfileCacheImg() {
+	    cacheProfileImg = CachedNetworkImage(
+			    imageUrl: profileURL,
+			    placeholder: (context, url) => CircularProgressIndicator(),
+			    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
+			    httpHeaders: Constant.HEADER
+	    );
+	    notifyListeners();
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-10
+     * @description : 사용자 프로필 이미지 변경되어 cache expire 시키기
+     */
+    Future<void> changedProfileImg() async {
+	    await DefaultCacheManager().removeFile(profileURL);
+	    notifyListeners();
     }
 
 }
