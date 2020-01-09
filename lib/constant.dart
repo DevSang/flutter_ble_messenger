@@ -32,6 +32,9 @@ class Constant {
     static bool APP_BAR_LOADING_COMPLETE = false;
     static bool APP_BAR_LOADING_ERROR = false;
 
+    // file upload max size (byte)
+	static int MAX_FILE_SIZE = 31457280;
+
     // SPF
     static SharedPreferences spf;
 
