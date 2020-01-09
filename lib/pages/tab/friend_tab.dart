@@ -171,14 +171,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                 originList.addAll(getFriendList);
                 friendList.addAll(getFriendList);
             });
-//            await store.put<List<FriendInfo>>("friendRequestList",friendRequestList);
         } else {
             setState(() {
                 originList = [];
                 friendList = [];
             });
-
-//            await store.put<List<FriendInfo>>("friendRequestList",[]);
         }
     }
 
@@ -216,13 +213,10 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
             setState(() {
                 requestList = friendRequestList;
             });
-//            await store.put<List<FriendInfo>>("friendRequestList",friendRequestList);
         } else {
             setState(() {
                 requestList = [];
             });
-
-//            await store.put<List<FriendInfo>>("friendRequestList",[]);
         }
     }
 
@@ -344,10 +338,10 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                 isLoading = false;
             });
 
-            developer.log("################" + chatInfo.toString());
-            developer.log("################**" + isLiked.toString());
-            developer.log("################**" + friendInfo.user_idx.toString());
-            developer.log("################**" + friendInfo.nickname);
+//            developer.log("################" + chatInfo.toString());
+//            developer.log("################**" + isLiked.toString());
+//            developer.log("################**" + friendInfo.user_idx.toString());
+//            developer.log("################**" + friendInfo.nickname);
 
             Navigator.push(context,
                 MaterialPageRoute(builder: (context) {
@@ -368,7 +362,13 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         }
     }
 
+    ///############################################################ Widget parts ############################################################################///
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 친구목록 페이지 build 위젯
+    */
     @override
     Widget build(BuildContext context) {
         searchController.addListener(() {
@@ -385,13 +385,20 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 전체 바디 위젯 (친구없을때 배경 포함)
+    */
     Widget buildBody() {
         return GestureDetector(
             child: Stack(
                 children: <Widget>[
+                    ///친구가 한명도 없을때
                     friendList.length == 0 ? Positioned(
                         top : ScreenUtil().setHeight(170),
                         child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
                                 Image.asset('assets/images/background/noFriendImg.png'),
                                 Text(
@@ -461,6 +468,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 친구 검색 부분 위젯
+    */
     Widget buildSearch() {
         return Container(
             color: Color.fromRGBO(255, 255, 255, 1),
@@ -512,6 +524,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 친구 요청 부분 위젯
+    */
     Widget buildFriendRequestList(String title, List<dynamic> friendInfoList)  {
         return Container(
             decoration: BoxDecoration(
@@ -596,7 +613,10 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                             toggleExpand();
                         },
                     ),
+
+                    ///Expand Friend request
                     friendInfoList.length == 0 ?
+                        ///친구요청 없을때
                     AnimatedSize(
                         curve: Curves.ease,
                         vsync: this, duration: new Duration(milliseconds: 500),
@@ -622,6 +642,7 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                             )
                         )
                     )
+                        ///친구요청 있을때
                     : MediaQuery.removePadding(
                         removeTop: true,
                         child: ListView.builder(
@@ -638,6 +659,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 친구 목록 부분 위젯
+    */
     Widget buildFriendList(String title, List<dynamic> friendInfoList) {
         return MediaQuery.removePadding(
             child: ListView.builder(
@@ -651,7 +677,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
     }
 
-
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 친구 한명 구성 위젯
+    */
     //TODO 한개일때 여러개일때 패딩 차이
     Widget buildFriendItem(dynamic friendInfo, bool isFriendList, bool isLast, int index) {
         developer.log("friendInfo" + friendInfo.user_idx.toString());
@@ -763,6 +793,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 친구 수락, 삭제 위젯(index 0 - 수락, 1 - 거절)
+    */
     Widget friendBtn(int index, dynamic friendInfo, int listIdx) {
         Color tabColor = index == 0 ? Color(0xffeaeaea) : Color.fromRGBO(77, 96, 191, 1);
         Color textColor = index == 0 ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(255, 255, 255, 1);
@@ -805,6 +840,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
 
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 연락처 유무 아이콘 위젯
+    */
     Widget contactIcon = new Container(
         width: ScreenUtil().setWidth(20),
         height: ScreenUtil().setHeight(20),
@@ -818,6 +858,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         )
     );
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 유저 프로필 하단 모달 위젯
+    */
     Widget userProfileModal(BuildContext context, dynamic friendInfo ,StateSetter setStateBuild) {
         return Container(
             height: friendInfo.user_idx == Constant.USER_IDX ? ScreenUtil().setHeight(200) : ScreenUtil().setHeight(299),
@@ -962,6 +1007,11 @@ class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-08
+    * @description : 유저 프로필 각 기능 모달 (1:1채팅, 차단하기)
+    */
     Widget userFunc(String iconSrc, String title,Function fn, dynamic friendInfo, StateSetter setStateBuild) {
         return new Container(
             width: ScreenUtil().setWidth(85.75),
