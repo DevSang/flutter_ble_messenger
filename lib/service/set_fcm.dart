@@ -17,6 +17,7 @@ class SetFCM {
 
         // 푸시 권한 획득 및 token 저장
         if (Platform.isIOS) iOSPermission();
+
         _firebaseMessaging.getToken().then((token) async {
             await addPushTokenRequest(token.toString());
         });

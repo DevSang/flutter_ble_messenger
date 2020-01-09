@@ -94,10 +94,7 @@ class HomePageState extends State<HomePage> {
         FriendRequestListInfoProvider friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
 
         await friendListProvider.getFriendList();
-        print("@@@@@@!");
-
         await friendRequestListInfoProvider.getFriendRequestList();
-        print("@@@@@@");
         return;
     }
 
