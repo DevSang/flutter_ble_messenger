@@ -36,7 +36,6 @@ class CallApi {
 
     static logRequest(String prefixUrl, method, url, data){
 	    developer.log("#Request Url : " + url.toString());
-	    developer.log("#Method : " + method.toString());
 	    developer.log("#Data : " + data.toString());
     }
 

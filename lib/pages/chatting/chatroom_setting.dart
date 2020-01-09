@@ -123,7 +123,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
      * @date : 2020-01-01
      * @description : 단화 설정 저장
     */
-    void saveSettingInfo() async {
+    Future<void> saveSettingInfo() async {
         try {
             String uri = "/danhwa/room/update?roomIdx=" + chatInfo.chatIdx.toString();
             uri += "&title=" + chatSettingUpdated.title;
@@ -139,11 +139,13 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                 url: encoded
             );
 
+            return;
+
         } catch (e) {
             developer.log("#### Error :: " + e.toString());
+            return;
         }
     }
-
 
 	/*
 	 * @project : HWA - Mobile
@@ -167,8 +169,6 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 		    setState(() {
                 isLoading = true;
 		    });
-
-		    //chat_idx
 
 		    Map<String, dynamic> paramMap = {
 			    "chat_idx" : chatInfo.chatIdx.toString()
