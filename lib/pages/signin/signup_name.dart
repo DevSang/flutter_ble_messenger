@@ -145,7 +145,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                     ),
                 ),
                 centerTitle: true,
-                title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w600))
+                title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w700))
             ),
             body: Container(
                 child: ListView(
@@ -171,7 +171,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text((AppLocalizations.of(context).tr('sign.signUpName.textNickname')),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans',fontWeight: FontWeight.w600,
+                    Text((AppLocalizations.of(context).tr('sign.signUpName.textNickname')),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans',fontWeight: FontWeight.w700,
                     ))
                 ],
             )

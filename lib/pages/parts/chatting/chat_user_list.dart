@@ -49,7 +49,7 @@ class ChatUserListState extends State<ChatUserList> {
     @override
     void initState() {
         super.initState();
-        openedList = true;
+        openedList = widget.userInfoList.length > 0;
         sameSize = GetSameSize().main();
     }
 
@@ -66,82 +66,101 @@ class ChatUserListState extends State<ChatUserList> {
             color: Colors.white,
               child: Column(
                   children: <Widget>[
-                      Container(
-                          width: ScreenUtil().setWidth(310),
-                          height: ScreenUtil().setWidth(32),
-                          padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(20),
-                            right:   ScreenUtil().setWidth(18)
-                          ),
-                          decoration: BoxDecoration(
-                              color: Color.fromRGBO(240, 240, 240, 1),
-                              border: Border(
-                                  top: BorderSide(
-                                      width: ScreenUtil().setWidth(1),
-                                      color: Color.fromRGBO(39, 39, 39, 0.15)
-                                  )
-                              )
-                          ),
+                      InkWell(
                           child:
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                  Container(
-                                      child: Row(
-                                          children: <Widget>[
-                                              Text(
-                                                  widget.joinType == "BLE_JOIN"
-                                                      ? "내 주변 사람"
-                                                      : (
-                                                      widget.joinType == "BLE_OUT"
-                                                          ? "온라인 유저"
-                                                          : "관전 유저"
-                                                  ),
-                                                  style: TextStyle(
-                                                      height: 1,
-                                                      fontSize: ScreenUtil().setSp(13),
-                                                      letterSpacing: ScreenUtil().setWidth(-0.33),
-                                                      color: Color.fromRGBO(39, 39, 39, 1)
-                                                  ),
-                                              ),
-                                              Container(
-                                                  height: ScreenUtil().setHeight(13),
-                                                  padding: EdgeInsets.only(
-                                                      left: ScreenUtil().setWidth(8),
-                                                      right: ScreenUtil().setWidth(8),
-                                                  ),
-                                                  child: Text(
-                                                      widget.userInfoList.length.toString(),
+                          Container(
+                              width: ScreenUtil().setWidth(310),
+                              height: ScreenUtil().setHeight(28),
+                              padding: EdgeInsets.only(
+                                left: ScreenUtil().setWidth(19),
+                                right:   ScreenUtil().setWidth(16)
+                              ),
+                              decoration:
+                              !openedList && widget.joinType == "ONLINE"
+                                ? BoxDecoration(
+                                      color: Color.fromRGBO(255, 255, 255, 1),
+                                      border: Border(
+                                          top: BorderSide(
+                                              width: ScreenUtil().setWidth(1),
+                                              color: Color.fromRGBO(39, 39, 39, 0.15)
+                                          ),
+                                          bottom: BorderSide(
+                                              width: ScreenUtil().setWidth(1),
+                                              color: Color.fromRGBO(235, 235, 235, 1)
+                                          ),
+                                      )
+                                  )
+                                : BoxDecoration(
+                                  color: Color.fromRGBO(255, 255, 255, 1),
+                                  border: Border(
+                                      top: BorderSide(
+                                          width: ScreenUtil().setWidth(1),
+                                          color: Color.fromRGBO(39, 39, 39, 0.15)
+                                      ),
+                                  )
+                                  )
+                              ,
+                              child:
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                      Container(
+                                          child: Row(
+                                              children: <Widget>[
+                                                  Text(
+                                                      widget.joinType == "BLE_JOIN"
+                                                          ? "내 주변 사용자"
+                                                          : (
+                                                          widget.joinType == "BLE_OUT"
+                                                              ? "온라인 사용자"
+                                                              : "관전 사용자"
+                                                      ),
                                                       style: TextStyle(
                                                           height: 1,
+                                                          fontFamily: 'NotoSans',
+                                                          fontWeight: FontWeight.w500,
                                                           fontSize: ScreenUtil().setSp(13),
                                                           letterSpacing: ScreenUtil().setWidth(-0.33),
-                                                          color: Color.fromRGBO(107, 107, 107, 1)
+                                                          color: Color.fromRGBO(39, 39, 39, 1)
                                                       ),
                                                   ),
+                                                  Container(
+                                                      padding: EdgeInsets.only(
+                                                          left: ScreenUtil().setWidth(5),
+                                                      ),
+                                                      child: Text(
+                                                          widget.userInfoList.length.toString(),
+                                                          style: TextStyle(
+                                                              height: 1,
+                                                              fontFamily: 'NotoSans',
+                                                              fontWeight: FontWeight.w500,
+                                                              fontSize: ScreenUtil().setSp(13),
+                                                              letterSpacing: ScreenUtil().setWidth(-0.65),
+                                                              color: Color.fromRGBO(39, 39, 39, 0.4)
+                                                          ),
+                                                      ),
+                                                  ),
+                                              ],
+                                          )
+                                      ),
+                                      Container(
+                                          width: ScreenUtil().setWidth(20),
+                                          decoration: BoxDecoration(
+                                              image: DecorationImage(
+                                                  image:AssetImage(openedList
+                                                                    ? "assets/images/icon/iconFold.png"
+                                                                    : "assets/images/icon/iconExpand.png")
                                               ),
-                                          ],
-                                      )
-                                  ),
-                                  Container(
-                                      width: ScreenUtil().setWidth(20),
-                                      child: FlatButton(
-                                          onPressed:(){
-                                              setState(() {
-                                                  openedList = !openedList;
-                                              });
-                                          }
-                                      ),
-                                      decoration: BoxDecoration(
-                                          image: DecorationImage(
-                                              image:AssetImage(openedList
-                                                                ? "assets/images/icon/iconFold.png"
-                                                                : "assets/images/icon/iconExpand.png")
                                           ),
-                                      ),
-                                  )
-                              ],
+                                      )
+                                  ],
+                              ),
                           ),
+                          onTap:(){
+                              setState(() {
+                                  openedList = !openedList;
+                              });
+                          }
                       ),
                       openedList
                           ? Container(

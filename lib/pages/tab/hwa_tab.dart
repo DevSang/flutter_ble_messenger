@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 import 'dart:ui';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_message.dart';
+import 'package:Hwa/utility/customRoute.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -203,7 +204,6 @@ class HwaTabState extends State<HwaTab> {
 			    chatList.insert(0, chatItem);
 			    chatIdxList.insert(0, chatItem.chatIdx);
 		    });
-
 	    } catch (e) {
 		    developer.log("#### Error :: "+ e.toString());
 	    }
@@ -459,13 +459,22 @@ class HwaTabState extends State<HwaTab> {
                 _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
             });
 
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) {
+            Navigator.push(
+                context,
+                CustomRoute(builder: (context) {
                     return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "HwaTab", isCreated: isCreated);
-                })
+                }),
             ).then((onValue) {
                 startBleService();
             });
+
+//            Navigator.push(context,
+//                MaterialPageRoute(builder: (context) {
+//                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "HwaTab", isCreated: isCreated);
+//                })
+//            ).then((onValue) {
+//                startBleService();
+//            });
 
             isLoading = false;
         } catch (e) {
@@ -530,6 +539,7 @@ class HwaTabState extends State<HwaTab> {
         return Scaffold(
             body: setScreen(),
             resizeToAvoidBottomPadding: false,
+            backgroundColor: chatList.length != 0 ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(250, 250, 250, 1)
         );
     }
 
@@ -646,7 +656,7 @@ class HwaTabState extends State<HwaTab> {
                                             fontFamily: 'NotoSans',
                                             color: Color(0xff272727),
                                             fontSize: ScreenUtil().setSp(20),
-                                            fontWeight: FontWeight.w600,
+                                            fontWeight: FontWeight.w700,
                                             fontStyle: FontStyle.normal,
                                             letterSpacing: ScreenUtil().setWidth(-1),
                                         )
@@ -759,10 +769,8 @@ class HwaTabState extends State<HwaTab> {
                                             fontFamily: "NotoSans",
                                             fontWeight: FontWeight.w400,
                                             fontSize: ScreenUtil(
-                                                allowFontScaling: true).setSp(
-                                                13),
-                                            color: Color.fromRGBO(
-                                                107, 107, 107, 1),
+                                                allowFontScaling: true).setSp(13),
+                                            color: Color.fromRGBO(107, 107, 107, 1),
                                             letterSpacing: ScreenUtil().setWidth(-0.33),
                                         ),
                                     ),
@@ -809,12 +817,12 @@ class HwaTabState extends State<HwaTab> {
             child: Flexible(
                 child: ListView.builder(
                   itemCount: chatList.length,
-                  itemBuilder: (BuildContext context, int index) => buildChatItem(chatList[index]))
+                  itemBuilder: (BuildContext context, int index) => buildChatItem(index, chatList[index]))
             )
         );
     }
 
-    Widget buildChatItem(ChatListItem chatListItem) {
+    Widget buildChatItem(int index, ChatListItem chatListItem) {
         return InkWell(
             child: Container(
                 height: ScreenUtil().setHeight(82),
@@ -825,146 +833,208 @@ class HwaTabState extends State<HwaTab> {
                     right:ScreenUtil().setHeight(16),
                 ),
                 decoration: BoxDecoration(
-                    color:Color.fromRGBO(250, 250, 250, 1),
+                    color:Color.fromRGBO(255, 255, 255, 1),
                     borderRadius: BorderRadius.all(
-                        Radius.circular(10.0)
+                        Radius.circular(
+                            sameSize*8
+                        )
                     ),
                     boxShadow: [
                          BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.1),
+                            color: Color.fromRGBO(39, 39, 39, 0.1),
                             offset: Offset(
                                 ScreenUtil().setWidth(0),
-                                ScreenUtil().setWidth(5)),
+                                ScreenUtil().setHeight(5)
+                            ),
                             blurRadius: ScreenUtil().setWidth(10)
                         )
                     ]
                 ),
-                child: Row(
+                child: Stack(
                     children: <Widget>[
-                        // 단화방 이미지
-                        Container(
-                            width: sameSize * 50,
-                            height: sameSize * 50,
-                            margin: EdgeInsets.only(
-                                left: ScreenUtil().setWidth(13.2),
-                            ),
-                            child: ClipRRect(
-                                borderRadius: new BorderRadius.circular(
-                                    ScreenUtil().setWidth(10)
-                                ),
-                                child:
-		                            chatListItem.roomImgIdx == null ? Image.asset('assets/images/icon/thumbnailUnset1.png') :
-		                            CachedNetworkImage(
-				                            imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
-				                            placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
-				                            errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
-				                            httpHeaders: Constant.HEADER, fit: BoxFit.fill
-		                            )
-	                            )
-                        ),
-                        // 단화방 정보
-                        Container(
-                            width: ScreenUtil().setWidth(260),
-                            child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                    /// 정보, 뱃지
-                                    Container(
-                                        height: ScreenUtil().setHeight(22),
-                                        margin: EdgeInsets.only(
-                                            left: ScreenUtil().setHeight(14.1),
-                                            top: ScreenUtil().setHeight(17),
-                                        ),
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment
-                                                .spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment
-                                                .end,
-                                            children: <Widget>[
-                                                Container(
-                                                    height:ScreenUtil().setHeight(23.5),
-                                                    constraints: BoxConstraints(
-                                                        maxWidth: ScreenUtil().setWidth(190)
-                                                    ),
-                                                    child: Align(
-                                                        alignment: Alignment.centerLeft,
-                                                        child: Text(
-                                                            chatListItem.title,
-                                                            style: TextStyle(
-                                                                height: 1,
-                                                                fontFamily: "NotoSans",
-                                                                fontWeight: FontWeight.w500,
-                                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
-                                                                color: Color.fromRGBO(39, 39, 39, 1),
-                                                                letterSpacing: ScreenUtil().setWidth(-0.8),
-                                                            ),
-                                                        ),
-                                                    )
+                        Row(
+                            children: <Widget>[
+                                // 단화방 이미지
+                                Container(
+                                    width: ScreenUtil().setWidth(77.5),
+                                    child: Align(
+                                        alignment: Alignment.center,
+                                        child: Container(
+                                            width: sameSize*50,
+                                            height: sameSize*50,
+                                            child: ClipRRect(
+                                                borderRadius: new BorderRadius.circular(
+                                                    ScreenUtil().setWidth(10)
                                                 ),
-                                                // TODO : 인기 정책 변경
-                                                (chatListItem.score ?? 0) > 10
-                                                    ? popularBadge()
-                                                    : Container()
-                                            ],
-                                        )
-                                    ),
+                                                child:
+                                                chatListItem.roomImgIdx == null
+                                                    ? Image.asset(
+                                                    (index % 2 == 0)
+                                                        ? 'assets/images/icon/thumbnailUnset1.png'
+                                                        : 'assets/images/icon/thumbnailUnset2.png',
 
-                                    /// 인원 수, 시간
-                                    Container(
-                                        width: ScreenUtil().setWidth(260),
-                                        margin: EdgeInsets.only(
-                                            left:ScreenUtil().setWidth(14),
-                                            top:ScreenUtil().setHeight(6.8),
+                                                    fit: BoxFit.cover
+                                                )
+                                                    : CachedNetworkImage(
+                                                    imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
+                                                    placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+                                                    errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+                                                    httpHeaders: Constant.HEADER,
+                                                    fit: BoxFit.cover
+                                                )
+
+                                            )
                                         ),
-                                        child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                                Container(
-                                                    child: Row(
-                                                        children: <Widget>[
-                                                            Text(
-                                                                chatListItem.userCount.total.toString(),
-                                                                style: TextStyle(
-                                                                    height: 1,
-                                                                    fontFamily: "NanumSquare",
-                                                                    fontWeight: FontWeight.w500,
-                                                                    fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                                    color: Color.fromRGBO(107,107,107, 1),
-                                                                    letterSpacing: ScreenUtil().setWidth(-0.33),
-                                                                ),
+                                    ),
+                                ),
+                                // 단화방 정보
+                                Container(
+                                    width: ScreenUtil().setWidth(233),
+                                    child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                            /// 정보, 뱃지
+                                            Container(
+                                                height: ScreenUtil().setHeight(23.5),
+                                                child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                                    children: <Widget>[
+                                                        Container(
+                                                            constraints: BoxConstraints(
+                                                                maxWidth: ScreenUtil().setWidth(190)
                                                             ),
-                                                            Text(
-                                                                '명',
+                                                            child: Align(
+                                                                alignment: Alignment.centerLeft,
+                                                                child: Text(
+                                                                    chatListItem.title.length > 15 ? chatListItem.title.substring(0, 15) + "..." : chatListItem.title,
+                                                                    style: TextStyle(
+                                                                        height: 1,
+                                                                        fontFamily: "NotoSans",
+                                                                        fontWeight: FontWeight.w500,
+                                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                                                        letterSpacing: ScreenUtil().setWidth(-0.8),
+                                                                    ),
+                                                                ),
+                                                            )
+                                                        ),
+                                                        // TODO : 인기 정책 변경
+                                                        (chatListItem.score ?? 0) > 10
+                                                            ? popularBadge()
+                                                            : Container()
+                                                    ],
+                                                )
+                                            ),
+
+                                            /// 인원 수, 시간
+                                            Container(
+                                                height: ScreenUtil().setHeight(19),
+                                                margin: EdgeInsets.only(
+                                                    top: ScreenUtil().setHeight(6),
+                                                ),
+                                                child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                    children: <Widget>[
+                                                        Container(
+                                                            child: Row(
+                                                                children: <Widget>[
+                                                                    Text(
+                                                                        chatListItem.userCount.total.toString(),
+                                                                        style: TextStyle(
+                                                                            height: 1,
+                                                                            fontFamily: "NanumSquare",
+                                                                            fontWeight: FontWeight.w500,
+                                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                                            color: Color.fromRGBO(107,107,107, 1),
+                                                                            letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                                        ),
+                                                                    ),
+                                                                    Text(
+                                                                        '명',
+                                                                        style: TextStyle(
+                                                                            height: 1,
+                                                                            fontFamily: "NotoSans",
+                                                                            fontWeight: FontWeight.w400,
+                                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                                            color: Color.fromRGBO(107,107,107, 1),
+                                                                            letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                                        ),
+                                                                    ),
+                                                                ],
+                                                            )
+                                                        ),
+                                                        Container(
+                                                            child: Text(
+                                                                chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : '메시지 없음',
                                                                 style: TextStyle(
                                                                     height: 1,
                                                                     fontFamily: "NotoSans",
                                                                     fontWeight: FontWeight.w400,
                                                                     fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                                    color: Color.fromRGBO(107,107,107, 1),
+                                                                    color: Color.fromRGBO(107, 107, 107, 1),
                                                                     letterSpacing: ScreenUtil().setWidth(-0.33),
                                                                 ),
                                                             ),
-                                                        ],
-                                                    )
-                                                ),
-                                                Container(
-                                                    child: Text(
-                                                        chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : '메시지 없음',
-                                                        style: TextStyle(
-                                                            height: 1,
-                                                            fontFamily: "NotoSans",
-                                                            fontWeight: FontWeight.w400,
-                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                            color: Color.fromRGBO(107, 107, 107, 1),
-                                                            letterSpacing: ScreenUtil().setWidth(-0.33),
                                                         ),
-                                                    ),
-                                                ),
-                                            ],
-                                        )
+                                                    ],
+                                                )
+                                            )
+                                        ],
+                                    ),
+                                )
+                            ],
+                        ),
+                        Positioned(
+                            top: 0,
+                            right: 0,
+                            child: Container(
+                                width: ScreenUtil().setWidth(59),
+                                height: ScreenUtil().setHeight(28),
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(248, 248, 248, 1),
+                                    borderRadius: BorderRadius.only(
+                                        topRight: Radius.circular(sameSize*8),
+                                        bottomLeft: Radius.circular(sameSize*8),
                                     )
-                                ],
-                            ),
+                                ),
+                                child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                        Container(
+                                            width: ScreenUtil().setWidth(11.7),
+                                            margin: EdgeInsets.only(
+                                                left: ScreenUtil().setWidth(9),
+                                            ),
+                                            decoration: BoxDecoration(
+                                                image: DecorationImage(
+                                                    image: AssetImage(
+                                                        chatListItem.isAlreadyJoin ? 'assets/images/icon/personIconColor.png' : 'assets/images/icon/personIconGrey.png'
+                                                    )
+                                                )
+                                            ),
+                                        ),
+                                        Container(
+                                            margin: EdgeInsets.only(
+                                                right: ScreenUtil().setWidth(8),
+                                            ),
+                                            child: Text(
+                                                '참여',
+                                                style: TextStyle(
+                                                    height: 1,
+                                                    fontFamily: "NotoSans",
+                                                    fontWeight: FontWeight.w700,
+                                                    fontSize: ScreenUtil().setSp(12),
+                                                    color: chatListItem.isAlreadyJoin ? Color.fromRGBO(78, 78, 78, 1) : Color.fromRGBO(78, 78, 78, 0.25)
+                                                ),
+                                            )
+                                        ),
+
+                                    ],
+                                ),
+                            )
                         )
                     ],
                 )
@@ -997,7 +1067,7 @@ class HwaTabState extends State<HwaTab> {
                     style: TextStyle(
                         height: 1,
                         fontFamily: "NotoSans",
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w700,
                         fontSize: ScreenUtil().setSp(13),
                         color: color
                     ),

@@ -94,7 +94,7 @@ flutter:
         - asset: assets/fonts/NotoSansKR-Medium.otf
           weight: 500
         - asset: assets/fonts/NotoSansKR-Bold.otf
-          weight: 600
+          weight: 700
         
     - family: NanumSquare
       fonts:
@@ -135,6 +135,7 @@ flutter:
     - assets/images/icon/iconActionMenuOpen.png
     - assets/images/icon/iconAddress.png
     - assets/images/icon/iconAttachCamera.png
+    - assets/images/icon/iconAttachCameraChat.png
     - assets/images/icon/iconAttachCard.png
     - assets/images/icon/iconAttachClose.png
     - assets/images/icon/iconAttachMore.png
@@ -177,6 +178,8 @@ flutter:
     - assets/images/icon/navIconMenu.png
     - assets/images/icon/navIconSearch.png
     - assets/images/icon/navIconWrite.png
+    - assets/images/icon/personIconColor.png
+    - assets/images/icon/personIconGrey.png
     - assets/images/icon/photoProfileDefault.png
     - assets/images/icon/profile.png
     - assets/images/icon/profileSeticonBasic.png
@@ -191,6 +194,7 @@ flutter:
     - assets/images/icon/bluetoothIconConnected.png
     - assets/images/icon/bluetoothIconUnconnected.png
     - assets/images/icon/thumbnailUnset1.png
+    - assets/images/icon/thumbnailUnset2.png
     - assets/images/icon/iconRefresh.png
     - assets/images/icon/gpsIconUnconnected.png
     - assets/images/icon/howmanyIcon.png

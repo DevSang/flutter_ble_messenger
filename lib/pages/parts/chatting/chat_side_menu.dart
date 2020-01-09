@@ -181,7 +181,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                 child: Column(
                     children: <Widget>[
                         Container(
-                            color: Color.fromRGBO(250, 250, 250, 1),
+                            color: Color.fromRGBO(250, 250, 251, 1),
                             height: ScreenUtil().setHeight(72),
                             padding: EdgeInsets.only(
                                 left: ScreenUtil().setWidth(20)
@@ -206,7 +206,7 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                                 style: TextStyle(
                                                                     height: 1,
                                                                     fontFamily: 'NotoSans',
-                                                                    fontWeight: FontWeight.w600,
+                                                                    fontWeight: FontWeight.w700,
                                                                     fontSize: ScreenUtil().setSp(16),
                                                                     letterSpacing: ScreenUtil().setWidth(-0.8),
                                                                     color: Color.fromRGBO(39, 39, 39, 1)
@@ -315,9 +315,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                                                 height: 1,
                                                                 fontFamily: 'NotoSans',
                                                                 fontWeight: FontWeight.w500,
+                                                                letterSpacing: ScreenUtil().setWidth(-0.33),
                                                                 color:Color.fromRGBO(107, 107, 107, 1),
                                                                 fontSize: ScreenUtil().setSp(12.5),
-                                                                letterSpacing: ScreenUtil().setWidth(-0.33)
                                                             ),
                                                         ),
                                                     ),
@@ -354,7 +354,13 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                               right: ScreenUtil().setWidth(14)
                             ),
                             decoration: BoxDecoration(
-                                color: Color.fromRGBO(240, 240, 240, 1),
+                                border: Border(
+                                    top: BorderSide(
+                                        width: ScreenUtil().setWidth(1),
+                                        color: Color.fromRGBO(39, 39, 39, 0.15)
+                                    )
+                                ),
+                                color: Color.fromRGBO(255, 255, 255, 1),
                             ),
                             child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:Hwa/data/models/chat_message.dart';
+import 'package:Hwa/utility/customRoute.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -137,7 +138,7 @@ class _ChatTabState extends State<ChatTab> {
                 isLoading = false;
             });
 
-            Navigator.push(context, MaterialPageRoute(builder: (context) {
+            Navigator.push(context, CustomRoute(builder: (context) {
                 return ChatroomPage(
                     chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "ChatTab", disable: (!alreadyJoined || myJoinType == "ONLINE")
                 );
@@ -158,7 +159,8 @@ class _ChatTabState extends State<ChatTab> {
     @override
     Widget build(BuildContext context) {
       return Scaffold(
-          body: setScreen()
+          body: setScreen(),
+          backgroundColor: chatList.length != 0 ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(250, 250, 250, 1)
       );
     }
 
@@ -210,7 +212,7 @@ class _ChatTabState extends State<ChatTab> {
                                                 fontFamily: 'NotoSans',
                                                 color: Color(0xff272727),
                                                 fontSize: ScreenUtil().setSp(20),
-                                                fontWeight: FontWeight.w600,
+                                                fontWeight: FontWeight.w700,
                                                 fontStyle: FontStyle.normal,
                                                 letterSpacing: ScreenUtil().setWidth(-1),
                                             )
@@ -296,7 +298,7 @@ class _ChatTabState extends State<ChatTab> {
                 child: ListView.builder(
                     itemCount: chatList.length,
                     itemBuilder: (BuildContext context, int index) =>
-                      buildChatItem(chatList[index], (index == chatList.length - 1))
+                      buildChatItem(index, chatList[index], (index == chatList.length - 1))
                 )
             )
         );
@@ -307,7 +309,7 @@ class _ChatTabState extends State<ChatTab> {
     * @date : 2020-01-01
     * @description : 채팅룸 위젯
     */
-    Widget buildChatItem(ChatListItem chatListItem, bool isLastItem) {
+    Widget buildChatItem(int index, ChatListItem chatListItem, bool isLastItem) {
         return InkWell(
             child: Container(
                 height: ScreenUtil().setHeight(82),
@@ -318,14 +320,12 @@ class _ChatTabState extends State<ChatTab> {
                     left: ScreenUtil().setWidth(16),
                     right: ScreenUtil().setWidth(16)
                 ),
-                padding: EdgeInsets.symmetric(
-                    horizontal: ScreenUtil().setWidth(14),
-                    vertical: ScreenUtil().setWidth(16),
-                ),
                 decoration: BoxDecoration(
-                  color: Color.fromRGBO(250, 250, 250, 1),
-                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                  boxShadow: [
+                    color:Color.fromRGBO(255, 255, 255, 1),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10.0)
+                    ),
+                    boxShadow: [
                     new BoxShadow(
                         color: Color.fromRGBO(39, 39, 39, 0.1),
                         offset: new Offset(
@@ -333,128 +333,138 @@ class _ChatTabState extends State<ChatTab> {
                             ScreenUtil().setHeight(5)
                         ),
                         blurRadius: ScreenUtil().setWidth(10))
-                  ]),
+                    ]),
                 child: Row(
                     children: <Widget>[
                         // 단화방 이미지
                         Container(
-                            width: sameSize * 50,
-                            height: sameSize * 50,
-                            margin: EdgeInsets.only(
-                                right: ScreenUtil().setWidth(15),
-                            ),
-                            child: ClipRRect(
-                                borderRadius:
-                                    new BorderRadius.circular(
-                                        ScreenUtil().setWidth(10)
-                                    ),
-                                child:
-//	                                Image.asset(
-//	                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-//	                                    width: sameSize * 50,
-//	                                    height: sameSize * 50,
-//	                                    fit: BoxFit.cover,
-//	                                ),
-		                            chatListItem.roomImgIdx == null ? Image.asset('assets/images/icon/thumbnailUnset1.png') :
-		                            CachedNetworkImage(
-				                            imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
-				                            placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
-				                            errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
-				                            httpHeaders: Constant.HEADER, fit: BoxFit.fill
-		                            )
-                            )
-                        ),
-                    // 단화방 정보
-                    Container(
-                        width: ScreenUtil().setWidth(250),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                                /// 정보, 뱃지
-                                Container(
-                                    height: ScreenUtil().setHeight(22),
-                                    margin: EdgeInsets.only(
-                                      top: ScreenUtil().setHeight(1),
-                                      bottom: ScreenUtil().setHeight(10),
-                                    ),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: <Widget>[
-                                        Container(
-                                          constraints: BoxConstraints(
-                                              maxWidth: ScreenUtil().setWidth(190)),
-                                          child: Text(
-                                            chatListItem.title.length > 13 ? chatListItem.title.substring(0, 13) + ".." : chatListItem.title,
-                                            style: TextStyle(
-                                              height: 1,
-                                              fontFamily: "NotoSans",
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
-                                              color: Color.fromRGBO(39, 39, 39, 1),
-                                              letterSpacing: ScreenUtil().setWidth(-0.8),
-                                            ),
-                                          ),
+                            width: ScreenUtil().setWidth(77.5),
+                            child: Align(
+                                alignment: Alignment.center,
+                                child: Container(
+                                    width: sameSize * 50,
+                                    height: sameSize * 50,
+                                    child: ClipRRect(
+                                        borderRadius:
+                                        new BorderRadius.circular(
+                                            ScreenUtil().setWidth(10)
                                         ),
-                                      ],
+                                        child:
+                                        //	                                Image.asset(
+                                        //	                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
+                                        //	                                    width: sameSize * 50,
+                                        //	                                    height: sameSize * 50,
+                                        //	                                    fit: BoxFit.cover,
+                                        //	                                ),
+                                        chatListItem.roomImgIdx == null ? Image.asset(
+                                            (index % 2 == 0)
+                                                ? 'assets/images/icon/thumbnailUnset1.png'
+                                                : 'assets/images/icon/thumbnailUnset2.png',
+
+                                            fit: BoxFit.cover
+                                        ) :
+                                        CachedNetworkImage(
+                                            imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
+                                            placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+                                            errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+                                            httpHeaders: Constant.HEADER, fit: BoxFit.fill
+                                        )
                                     )
                                 ),
-
-                                /// 인원 수, 시간
-                                Container(
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
+                            )
+                        ),
+                        // 단화방 정보
+                        Container(
+                            width: ScreenUtil().setWidth(247.5),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                    /// 정보, 뱃지
+                                    Container(
+                                        height: ScreenUtil().setHeight(23.5),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: <Widget>[
                                             Container(
-                                                child: Row(
-                                                    children: <Widget>[
-                                                        Text(
-                                                            chatListItem.userCount.total.toString(),
-                                                            style: TextStyle(
-                                                                height: 1,
-                                                                fontFamily: "NanumSquare",
-                                                                fontWeight: FontWeight.w500,
-                                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                                color: Color.fromRGBO(107, 107, 107,1),
-                                                                letterSpacing: ScreenUtil().setWidth(-0.33),
-                                                            ),
-                                                        ),
-                                                        Text(
-                                                          (AppLocalizations.of(context).tr('tabNavigation.chat.people')),
-                                                            style: TextStyle(
-                                                                height: 1,
-                                                                fontFamily: "NotoSans",
-                                                                fontWeight: FontWeight.w400,
-                                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                                color: Color.fromRGBO(107, 107, 107,1),
-                                                                letterSpacing: ScreenUtil().setWidth(-0.33),
-                                                            ),
-                                                        ),
-                                                    ],
-                                                )
+                                              constraints: BoxConstraints(
+                                                  maxWidth: ScreenUtil().setWidth(190)),
+                                              child: Align(
+                                                  alignment: Alignment.centerLeft,
+                                                  child: Text(
+                                                      chatListItem.title.length > 13 ? chatListItem.title.substring(0, 13) + ".." : chatListItem.title,
+                                                      style: TextStyle(
+                                                          height: 1,
+                                                          fontFamily: "NotoSans",
+                                                          fontWeight: FontWeight.w500,
+                                                          fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                          color: Color.fromRGBO(39, 39, 39, 1),
+                                                          letterSpacing: ScreenUtil().setWidth(-0.8),
+                                                      ),
+                                                  )
+                                              ),
                                             ),
-                                            Container(
-                                                margin: EdgeInsets.only(
-                                                    right: ScreenUtil().setWidth(5),
+                                          ],
+                                        )
+                                    ),
+
+                                    /// 인원 수, 시간
+                                    Container(
+                                        height: ScreenUtil().setHeight(19),
+                                        margin: EdgeInsets.only(
+                                            top: ScreenUtil().setHeight(6),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: <Widget>[
+                                                Container(
+                                                    child: Row(
+                                                        children: <Widget>[
+                                                            Text(
+                                                                chatListItem.userCount.total.toString(),
+                                                                style: TextStyle(
+                                                                    height: 1,
+                                                                    fontFamily: "NanumSquare",
+                                                                    fontWeight: FontWeight.w500,
+                                                                    fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                                    color: Color.fromRGBO(107, 107, 107,1),
+                                                                    letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                                ),
+                                                            ),
+                                                            Text(
+                                                              (AppLocalizations.of(context).tr('tabNavigation.chat.people')),
+                                                                style: TextStyle(
+                                                                    height: 1,
+                                                                    fontFamily: "NotoSans",
+                                                                    fontWeight: FontWeight.w400,
+                                                                    fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                                    color: Color.fromRGBO(107, 107, 107,1),
+                                                                    letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    )
                                                 ),
-                                                child: Text(
-	                                                chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : (AppLocalizations.of(context).tr('tabNavigation.chat.noMsg')),
-                                                    style: TextStyle(
-                                                        height: 1,
-                                                        fontFamily: "NotoSans",
-                                                        fontWeight: FontWeight.w400,
-                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
-                                                        color: Color.fromRGBO(107, 107, 107, 1),
-                                                        letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                Container(
+                                                    child: Text(
+                                                        chatListItem.lastMsg.chatTime != null ? GetTimeDifference.timeDifference(chatListItem.lastMsg.chatTime) : (AppLocalizations.of(context).tr('tabNavigation.chat.noMsg')),
+                                                        style: TextStyle(
+                                                            height: 1,
+                                                            fontFamily: "NotoSans",
+                                                            fontWeight: FontWeight.w400,
+                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                            color: Color.fromRGBO(107, 107, 107, 1),
+                                                            letterSpacing: ScreenUtil().setWidth(-0.33),
+                                                        ),
                                                     ),
                                                 ),
-                                            ),
-                                        ],
+                                            ],
+                                        )
                                     )
-                                )
-                            ],
-                        ),
-                    )
+                                ],
+                            ),
+                        )
                     ],
                 )
             ),
