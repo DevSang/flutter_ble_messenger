@@ -16,6 +16,7 @@ import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/data/state/friend_list_info_provider.dart';
 import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
+import 'package:Hwa/service/set_fcm.dart';
 
 // KV Store 전역 선언
 final kvStore = KvStore();
@@ -69,6 +70,7 @@ class HomePageState extends State<HomePage> {
 	    // 로그인된 사용자 처리
 	    if(Constant.isUserLogin){
 		    await initApiCall(context); // TODO 부하증가에 따라 API 호출 시간이 너무 길어질 경우 어떻게 할것인가?
+            SetFCM.firebaseCloudMessagingListeners();
 	    }
 
 	    // App 초기화 및 사용자 정보 셋팅 시간 측정, 1.5초 미만이면 1.5초를 채운 후 화면 이동

@@ -4,10 +4,8 @@ import 'dart:convert';
 import 'dart:collection';
 import 'dart:typed_data';
 import 'dart:developer' as developer;
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,7 +15,6 @@ import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-
 import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_message.dart';
@@ -27,7 +24,6 @@ import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/service/stomp_client.dart';
-
 import 'package:Hwa/pages/chatting/notice_page.dart';
 import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
@@ -459,8 +455,6 @@ class ChatScreenState extends State<ChatroomPage> {
 				    , contentsType: mimeStr
 				    , onSendProgress: (int sent, int total){
 
-			    developer.log("$sent : $total");
-
 			    for(var i=0; i<uploadingImageCount; i++) {
 			        if (fileType == "video") {
                         if (messageList[i].thumbnailFile == thumbNailFile) {
@@ -482,15 +476,13 @@ class ChatScreenState extends State<ChatroomPage> {
 
 				    break;
 			    }
-		    }, onError: (DioError e){
-			    // TODO 서버 에러일 경우 처리
+		    }, onError: (dynamic e){
+			    // TODO 서버 에러일 경우 처리, 파일 크기 30MB 넘었을 경우 "oversize" 찍힘
 			    developer.log("########### DioError");
 			    developer.log(e.toString());
-			    developer.log(e.message);
-			    developer.log(e.type.toString());
 		    });
 
-		    if(response.statusCode == 200){
+		    if(response != null && response.statusCode == 200){
 			    await precacheImage(
 					    CachedNetworkImageProvider(
 							    "https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", headers: Constant.HEADER
@@ -498,6 +490,8 @@ class ChatScreenState extends State<ChatroomPage> {
 
 			    // 썸네일 URI 전송
 			    onSendMessage("https://api.hwaya.net/api/v2/chat/share/file?file_idx=" + response.data["data"].toString() + "&type=SMALL", fileType.toUpperCase());
+		    } else {
+		        // TODO 에러 처리
 		    }
 	    }
     }
