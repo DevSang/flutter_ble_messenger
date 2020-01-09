@@ -1,24 +1,17 @@
-import 'dart:convert';
 import 'dart:developer' as developer;
-
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
-import 'package:Hwa/pages/tab/chat_tab.dart';
-import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:configurable_expansion_tile/configurable_expansion_tile.dart';
-
-import 'package:Hwa/data/models/chat_user_info.dart';
-
 import 'package:Hwa/pages/parts/chatting/chat_user_list.dart';
 import 'package:Hwa/pages/chatting/chatroom_setting.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -73,7 +66,6 @@ class ChatSideMenuState extends State<ChatSideMenu> {
     void _getChatJoinInfo() {
         if (chatJoinInfoList != null && chatJoinInfoList.length > 0) {
             for(var chatJoinInfo in chatJoinInfoList) {
-
                 switch(chatJoinInfo.joinType) {
                     case "BLE_JOIN": userInfoListBle.add(chatJoinInfo);
                         break;
@@ -87,9 +79,6 @@ class ChatSideMenuState extends State<ChatSideMenu> {
 
         if (joinedUserNow.length > 0) {
             for(var chatJoinInfo in joinedUserNow) {
-                developer.log("#side menu###" + chatJoinInfo.toString());
-                developer.log("#side menu###" + chatJoinInfo.userNick);
-
                 switch(chatJoinInfo.joinType) {
                     case "BLE_JOIN": userInfoListBle.add(chatJoinInfo);
                     break;
@@ -120,8 +109,6 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             String uri = "/danhwa/like?roomIdx=" + chatInfo.chatIdx.toString();
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
-            developer.log(response.body);
-
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
         }
@@ -141,8 +128,6 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             /// 참여 타입 수정
             String uri = "/danhwa/likeCancel?roomIdx=" + chatInfo.chatIdx.toString();
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
-
-            developer.log(response.body);
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
