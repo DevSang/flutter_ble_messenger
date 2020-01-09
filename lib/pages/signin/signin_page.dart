@@ -332,7 +332,8 @@ class _SignInPageState extends State<SignInPage> {
 	                onTap: (){
 	                    FocusScope.of(context).requestFocus(new FocusNode());
 	                },
-	                child: new Container(
+	                child: new SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
 	                    child: _isLoading
 	                        ? Center(child: CircularProgressIndicator())
 	                        : Column(
