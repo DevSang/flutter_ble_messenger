@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
@@ -595,7 +596,6 @@ class ChatMessageListState extends State<ChatMessageList> {
                     InkWell(
                         child: Container(
                             width: ScreenUtil().setWidth(230),
-                            height: ScreenUtil().setWidth(230),
                             child: Stack(
                                 children: <Widget>[
                                     ClipRRect(
@@ -606,7 +606,6 @@ class ChatMessageListState extends State<ChatMessageList> {
                                             placeholder: (context, url) =>
                                                 Container(
                                                     width: ScreenUtil().setWidth(230),
-                                                    height: ScreenUtil().setWidth(230),
                                                     color: Colors.transparent,
                                                     child: Center(
                                                         child: Container(
@@ -655,6 +654,13 @@ class ChatMessageListState extends State<ChatMessageList> {
 
     // 업로드 중 썸네일 스타일
     Widget uploadingImageBubble(ChatMessage chatMessage, bool isLastSendMessage) {
+        bool isFile;
+        if (chatMessage.thumbnailFile.runtimeType.toString() == '_File') {
+            isFile = true;
+        } else {
+            isFile = false;
+        }
+
         return Container(
             margin: EdgeInsets.only(
                 bottom: ScreenUtil.getInstance().setHeight(14)
@@ -672,13 +678,21 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 ClipRRect(
                                     borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(10)),
                                     child:
-                                    Image.file(
-                                        chatMessage.thumbnailFile,
-                                        gaplessPlayback: true,
-                                        fit: BoxFit.cover,
-                                        width: ScreenUtil().setWidth(230),
-                                        height: ScreenUtil().setWidth(230),
-                                    )
+                                    isFile
+                                        ? Image.file(
+                                            chatMessage.thumbnailFile,
+                                            gaplessPlayback: true,
+                                            fit: BoxFit.cover,
+                                            width: ScreenUtil().setWidth(230),
+                                            height: ScreenUtil().setWidth(230),
+                                        )
+                                        : Image.memory(
+                                            chatMessage.thumbnailFile,
+                                            gaplessPlayback: true,
+                                            fit: BoxFit.cover,
+                                            width: ScreenUtil().setWidth(230),
+                                            height: ScreenUtil().setWidth(230),
+                                        )
                                 ),
                                 Positioned.fill(
                                     child: Align(

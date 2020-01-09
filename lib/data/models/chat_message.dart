@@ -16,7 +16,7 @@ class ChatMessage {
     // Thumbnail Message 관련 변수
     final GaugeDriver gaugeDriver;		// 업로드 Percentage 표현
     bool uploaded;		                // 업로드 완료 여부
-    final File thumbnailFile;           // Placeholder Image Source (Thumbnail)
+    final dynamic thumbnailFile;           // Placeholder Image Source (Thumbnail)
     YoutubePlayer youtubePlayer;        // youtube video
 
     ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickName, this.message, this.userCountObj, this.chatTime, this.gaugeDriver, this.uploaded, this.thumbnailFile});

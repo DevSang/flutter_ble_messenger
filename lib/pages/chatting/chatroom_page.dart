@@ -381,7 +381,7 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2020-01-07
      * @description : Image 업로드 전 Thumbnail 말풍선에 맵핑
     */
-    void thumbnailMessage(File imgFile, GaugeDriver gaugeDriver) {
+    void thumbnailMessage(dynamic imgFile, GaugeDriver gaugeDriver) {
         ChatMessage cmb = ChatMessage(
             chatType: "UPLOADING_IMG",
             roomIdx: chatInfo.chatIdx,
@@ -405,7 +405,7 @@ class ChatScreenState extends State<ChatroomPage> {
 	 */
     Future<void> uploadContents(int type) async {
 	    File contentsFile;
-	    File thumbNailFile;
+	    dynamic thumbNailFile;
 
 	    switch(type) {
 	        case 0: contentsFile = await ImagePicker.pickImage(source: ImageSource.gallery);
@@ -441,12 +441,14 @@ class ChatScreenState extends State<ChatroomPage> {
                     quality: 50,
                 );
 
-                thumbNailFile = File.fromRawPath(imageThumbnailString);
+                thumbNailFile = imageThumbnailString;
+                thumbnailMessage(imageThumbnailString, gaugeDriver);
+//                thumbNailFile = File.fromRawPath(imageThumbnailString);
             } else {
                 thumbNailFile = contentsFile;
+                thumbnailMessage(thumbNailFile, gaugeDriver);
             }
 
-            thumbnailMessage(thumbNailFile, gaugeDriver);
             uploadingImageCount ++;
 
 		    // 파일 업로드 API 호출
@@ -460,13 +462,23 @@ class ChatScreenState extends State<ChatroomPage> {
 			    developer.log("$sent : $total");
 
 			    for(var i=0; i<uploadingImageCount; i++) {
-				    if (messageList[i].thumbnailFile.path == thumbNailFile.path) {
-					    messageList[i].gaugeDriver.drive(sent/total);
+			        if (fileType == "video") {
+                        if (messageList[i].thumbnailFile == thumbNailFile) {
+                            messageList[i].gaugeDriver.drive(sent/total);
 
-					    if(sent == total) {
-						    messageList[i].uploaded = true;
-					    }
-				    }
+                            if(sent == total) {
+                                messageList[i].uploaded = true;
+                            }
+                        }
+                    } else {
+                        if (messageList[i].thumbnailFile.path == thumbNailFile.path) {
+                            messageList[i].gaugeDriver.drive(sent/total);
+
+                            if(sent == total) {
+                                messageList[i].uploaded = true;
+                            }
+                        }
+                    }
 
 				    break;
 			    }
