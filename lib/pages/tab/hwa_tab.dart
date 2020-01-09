@@ -478,7 +478,6 @@ class HwaTabState extends State<HwaTab> {
         }
     }
 
-
     /*
      * @author : hs
      * @date : 2019-12-28
@@ -859,12 +858,6 @@ class HwaTabState extends State<HwaTab> {
                                     ScreenUtil().setWidth(10)
                                 ),
                                 child:
-//	                                Image.asset(
-//	                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-//	                                    width: sameSize * 50,
-//	                                    height: sameSize * 50,
-//	                                    fit: BoxFit.cover,
-//	                                ),
 		                            chatListItem.roomImgIdx == null ? Image.asset('assets/images/icon/thumbnailUnset1.png') :
 		                            CachedNetworkImage(
 				                            imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
@@ -983,21 +976,6 @@ class HwaTabState extends State<HwaTab> {
             ),
             onTap: () => _joinChat(chatListItem.chatIdx),
         );
-    }
-
-    _getAddressFromLatLng() async {
-        try {
-            List<Placemark> p = await geolocator.placemarkFromCoordinates(
-                _currentPosition.latitude, _currentPosition.longitude);
-
-            Placemark place = p[0];
-
-            setState(() {
-                _currentAddress = "${place.locality}, ${place.postalCode}";
-            });
-        } catch (e) {
-            developer.log(e);
-        }
     }
 
     Widget popularBadge() {
