@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:Hwa/constant.dart';
+import 'package:dio/dio.dart';
+import 'package:Hwa/utility/red_toast.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:developer' as developer;
 
 
 class FullPhoto extends StatelessWidget {
@@ -35,9 +40,21 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
     void initState() {
 
     	if(header == null) header = Constant.HEADER;
-
+      downloadFile();
 	    super.initState();
     }
+
+   downloadFile() async {
+      Dio dio = Dio();
+      try {
+          var dir = await getApplicationDocumentsDirectory();
+          await dio.download(url, "${dir.path}/danhwa.jpg");
+          RedToast.toast("이미지를 저장했습니다", ToastGravity.TOP);
+          developer.log("이미지를 저장했습니다.");
+      } catch (e) {
+          developer.log(e);
+      }
+  }
 
     @override
     Widget build(BuildContext context) {

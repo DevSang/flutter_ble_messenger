@@ -421,7 +421,7 @@ class _ProfilePageState extends State <ProfilePage>{
                   buildTextInfoItem((AppLocalizations.of(context).tr('profile.leave')), "", true),
 
                 InkWell(
-                    child: policyBtn((AppLocalizations.of(context).tr('profile.opensource')), "", false),
+                    child: policyBtn((AppLocalizations.of(context).tr('profile.opensource')), false),
                     onTap:() {
                       Navigator.pushNamed(context, "/opensource");
                     }
@@ -601,7 +601,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 border: Border(
                     bottom: BorderSide(
                         width: ScreenUtil().setWidth(1),
-                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                        color: Color.fromRGBO(39, 39, 39, 0.15)
                     )
                 )
             ),
@@ -635,7 +635,7 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget policyBtn(String tr, String title, bool issLast) {
+    Widget policyBtn(String tr, bool isLast) {
       return Container(
           height: ScreenUtil().setHeight(49),
           margin: EdgeInsets.only(
@@ -648,7 +648,7 @@ class _ProfilePageState extends State <ProfilePage>{
               border: Border(
                   bottom: BorderSide(
                       width: ScreenUtil().setWidth(1),
-                      color: issLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
+                      color: Color.fromRGBO(39, 39, 39, 0.15)
                   )
               )
           ),
