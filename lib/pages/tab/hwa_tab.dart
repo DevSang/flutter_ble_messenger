@@ -1,33 +1,28 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'dart:io' show Platform;
 import 'dart:developer' as developer;
 import 'dart:ui';
-
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:geolocator/geolocator.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
-
 import 'package:Hwa/pages/chatting/chatroom_page.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
-
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+
 
 /*
  * @project : HWA - Mobile
