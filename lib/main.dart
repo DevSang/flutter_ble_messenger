@@ -23,6 +23,8 @@ import 'package:Hwa/data/state/friend_count.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 import 'package:Hwa/data/state/friend_list_info_provider.dart';
+import 'package:Hwa/data/models/friend_request_info.dart';
+import 'package:Hwa/data/models/friend_info.dart';
 //import 'package:kakao_flutter_sdk/auth.dart';
 
 Future main() async {
@@ -57,8 +59,8 @@ class HereWeAreApp extends StatelessWidget {
             providers: [
 	            ChangeNotifierProvider(create: (_) => FriendCount()),
 	            ChangeNotifierProvider(create: (_) => UserInfoProvider()),
-	            ChangeNotifierProvider(create: (_) => FriendListInfoProvider()),
-	            ChangeNotifierProvider(create: (_) => FriendRequestListInfoProvider())
+	            ChangeNotifierProvider(create: (_) => FriendListInfoProvider(friendList: List<FriendInfo>())),
+	            ChangeNotifierProvider(create: (_) => FriendRequestListInfoProvider(friendRequestList: List<FriendRequestInfo>()))
             ],
             child: EasyLocalizationProvider(
 			     	data: data,
@@ -80,8 +82,8 @@ class HereWeAreApp extends StatelessWidget {
 			            '/notice': (context) => NoticePage(),
 			            '/notice_write': (context) => NoticeWritePage(),
 			            '/notice_detail': (context) => NoticeDetailPage(),
-									'/opensource': (context) => OpenSourcePage(),
-									'/service_policy': (context) => ServicePolicyPage()
+						'/opensource': (context) => OpenSourcePage(),
+						'/service_policy': (context) => ServicePolicyPage()
 		            },
 		            localizationsDelegates: [
 		                GlobalMaterialLocalizations.delegate,
