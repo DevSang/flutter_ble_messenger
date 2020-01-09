@@ -7,33 +7,26 @@ import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:Hwa/utility/action_sheet.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
 import 'dart:developer' as developer;
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/service/stomp_client.dart';
 import 'package:Hwa/utility/call_api.dart';
-
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/chat_info.dart';
-
 import 'package:Hwa/pages/chatting/notice_page.dart';
 import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
-
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
-
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 

@@ -1,18 +1,12 @@
-//pub module
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'dart:developer' as developer;
-
-//import module
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/package/fullPhoto.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/constant.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 
 /*
@@ -93,11 +87,8 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
                                                         width: ScreenUtil().setWidth(40),
                                                         height: ScreenUtil().setWidth(40),
                                                         placeholder: AssetImage("assets/images/icon/profile.png"),
-                                                        image: NetworkImage(
-                                                            Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=SMALL"
-                                                            , scale: 1
-                                                            , headers: Constant.HEADER
-                                                        ),
+                                                        image: userInfo.profilePictureIdx == null ? AssetImage("assets/images/icon/profile.png") :
+                                                                CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=SMALL", headers: Constant.HEADER),
                                                         fit: BoxFit.cover,
                                                         fadeInDuration: Duration(milliseconds: 1)
                                                     )
