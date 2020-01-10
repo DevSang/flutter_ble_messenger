@@ -67,10 +67,10 @@ class HomePageState extends State<HomePage> {
 	    // 사용자 로그인 여부 판별 및 사용자 정보 셋팅
         await userInfoProvider.getUserInfoFromSPF();
 
+
 	    // 로그인된 사용자 처리
 	    if(Constant.isUserLogin){
 		    await initApiCall(context); // TODO 부하증가에 따라 API 호출 시간이 너무 길어질 경우 어떻게 할것인가?
-            SetFCM.firebaseCloudMessagingListeners();
 	    }
 
 	    // App 초기화 및 사용자 정보 셋팅 시간 측정, 1.5초 미만이면 1.5초를 채운 후 화면 이동

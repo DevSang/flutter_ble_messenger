@@ -133,7 +133,6 @@ class _SignUpPageState extends State<SignUpPage>{
 
                             await userInfoProvider.getUserInfoFromSPF();
                             await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo']);
-                            SetFCM.firebaseCloudMessagingListeners();
                             HomePageState.initApiCall(context);
 
                             developer.log('# [Navigator] SignUpPage -> MainPage');

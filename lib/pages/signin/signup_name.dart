@@ -14,7 +14,6 @@ import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/home.dart';
-import 'package:Hwa/service/set_fcm.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 
@@ -114,7 +113,6 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
 
             await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['data']['userInfo']);
             await userInfoProvider.getUserInfoFromSPF();
-            SetFCM.firebaseCloudMessagingListeners();
             HomePageState.initApiCall(context);
 
             RedToast.toast((AppLocalizations.of(context).tr('sign.signUpName.toast.start')), ToastGravity.TOP);

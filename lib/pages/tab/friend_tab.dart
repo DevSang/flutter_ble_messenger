@@ -37,10 +37,10 @@ class User {
 
 class FriendTab extends StatefulWidget {
     @override
-    _FriendTabState createState() => _FriendTabState();
+    FriendTabState createState() => FriendTabState();
 }
 
-class _FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
+class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     final store = KvStore();
 
 //    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];

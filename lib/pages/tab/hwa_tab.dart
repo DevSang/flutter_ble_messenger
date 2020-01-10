@@ -23,6 +23,7 @@ import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Hwa/service/set_fcm.dart';
 
 
 /*
@@ -39,6 +40,7 @@ class HwaTab extends StatefulWidget {
 }
 
 class HwaTabState extends State<HwaTab> {
+
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];
@@ -97,6 +99,10 @@ class HwaTabState extends State<HwaTab> {
         checkGpsBleAndStartService();
     }
 
+    void didChangeDependencies(){
+        SetFCM.firebaseCloudMessagingListeners(context);
+    }
+
     @override
     void dispose() {
 	    super.dispose();
@@ -104,7 +110,6 @@ class HwaTabState extends State<HwaTab> {
 	    if(Platform.isAndroid){
 		    HwaBeacon().stopRanging();
 	    }
-
 	    // 모든 타이머 정지
 	    stopAllTimer();
     }
