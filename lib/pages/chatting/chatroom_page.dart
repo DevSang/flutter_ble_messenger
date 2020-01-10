@@ -884,7 +884,7 @@ class ChatScreenState extends State<ChatroomPage> {
                 color: Colors.white
             ),
             child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                     isFocused || disable ? chatIconClose() : chatIconOpen(),
                     // Edit text
@@ -892,7 +892,7 @@ class ChatScreenState extends State<ChatroomPage> {
                         width: disable
                                 ? ScreenUtil().setWidth(359)
                                 : isFocused
-                                    ? ScreenUtil().setWidth(343)
+                                    ? ScreenUtil().setWidth(317)
                                     : ScreenUtil().setWidth(230),
                         margin: EdgeInsets.only(
                             top: sameSize*6,
@@ -1028,17 +1028,18 @@ class ChatScreenState extends State<ChatroomPage> {
             child:
             GestureDetector(
                 child: Container(
-                    padding: EdgeInsets.only(
-                        left: sameSize*4,
-                        right: sameSize*4,
-                        bottom: sameSize*16,
+                    margin: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(8),
+                        right: ScreenUtil().setWidth(12),
                     ),
-                    width: sameSize*26,
-                    height: sameSize*48,
+                    width: ScreenUtil().setWidth(32),
+                    height: ScreenUtil().setWidth(32),
                     decoration: BoxDecoration(
+                        color: Color.fromRGBO(234, 234, 234, 1),
                         image: DecorationImage(
-                            image:AssetImage('assets/images/icon/iconAttachFold.png')
+                            image:AssetImage('assets/images/icon/more.png')
                         ),
+                        shape: BoxShape.circle
                     )
                 ),
                 onTap:(){
@@ -1059,7 +1060,6 @@ class ChatScreenState extends State<ChatroomPage> {
                         margin: EdgeInsets.only(
                             left: ScreenUtil().setWidth(8),
                             right: ScreenUtil().setWidth(12),
-                            bottom: ScreenUtil().setWidth(8),
                         ),
                         child:
                         GestureDetector(
@@ -1067,12 +1067,18 @@ class ChatScreenState extends State<ChatroomPage> {
                                 margin: EdgeInsets.only(right: ScreenUtil().setWidth(0)),
                                 width: ScreenUtil().setWidth(32),
                                 height: ScreenUtil().setWidth(32),
-                                decoration: setIcon(
-                                    /// 하단 메뉴 서비스 추가 시 코드 교체
-//                                    isShowMenu
-//                                        ? 'assets/images/icon/iconAttachClose.png'
-//                                        : 'assets/images/icon/iconAttachMore.png'
-                                    'assets/images/icon/iconAttachCard.png'
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(234, 234, 234, 1),
+                                    image: DecorationImage(
+                                        image: AssetImage(
+                                            /// 하단 메뉴 서비스 추가 시 코드 교체
+    //                                    isShowMenu
+    //                                        ? 'assets/images/icon/iconAttachClose.png'
+    //                                        : 'assets/images/icon/iconAttachMore.png'
+                                                'assets/images/icon/iconAttachCard.png'
+                                        )
+                                    ),
+                                shape: BoxShape.circle
                                 )
                             ),
                             onTap:(){
@@ -1087,14 +1093,19 @@ class ChatScreenState extends State<ChatroomPage> {
                     Container(
                         margin: EdgeInsets.only(
                             right: ScreenUtil().setWidth(12),
-                            bottom: ScreenUtil().setWidth(8),
                         ),
                         child:
                         GestureDetector(
                             child: Container(
                                 width: ScreenUtil().setWidth(32),
                                 height: ScreenUtil().setWidth(32),
-                                decoration: setIcon('assets/images/icon/iconAttachCameraChat.png')
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(234, 234, 234, 1),
+                                    image: DecorationImage(
+                                        image:AssetImage('assets/images/icon/iconAttachCameraChat.png')
+                                    ),
+                                    shape: BoxShape.circle
+                                )
                             ),
                             onTap:(){
                                 ActionSheetState().showActionSheet(
@@ -1107,14 +1118,19 @@ class ChatScreenState extends State<ChatroomPage> {
                     Container(
                         margin: EdgeInsets.only(
                             right: ScreenUtil().setWidth(11),
-                            bottom: ScreenUtil().setWidth(8),
                         ),
                         child:
                         GestureDetector(
                             child: Container(
                                 width: ScreenUtil().setWidth(32),
                                 height: ScreenUtil().setWidth(32),
-                                decoration: setIcon('assets/images/icon/iconAttachPhoto.png')
+                                decoration: BoxDecoration(
+                                    color: Color.fromRGBO(234, 234, 234, 1),
+                                    image: DecorationImage(
+                                        image:AssetImage('assets/images/icon/iconAttachPhoto.png')
+                                    ),
+                                    shape: BoxShape.circle
+                                )
                             ),
                             onTap:(){
                                 ActionSheetState().showActionSheet(
