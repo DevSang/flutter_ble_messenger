@@ -327,7 +327,8 @@ class ChatScreenState extends State<ChatroomPage> {
             senderIdx: message.senderIdx,
             nickName: message.nickName,
             message: message.message,
-            chatTime: message.chatTime
+            chatTime: message.chatTime,
+	        msgIdx: message.msgIdx
         );
 
         // youtube 체크
