@@ -694,10 +694,9 @@ class HwaTabState extends State<HwaTab> {
                                     child: Text(subTitle,
                                         style: TextStyle(
                                             fontFamily: 'NotoSans',
-                                            color: Color(0xff6b6b6b),
+                                            color: Color.fromRGBO(39, 39, 39, 1),
                                             fontSize: ScreenUtil().setSp(20),
                                             fontWeight: FontWeight.w400,
-                                            fontStyle: FontStyle.normal,
                                             letterSpacing: ScreenUtil().setWidth(-1),
                                         )
                                     )
