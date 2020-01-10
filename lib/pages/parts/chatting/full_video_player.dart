@@ -33,7 +33,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 
     VideoPlayerController _controller;
     bool startedPlaying = false;
-    Future<void> _initializeVideoPlayerFuture;
+    Future<bool> _initializeVideoPlayerFuture;
 
     @override
     void initState() {
@@ -116,15 +116,15 @@ class VideoPlayerState extends State<FullVideoPlayer> {
                     _controller = VideoPlayerController.file(file);
                 });
 
-                print("##############");
-                print(file.path);
-                print("##############");
-
             }
         }
+    }
 
-        _initializeVideoPlayerFuture = _controller.initialize();
-        _controller.play();
+    Future<bool> started() async {
+        await _controller.initialize();
+        await _controller.play();
+        startedPlaying = true;
+        return true;
     }
 
     @override
@@ -137,11 +137,18 @@ class VideoPlayerState extends State<FullVideoPlayer> {
                             children: <Widget>[
                                 // 영상 영역
                                 Center(
-                                    child: videoSection()
+                                    child:
+                                    _controller != null
+                                        ? videoSection()
+                                        : CircularProgressIndicator(
+                                            valueColor: AlwaysStoppedAnimation<Color>(
+                                                Color.fromRGBO(250, 250, 250, 0.7),
+                                            )
+                                        )
                                 ),
 
                                 // 컨트롤러 영역
-                                controllerSection()
+                                _controller != null ? controllerSection() : Container()
                             ],
                         ),
                     );
@@ -152,16 +159,17 @@ class VideoPlayerState extends State<FullVideoPlayer> {
     }
 
     Widget videoSection() {
-        return FutureBuilder(
-            future: _initializeVideoPlayerFuture,
-            builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
+        return FutureBuilder<bool>(
+            future: started(),
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                print(snapshot);
+                if (snapshot.data == true) {
                     return AspectRatio(
                         aspectRatio: _controller.value.aspectRatio,
                         child: VideoPlayer(_controller)
                     );
                 } else {
-                    return CircularProgressIndicator(
+                    return const CircularProgressIndicator(
                         valueColor: AlwaysStoppedAnimation<Color>(
                             Color.fromRGBO(76, 96, 191, 0.7),
                         )
@@ -174,11 +182,13 @@ class VideoPlayerState extends State<FullVideoPlayer> {
     Widget controllerSection() {
         return Positioned(
             bottom: ScreenUtil().setHeight(40),
+            right: 0,
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                     InkWell(
                         onTap: () {
+                            print(_controller.value);
                             // Wrap the play or pause in a call to `setState`. This ensures the
                             // correct icon is shown.
                             setState(() {
@@ -204,9 +214,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
                                 shape: BoxShape.circle
                             ),
                             child: Icon(
-                                _controller == null
-                                    ? Icons.play_arrow
-                                    : _controller.value.isPlaying
+                                _controller.value.isPlaying
                                     ? Icons.pause
                                     : Icons.play_arrow,
                                 color: Colors.white,
