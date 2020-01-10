@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/trend/trend_page.dart';
-import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
-
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 
@@ -40,16 +35,14 @@ class _BottomNavigationState extends State<BottomNavigation>{
 	UserInfoProvider userInfoProvider;
 	final List<Widget> list = <Widget>[];
     int _currentIndex;
+
     // 화면 비율에 따른 1:1 요소 사이즈 셋팅
     double sameSize;
-
-    StatefulWidget profileImg;
 
     String appBarTitle = "";
 
     @override
     void initState() {
-		userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
 		_currentIndex = widget.activeIndex ?? 0;
 
         list
@@ -58,13 +51,6 @@ class _BottomNavigationState extends State<BottomNavigation>{
             ..add(new ChatTab( setCurrentIndex:setCurrentIndex));
 
         sameSize  = GetSameSize().main();
-
-        profileImg = CachedNetworkImage(
-		        imageUrl: userInfoProvider.profileURL,
-		        placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
-		        errorWidget: (context, url, error) => getErrorWidget(),
-		        httpHeaders: Constant.HEADER
-        );
 
         super.initState();
     }
@@ -82,16 +68,6 @@ class _BottomNavigationState extends State<BottomNavigation>{
 
     displayDialog(){
 		hwaTabStateKey.currentState.displayDialog();
-    }
-
-    /*
-     * @author : hk
-     * @date : 2020-01-02
-     * @description : 사용자 이미지 캐시 실패시 다음부터 기본 Asset 이미지 제공
-     */
-    getErrorWidget(){
-	    Constant.APP_BAR_LOADING_ERROR = true;
-	    return Image.asset('assets/images/icon/profile.png');
     }
 
     /*
@@ -188,10 +164,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 												        ),
 												        child: ClipRRect(
 														        borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
-														        child: profileImg
-//	                                  child: proFileImgUri == null
-//	                                      ? Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
-//	                                      : Image.network(proFileImgUri, scale: 1.0, headers: header)
+														        child: Provider.of<UserInfoProvider>(context).getUserProfileImg()
 												        ),
 											        ),
 										        ),

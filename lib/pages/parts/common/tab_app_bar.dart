@@ -52,69 +52,7 @@ class TabAppBarState extends State<TabAppBar> {
     void initState() {
         userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
 
-//	    setUserInfo();
-	    _initState();
         super.initState();
-    }
-
-    /*
-     * @author : hk
-     * @date : 2020-01-02
-     * @description : 상단 탭바가 페이지 이동시마다 리로딩되어 임시 조치, TODO
-     */
-    void _initState() async {
-	    if(Constant.APP_BAR_LOADING_COMPLETE == false){
-		    getCacheImg();
-		    Constant.APP_BAR_LOADING_COMPLETE = true;
-	    }else{
-		    if(Constant.APP_BAR_LOADING_ERROR == true){
-			    profileImg = Image.asset('assets/images/icon/profile.png');
-		    }else{
-			    getCacheImg();
-		    }
-	    }
-    }
-
-    /*
-     * @author : hk
-     * @date : 2020-01-02
-     * @description : 사용자 프로필 이미지 캐시로 가져오기
-     */
-    getCacheImg(){
-	    profileImg = CachedNetworkImage(
-            imageUrl: userInfoProvider.profileURL,
-            placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
-            errorWidget: (context, url, error) => getErrorWidget(),
-            httpHeaders: Constant.HEADER
-	    );
-    }
-
-    /*
-     * @author : hk
-     * @date : 2020-01-02
-     * @description : 사용자 이미지 캐시 실패시 다음부터 기본 Asset 이미지 제공
-     */
-    getErrorWidget(){
-    	Constant.APP_BAR_LOADING_ERROR = true;
-    	return Image.asset('assets/images/icon/profile.png');
-    }
-
-    /*
-     * @author : hk
-     * @date : 2020-01-02
-     * @description : 프로필 이미지 변경 됐을 경우 캐시 지우고 새로 로딩
-     */
-    void expireProfileImgCache() async {
-	    if(Constant.IS_CHANGE_PROFILE_IMG && Constant.APP_BAR_LOADING_ERROR == false){
-		    await DefaultCacheManager().removeFile(userInfoProvider.profileURL);
-
-		    profileImg = CachedNetworkImage(
-			    imageUrl: userInfoProvider.profileURL,
-			    placeholder: (context, url) => Image.asset('assets/images/icon/profile.png'),
-			    errorWidget: (context, url, error) => getErrorWidget(),
-			    httpHeaders: Constant.HEADER
-		    );
-	    }
     }
 
     /*
@@ -266,9 +204,7 @@ class TabAppBarState extends State<TabAppBar> {
                                             MaterialPageRoute(builder: (context) {
                                                 return ProfilePage();
                                             })
-                                        ).then((val) => {
-	                                        expireProfileImgCache()
-                                        });
+                                        );
                                     },
                                 )
                             ),

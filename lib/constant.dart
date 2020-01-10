@@ -24,13 +24,8 @@ class Constant {
 
     static Map<String, String> HEADER;
 
-//    static String PROFILE_IMG_URI="";
-
-    // 프로필 이미지 및 App bar 상태 관련, TODO 리팩터링 예정
-    static bool IS_PROFILE_IMG = false;
-    static bool IS_CHANGE_PROFILE_IMG = false;
-    static bool APP_BAR_LOADING_COMPLETE = false;
-    static bool APP_BAR_LOADING_ERROR = false;
+    // file upload max size (byte)
+	static int MAX_FILE_SIZE = 31457280;
 
     // SPF
     static SharedPreferences spf;

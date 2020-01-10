@@ -50,9 +50,9 @@
         }
     },
     "tapMenuTitle": {
-        "hwa": "DanhwaRoom",
-        "friend": "Danhwa Friend",
-        "chat": "Danhwa ChatList"
+        "hwa": "HWA",
+        "friend": "Friend",
+        "chat": "Chat"
     },
 
     "tabNavigation": {
