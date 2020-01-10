@@ -175,7 +175,6 @@ class VideoPlayerState extends State<FullVideoPlayer> {
         return FutureBuilder<bool>(
             future: initVideoPlayer(),
             builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                print(snapshot);
                 if (snapshot.data == true) {
                     return AspectRatio(
                         aspectRatio: _controller.value.aspectRatio,
