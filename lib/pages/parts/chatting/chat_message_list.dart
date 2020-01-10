@@ -155,7 +155,7 @@ class ChatMessageListState extends State<ChatMessageList> {
         return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-                thumbnail(chatMessage.nickName),
+                thumbnail(chatMessage.senderIdx, chatMessage.nickName),
 
                 Expanded(
                     child: Column(
@@ -212,13 +212,26 @@ class ChatMessageListState extends State<ChatMessageList> {
     }
 
     // 받은 메세지 유저 프로필 이미지
-    Widget thumbnail(String nickName) {
+    Widget thumbnail(int userIdx, String nickName) {
         return new Container(
             margin: EdgeInsets.only(
                 right: ScreenUtil.getInstance().setWidth(7)),
             child: CircleAvatar(
-                child: Text(nickName[0]),
-
+//                child: CachedNetworkImage(
+//                    imageUrl: ,
+//                    placeholder: (context, url) => CircularProgressIndicator(),
+//                    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
+//                    httpHeaders: Constant.HEADER
+//                ),
+                child: Text(
+                    nickName[0],
+                    style: TextStyle(
+                        fontFamily: "NotoSans",
+                        fontWeight: FontWeight.w400,
+                        color: Color.fromRGBO(255, 255, 255, 1)
+                    )
+                ),
+                backgroundColor: Color.fromRGBO(77, 96, 191, 1),
             )
         );
     }

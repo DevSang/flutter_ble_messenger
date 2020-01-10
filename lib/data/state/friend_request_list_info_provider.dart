@@ -92,10 +92,21 @@ class FriendRequestListInfoProvider with ChangeNotifier{
                 profile_picture_idx: int.parse(data['profile_picture_idx'] ?? "0"),
                 business_card_idx: int.parse(data['business_card_idx'] ?? "0"),
                 user_status: data['user_status'],
-                description: data['description']
+                description: data['description'] ?? '안녕하세요! ' + data['nickname'] + "입니다! :)"
             )
         );
         notifyListeners();
     }
 
+    /*
+     * @author : sh
+     * @date : 2020-01-08
+     * @description : 친구요청 삭제
+     */
+    removeFriendRequest(int reqIdx) {
+        friendRequestList.removeWhere((item) =>
+            item.req_idx == reqIdx
+        );
+        notifyListeners();
+    }
 }

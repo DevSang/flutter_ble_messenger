@@ -192,7 +192,6 @@ class ChatUserInfoListState extends State<ChatUserInfoList> with TickerProviderS
     );
 
     _showModalSheet(BuildContext context, ChatJoinInfo userInfo) {
-
         return showModalBottomSheet(
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(

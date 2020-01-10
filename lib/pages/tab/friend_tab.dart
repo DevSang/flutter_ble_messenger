@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/fade_in.dart';
 import 'package:Hwa/data/models/friend_info.dart';
 import 'package:Hwa/data/models/friend_request_info.dart';
 import 'package:Hwa/data/state/friend_list_info_provider.dart';
@@ -42,8 +43,9 @@ class FriendTab extends StatefulWidget {
 
 class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     final store = KvStore();
+    FriendListInfoProvider friendListInfoProvider;
+    FriendRequestListInfoProvider friendRequestListInfoProvider;
 
-//    List<FriendInfo> friendList = Constant.FRIEND_LIST ?? <FriendInfo>[];
     List<FriendInfo> originList;              // 원본 친구 리스트
     List<FriendInfo> friendList;              // 화면에 보이는 친구 리스트 (검색 용도)
     List<FriendRequestInfo> requestList;
@@ -51,20 +53,34 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     TextEditingController searchController = TextEditingController();
     double sameSize;
     bool isLoading;
-
     ScrollController _scrollController;
-
     int requestListHeight;
     bool requestExpandFlag;
+    bool isSearching;
 
     @override
     void initState() {
+        print("@@init");
+        friendListInfoProvider = Provider.of<FriendListInfoProvider>(context, listen: false);
+        friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
+
+        searchController.addListener(() {
+            print(searchController.text.length);
+            if (searchController.text.length > 0) {
+                searchFriends();
+            } else {
+                setState(() {
+                    isSearching = false;
+                });
+            }
+        });
 
         _initState();
 
         _scrollController = new ScrollController()..addListener(_sc);
         sameSize = GetSameSize().main();
         isLoading = false;
+        isSearching = false;
 
         super.initState();
     }
@@ -133,6 +149,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
 
         setState(() {
+            isSearching = true;
             friendList.addAll(constList);
         });
     }
@@ -143,8 +160,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
      * @description : 친구목록 및 요청목록 셋팅
     */
     setDefaultList() async {
-        originList = Provider.of<FriendListInfoProvider>(context, listen: false).friendList;
-        friendList = Provider.of<FriendListInfoProvider>(context, listen: false).friendList;
+        friendList = <FriendInfo>[];
     }
 
     /*
@@ -160,18 +176,17 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
 
         if(response.statusCode == 200){
-            friendList.add(
-                FriendInfo(
-                    user_idx: friendInfo.user_idx,
-                    nickname: friendInfo.nickname,
-                    phone_number: friendInfo.phone_number,
-                    profile_picture_idx: friendInfo.profile_picture_idx,
-                    business_card_idx: friendInfo.business_card_idx,
-                    user_status: friendInfo.user_status
-                )
-            );
-            requestList.removeAt(listIdx);
-            _initState();
+            friendListInfoProvider.addFriend({
+                'user_idx': friendInfo.user_idx,
+                'nickname': friendInfo.nickname,
+                'phone_number': friendInfo.phone_number,
+                'profile_picture_idx': friendInfo.profile_picture_idx,
+                'business_card_idx': friendInfo.business_card_idx,
+                'user_status': friendInfo.user_status
+            });
+            friendRequestListInfoProvider.removeFriendRequest(friendInfo.req_idx);
+
+//            _initState();
             developer.log("## 친구요청을 수락하였습니다.");
         } else {
             developer.log("## 친구요청을 수락에 실패하였습니다.");
@@ -191,7 +206,8 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
 
         if(response.statusCode == 200){
-            requestList.removeAt(listIdx);
+            friendRequestListInfoProvider.removeFriendRequest(friendInfo.req_idx);
+
             _initState();
             developer.log("## 친구요청을 거절하였습니다.");
         } else {
@@ -298,11 +314,13 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     */
     @override
     Widget build(BuildContext context) {
+        originList =  Provider.of<FriendListInfoProvider>(context, listen: true).friendList;
         requestList = Provider.of<FriendRequestListInfoProvider>(context, listen: true).friendRequestList;
 
-        searchController.addListener(() {
-            searchFriends();
-        });
+        if (!isSearching) {
+            friendList.clear();
+            friendList.addAll(originList);
+        }
 
         return MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -618,7 +636,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     */
     //TODO 한개일때 여러개일때 패딩 차이
     Widget buildFriendItem(dynamic friendInfo, bool isFriendList, bool isLast, int index) {
-        developer.log("friendInfo" + friendInfo.user_idx.toString());
         String profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=SMALL";
         return InkWell(
             child: AnimatedSize(
@@ -628,10 +645,10 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                     width: ScreenUtil().setWidth(375),
                     height: ScreenUtil().setHeight(
                         isFriendList ?
-                            index == 0 ?
-                            74
+                        index == 0 ?
+                        74
                             : 66
-                        : requestListHeight - 31),
+                            : requestListHeight - 31),
                     color: Color.fromRGBO(255, 255, 255, 1),
                     padding: EdgeInsets.only(
                         left: ScreenUtil().setWidth(16),
@@ -706,7 +723,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                             ],
                                         ),
                                         !isFriendList
-                                        ? Row(
+                                            ? Row(
                                             mainAxisAlignment: MainAxisAlignment.end,
                                             children: <Widget>[
                                                 Container(),
@@ -724,6 +741,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
             onTap: () {
                 _showModalSheet(context, friendInfo);
             },
+
         );
     }
 
@@ -907,8 +925,9 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                 Container(
                                     child: Text(
                                         // TODO: 인삿말 맵핑
-                                        friendInfo.description.toString(),
-//                                        '안녕하세요! ' + friendInfo.nickname + "입니다! :)",
+                                        friendInfo.description.toString() == 'null' ?
+                                            '안녕하세요! ' + friendInfo.nickname + "입니다! :)"
+                                            : friendInfo.description.toString(),
                                         style: TextStyle(
                                             height: 1,
                                             fontSize: ScreenUtil().setSp(13),

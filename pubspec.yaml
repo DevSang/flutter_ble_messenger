@@ -56,9 +56,10 @@ dependencies:
     #flutter_kakao_login: "^0.5.0"  # Social Login - Kakao
     #kakao_flutter_sdk: ^0.3.2
     contacts_service: ^0.3.10
+    simple_animations: ^1.3.4
 
 
-    ### BLE module ###
+  ### BLE module ###
     hwa_beacon:
 #        path: ./hwa_beacon-master
         git:
@@ -132,6 +133,7 @@ flutter:
     - assets/images/icon/appIcon.jpg
     - assets/images/icon/appIcon2.png
     - assets/images/icon/crown.png
+    - assets/images/icon/editButton.png
     - assets/images/icon/iconActionMenuOpen.png
     - assets/images/icon/iconAddress.png
     - assets/images/icon/iconAttachCamera.png

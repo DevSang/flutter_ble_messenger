@@ -184,7 +184,8 @@ class _ProfilePageState extends State <ProfilePage>{
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(16)
+                        fontSize: ScreenUtil.getInstance().setSp(16),
+                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.8),
                     ),
                 ),
                 leading:  IconButton(
@@ -195,7 +196,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 ),
                 centerTitle: true,
                 elevation: 0,
-                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+                backgroundColor: Color.fromRGBO(255, 255, 255, 1),
                 brightness: Brightness.light,
             ),
             body:
@@ -206,14 +207,17 @@ class _ProfilePageState extends State <ProfilePage>{
                             Flexible(
                                 child: ListView(
                                     children: <Widget>[
-                                        // 프로필 이미지
-                                        _profileImageSection(context),
+                                        // 프로필 상단 설정
+                                        _profileTopSection(context),
 
                                         // 프로필 설정
                                         _profileSetting(context),
 
                                         // 앱 설정
                                         _appSetting(context),
+
+                                        // 앱 정보
+                                        _appInfo(context),
 
                                         // 계정 설정
                                         _accountSetting(context)
@@ -225,167 +229,234 @@ class _ProfilePageState extends State <ProfilePage>{
                     // Loading
                     isLoading ? Loading() : Container()
                 ],
+            ),
+            backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+        );
+    }
+
+    Widget _profileTopSection(BuildContext context) {
+        return Container(
+            height: ScreenUtil().setHeight(110),
+            padding: EdgeInsets.symmetric(
+                vertical: ScreenUtil().setHeight(16),
+                horizontal: ScreenUtil().setWidth(16),
+            ),
+            margin: EdgeInsets.only(
+                bottom: 24
+            ),
+            decoration: BoxDecoration(
+                color: Color.fromRGBO(250, 250, 251, 1),
+                border: Border(
+                    top: BorderSide(
+                        width: ScreenUtil().setWidth(0.5),
+                        color: Color.fromRGBO(178, 178, 178, 0.8)
+                    )
+                )
+            ),
+            child: Row(
+                children: <Widget>[
+                    // 프로필 이미지
+                    _profileImageSection(context),
+
+                    // 닉네임, 소개글
+                    _profileNickSection(context),
+
+                    // 편집 버튼
+                    _profileEditBtnSection(context),
+                ],
             )
         );
     }
 
-
     Widget _profileImageSection(BuildContext context) {
-        return Container(
-              width: ScreenUtil().setWidth(375),
-              height: ScreenUtil().setHeight(178),
-              decoration: BoxDecoration(
-                  color: Color.fromRGBO(178, 178, 178, 1),
-              ),
-              child: Stack(
-                  children: <Widget>[
-                      InkWell(
-                          child: Center(
-                              child: Container(
-                                  width: ScreenUtil().setHeight(90),
-                                  height: ScreenUtil().setHeight(90),
-                                  margin: EdgeInsets.only(
-                                      top: ScreenUtil().setHeight(41),
-                                      bottom: ScreenUtil().setHeight(46),
-                                  ),
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: ScreenUtil().setWidth(1),
-                                          color: Color.fromRGBO(0, 0, 0, 0.05)
-                                      ),
-                                      borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
-                                  ),
-                                  child: ClipRRect(
-                                      borderRadius: new BorderRadius.circular(ScreenUtil().setHeight(45)),
-//                                      child: Provider.of<UserInfoProvider>(context).getUserProfileImg()
-                                      child: Provider.of<UserInfoProvider>(context).getUserProfileImg()
-//	                                  child: proFileImgUri == null
-//	                                      ? Image.asset('assets/images/icon/thumbnailUnset1.png',fit: BoxFit.cover)
-//	                                      : Image.network(proFileImgUri, scale: 1.0, headers: header)
-                                  ),
-                              ),
-                          ),
-                          onTap: () {
-                          	  uploadProfileImg(1);
-                          },
-                      ),
-                      Positioned(
-                          bottom: ScreenUtil().setHeight(41),
-                          left: ScreenUtil().setWidth(206),
-                          child: InkWell(
-                              child: Container(
-                                  width: ScreenUtil().setWidth(32),
-                                  height: ScreenUtil().setHeight(32),
-                                  decoration: BoxDecoration(
-                                      color: Color.fromRGBO(77, 96, 191, 1),
-                                      image: DecorationImage(
-                                          image: AssetImage(
-                                              "assets/images/icon/iconAttachCamera.png")
-                                      ),
-                                      shape: BoxShape.circle
-                                  )
-                              ),
-                              onTap: () {
-                              	  uploadProfileImg(2);
-                              }
-                          )
-                      )
-                  ],
-              ),
+        return InkWell(
+            child: Container(
+                width: ScreenUtil().setWidth(78),
+                height: ScreenUtil().setWidth(78),
+                margin: EdgeInsets.only(
+                    left: ScreenUtil().setWidth(4),
+                    right: 20,
+                ),
+                decoration: BoxDecoration(
+                    border: Border.all(
+                        width: ScreenUtil().setWidth(1),
+                        color: Color.fromRGBO(0, 0, 0, 0.05)
+                    ),
+                    shape: BoxShape.circle
+                ),
+                child: ClipOval(
+                    child: Provider.of<UserInfoProvider>(context).getUserProfileImg()
+                ),
+            ),
         );
     }
 
+    Widget _profileNickSection(BuildContext context) {
+        return Container(
+            width: ScreenUtil().setWidth(228.5) - 28,
+            margin: EdgeInsets.only(
+                right: 8
+            ),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                    Container(
+                        margin: EdgeInsets.only(
+                            bottom: ScreenUtil().setWidth(8)
+                        ),
+                        child: Text(
+                            nickName ?? "",
+                            style: TextStyle(
+                                height: 1,
+                                fontFamily: "NotoSans",
+                                fontWeight: FontWeight.w500,
+                                fontSize: ScreenUtil().setSp(17),
+                                color: Color.fromRGBO(39, 39, 39, 1)
+                            )
+                        )
+                    ),
+                    Text(
+                        intro ?? "안녕하세요 :) " + (nickName ?? "") + "입니다. ",
+                        style: TextStyle(
+                            height: 1,
+                            fontFamily: "NotoSans",
+                            fontWeight: FontWeight.w400,
+                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75),
+                            fontSize: ScreenUtil().setSp(15),
+                            color: Color.fromRGBO(107, 107, 107, 1)
+                        )
+                    )
+                ],
+            )
+        );
+    }
+
+    Widget _profileEditBtnSection(BuildContext context) {
+        return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+                Container(
+                    width: ScreenUtil().setWidth(28.5),
+                    height: ScreenUtil().setWidth(28.5),
+                    margin: EdgeInsets.only(
+                        top: ScreenUtil().setHeight(12.25)
+                    ),
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: AssetImage(
+                                'assets/images/icon/editButton.png',
+                            ),
+                            fit: BoxFit.cover
+                        )
+                    ),
+                )
+            ],
+        );
+    }
+
+//    uploadProfileImg(1); 앨범
+//    uploadProfileImg(2); 앨범
+
+
     Widget _profileSetting(BuildContext context) {
         return Container(
+            margin: EdgeInsets.only(
+                bottom: 12
+            ),
             child: Column(
                 children: <Widget>[
                     buildSettingHeader((AppLocalizations.of(context).tr('profile.profile'))),
 
-                    buildTextItem(
-                        (AppLocalizations.of(context).tr('profile.username')),
-                        nickName,
-                        false,
-                        (dynamic value)  {
-                            setState(() {
-                                nickName = value;
-                            });
-                        }
-                    ),
+                    buildTextInfoItem((AppLocalizations.of(context).tr('profile.phoneNumber')), phoneNum),
 
                     buildTextItem(
-                        (AppLocalizations.of(context).tr('profile.introduce')),
-                        intro,
-                        false,
-                        (dynamic value)  {
-                            setState(() {
-                                intro = value;
-                            });
-                        }
-                    ),
-
-                    buildTextInfoItem((AppLocalizations.of(context).tr('profile.phoneNumber')), phoneNum, true),
-
-//                    buildTextItem("명함 관리", "", true)
+                        "명함 관리",
+                        "",
+                        () {}
+                    )
                 ]
             ),
         );
-  }
+    }
 
-  Widget _appSetting(BuildContext context){
-      return Container(
-          child: Column(
-              children: <Widget>[
-                  buildSettingHeader(AppLocalizations.of(context).tr('profile.appSetting')),
+    Widget _appSetting(BuildContext context){
+        return Container(
+            margin: EdgeInsets.only(
+                bottom: 12
+            ),
+            child: Column(
+                children: <Widget>[
+                    buildSettingHeader(AppLocalizations.of(context).tr('profile.appSetting')),
 
-                  buildSwitchItem(
-                      (AppLocalizations.of(context).tr('profile.pushAlarm')),
-                      allowedPush,
-                      false,
-                      (bool value) {
-                          setState(() {
-                              allowedPush = value;
-                          });
-                      }
-                  ),
+                    buildSwitchItem(
+                        (AppLocalizations.of(context).tr('profile.pushAlarm')),
+                        allowedPush,
+                        (bool value) {
+                            setState(() {
+                                allowedPush = value;
+                            });
+                        }
+                    ),
 
-                  buildSwitchItem(
-                      (AppLocalizations.of(context).tr('profile.friendAllow')),
-                      allowedFriend,
-                      true,
-                      (bool value) {
-                          developer.log(value.toString());
-                          setState(() {
-                              allowedFriend = value;
-                          });
-                      }
-                  ),
-              ]
-          )
-      );
-  }
+                    buildSwitchItem(
+                        (AppLocalizations.of(context).tr('profile.friendAllow')),
+                        allowedFriend,
+                        (bool value) {
+                            developer.log(value.toString());
+                            setState(() {
+                                allowedFriend = value;
+                            });
+                        }
+                    ),
+                ]
+            )
+        );
+    }
 
+    Widget _appInfo(BuildContext context){
+        return Container(
+            margin: EdgeInsets.only(
+                bottom: 12
+            ),
+            child: Column(
+                children: <Widget>[
+                    buildSettingHeader("앱 정보"),
+
+                    buildTextInfoItem("앱 버젼", "0.0.5"),
+
+                    buildTextItem("약관", "", null),
+
+                    buildTextItem(
+                        (AppLocalizations.of(context).tr('profile.opensource')),
+                        "",
+                            () {
+                            Navigator.pushNamed(context, "/opensource");
+                        }
+                    ),
+
+                ]
+            )
+        );
+    }
 
     Widget _accountSetting(BuildContext context){
       return Container(
+          margin: EdgeInsets.only(
+              bottom: 12
+          ),
           child: Column(
               children: <Widget>[
                   buildSettingHeader((AppLocalizations.of(context).tr('profile.account'))),
 
                   InkWell(
-                      child: buildTextItem((AppLocalizations.of(context).tr('profile.logout')), "", false, null),
+                      child: buildTextItem((AppLocalizations.of(context).tr('profile.logout')), "", null),
                       onTap:() {
                           logOut();
                       }
                   ),
 
-                  buildTextInfoItem((AppLocalizations.of(context).tr('profile.leave')), "", true),
-
-                InkWell(
-                    child: policyBtn((AppLocalizations.of(context).tr('profile.opensource')), false),
-                    onTap:() {
-                      Navigator.pushNamed(context, "/opensource");
-                    }
-                ),
+                  buildTextItem((AppLocalizations.of(context).tr('profile.leave')), "", null)
               ]
           )
       );
@@ -397,9 +468,14 @@ class _ProfilePageState extends State <ProfilePage>{
                 horizontal: ScreenUtil().setWidth(16)
             ),
             width: MediaQuery.of(context).size.width,
-            height: ScreenUtil().setHeight(25),
+            height: ScreenUtil().setHeight(29),
             decoration: BoxDecoration(
-                color: Color.fromRGBO(235, 235, 235, 1),
+                border: Border(
+                    bottom: BorderSide(
+                        width: ScreenUtil.getInstance().setWidth(1),
+                        color: Color.fromRGBO(235, 235, 235, 1)
+                    )
+                )
             ),
             child: Align(
                 alignment: Alignment.centerLeft,
@@ -410,29 +486,19 @@ class _ProfilePageState extends State <ProfilePage>{
                         fontWeight: FontWeight.w400,
                         color: Color.fromRGBO(39, 39, 39, 1),
                         fontSize: ScreenUtil.getInstance().setSp(13),
-                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.65)
+                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.32)
                     )
                 ),
             ),
         );
     }
 
-    Widget buildTextItem(String title, String value, bool isLast, Function fn) {
+    Widget buildTextItem(String title, String value, Function fn) {
         return Container(
-            height: ScreenUtil().setHeight(49),
-            margin: EdgeInsets.only(
-                left: ScreenUtil().setWidth(16)
-            ),
+            height: ScreenUtil().setHeight(52),
             padding: EdgeInsets.only(
-                right: ScreenUtil().setWidth(8)
-            ),
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-                        width: ScreenUtil().setWidth(1),
-                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
-                    )
-                )
+                left: ScreenUtil().setWidth(16),
+                right: ScreenUtil().setWidth(11)
             ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -458,8 +524,7 @@ class _ProfilePageState extends State <ProfilePage>{
                                         fontFamily: "NotoSans",
                                         fontWeight: FontWeight.w400,
                                         color: Color.fromRGBO(107, 107, 107, 1),
-                                        fontSize: ScreenUtil.getInstance().setSp(15),
-                                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                                        fontSize: ScreenUtil().setSp(15)
                                     )
                                 ),
                                 Container(
@@ -495,22 +560,12 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget buildSwitchItem(String title, bool value, bool isLast, Function fn) {
+    Widget buildSwitchItem(String title, bool value, Function fn) {
         return Container(
-            height: ScreenUtil().setHeight(49),
-            margin: EdgeInsets.only(
-                left: ScreenUtil().setWidth(16)
-            ),
+            height: ScreenUtil().setHeight(52),
             padding: EdgeInsets.only(
-                right: ScreenUtil().setWidth(8)
-            ),
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-                        width: ScreenUtil().setWidth(1),
-                        color: isLast ? Colors.white : Color.fromRGBO(39, 39, 39, 0.15)
-                    )
-                )
+                left: ScreenUtil().setWidth(16),
+                right: ScreenUtil().setWidth(16)
             ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -533,14 +588,6 @@ class _ProfilePageState extends State <ProfilePage>{
                         value: value ?? true,
                         inactiveColor: Color.fromRGBO(235, 235, 235, 1),
                         activeColor: Color.fromRGBO(77, 96, 191, 1),
-                        shadow: BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.4),
-                            offset: new Offset(
-                                ScreenUtil().setWidth(0),
-                                ScreenUtil().setWidth(0)
-                            ),
-                            blurRadius: 2
-                        )
                     )
                 ],
             )
@@ -548,22 +595,12 @@ class _ProfilePageState extends State <ProfilePage>{
     }
 
 
-    Widget buildTextInfoItem(String title, String value, bool isLast) {
+    Widget buildTextInfoItem(String title, String value) {
         return Container(
-            height: ScreenUtil().setHeight(49),
-            margin: EdgeInsets.only(
-                left: ScreenUtil().setWidth(16)
-            ),
+            height: ScreenUtil().setHeight(52),
             padding: EdgeInsets.only(
+                left: ScreenUtil().setWidth(16),
                 right: ScreenUtil().setWidth(16)
-            ),
-            decoration: BoxDecoration(
-                border: Border(
-                    bottom: BorderSide(
-                        width: ScreenUtil().setWidth(1),
-                        color: Color.fromRGBO(39, 39, 39, 0.15)
-                    )
-                )
             ),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -585,9 +622,8 @@ class _ProfilePageState extends State <ProfilePage>{
                             height: 1,
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w400,
-                            color: Color.fromRGBO(39, 39, 39, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(15),
-                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                            color: Color.fromRGBO(107, 107, 107, 1),
+                            fontSize: ScreenUtil.getInstance().setSp(15)
                         )
                     )
                 ],
@@ -595,22 +631,12 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
-    Widget policyBtn(String tr, bool isLast) {
+    Widget policyBtn(String tr) {
       return Container(
-          height: ScreenUtil().setHeight(49),
-          margin: EdgeInsets.only(
-              left: ScreenUtil().setWidth(16)
-          ),
+          height: ScreenUtil().setHeight(52),
           padding: EdgeInsets.only(
-              right: ScreenUtil().setWidth(8)
-          ),
-          decoration: BoxDecoration(
-              border: Border(
-                  bottom: BorderSide(
-                      width: ScreenUtil().setWidth(1),
-                      color: Color.fromRGBO(39, 39, 39, 0.15)
-                  )
-              )
+              left: ScreenUtil().setWidth(16),
+              right: ScreenUtil().setWidth(16)
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
