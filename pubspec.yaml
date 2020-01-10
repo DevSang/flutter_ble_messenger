@@ -169,6 +169,7 @@ flutter:
     - assets/images/icon/iconUnfold.png
     - assets/images/icon/iconSendMessage.png
     - assets/images/icon/iconSetting.png
+    - assets/images/icon/more.png
     - assets/images/icon/navIconHot.png
     - assets/images/icon/navIconClose.png
     - assets/images/icon/navIconDown.png
