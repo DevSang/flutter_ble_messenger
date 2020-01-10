@@ -25,7 +25,7 @@ class ChatUserInfoList extends StatefulWidget {
     State createState() => new ChatUserInfoListState(userInfo: userInfo, hostIdx: hostIdx);
 }
 
-class ChatUserInfoListState extends State<ChatUserInfoList> {
+class ChatUserInfoListState extends State<ChatUserInfoList> with TickerProviderStateMixin {
     final int hostIdx;
     final ChatJoinInfo userInfo;
     double sameSize = GetSameSize().main();
@@ -64,66 +64,71 @@ class ChatUserInfoListState extends State<ChatUserInfoList> {
     @override
     Widget build(BuildContext context) {
         return new InkWell(
-            child: Stack(
-                children: <Widget>[
-                    Container(
-                        padding: EdgeInsets.only(
-                            left: ScreenUtil().setWidth(20),
-                            right: ScreenUtil().setWidth(18)
-                        ),
-                        height: ScreenUtil().setHeight(52),
-                        child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                                Container(
-                                    width: ScreenUtil().setWidth(252),
-                                    child: Row(
-                                        children: <Widget>[
-                                            // 프로필 이미지
-                                            Container(
-                                                child: ClipRRect(
-                                                    borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
-                                                    child: FadeInImage(
-                                                        width: ScreenUtil().setHeight(40),
-                                                        height: ScreenUtil().setHeight(40),
-                                                        placeholder: AssetImage("assets/images/icon/profile.png"),
-                                                        image: userInfo.profilePictureIdx == null ? AssetImage("assets/images/icon/profile.png") :
-                                                                CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=SMALL", headers: Constant.HEADER),
-                                                        fit: BoxFit.cover,
-                                                        fadeInDuration: Duration(milliseconds: 1)
+            child: AnimatedSize(
+                curve: Curves.ease,
+                vsync: this,
+                duration: new Duration(milliseconds: 500),
+                child: Stack(
+                    children: <Widget>[
+                        Container(
+                            padding: EdgeInsets.only(
+                                left: ScreenUtil().setWidth(20),
+                                right: ScreenUtil().setWidth(18)
+                            ),
+                            height: ScreenUtil().setHeight(52),
+                            child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                    Container(
+                                        width: ScreenUtil().setWidth(252),
+                                        child: Row(
+                                            children: <Widget>[
+                                                // 프로필 이미지
+                                                Container(
+                                                    child: ClipRRect(
+                                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                                        child: FadeInImage(
+                                                            width: ScreenUtil().setHeight(40),
+                                                            height: ScreenUtil().setHeight(40),
+                                                            placeholder: AssetImage("assets/images/icon/profile.png"),
+                                                            image: userInfo.profilePictureIdx == null ? AssetImage("assets/images/icon/profile.png") :
+                                                                    CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=SMALL", headers: Constant.HEADER),
+                                                            fit: BoxFit.cover,
+                                                            fadeInDuration: Duration(milliseconds: 1)
+                                                        )
                                                     )
-                                                )
-                                            ),
-                                            Container(
-                                                padding: EdgeInsets.only(
-                                                    left: ScreenUtil().setWidth(10.1)
                                                 ),
-                                                child: Text(
-                                                    userInfo.userNick ?? "",
-                                                    style: TextStyle(
-                                                        height: 1,
-                                                        fontFamily: 'NotoSans',
-                                                        fontWeight: FontWeight.w500,
-                                                        fontSize: ScreenUtil().setSp(13),
-                                                        letterSpacing: ScreenUtil().setWidth(-0.32),
-                                                        color: Color.fromRGBO(39, 39, 39, 1)
+                                                Container(
+                                                    padding: EdgeInsets.only(
+                                                        left: ScreenUtil().setWidth(10.1)
                                                     ),
-                                                )
-                                            ),
-                                        ],
+                                                    child: Text(
+                                                        userInfo.userNick ?? "",
+                                                        style: TextStyle(
+                                                            height: 1,
+                                                            fontFamily: 'NotoSans',
+                                                            fontWeight: FontWeight.w500,
+                                                            fontSize: ScreenUtil().setSp(13),
+                                                            letterSpacing: ScreenUtil().setWidth(-0.32),
+                                                            color: Color.fromRGBO(39, 39, 39, 1)
+                                                        ),
+                                                    )
+                                                ),
+                                            ],
+                                        ),
                                     ),
-                                ),
-                                // TODO: 연락처 아이콘
-//                                userInfo.existContact ? contactIcon : new Container()
-                            ],
-                        )
-                    ),
-                    // 자신 뱃지
-                    userInfo.userIdx == Constant.USER_IDX ? badgeMe : new Container(),
+                                    // TODO: 연락처 아이콘
+    //                                userInfo.existContact ? contactIcon : new Container()
+                                ],
+                            )
+                        ),
+                        // 자신 뱃지
+                        userInfo.userIdx == Constant.USER_IDX ? badgeMe : new Container(),
 
-                    // 방장 뱃지
-                    userInfo.userIdx == hostIdx ? badgeHost : new Container(),
-                ],
+                        // 방장 뱃지
+                        userInfo.userIdx == hostIdx ? badgeHost : new Container(),
+                    ],
+                )
             ),
             onTap: (){
                 /// 프로필 팝업

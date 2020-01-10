@@ -153,7 +153,7 @@ class ChatUserListState extends State<ChatUserList> with TickerProviderStateMixi
                                                     image: DecorationImage(
                                                         image:AssetImage(openedList
                                                             ? "assets/images/icon/iconFold.png"
-                                                            : "assets/images/icon/iconExpand.png")
+                                                            : "assets/images/icon/iconUnfold.png")
                                                     ),
                                                 ),
                                             )

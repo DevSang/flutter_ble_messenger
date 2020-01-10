@@ -981,6 +981,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
                                         )
                                     )
+                                        
                                 ),
                                 // Button send message
                                 Container(

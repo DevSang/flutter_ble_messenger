@@ -650,7 +650,6 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _signinText() {
         return Container(
-            height: ScreenUtil().setHeight(22.5),
             margin: EdgeInsets.only(
                 top: ScreenUtil().setHeight(34),
                 bottom: ScreenUtil().setHeight(22)

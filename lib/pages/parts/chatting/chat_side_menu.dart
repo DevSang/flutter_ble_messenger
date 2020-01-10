@@ -248,9 +248,6 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                     Container(
                                         width: ScreenUtil().setWidth(53),
                                         height: ScreenUtil().setHeight(72),
-                                        decoration: BoxDecoration(
-                                            border: new Border(right: BorderSide(color:Color.fromRGBO(39, 39, 39, 0.4), width: 0.5))
-                                        ),
                                         child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             mainAxisAlignment: MainAxisAlignment.center,
