@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+
 import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/pages/trend/trend_page.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:provider/provider.dart';
-import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
+import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 
 
 final hwaTabStateKey = new GlobalKey<HwaTabState>();
@@ -84,6 +85,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
     @override
     Widget build(BuildContext context) {
 	    sameSize  = GetSameSize().main();
+		int requestCount = Provider.of<FriendRequestListInfoProvider>(context, listen: true).friendRequestList.length;
 
         return Scaffold(
 	        appBar: PreferredSize(
@@ -219,13 +221,17 @@ class _BottomNavigationState extends State<BottomNavigation>{
                     },
                     selectedItemColor: Color.fromRGBO(77, 96, 191, 1),
                     selectedLabelStyle: TextStyle(
-                        fontSize: ScreenUtil().setSp(10),
-                        letterSpacing: ScreenUtil().setWidth(-0.25),
+						fontFamily: "NotoSans",
+						fontSize: ScreenUtil().setSp(10),
+						fontWeight: FontWeight.w700,
+                        letterSpacing: ScreenUtil().setWidth(0.3),
                     ),
                     unselectedItemColor: Color.fromRGBO(0, 0, 0, 0.4),
                     unselectedLabelStyle: TextStyle(
-                        fontSize: ScreenUtil().setSp(10),
-                        letterSpacing: ScreenUtil().setWidth(-0.25),
+						fontFamily: "NotoSans",
+						fontWeight: FontWeight.w600,
+						fontSize: ScreenUtil().setSp(10),
+                        letterSpacing: ScreenUtil().setWidth(0.3),
                     ),
                     type: BottomNavigationBarType.fixed,
                     items: [
@@ -236,23 +242,72 @@ class _BottomNavigationState extends State<BottomNavigation>{
                             title: Text ('HWA')
                         ),
                         BottomNavigationBarItem(
-                            icon: _currentIndex == 1 ? Image.asset('assets/images/icon/tabIconFriendActive.png') : Image.asset('assets/images/icon/tabIconFriend.png'),
-                            title: Text ('Friend')
+                            icon: Container(
+								width: ScreenUtil().setWidth(50),
+								height: ScreenUtil().setHeight(27),
+								child: Row(
+									mainAxisAlignment: MainAxisAlignment.center,
+									children: <Widget>[
+										Stack(
+											children: <Widget>[
+												_currentIndex == 1 ?
+												Image.asset('assets/images/icon/tabIconFriendActive.png',
+													width: ScreenUtil().setWidth(40),
+													height: ScreenUtil().setHeight(30),
+												)
+													: Image.asset('assets/images/icon/tabIconFriend.png',
+													width: ScreenUtil().setWidth(40),
+													height: ScreenUtil().setHeight(30),
+												),
+												requestCount != 0 ? badgeCountAlert(requestCount) :Container()
+											],
+										)
+									],
+								)
+
+							),
+                            title: Text ('Friend',
+								style: TextStyle(
+
+								),
+							)
                         ),
                         BottomNavigationBarItem(
                             icon: _currentIndex == 2 ? Image.asset('assets/images/icon/tabIconChatActive.png') : Image.asset('assets/images/icon/tabIconChat.png'),
                             title: Text ('Chat')
                         ),
-                        //            BottomNavigationBarItem(
-                        //                icon: _currentIndex == 4 ? Image.asset('assets/images/icon/tabIconChatActive.png') : Image.asset('assets/images/icon/tabIconChat.png'),
-                        //                title: Text ('test')
-                        //            )
-                    ]
+					]
                 ),
             ),
             backgroundColor: Color.fromRGBO(255, 255, 255, 1)
         );
     }
+
+	Widget badgeCountAlert(int count) {
+		return new Positioned(
+			left: ScreenUtil().setWidth(25),
+			child: GestureDetector(
+				child: Container(
+					width: ScreenUtil().setHeight(15),
+					height: ScreenUtil().setHeight(15),
+					decoration: BoxDecoration(
+						color: Color.fromRGBO(246, 69, 57, 1),
+						shape: BoxShape.circle
+					),
+					child: Align(
+						alignment: Alignment.center,
+						child: Text(
+							count.toString(),
+							style: TextStyle(
+								color: Colors.white,
+								fontSize: ScreenUtil().setSp(8)
+							),
+						)
+					)
+				)
+			)
+		);
+	}
 
     /*
      * @author : hk
