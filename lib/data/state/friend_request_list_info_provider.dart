@@ -77,4 +77,25 @@ class FriendRequestListInfoProvider with ChangeNotifier{
         notifyListeners();
     }
 
+    /*
+     * @author : sh
+     * @date : 2020-01-08
+     * @description : 친구요청 목록 추가
+     */
+    addFriendRequest(Map data) async {
+        friendRequestList.add(
+            FriendRequestInfo(
+                req_idx: int.parse(data['request_idx']),
+                user_idx: int.parse(data['user_idx']),
+                nickname: data['nickname'],
+                phone_number: data['phone_number'],
+                profile_picture_idx: int.parse(data['profile_picture_idx'] ?? "0"),
+                business_card_idx: int.parse(data['business_card_idx'] ?? "0"),
+                user_status: data['user_status'],
+                description: data['description']
+            )
+        );
+        notifyListeners();
+    }
+
 }

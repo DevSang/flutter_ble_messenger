@@ -16,7 +16,6 @@ import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
-import 'package:Hwa/service/set_fcm.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 
 

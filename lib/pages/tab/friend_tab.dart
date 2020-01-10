@@ -145,7 +145,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     setDefaultList() async {
         originList = Provider.of<FriendListInfoProvider>(context, listen: false).friendList;
         friendList = Provider.of<FriendListInfoProvider>(context, listen: false).friendList;
-        requestList = Provider.of<FriendRequestListInfoProvider>(context, listen: false).friendRequestList;
     }
 
     /*
@@ -299,6 +298,8 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     */
     @override
     Widget build(BuildContext context) {
+        requestList = Provider.of<FriendRequestListInfoProvider>(context, listen: true).friendRequestList;
+
         searchController.addListener(() {
             searchFriends();
         });
