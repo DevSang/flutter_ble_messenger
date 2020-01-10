@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'dart:developer' as developer;
+
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/red_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
 import 'package:Hwa/pages/parts/chatting/notice/set_chat_notice_data.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
 /*
@@ -15,12 +21,42 @@ class NoticeWritePage extends StatefulWidget {
     NoticeWritePage({Key key, @required this.chatIdx}) :super(key: key);
 
     @override
-    State createState() => new NoticeWritePageState();
+    State createState() => new NoticeWritePageState(chatIdx: chatIdx);
 }
 
 class NoticeWritePageState extends State<NoticeWritePage> {
+    final int chatIdx;
+    NoticeWritePageState({Key key, @required this.chatIdx});
+
     List<ChatNoticeItem> chatNoticeList = new SetChatNoticeData().main();
-    TextEditingController textEditingController;
+    TextEditingController textEditingController = TextEditingController();
+
+    @override
+    void initState() {
+        super.initState();
+    }
+
+    writeNotice(String contents) async {
+        try {
+            /// 참여 타입 수정
+            String uri = "/api/v2/chat/announce";
+            final response = await CallApi.commonApiCall(
+                method: HTTP_METHOD.post,
+                url: uri,
+                data: {
+                    "chat_idx" : chatIdx,
+                    "contents" : contents
+                }
+            );
+
+            print(response.body);
+            RedToast.toast("공지사항이 등록되었습니다.", ToastGravity.TOP);
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+            RedToast.toast("공지사항이 등록되었습니다.", ToastGravity.TOP);
+        }
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -81,7 +117,9 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                                                 fontWeight: FontWeight.w500
                                             ),
                                         ),
-                                        onTap: () {},
+                                        onTap: () {
+                                            if (textEditingController.text.length > 0) writeNotice(textEditingController.text);
+                                        },
                                     )
                                 ),
                             ],
@@ -121,7 +159,7 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                     minLines: 100,
                     maxLines: null,
                     keyboardType: TextInputType.multiline,
-
+                    controller: textEditingController,
                     // 텍스트폼필드에 스타일 적용
                     decoration: InputDecoration(
                         hintText: '단화방에 알리고 싶은 공지를 남겨보세요',
