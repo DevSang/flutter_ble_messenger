@@ -64,42 +64,28 @@ class ChatScreenState extends State<ChatroomPage> {
 
     ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList});
 
-    // 실시간 입장 유저 리스트
-    List<ChatJoinInfo> joinedUserNow;
-    // 채팅방 메세지 리스트
-    final List<ChatMessage> messageList = <ChatMessage>[];
-    // 받은 메세지
-    ChatMessage message;
-    // 업로드 중인 이미지 갯수
-    int uploadingImageCount;
-    SharedPreferences prefs;
+    List<ChatJoinInfo> joinedUserNow;   // 실시간 입장 유저 리스트
+    final List<ChatMessage> messageList = <ChatMessage>[];  // 채팅방 메세지 리스트
+    ChatMessage message;                // 받은 메세지
+    int uploadingImageCount;            // 업로드 중인 이미지 갯수
 
-    // 로딩
-    bool isLoading;
-    // 하단 메뉴 관련
-    bool isShowMenu;
-    // 온라인 입장 유저 입력 불가
-    bool disable;
-
-    // 현재 채팅 Advertising condition
-    BoxDecoration adCondition;
-    // 현재 채팅 Advertising condition
-    bool openedNf;
-    // ChatTextField Focused
-    bool isFocused;
-    // 현재 채팅 좋아요 TODO: 추후 맵핑
-    bool isLike;
-    // Focus된 메세지
-    int focusMsg;
-    // 채팅 입력 여부
-    bool isEmpty;
-    // 채팅 입력 줄 수
-    int inputLineCount;
-    // 입력칸 높이
-    int _inputHeight;
+    bool isLoading;             // 로딩
+    bool isShowMenu;            // 하단 메뉴 관련
+    bool disable;               // 온라인 입장 유저 입력 불가
+    BoxDecoration adCondition;  // 현재 채팅 Advertising condition
+    bool openedNf;              // 현재 채팅 Advertising condition
+    bool isFocused;             // ChatTextField Focused
+    bool isLike;                // 현재 채팅 좋아요 TODO: 추후 맵핑
+    int focusMsg;               // Focus된 메세지
+    bool isEmpty;               // 채팅 입력 여부
+    int inputLineCount;         // 채팅 입력 줄 수
+    int _inputHeight;           // 입력칸 높이
     double sameSize;
     double dragGestureInit;
     double dragGestureDistance;
+
+    // 프로필 이미지를 가지고 있는 사용자 셋
+    Set<int> profileImgExistUserSet = Set<int>();
 
     // Stomp 관련
     StompClient s;
@@ -116,6 +102,15 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     void initState() {
         super.initState();
+
+        developer.log("### joinInfo : ${joinInfo.toString()}");
+
+        // 입장한 사용자 중 프로필 이미지가 있는 사용자 정보 추출
+        if(joinInfo != null) {
+	        joinInfo.forEach((ChatJoinInfo user) {
+	        	if(user.profilePictureIdx != null) profileImgExistUserSet.add(user.userIdx);
+	        });
+        }
 
         checkAd();
         /// Stomp 초기화
@@ -157,14 +152,26 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     /*
+     * @author : hk
+     * @date : 2020-01-10
+     * @description : 사용자가 프로필 이미지를 가지고있는지 체크 - 사용자 채팅 올라오면 이미지 보여줄때 사용
+     */
+    bool isExistUserProfileImg(int userIdx){
+    	if(profileImgExistUserSet != null){
+    		if(profileImgExistUserSet.contains(userIdx)) return true;
+    		else return false;
+	    } else {
+    		return false;
+	    }
+    }
+
+    /*
      * @author : hs
      * @date : 2019-12-30
      * @description : 입장 시 기존 Advertising Stop
     */
     void checkAd() async {
-
     	if(Constant.USER_IDX == chatInfo.createUserIdx){
-
 		    if(Platform.isAndroid){
 			    bool advertising = await HwaBeacon().isAdvertising();
 
@@ -175,8 +182,6 @@ class ChatScreenState extends State<ChatroomPage> {
 			    else
 				    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
 		    }
-
-
 	    }
     }
 
@@ -186,7 +191,6 @@ class ChatScreenState extends State<ChatroomPage> {
      * @description : Advertising Stop/Start
     */
     void advertiseChange() async {
-
 	    if(Platform.isAndroid){
 		    if (advertising) {
 			    await HwaBeacon().stopAdvertising();
@@ -198,7 +202,6 @@ class ChatScreenState extends State<ChatroomPage> {
                 developer.log('##BLE START!!!');
 		    }
 	    }
-
     }
 
     /*
@@ -280,7 +283,7 @@ class ChatScreenState extends State<ChatroomPage> {
 
         // subscribe topic
         s.subscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString(), roomIdx: chatInfo.chatIdx.toString(), userIdx: Constant.USER_IDX.toString()).stream.listen((HashMap data) =>
-            messageReceieved(data),
+		        messageReceived(data),
             onDone: () {
                 developer.log("Listen Done");
             },
@@ -295,13 +298,17 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2019-12-22
      * @description : 메세지 수신 후 처리
     */
-    void messageReceieved(HashMap data) async {
+    void messageReceived(HashMap data) async {
         message = new ChatMessage.fromJSON(json.decode(data['contents']));
-        // TODO: 추후 Image Idx 활용하여 해당 src 할당
-        String imgSrc;
+
+        // 프로필 이미지 있는 사용자는 메시지에 사용자 프로필 경로 설정
+        String profileImgUri;
+        bool existProfileImg = isExistUserProfileImg(message.senderIdx);
+        if(existProfileImg) profileImgUri = Constant.getUserProfileImgUri(message.senderIdx);
 
         developer.log("# messageReceieved : " + json.decode(data['contents']).toString());
 
+        // TODO 입장한 사용자가 프로필 이미지 있으면 profileImgExistUserSet 에 userIdx 넣어주기
         if (message.chatType == "ENTER") {
             joinedUserNow.add(
                 ChatJoinInfo(
@@ -314,7 +321,6 @@ class ChatScreenState extends State<ChatroomPage> {
             // 업로드 완료된 항목 삭제
             for(var i=0; i<uploadingImageCount; i++) {
                 if (messageList[i].uploaded == true) {
-                    imgSrc = messageList[i].message;
                     messageList.removeAt(i);
                     uploadingImageCount --;
                 }
@@ -328,7 +334,8 @@ class ChatScreenState extends State<ChatroomPage> {
             nickName: message.nickName,
             message: message.message,
             chatTime: message.chatTime,
-	        msgIdx: message.msgIdx
+	        msgIdx: message.msgIdx,
+	        profileImgUri: profileImgUri
         );
 
         // youtube 체크

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/data/state/user_info_provider.dart';
@@ -62,6 +63,16 @@ class Constant {
 	static Future<SharedPreferences> getSPF() async {
 		if(spf == null) spf = await SharedPreferences.getInstance();
 		return spf;
+	}
+	
+	/*
+	 * @author : hk
+	 * @date : 2020-01-10
+	 * @description : 사용자 프로필 이미지 경로 얻기
+	 */
+	static String getUserProfileImgUri(int userIdx) {
+		if(userIdx != null) return API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userIdx.toString() + "&type=SMALL";
+		else return null;
 	}
 
 }
