@@ -552,11 +552,9 @@ class HwaTabState extends State<HwaTab> {
                 maxLength: 15,
             ),
         ).then((onValue){
-            _createChat(onValue);
-
-            setState(() {
-                isLoading = true;
-            });
+            if (onValue != null) {
+                _createChat(onValue);
+            }
         });
     }
 
