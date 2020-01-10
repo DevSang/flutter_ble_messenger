@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
@@ -17,9 +18,8 @@ import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 
-
-import 'package:easy_localization/easy_localization.dart';
 
 /*
  * @project : HWA - Mobile
@@ -86,14 +86,11 @@ class _SignInPageState extends State<SignInPage> {
      */
     void googleSignin() async {
 
-        setState(() {
-            _isLoading = true;
-        });
-
         try {
             developer.log("# Google Signin");
             _googleSignIn.signIn().then((result){
                 result.authentication.then((googleKey) async {
+                    setState(() { _isLoading = true; });
                     socialSigninAfterProcess(
                         "google",
                         googleKey.accessToken.toString(),
@@ -102,16 +99,14 @@ class _SignInPageState extends State<SignInPage> {
                     );
                 }).catchError((err){
 	                developer.log('inner error');
-                    setState(() { _isLoading = false; });
                 });
             }).catchError((err){
 	            developer.log('error occured');
-	            setState(() { _isLoading = false; });
             });
         } catch (error) {
             developer.log(error);
-            setState(() { _isLoading = false; });
         }
+        setState(() { _isLoading = false; });
     }
 
     /*
@@ -122,7 +117,8 @@ class _SignInPageState extends State<SignInPage> {
 	void facebookLogin() async {
         developer.log("# Facebook Signin");
         final facebookLogin = FacebookLogin();
-		final result = await facebookLogin. logIn(["email"]);
+		final result = await facebookLogin.logIn(["email"]);
+        setState(() { _isLoading = true; });
 
 		switch (result.status) {
 			case FacebookLoginStatus.loggedIn:
@@ -139,10 +135,12 @@ class _SignInPageState extends State<SignInPage> {
 				break;
 			case FacebookLoginStatus.cancelledByUser:
 				developer.log("# facebookLogin cancelledByUser");
-				break;
+                setState(() { _isLoading = false; });
+                break;
 			case FacebookLoginStatus.error:
 				developer.log("# facebookLogin" + result.errorMessage);
-				break;
+                setState(() { _isLoading = false; });
+                break;
 		}
 	}
 
@@ -209,7 +207,6 @@ class _SignInPageState extends State<SignInPage> {
             developer.log('#Request failed：${response.statusCode}');
             RedToast.toast("서버 요청에 실패하였습니다.", ToastGravity.TOP);
         }
-
         setState(() {
             _isLoading = false;
         });
@@ -221,6 +218,8 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Auth code request function
      */
     loginCodeRequest() async {
+        setState(() { _isLoading = true; });
+
         if(_phoneController.text == '' ){
             developer.log("# Phone number is empty.");
             RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
@@ -254,6 +253,7 @@ class _SignInPageState extends State<SignInPage> {
                 }
             }
         }
+        setState(() { _isLoading = false; });
     }
 
     /*
@@ -262,7 +262,9 @@ class _SignInPageState extends State<SignInPage> {
      * @description : Confirm auth code function
      */
     authCodeLoginRequest() async {
-	    spf = await Constant.getSPF();
+        setState(() { _isLoading = true; });
+
+        spf = await Constant.getSPF();
         try {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
@@ -310,6 +312,7 @@ class _SignInPageState extends State<SignInPage> {
         } catch (e) {
             developer.log('#Request failed：${e}');
         }
+        setState(() { _isLoading = false; });
     }
 
 
@@ -325,30 +328,33 @@ class _SignInPageState extends State<SignInPage> {
 
         return EasyLocalizationProvider(
 		    data: data,
-		    child: Scaffold(
-	            body: new GestureDetector(
-	                onTap: (){
-	                    FocusScope.of(context).requestFocus(new FocusNode());
-	                },
-	                child: new SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-	                    child: _isLoading
-	                        ? Center(child: CircularProgressIndicator())
-	                        : Column(
-	                        children: <Widget>[
-	                            _loginMainImage(),
-	                            _loginInputText(),
-	                            _loginInputCodeField(),
-	                            _SignInButton(),
-	                            _registerSection(context),
-	                            _signinText(),
-	                            _socialSignin()
-	                        ],
-	                    ),
-	                ),
-	            ),
-	            resizeToAvoidBottomPadding: false,
-	        )
+		    child: Stack(
+                children: <Widget>[
+                    Scaffold(
+                        body: new GestureDetector(
+                            onTap: (){
+                                FocusScope.of(context).requestFocus(new FocusNode());
+                            },
+                            child: new SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Column(
+                                    children: <Widget>[
+                                        _loginMainImage(),
+                                        _loginInputText(),
+                                        _loginInputCodeField(),
+                                        _SignInButton(),
+                                        _registerSection(context),
+                                        _signinText(),
+                                        _socialSignin()
+                                    ],
+                                ),
+                            ),
+                        ),
+                        resizeToAvoidBottomPadding: false,
+                    ),
+                    _isLoading ? Loading() : Container()
+                ],
+            )
         );
     }
 

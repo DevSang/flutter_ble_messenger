@@ -8,13 +8,14 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 
 
 /*
@@ -55,6 +56,7 @@ class _SignUpPageState extends State<SignUpPage>{
     FocusNode myFocusNode;
     final TextEditingController _regAuthCodeController = new TextEditingController();
     bool lengthConfirm;
+    bool _isLoading = false;
 
 
     @override
@@ -69,6 +71,7 @@ class _SignUpPageState extends State<SignUpPage>{
      * @description : 인증 문자 요청
      */
     registerCodeRequest() async {
+        setState(() {_isLoading = true;});
         final userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
 
         SPF = await Constant.getSPF();
@@ -151,6 +154,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 }
             });
         }
+        setState(() {_isLoading = false;});
     }
 
     /*
@@ -159,6 +163,7 @@ class _SignUpPageState extends State<SignUpPage>{
      * @description : 인증번호 입력후 다음누르면
      */
     registerNext() async {
+        setState(() {_isLoading = true;});
         SPF = await SharedPreferences.getInstance();
 
         if(_regAuthCodeController.text == ''){
@@ -201,6 +206,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 }
             });
         }
+        setState(() {_isLoading = false;});
     }
 
     /*
@@ -210,48 +216,53 @@ class _SignUpPageState extends State<SignUpPage>{
      */
     @override
     Widget build(BuildContext context){
-        return Scaffold(
-            body:  GestureDetector(
-                //텍스트필드 클릭 후 키보드 올라와 있을때 다른영역 터치해서 포커싱 해제
-                onTap: (){
-                    FocusScope.of(context).requestFocus( FocusNode());
-                },
-                child:  Container(
-                    decoration: BoxDecoration(
-                        border: Border(
-                            top: BorderSide(
-                                width: ScreenUtil().setWidth(0.5),
-                                color: Color.fromRGBO(178, 178, 178, 0.8)
-                            )
+        return Stack(
+            children: <Widget>[
+                Scaffold(
+                    body:  GestureDetector(
+                        //텍스트필드 클릭 후 키보드 올라와 있을때 다른영역 터치해서 포커싱 해제
+                        onTap: (){
+                            FocusScope.of(context).requestFocus( FocusNode());
+                        },
+                        child:  Container(
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    top: BorderSide(
+                                        width: ScreenUtil().setWidth(0.5),
+                                        color: Color.fromRGBO(178, 178, 178, 0.8)
+                                    )
+                                )
+                            ),
+
+                            child: ListView(
+                                children: <Widget>[
+                                    _regPhoneTextField(),
+                                    _regPhoneNumTextField(),
+                                    _regAuthCodeText(),
+                                    _regAuthTextField(),
+                                    _regNextButton(),
+                                ]
+                            ),
                         )
                     ),
-
-                    child: ListView(
-                        children: <Widget>[
-                            _regPhoneTextField(),
-                            _regPhoneNumTextField(),
-                            _regAuthCodeText(),
-                            _regAuthTextField(),
-                            _regNextButton(),
-                        ]
-                    ),
-                )
-            ),
-            appBar: AppBar(
-                brightness: Brightness.light,
-                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-                elevation: 0.0,
-                leading: Padding(
-                    padding: EdgeInsets.only(left: 16),
-                    child: IconButton(
-                        icon: Image.asset("assets/images/icon/navIconPrev.png"),
-                        onPressed: () => Navigator.of(context).pop(null),
+                    appBar: AppBar(
+                        brightness: Brightness.light,
+                        backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+                        elevation: 0.0,
+                        leading: Padding(
+                            padding: EdgeInsets.only(left: 16),
+                            child: IconButton(
+                                icon: Image.asset("assets/images/icon/navIconPrev.png"),
+                                onPressed: () => Navigator.of(context).pop(null),
+                            ),
+                        ),
+                        centerTitle: true,
+                        title: Text(AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w700),
+                        ),
                     ),
                 ),
-                centerTitle: true,
-                title: Text(AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w700),
-                ),
-            ),
+                _isLoading ? Loading() : Container()
+            ],
         );
     }
 
