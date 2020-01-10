@@ -28,7 +28,6 @@ class UserInfoProvider with ChangeNotifier{
     String userStatus;
     String regTs;
     String updateTs;
-    //Todo : file upload해서 사용할것
     String profileURL;
     String nickname;
     String token;

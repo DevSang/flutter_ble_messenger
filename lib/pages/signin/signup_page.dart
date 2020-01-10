@@ -13,7 +13,6 @@ import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
-import 'package:Hwa/service/set_fcm.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 
