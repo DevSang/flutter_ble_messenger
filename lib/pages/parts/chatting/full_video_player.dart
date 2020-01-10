@@ -42,7 +42,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
     @override
     void dispose() {
         super.dispose();
-        _controller.dispose();
+        if(_controller != null) _controller.dispose();
     }
 
     /*
@@ -61,10 +61,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 		 *                AsyncMemoizer 사용하여 초기화 결과는 Cache에서 반환
 		 */
         return this._memoizer.runOnce(() async {
-
         	try {
-		        developer.log("### memoizer.runOnce()");
-
 		        Directory tempDir = await getTemporaryDirectory();
 		        String tempPath = tempDir.path;
 
