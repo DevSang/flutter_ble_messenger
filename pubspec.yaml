@@ -41,6 +41,7 @@ dependencies:
     mime: ^0.9.6+3                    # Mime Type
     youtube_player_flutter: ^6.0.3+2  # Youtube
     path_provider: ^1.5.1             # file download
+    async: ^2.4.0                     # async
 
     ### Add by JH ###
     shared_preferences:             # SharedPreferences
