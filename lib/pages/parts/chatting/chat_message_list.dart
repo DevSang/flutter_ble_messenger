@@ -1,10 +1,5 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:Hwa/pages/parts/chatting/full_photo.dart';
-import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:Hwa/pages/parts/chatting/full_video_player.dart';
-import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/gauge_animate.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -14,7 +9,6 @@ import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/chatting/youtube_page.dart';
-import 'package:image/image.dart' as Im;
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 
@@ -40,8 +34,6 @@ class ChatMessageListState extends State<ChatMessageList> {
 
     int clickedMessage;
     double sameSize;
-
-    Map<String, String> header = Constant.HEADER;
 
     @override
     Widget build(BuildContext context) {
@@ -138,8 +130,6 @@ class ChatMessageListState extends State<ChatMessageList> {
     _playYoutube(ChatMessage chatMessage){
     	// youtube 객체가 있으면 반응
 		if(chatMessage.youtubePlayer != null){
-			print("#### Exist Youtube");
-
 			GlobalKey key = GlobalKey();
 
 			Navigator.push(context,
@@ -155,7 +145,7 @@ class ChatMessageListState extends State<ChatMessageList> {
         return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-                thumbnail(chatMessage.senderIdx, chatMessage.nickName),
+                thumbnail(chatMessage),
 
                 Expanded(
                     child: Column(
@@ -212,28 +202,43 @@ class ChatMessageListState extends State<ChatMessageList> {
     }
 
     // 받은 메세지 유저 프로필 이미지
-    Widget thumbnail(int userIdx, String nickName) {
+    Widget thumbnail(ChatMessage chatMessage) {
         return new Container(
             margin: EdgeInsets.only(
                 right: ScreenUtil.getInstance().setWidth(7)),
             child: CircleAvatar(
-//                child: CachedNetworkImage(
-//                    imageUrl: ,
-//                    placeholder: (context, url) => CircularProgressIndicator(),
-//                    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
-//                    httpHeaders: Constant.HEADER
-//                ),
-                child: Text(
-                    nickName[0],
-                    style: TextStyle(
-                        fontFamily: "NotoSans",
-                        fontWeight: FontWeight.w400,
-                        color: Color.fromRGBO(255, 255, 255, 1)
-                    )
-                ),
+                child: chatMessage.profileImgUri != null ? getProfileImg(chatMessage) : getTextProfile(chatMessage),
                 backgroundColor: Color.fromRGBO(77, 96, 191, 1),
             )
         );
+    }
+
+    // 사용자 프로필 이미지 캐시 return
+    Widget getProfileImg(ChatMessage chatMessage){
+    	return ClipOval(
+		    child: CachedNetworkImage(
+				    imageUrl: chatMessage.profileImgUri,
+				    placeholder: (context, url) => CircularProgressIndicator(),
+				    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
+				    httpHeaders: Constant.HEADER
+		    ),
+	    );
+    }
+
+    // 사용자 텍스트 프로필 이미지 return
+    Widget getTextProfile(ChatMessage chatMessage){
+    	try {
+		    return Text(
+			        chatMessage.nickName[0],
+			        style: TextStyle(
+					        fontFamily: "NotoSans",
+					        fontWeight: FontWeight.w400,
+					        color: Color.fromRGBO(255, 255, 255, 1)
+			        )
+	        );
+	    } catch (e) {
+		    return Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover);
+	    }
     }
 
     // 메세지 시간 레이아웃
@@ -487,14 +492,14 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                 ),
                                             ),
                                         ),
-                                    httpHeaders: header,
+                                    httpHeaders: Constant.HEADER,
                                     fit: BoxFit.cover,
                                 )
                             ),
                         ),
                         onTap: () {
                             Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header))
+                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: Constant.HEADER))
                             );
                         },
                     ),
@@ -632,7 +637,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                         ),
                                                     ),
                                                 ),
-                                            httpHeaders: header,
+                                            httpHeaders: Constant.HEADER,
                                             fit: BoxFit.cover,
                                         )
                                     ),
@@ -834,7 +839,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                         ),
                         onTap: () {
                             Navigator.push(
-		                            context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: header)));
+		                            context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: Constant.HEADER)));
                         },
                     ),
 
