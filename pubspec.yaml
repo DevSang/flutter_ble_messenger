@@ -132,6 +132,7 @@ flutter:
     - assets/images/icon/appIcon.jpg
     - assets/images/icon/appIcon2.png
     - assets/images/icon/crown.png
+    - assets/images/icon/editButton.png
     - assets/images/icon/iconActionMenuOpen.png
     - assets/images/icon/iconAddress.png
     - assets/images/icon/iconAttachCamera.png

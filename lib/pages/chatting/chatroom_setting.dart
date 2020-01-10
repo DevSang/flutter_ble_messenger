@@ -505,14 +505,6 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                         value: value ?? true,
                         inactiveColor: Color.fromRGBO(235, 235, 235, 1),
                         activeColor: Color.fromRGBO(77, 96, 191, 1),
-                        shadow: BoxShadow(
-                            color: Color.fromRGBO(0, 0, 0, 0.4),
-                            offset: new Offset(
-                                ScreenUtil().setWidth(0),
-                                ScreenUtil().setWidth(0)
-                            ),
-                            blurRadius: 2
-                        )
                     )
                 ],
             )
