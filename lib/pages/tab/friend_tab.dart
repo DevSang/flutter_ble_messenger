@@ -56,6 +56,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     ScrollController _scrollController;
     int requestListHeight;
     bool requestExpandFlag;
+    bool isSearching;
 
     @override
     void initState() {
@@ -63,11 +64,23 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         friendListInfoProvider = Provider.of<FriendListInfoProvider>(context, listen: false);
         friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
 
+        searchController.addListener(() {
+            print(searchController.text.length);
+            if (searchController.text.length > 0) {
+                searchFriends();
+            } else {
+                setState(() {
+                    isSearching = false;
+                });
+            }
+        });
+
         _initState();
 
         _scrollController = new ScrollController()..addListener(_sc);
         sameSize = GetSameSize().main();
         isLoading = false;
+        isSearching = false;
 
         super.initState();
     }
@@ -136,6 +149,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
         );
 
         setState(() {
+            isSearching = true;
             friendList.addAll(constList);
         });
     }
@@ -147,8 +161,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     */
     setDefaultList() async {
         friendList = <FriendInfo>[];
-        originList =  Provider.of<FriendListInfoProvider>(context, listen: false).friendList;
-        friendList.addAll(originList);
     }
 
     /*
@@ -303,12 +315,12 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     @override
     Widget build(BuildContext context) {
         originList =  Provider.of<FriendListInfoProvider>(context, listen: true).friendList;
-
         requestList = Provider.of<FriendRequestListInfoProvider>(context, listen: true).friendRequestList;
 
-        searchController.addListener(() {
-            searchFriends();
-        });
+        if (!isSearching) {
+            friendList.clear();
+            friendList.addAll(originList);
+        }
 
         return MaterialApp(
             debugShowCheckedModeBanner: false,
