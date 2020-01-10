@@ -22,15 +22,19 @@ class ChatMessage {
     ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickName, this.message, this.userCountObj, this.chatTime, this.gaugeDriver, this.uploaded, this.thumbnailFile});
 
     factory ChatMessage.fromJSON (Map<String, dynamic> json) {
-        return ChatMessage (
-            chatType : json['type'],
-            roomIdx : json['roomIdx'],
-            msgIdx : json['msgIdx'],
-            senderIdx : json['senderIdx'],
-            nickName : json['nickname'] ?? "닉네임 없음",
-            message : json['message'],
-            userCountObj : json['userCountObj'] != null ? new ChatCountUser.fromJSON(json['userCountObj']) : null,
-            chatTime : json['createTs']
-        );
+        try {
+	        return ChatMessage (
+	                    chatType : json['type'],
+	                    roomIdx : json['roomIdx'],
+	                    msgIdx : json['msgIdx'],
+	                    senderIdx : json['senderIdx'],
+	                    nickName : json['nickname'] ?? "닉네임 없음",
+	                    message : json['message'],
+	                    userCountObj : json['userCountObj'] != null ? new ChatCountUser.fromJSON(json['userCountObj']) : null,
+	                    chatTime : json['createTs']
+	                );
+        } catch (e) {
+	        return null;
+        }
     }
 }
