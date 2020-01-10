@@ -12,9 +12,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/constant.dart';
 
-
-void main() => runApp(FullVideoPlayer());
-
 class FullVideoPlayer extends StatefulWidget {
     final String videoUrl;
     final ChatMessage chatMessage;

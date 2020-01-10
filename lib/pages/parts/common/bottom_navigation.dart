@@ -189,13 +189,17 @@ class _BottomNavigationState extends State<BottomNavigation>{
 									        ],
 								        ),
 								        onTap: () {
-									        Navigator.push(context,
-											        MaterialPageRoute(builder: (context) {
-												        return ProfilePage();
-											        })
-									        ).then((val) => {
+								            if (_currentIndex == 0) {
+								                hwaTabStateKey.currentState.enterProfile();
+                                            } else {
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(builder: (context) {
+                                                        return ProfilePage();
+                                                    })
+                                                ).then((val) => {
 //														        expireProfileImgCache()
-									        });
+                                                });
+                                            }
 								        },
 							        )
 						        ),

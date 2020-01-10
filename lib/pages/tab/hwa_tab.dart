@@ -5,6 +5,7 @@ import 'dart:developer' as developer;
 import 'dart:ui';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_message.dart';
+import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/utility/customRoute.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -483,6 +484,31 @@ class HwaTabState extends State<HwaTab> {
     }
 
     /*
+       * @author : hs
+       * @date : 2019-12-28
+       * @description : 프로필 설정 입장
+      */
+    void enterProfile() async {
+        setState(() {
+            HwaBeacon().stopRanging();
+            stopOldChatRemoveTimer();
+            chatList.clear();
+            chatIdxList.clear();
+            _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
+        });
+
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) {
+                return ProfilePage();
+            })
+        ).then((val) => {
+            startBleService()
+        });
+
+    }
+
+    /*
      * @author : hs
      * @date : 2019-12-28
      * @description : 단화방 입장(리스트에서 클릭)
@@ -876,11 +902,11 @@ class HwaTabState extends State<HwaTab> {
                                                     fit: BoxFit.cover
                                                 )
                                                     : CachedNetworkImage(
-                                                    imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
-                                                    placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
-                                                    errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
-                                                    httpHeaders: Constant.HEADER,
-                                                    fit: BoxFit.cover
+                                                        imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + chatListItem.chatIdx.toString(),
+                                                        placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+                                                        errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+                                                        httpHeaders: Constant.HEADER,
+                                                        fit: BoxFit.cover
                                                 )
 
                                             )
