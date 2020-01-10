@@ -8,13 +8,13 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:Hwa/data/state/user_info_provider.dart';
-
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/home.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 
 
 /*
@@ -48,6 +48,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
     //local var
     bool availNick;
     final TextEditingController _regNameController =  TextEditingController();
+    bool _isLoading = false;
 
     @override
     void initState() {
@@ -86,6 +87,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      * @description : 회원가입 완료 request
      */
     registerFinish(BuildContext context) async {
+        setState(() { _isLoading = true; });
 
         String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
         final response = await http.post(url,
@@ -121,6 +123,8 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         } else {
             developer.log('#Request failed：${response.statusCode}');
         }
+        setState(() { _isLoading = false; });
+
     }
 
     /*
@@ -130,30 +134,35 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      */
     @override
     Widget build(BuildContext context) {
-        return Scaffold(
-            appBar: AppBar(
-                brightness: Brightness.light,
-                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-                elevation: 0.0,
-                leading: Padding(
-                    padding: EdgeInsets.only(left: 16),
-                    child: IconButton(
-                        icon: Image.asset("assets/images/icon/navIconClose.png"),
-                        onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+        return Stack(
+            children: <Widget>[
+                Scaffold(
+                    appBar: AppBar(
+                        brightness: Brightness.light,
+                        backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+                        elevation: 0.0,
+                        leading: Padding(
+                            padding: EdgeInsets.only(left: 16),
+                            child: IconButton(
+                                icon: Image.asset("assets/images/icon/navIconClose.png"),
+                                onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+                            ),
+                        ),
+                        centerTitle: true,
+                        title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w700))
                     ),
+                    body: Container(
+                        child: ListView(
+                            children: <Widget>[
+                                _regNickTextField(),
+                                _regAuthTextField(),
+                                _regStartBtn(context)
+                            ]
+                        ),
+                    )
                 ),
-                centerTitle: true,
-                title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w700))
-            ),
-            body: Container(
-                child: ListView(
-                    children: <Widget>[
-                        _regNickTextField(),
-                        _regAuthTextField(),
-                        _regStartBtn(context)
-                    ]
-                ),
-            )
+                _isLoading ? Loading() : Container()
+            ],
         );
     }
 
