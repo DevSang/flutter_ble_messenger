@@ -29,10 +29,9 @@ class FriendListInfoProvider with ChangeNotifier{
     /*
     * @author : sh
     * @date : 2020-01-08
-    * @description : 친구목록이 Store에 없을 경우 api call 하여 저장
+    * @description : 친구목록이 Provider에 api call 하여 저장
     */
     Future<void> getFriendList () async {
-
         String uri = "/api/v2/relation/relationship/all";
         final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
 
@@ -68,6 +67,26 @@ class FriendListInfoProvider with ChangeNotifier{
             developer.log("# Server request failed.");
             friendList = <FriendInfo>[];
         }
+        notifyListeners();
+    }
+
+    /*
+     * @author : sh
+     * @date : 2020-01-08
+     * @description : 친구 수락
+     */
+    addFriend(Map data) async {
+        friendList.add(
+            FriendInfo(
+                user_idx: int.parse(data['user_idx'].toString()),
+                nickname: data['nickname'],
+                phone_number: data['phone_number'],
+                profile_picture_idx: int.parse(data['profile_picture_idx'].toString() ?? "0"),
+                business_card_idx: int.parse(data['business_card_idx'].toString() ?? "0"),
+                user_status: data['user_status'],
+                description: data['description']
+            )
+        );
         notifyListeners();
     }
 }
