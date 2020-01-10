@@ -307,8 +307,10 @@ class ChatScreenState extends State<ChatroomPage> {
         if(existProfileImg) profileImgUri = Constant.getUserProfileImgUri(message.senderIdx);
 
         developer.log("# messageReceieved : " + json.decode(data['contents']).toString());
+        developer.log("# existProfileImg : $existProfileImg");
 
-        // TODO 입장한 사용자가 프로필 이미지 있으면 profileImgExistUserSet 에 userIdx 넣어주기
+
+        // TODO 입장한 사용자가 프로필 이미지 있으면 profileImgExistUserSet 에 userIdx 넣어주기, (채팅방을 아예 나갈때도 빼주기?)
         if (message.chatType == "ENTER") {
             joinedUserNow.add(
                 ChatJoinInfo(
