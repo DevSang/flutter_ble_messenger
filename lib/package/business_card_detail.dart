@@ -60,7 +60,7 @@ class CardDetailScreenState extends State<CardDetailScreen> {
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
                             color: Color.fromRGBO(39, 39, 39, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(16),
+                            fontSize: ScreenUtil().setSp(16),
                             letterSpacing: ScreenUtil().setWidth(-0.8)
                         ),
                     ),

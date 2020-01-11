@@ -204,7 +204,7 @@ class HomePageState extends State<HomePage> {
             statusBarBrightness: Brightness.dark
         ));
 
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
+        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: false)..init(context);
 
         return Scaffold(
             body: Container(

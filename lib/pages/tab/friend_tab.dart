@@ -680,7 +680,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                                         height: 1,
                                                         fontFamily: "NotoSans",
                                                         fontWeight: FontWeight.w500,
-                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                        fontSize: ScreenUtil().setSp(16),
                                                         color: Color.fromRGBO(39, 39, 39, 1),
                                                         letterSpacing: ScreenUtil()
                                                             .setWidth(-0.8),
@@ -696,7 +696,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                                             height: 1,
                                                             fontFamily: "NotoSans",
                                                             fontWeight: FontWeight.w400,
-                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(14),
+                                                            fontSize: ScreenUtil().setSp(14),
                                                             color: Color.fromRGBO(107, 107, 107, 1),
                                                             letterSpacing: ScreenUtil()
                                                                 .setWidth(-0.8),
