@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:Hwa/data/models/chat_notice_item.dart';
 import 'package:Hwa/pages/parts/chatting/notice/set_chat_notice_reply_data.dart';
 import 'package:Hwa/data/models/chat_notice_reply.dart';
-import 'package:intl/intl.dart';
 import 'package:Hwa/utility/convert_time.dart';
+import 'package:Hwa/constant.dart';
 
 /*
  * @project : HWA - Mobile
@@ -159,13 +162,14 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                     margin: EdgeInsets.only(
                                         right: ScreenUtil().setWidth(11)
                                     ),
-                                    child: ClipRRect(
-                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(45)),
-                                        child: Image.asset(
-                                            widget.notice.userImg,
-                                            width: ScreenUtil().setWidth(40),
-                                            height: ScreenUtil().setWidth(40),
-                                        )
+                                    child: FadeInImage(
+                                        width: ScreenUtil().setHeight(40),
+                                        height: ScreenUtil().setHeight(40),
+                                        placeholder: AssetImage("assets/images/icon/profile.png"),
+                                        image: widget.notice.profile_picture_idx == null ? AssetImage("assets/images/icon/profile.png")
+                                            : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + widget.notice.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
+                                        fit: BoxFit.cover,
+                                        fadeInDuration: Duration(milliseconds: 1)
                                     )
                                 ),
                                 Container(
@@ -202,7 +206,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                                 right: ScreenUtil().setWidth(13.5)
                                                             ),
                                                             child: Text(
-                                                                ConvertTime().getTime(widget.notice.regTime),
+                                                                widget.notice.reg_ts.toString(),
                                                                 style: TextStyle(
                                                                     fontSize: ScreenUtil().setSp(13),
                                                                     fontFamily: "NanumSquare",
@@ -227,7 +231,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                         ),
                                                         Container(
                                                             child: Text(
-                                                                widget.notice.replyCount.toString(),
+                                                                widget.notice.reply_cnt.toString(),
                                                                 style: TextStyle(
                                                                     fontSize: ScreenUtil().setSp(13),
                                                                     fontFamily: "NanumSquare",
@@ -259,7 +263,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                     right: ScreenUtil().setWidth(16),
                                 ),
                                 child: Text(
-                                    widget.notice.content,
+                                    widget.notice.contents,
                                     style: TextStyle(
                                         fontSize: ScreenUtil().setSp(15),
                                         fontFamily: "NotoSans",
