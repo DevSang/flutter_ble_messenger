@@ -18,6 +18,7 @@ import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/animate/fade_in.dart';
 import 'package:Hwa/data/models/friend_info.dart';
 import 'package:Hwa/data/models/friend_request_info.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/data/state/friend_list_info_provider.dart';
 import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 
@@ -92,7 +93,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
             requestExpandFlag = true;
         });
         await setDefaultList();
-
         friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
     }
 
@@ -110,7 +110,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                 requestListHeight = 31;
             }
         });
-
     }
 
     @override
@@ -896,13 +895,16 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                         )
                                     ),
                                     onTap: () {
-                                        Navigator.push(
-                                            context, MaterialPageRoute(
-                                            builder: (context) => FullPhoto(
-                                                url: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=BIG"
-                                                , header: Constant.HEADER
-                                            )
-                                        ));
+                                        if(Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null){
+                                            Navigator.push(
+                                                context, MaterialPageRoute(
+                                                builder: (context) =>
+                                                    FullPhoto(
+                                                        url: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=BIG"
+                                                        , header: Constant.HEADER
+                                                    )
+                                            ));
+                                        }
                                     },
                                 ),
                                 Container(
