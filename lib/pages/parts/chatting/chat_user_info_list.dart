@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:developer' as developer;
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 
 /*
@@ -300,13 +303,15 @@ class ChatUserInfoListState extends State<ChatUserInfoList> with TickerProviderS
                                                         )
                                                     ),
                                                     onTap: () {
-                                                        Navigator.push(
-                                                            context, MaterialPageRoute(
-                                                            builder: (context) => FullPhoto(
-                                                                url: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=BIG"
-                                                                , header: Constant.HEADER
-                                                            )
-                                                        ));
+                                                        if(Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null) {
+                                                            Navigator.push(
+                                                                context, MaterialPageRoute(
+                                                                builder: (context) => FullPhoto(
+                                                                    url: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=BIG"
+                                                                    , header: Constant.HEADER
+                                                                )
+                                                            ));
+                                                        }
                                                     },
                                                 ),
                                                 Container(

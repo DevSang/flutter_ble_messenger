@@ -1,15 +1,18 @@
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:provider/provider.dart';
+
 import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/pages/parts/chatting/full_video_player.dart';
 import 'package:Hwa/utility/gauge_animate.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/chatting/youtube_page.dart';
-import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 
 /*
@@ -498,9 +501,13 @@ class ChatMessageListState extends State<ChatMessageList> {
                             ),
                         ),
                         onTap: () {
-                            Navigator.push(
-                                context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: Constant.HEADER))
-                            );
+                            if(Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null) {
+                                Navigator.push(
+                                    context, MaterialPageRoute(
+                                    builder: (context) =>
+                                        FullPhoto(url: getOriginImgUri(chatMessage.message), header: Constant.HEADER)
+                                ));
+                            }
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
@@ -838,9 +845,14 @@ class ChatMessageListState extends State<ChatMessageList> {
                             )
                         ),
                         onTap: () {
-                            Navigator.push(
-		                            context, MaterialPageRoute(builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message), header: Constant.HEADER)));
-                        },
+                            if(Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null) {
+                                Navigator.push(
+                                    context, MaterialPageRoute(
+                                    builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message),
+                                        header: Constant.HEADER))
+                                );
+                            };
+                        }
                     ),
 
                     // 시간 레이아웃 (받은 메세지)

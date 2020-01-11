@@ -15,7 +15,6 @@ import 'package:provider/provider.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/animate/fade_in.dart';
 import 'package:Hwa/data/models/friend_info.dart';
 import 'package:Hwa/data/models/friend_request_info.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
