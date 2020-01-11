@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
+import 'package:Hwa/utility/call_api.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/pages/parts/chatting/notice/set_chat_notice_data.dart';
@@ -17,15 +19,41 @@ import 'package:Hwa/data/models/chat_notice_item.dart';
  * @description : 공지사항 리스트
  */
 class NoticePage extends StatefulWidget {
+    final int hostIdx;
     final int chatIdx;
-    NoticePage({Key key, @required this.chatIdx}) :super(key: key);
+    NoticePage({Key key, @required this.hostIdx, this.chatIdx}) :super(key: key);
 
     @override
-    State createState() =>  NoticePageState();
+    State createState() =>  NoticePageState(chatIdx: chatIdx);
 }
 
 class NoticePageState extends State<NoticePage> {
+    final int chatIdx;
+
+    NoticePageState({Key key, this.chatIdx});
+
     List<ChatNoticeItem> chatNoticeList =  SetChatNoticeData().main();
+
+    @override
+    void initState() {
+        getNoticeList();
+        super.initState();
+    }
+
+    getNoticeList() async {
+        try {
+            /// 참여 타입 수정
+            String uri = "/api/v2/chat/announce/all?chat_idx=" +  chatIdx.toString();
+            final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
+            print(response.body);
+            Map<String, dynamic> jsonParse = json.decode(response.body);
+
+            print(jsonParse);
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -58,7 +86,7 @@ class NoticePageState extends State<NoticePage> {
                             onPressed: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                        return NoticeWritePage(chatIdx: 0);
+                                        return NoticeWritePage(chatIdx: chatIdx);
                                     })
                                 );
                             },
@@ -107,7 +135,7 @@ class NoticePageState extends State<NoticePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                     headerTab(1),
-                    headerTab(2),
+//                    headerTab(2),
                     Container()
                 ],
             )
@@ -283,8 +311,7 @@ class NoticePageState extends State<NoticePage> {
                                     )
                                 ),
                                 onTap:(){
-                                    showCupertinoModalPopup(context: context, builder: (context) => ActionSheet());
-                                    developer.log("clicked");
+                                    showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet());
                                 }
                             ),
                         )
@@ -298,6 +325,32 @@ class NoticePageState extends State<NoticePage> {
                     })
                 );
             },
+        );
+    }
+
+    Widget _buildActionSheet() {
+        return CupertinoActionSheet(
+            actions: <Widget>[
+                CupertinoActionSheetAction(
+                    child: Text("수정하기"),
+                    onPressed: () {
+                        Navigator.pop(context);
+                    },
+                ),
+                CupertinoActionSheetAction(
+                    child: Text("삭제하기"),
+                    isDestructiveAction: true,
+                    onPressed: () {
+                        Navigator.pop(context);
+                    },
+                )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+                child: Text("취소"),
+                onPressed: () {
+                    Navigator.pop(context);
+                },
+            ),
         );
     }
 }

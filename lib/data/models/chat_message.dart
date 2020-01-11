@@ -16,21 +16,26 @@ class ChatMessage {
     // Thumbnail Message 관련 변수
     final GaugeDriver gaugeDriver;		// 업로드 Percentage 표현
     bool uploaded;		                // 업로드 완료 여부
-    final dynamic thumbnailFile;           // Placeholder Image Source (Thumbnail)
+    final dynamic thumbnailFile;        // Placeholder Image Source (Thumbnail)
     YoutubePlayer youtubePlayer;        // youtube video
+    String profileImgUri;               // 보낸 사용자 프로필 이미지 경로
 
-    ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickName, this.message, this.userCountObj, this.chatTime, this.gaugeDriver, this.uploaded, this.thumbnailFile});
+    ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickName, this.message, this.userCountObj, this.chatTime, this.gaugeDriver, this.uploaded, this.thumbnailFile, this.profileImgUri});
 
     factory ChatMessage.fromJSON (Map<String, dynamic> json) {
-        return ChatMessage (
-            chatType : json['type'],
-            roomIdx : json['roomIdx'],
-            msgIdx : json['msgIdx'],
-            senderIdx : json['senderIdx'],
-            nickName : json['nickname'] ?? "닉네임 없음",
-            message : json['message'],
-            userCountObj : json['userCountObj'] != null ? new ChatCountUser.fromJSON(json['userCountObj']) : null,
-            chatTime : json['createTs']
-        );
+        try {
+	        return ChatMessage (
+	                    chatType : json['type'],
+	                    roomIdx : json['roomIdx'],
+	                    msgIdx : json['msgIdx'],
+	                    senderIdx : json['senderIdx'],
+	                    nickName : json['nickname'] ?? "닉네임 없음",
+	                    message : json['message'],
+	                    userCountObj : json['userCountObj'] != null ? new ChatCountUser.fromJSON(json['userCountObj']) : null,
+	                    chatTime : json['createTs']
+	                );
+        } catch (e) {
+	        return null;
+        }
     }
 }

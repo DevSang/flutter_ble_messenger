@@ -701,7 +701,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 
                                 Container(
                                     child:Text(
-                                        titleText.length > 15 ? titleText.substring(0, 15) + "..." : titleText,
+                                        titleText,
                                         style: TextStyle(
                                             fontFamily: 'NotoSans',
                                             color: Color(0xff272727),

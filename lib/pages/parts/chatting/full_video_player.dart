@@ -28,21 +28,27 @@ class FullVideoPlayer extends StatefulWidget {
 }
 
 class VideoPlayerState extends State<FullVideoPlayer> {
+    final AsyncMemoizer<bool> _memoizer = AsyncMemoizer();
     final String videoUrl;
     ChatMessage chatMessage;
     VideoPlayerState({Key key, this.videoUrl, this.chatMessage});
     VideoPlayerController _controller;
-    final AsyncMemoizer<bool> _memoizer = AsyncMemoizer();
+    String positionTime;
+    String durationTime;
+    bool _showController;
+    double dragGestureInit;
+    double dragGestureDistance;
 
     @override
     void initState() {
         super.initState();
+        _showController = true;
     }
 
     @override
     void dispose() {
         super.dispose();
-        _controller.dispose();
+        if(_controller != null) _controller.dispose();
     }
 
     /*
@@ -61,10 +67,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 		 *                AsyncMemoizer 사용하여 초기화 결과는 Cache에서 반환
 		 */
         return this._memoizer.runOnce(() async {
-
         	try {
-		        developer.log("### memoizer.runOnce()");
-
 		        Directory tempDir = await getTemporaryDirectory();
 		        String tempPath = tempDir.path;
 
@@ -125,8 +128,15 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 
 		        await _controller.initialize();
 
+                durationTime = getTime(_controller.value.duration.inMinutes, _controller.value.duration.inSeconds);
+
 		        // 비디오가 끝나면 처음으로 돌림
 		        _controller.addListener(() async {
+                    setState(() {
+                        positionTime = getTime(_controller.value.position.inMinutes, _controller.value.position.inSeconds);
+                    });
+
+
 			        if(_controller.value.position == _controller.value.duration){
 				        await _controller.seekTo(Duration(seconds: 0, minutes: 0, hours: 0));
 
@@ -147,23 +157,90 @@ class VideoPlayerState extends State<FullVideoPlayer> {
         }); // memoizer.runOnce
     }
 
+    String getTime(int minutes, int seconds) {
+        String _stringTime;
+        String _stringMinutes;
+        String _stringSeconds;
+
+        _stringMinutes = minutes < 10 ? '0' + minutes.toString() : minutes.toString();
+        _stringSeconds = seconds < 10 ? '0' + seconds.toString() : seconds.toString();
+        _stringTime = _stringMinutes + ":" + _stringSeconds;
+
+        return _stringTime;
+    }
+
 
     @override
     Widget build(BuildContext context) {
         return Scaffold(
+            appBar: _showController
+                ? new AppBar(
+                iconTheme: IconThemeData(
+                    color: Color.fromRGBO(77, 96, 191, 1), //change your color here
+                ),
+                title: Text(
+                    chatMessage.nickName + "님의 동영상",
+                    style: TextStyle(
+                        height: 1,
+                        color: Color.fromRGBO(250, 250, 250, 1),
+                        fontSize: ScreenUtil.getInstance().setSp(16),
+                        fontFamily: "NotoSans",
+                        fontWeight: FontWeight.w400
+                    ),
+                ),
+                leading: new IconButton(
+                    icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: Color.fromRGBO(250, 250, 250, 1),
+                        size: ScreenUtil().setWidth(20),
+                    ),
+                    onPressed: (){
+                        Navigator.of(context).pop();
+                    }
+                ),
+                backgroundColor: Color.fromRGBO(0, 0, 0, 0),
+                centerTitle: true,
+                elevation: 0,
+            )
+            : new AppBar(
+                elevation: 0,
+                backgroundColor: Color.fromRGBO(255, 255, 255, 0),
+            ),
             body: new Builder(
                 builder: (context) {
                     return GestureDetector(
-                        child: Stack(
-                            children: <Widget>[
-                                // 영상 영역
-                                Center(
-                                    child: videoSection()
-                                ),
-                                // 컨트롤러 영역
-                                controllerSection()
-                            ],
+                        child: Container(
+                            width: ScreenUtil().setWidth(375),
+                            height: ScreenUtil().setHeight(667),
+                            child: Stack(
+                                children: <Widget>[
+                                    // 영상 영역
+                                    Center(
+                                        child: videoSection()
+                                    ),
+
+                                    // 컨트롤러 영역
+                                    controllerSection()
+                                ],
+                            )
                         ),
+                        onTap : (){
+                            setState(() {
+                                _showController = !_showController;
+                            });
+                        },
+                        onPanStart: (DragStartDetails details) {
+                            dragGestureInit = details.globalPosition.dy;
+                        },
+                        onPanUpdate: (DragUpdateDetails details) {
+                            dragGestureDistance= details.globalPosition.dy - dragGestureInit;
+                        },
+                        onPanEnd: (DragEndDetails details) {
+                            dragGestureInit = 0.0;
+                            if (dragGestureDistance > 0) {
+                                Navigator.of(context).pop();
+                            }
+                        }
                     );
                 }
             ),
@@ -193,43 +270,118 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 
     Widget controllerSection() {
         return Positioned(
-            bottom: ScreenUtil().setHeight(40),
-            right: 0,
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                    InkWell(
-                        onTap: () {
-                        	if(_controller != null){
-		                        setState(() {
-			                        if (_controller.value.isPlaying) {
-				                        _controller.pause();
-			                        } else {
-				                        _controller.play();
-			                        }
-		                        });
-	                        }
-                        },
-                        // Display the correct icon depending on the state of the player.
+            bottom: 0,
+            child: FutureBuilder<bool>(
+            future: initVideoPlayer(),
+            builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                if (snapshot.data == true) {
+                    return AnimatedOpacity(
+                        opacity: _showController ? 1.0 : 0.0,
+                        duration: Duration(milliseconds: 200),
                         child: Container(
-                            width: ScreenUtil().setHeight(40),
-                            height: ScreenUtil().setHeight(40),
-                            decoration: BoxDecoration(
-                                color: Colors.transparent,
-                                border: Border.all(
-                                    width: ScreenUtil().setHeight(1),
-                                    color: Colors.white
-                                ),
-                                shape: BoxShape.circle
-                            ),
-                            child: Icon(
-	                            _controller == null ? Icons.hourglass_empty : (_controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                                color: Colors.white,
+                            width: ScreenUtil().setWidth(375),
+                            height: ScreenUtil().setHeight(90),
+                            color: Color.fromRGBO(0, 0, 0, 0.6),
+                            child: SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Column(
+                                    children: <Widget>[
+                                        // Controller
+                                        Container(
+                                            width: ScreenUtil().setWidth(375),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: ScreenUtil().setWidth(16),
+                                            ),
+                                            margin: EdgeInsets.only(
+                                                top: ScreenUtil().setHeight(10),
+                                                bottom: ScreenUtil().setHeight(3),
+                                            ),
+                                            child: VideoProgressIndicator(
+                                                _controller,
+                                                allowScrubbing: true,
+                                                colors: VideoProgressColors(
+                                                    playedColor: Colors.white,
+                                                    backgroundColor: Color.fromRGBO(0, 0, 0, 0.3),
+                                                    bufferedColor: Color.fromRGBO(0, 0, 0, 0.3),
+                                                ),
+                                            ),
+                                        ),
+
+                                        // Controller Time
+                                        Container(
+                                            width: ScreenUtil().setWidth(375),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: ScreenUtil().setWidth(16),
+                                            ),
+                                            child:
+                                            Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: <Widget>[
+                                                    Text(
+                                                        positionTime ?? '',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            letterSpacing: ScreenUtil().setWidth(-0.75),
+                                                            fontSize: ScreenUtil.getInstance().setSp(11),
+                                                            fontFamily: "NanumSquare",
+                                                            fontWeight: FontWeight.w500
+                                                        )
+                                                    ),
+                                                    Text(
+                                                        durationTime ?? '',
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            letterSpacing: ScreenUtil().setWidth(-0.75),
+                                                            fontSize: ScreenUtil.getInstance().setSp(11),
+                                                            fontFamily: "NanumSquare",
+                                                            fontWeight: FontWeight.w500
+                                                        )
+                                                    ),
+                                                ],
+                                            ),
+                                        ),
+
+                                        // 재생 버튼
+                                        InkWell(
+                                            onTap: () {
+                                                if(_controller != null){
+                                                    setState(() {
+                                                        if (_controller.value.isPlaying) {
+                                                            _controller.pause();
+                                                        } else {
+                                                            _controller.play();
+                                                        }
+                                                    });
+                                                }
+                                            },
+                                            // Display the correct icon depending on the state of the player.
+                                            child: Container(
+                                                width: ScreenUtil().setWidth(50),
+                                                height: ScreenUtil().setWidth(50),
+                                                decoration: BoxDecoration(
+                                                    color: Colors.transparent,
+                                                    border: Border.all(
+                                                        width: ScreenUtil().setWidth(1),
+                                                        color: Colors.white
+                                                    ),
+                                                    shape: BoxShape.circle
+                                                ),
+                                                child: Icon(
+                                                    _controller == null ? Icons.hourglass_empty : (_controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+                                                    color: Colors.white,
+                                                    size: ScreenUtil().setWidth(35),
+                                                )
+                                            )
+                                        ),
+                                    ],
+                                )
                             )
                         )
-                    )
-                ]
-            ),
+                    );
+                } else {
+                    return Container();
+                }
+            })
         );
     }
 }

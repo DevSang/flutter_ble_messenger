@@ -125,12 +125,14 @@ class _ChatTabState extends State<ChatTab> {
             }
 
             for (var joinInfo in chatInfoJson['joinList']) {
-                chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
+                ChatJoinInfo cji = ChatJoinInfo.fromJSON(joinInfo);
+                if(cji != null) chatJoinInfo.add(cji);
             }
 
             if (chatInfoJson['recentMsg'] != null) {
                 for (var recentMsg in chatInfoJson['recentMsg']) {
-                    chatMessageList.add(new ChatMessage.fromJSON(recentMsg));
+	                ChatMessage cm = ChatMessage.fromJSON(recentMsg);
+	                if(cm != null) chatMessageList.add(cm);
                 }
             }
 

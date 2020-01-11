@@ -26,16 +26,20 @@ class ChatJoinInfo {
     });
 
     factory ChatJoinInfo.fromJSON (Map<String, dynamic> jsonData) {
-        Map<String, dynamic> userVal = json.decode(jsonData['jb_user_data']);
+        try {
+	        Map<String, dynamic> userVal = json.decode(jsonData['jb_user_data']);
 
-        return ChatJoinInfo (
-            joinType : jsonData['join_type'],
-            userIdx : jsonData['user_idx'],
-            userNick : userVal['nickname'],
-	        profilePictureIdx : userVal['profile_picture_idx'],
-	        isFriendRequestAllowed : userVal['is_friend_request_allowed'],
-	        isPushAllowed : userVal['is_push_allowed'],
-	        description : userVal['description'],
-        );
+	        return ChatJoinInfo (
+	                    joinType : jsonData['join_type'],
+	                    userIdx : jsonData['user_idx'],
+	                    userNick : userVal['nickname'],
+		                profilePictureIdx : userVal['profile_picture_idx'],
+		                isFriendRequestAllowed : userVal['is_friend_request_allowed'],
+		                isPushAllowed : userVal['is_push_allowed'],
+		                description : userVal['description'],
+	                );
+        } catch (e) {
+	        return null;
+        }
     }
 }
