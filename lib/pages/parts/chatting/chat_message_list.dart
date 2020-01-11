@@ -40,9 +40,9 @@ class ChatMessageListState extends State<ChatMessageList> {
         return Flexible(
             child: ListView.builder(
                 padding: EdgeInsets.only(
-                    top: ScreenUtil.getInstance().setHeight(50),
-                    left: ScreenUtil.getInstance().setWidth(13),
-                    right: ScreenUtil.getInstance().setWidth(13)
+                    top: ScreenUtil().setHeight(50),
+                    left: ScreenUtil().setWidth(13),
+                    right: ScreenUtil().setWidth(13)
                 ),
                 reverse: true,
 
@@ -156,9 +156,9 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 style: TextStyle(
                                     fontFamily: "NotoSans",
                                     fontWeight: FontWeight.w400,
-                                    fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                                    fontSize: ScreenUtil().setSp(11),
                                     color: Color.fromRGBO(39, 39, 39, 0.7),
-                                    letterSpacing: ScreenUtil.getInstance().setHeight(-0.28),
+                                    letterSpacing: ScreenUtil().setHeight(-0.28),
                                 )
                             ),
                             chatMessage.chatType == "TALK"
@@ -205,7 +205,7 @@ class ChatMessageListState extends State<ChatMessageList> {
     Widget thumbnail(ChatMessage chatMessage) {
         return new Container(
             margin: EdgeInsets.only(
-                right: ScreenUtil.getInstance().setWidth(7)),
+                right: ScreenUtil().setWidth(7)),
             child: CircleAvatar(
                 child: chatMessage.profileImgUri != null ? getProfileImg(chatMessage) : getTextProfile(chatMessage),
                 backgroundColor: Color.fromRGBO(77, 96, 191, 1),
@@ -247,11 +247,11 @@ class ChatMessageListState extends State<ChatMessageList> {
             margin:
             receivedMsg
                 ? EdgeInsets.only(
-                    bottom: ScreenUtil.getInstance().setHeight(4),
-                    left: ScreenUtil.getInstance().setWidth(7))
+                    bottom: ScreenUtil().setHeight(4),
+                    left: ScreenUtil().setWidth(7))
                 : EdgeInsets.only(
-                    bottom: ScreenUtil.getInstance().setHeight(4),
-                    right: ScreenUtil.getInstance().setWidth(7))
+                    bottom: ScreenUtil().setHeight(4),
+                    right: ScreenUtil().setWidth(7))
             ,
             child: Text(
                 GetTimeDifference.timeDifference(chatTime),
@@ -259,8 +259,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                     height: 1,
                     fontFamily: "NanumSquare",
                     fontWeight: FontWeight.w400,
-                    fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
-                    letterSpacing: ScreenUtil.getInstance().setWidth(-0.28),
+                    fontSize: ScreenUtil().setSp(11),
+                    letterSpacing: ScreenUtil().setWidth(-0.28),
                     color: Color.fromRGBO(39, 39, 39, 0.7)
                 )
             ),
@@ -282,8 +282,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                             : Color.fromRGBO(255, 255, 255, 1)
                     ,
                     alignment: AlignmentDirectional(0.0, 0.0),
-                    width: ScreenUtil.getInstance().setWidth(15),
-                    height: ScreenUtil.getInstance().setHeight(5),
+                    width: ScreenUtil().setWidth(15),
+                    height: ScreenUtil().setHeight(5),
                     child: Container(
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
@@ -353,8 +353,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                             Container(
                                 color: Color.fromRGBO(76, 96, 191, 1),
                                 alignment: AlignmentDirectional(0.0, 0.0),
-                                width: ScreenUtil.getInstance().setWidth(15),
-                                height: ScreenUtil.getInstance().setHeight(5),
+                                width: ScreenUtil().setWidth(15),
+                                height: ScreenUtil().setHeight(5),
                                 child: Container(
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.only(
@@ -370,8 +370,8 @@ class ChatMessageListState extends State<ChatMessageList> {
                                 margin: EdgeInsets.only(
                                     bottom:
                                     isLastSendMessage
-                                        ? ScreenUtil.getInstance().setHeight(14)
-                                        : ScreenUtil.getInstance().setHeight(0)
+                                        ? ScreenUtil().setHeight(14)
+                                        : ScreenUtil().setHeight(0)
                                 ),
                                 child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -420,7 +420,7 @@ class ChatMessageListState extends State<ChatMessageList> {
             decoration: BoxDecoration(
                 color: Color.fromRGBO(0, 0, 0, 0.25),
                 borderRadius: BorderRadius.all(
-                    Radius.circular(ScreenUtil.getInstance().setWidth(4))
+                    Radius.circular(ScreenUtil().setWidth(4))
                 )
             ),
             child: new Row(
@@ -432,7 +432,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                         style: TextStyle(
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w700,
-                            fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                            fontSize: ScreenUtil().setSp(11),
                             color: Colors.white
                         ),
                     ),
@@ -441,7 +441,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                         style: TextStyle(
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w400,
-                            fontSize: ScreenUtil(allowFontScaling: true).setSp(11),
+                            fontSize: ScreenUtil().setSp(11),
                             color: Colors.white
                         ),
                     )
@@ -456,9 +456,9 @@ class ChatMessageListState extends State<ChatMessageList> {
             margin: EdgeInsets.only(
                 top:
                 receivedMsg
-                    ? ScreenUtil.getInstance().setHeight(9)
-                    : ScreenUtil.getInstance().setHeight(0),
-                bottom: ScreenUtil.getInstance().setHeight(14)
+                    ? ScreenUtil().setHeight(9)
+                    : ScreenUtil().setHeight(0),
+                bottom: ScreenUtil().setHeight(14)
             ),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -602,9 +602,9 @@ class ChatMessageListState extends State<ChatMessageList> {
             margin: EdgeInsets.only(
                 top:
                 receivedMsg
-                    ? ScreenUtil.getInstance().setHeight(9)
-                    : ScreenUtil.getInstance().setHeight(0),
-                bottom: ScreenUtil.getInstance().setHeight(14)
+                    ? ScreenUtil().setHeight(9)
+                    : ScreenUtil().setHeight(0),
+                bottom: ScreenUtil().setHeight(14)
             ),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -681,7 +681,7 @@ class ChatMessageListState extends State<ChatMessageList> {
 
         return Container(
             margin: EdgeInsets.only(
-                bottom: ScreenUtil.getInstance().setHeight(14)
+                bottom: ScreenUtil().setHeight(14)
             ),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -732,9 +732,9 @@ class ChatMessageListState extends State<ChatMessageList> {
             margin: EdgeInsets.only(
                 top:
                 receivedMsg
-                    ? ScreenUtil.getInstance().setHeight(9)
-                    : ScreenUtil.getInstance().setHeight(0),
-                bottom: ScreenUtil.getInstance().setHeight(14)
+                    ? ScreenUtil().setHeight(9)
+                    : ScreenUtil().setHeight(0),
+                bottom: ScreenUtil().setHeight(14)
             ),
             child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -748,7 +748,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                     GestureDetector(
                         child: Container(
                             width: ScreenUtil().setWidth(230),
-                            height: ScreenUtil.getInstance().setHeight(163),
+                            height: ScreenUtil().setHeight(163),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 border: Border.all(
@@ -786,7 +786,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                                     style: TextStyle(
                                                                         fontFamily: "NotoSans",
                                                                         fontWeight: FontWeight.w700,
-                                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
+                                                                        fontSize: ScreenUtil().setSp(15),
                                                                         color: Color.fromRGBO(39, 39, 39, 1),
                                                                         letterSpacing: ScreenUtil().setWidth(-0.75)
                                                                     ),
@@ -798,7 +798,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                                                                     style: TextStyle(
                                                                         fontFamily: "NotoSans",
                                                                         fontWeight: FontWeight.w400,
-                                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
+                                                                        fontSize: ScreenUtil().setSp(15),
                                                                         color: Color.fromRGBO(39, 39, 39, 1),
                                                                         letterSpacing: ScreenUtil().setWidth(-0.75)
                                                                     ),

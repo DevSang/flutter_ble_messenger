@@ -41,8 +41,6 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
 
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
-
         return new Scaffold(
             appBar: new AppBar(
                 iconTheme: IconThemeData(
@@ -53,7 +51,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                     "코엑스 별마당 도서관",
                     style: TextStyle(
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(16),
+                        fontSize: ScreenUtil().setSp(16),
                         fontFamily: "NotoSans"
                     ),
                 ),
@@ -78,7 +76,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                 style: TextStyle(
                                                     color: Color.fromRGBO(107, 107, 107, 1),
                                                     letterSpacing: ScreenUtil().setWidth(-0.75),
-                                                    fontSize: ScreenUtil.getInstance().setSp(15),
+                                                    fontSize: ScreenUtil().setSp(15),
                                                     fontFamily: "NotoSans",
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -111,8 +109,8 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                     Flexible(
                         child: ListView.builder(
                             padding: EdgeInsets.only(
-                                left: ScreenUtil.getInstance().setWidth(16.0),
-                                right: ScreenUtil.getInstance().setWidth(16.0)
+                                left: ScreenUtil().setWidth(16.0),
+                                right: ScreenUtil().setWidth(16.0)
                             ),
 
                             itemCount: noticeReplyList.length,

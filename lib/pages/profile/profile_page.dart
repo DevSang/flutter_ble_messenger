@@ -184,8 +184,8 @@ class _ProfilePageState extends State <ProfilePage>{
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(16),
-                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.8),
+                        fontSize: ScreenUtil().setSp(16),
+                        letterSpacing: ScreenUtil().setWidth(-0.8),
                     ),
                 ),
                 leading:  IconButton(
@@ -322,7 +322,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             height: 1,
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w400,
-                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75),
+                            letterSpacing: ScreenUtil().setWidth(-0.75),
                             fontSize: ScreenUtil().setSp(15),
                             color: Color.fromRGBO(107, 107, 107, 1)
                         )
@@ -472,7 +472,7 @@ class _ProfilePageState extends State <ProfilePage>{
             decoration: BoxDecoration(
                 border: Border(
                     bottom: BorderSide(
-                        width: ScreenUtil.getInstance().setWidth(1),
+                        width: ScreenUtil().setWidth(1),
                         color: Color.fromRGBO(235, 235, 235, 1)
                     )
                 )
@@ -485,8 +485,8 @@ class _ProfilePageState extends State <ProfilePage>{
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w400,
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(13),
-                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.32)
+                        fontSize: ScreenUtil().setSp(13),
+                        letterSpacing: ScreenUtil().setWidth(-0.32)
                     )
                 ),
             ),
@@ -510,8 +510,8 @@ class _ProfilePageState extends State <ProfilePage>{
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
                             color: Color.fromRGBO(39, 39, 39, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(15),
-                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                            fontSize: ScreenUtil().setSp(15),
+                            letterSpacing: ScreenUtil().setWidth(-0.75)
                         )
                     ),
                     InkWell(
@@ -577,8 +577,8 @@ class _ProfilePageState extends State <ProfilePage>{
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
                             color: Color.fromRGBO(39, 39, 39, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(15),
-                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                            fontSize: ScreenUtil().setSp(15),
+                            letterSpacing: ScreenUtil().setWidth(-0.75)
                         )
                     ),
                     CustomSwitch(
@@ -612,8 +612,8 @@ class _ProfilePageState extends State <ProfilePage>{
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
                             color: Color.fromRGBO(39, 39, 39, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(15),
-                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                            fontSize: ScreenUtil().setSp(15),
+                            letterSpacing: ScreenUtil().setWidth(-0.75)
                         )
                     ),
                     Text(
@@ -623,7 +623,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w400,
                             color: Color.fromRGBO(107, 107, 107, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(15)
+                            fontSize: ScreenUtil().setSp(15)
                         )
                     )
                 ],
@@ -649,8 +649,8 @@ class _ProfilePageState extends State <ProfilePage>{
                       fontFamily: "NotoSans",
                       fontWeight: FontWeight.w500,
                       color: Color.fromRGBO(39, 39, 39, 1),
-                      fontSize: ScreenUtil.getInstance().setSp(15),
-                      letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                      fontSize: ScreenUtil().setSp(15),
+                      letterSpacing: ScreenUtil().setWidth(-0.75)
                   )
               ),
             ],

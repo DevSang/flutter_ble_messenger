@@ -60,8 +60,6 @@ class NoticeWritePageState extends State<NoticeWritePage> {
 
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
-
         return new Scaffold(
             appBar: new AppBar(
                 iconTheme: IconThemeData(
@@ -75,7 +73,7 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                                 style: TextStyle(
                                     height: 1,
                                     color: Color.fromRGBO(39, 39, 39, 1),
-                                    fontSize: ScreenUtil.getInstance().setSp(16),
+                                    fontSize: ScreenUtil().setSp(16),
                                     fontFamily: "NotoSans"
                                 ),
                             ),
@@ -84,7 +82,7 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                                 style: TextStyle(
                                     height: 1.5,
                                     color: Color.fromRGBO(107, 107, 107, 1),
-                                    fontSize: ScreenUtil.getInstance().setSp(11),
+                                    fontSize: ScreenUtil().setSp(11),
                                     fontFamily: "NotoSans",
                                     fontWeight: FontWeight.w400
                                 ),
@@ -112,7 +110,7 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                                             style: TextStyle(
                                                 color: Color.fromRGBO(107, 107, 107, 1),
                                                 letterSpacing: ScreenUtil().setWidth(-0.75),
-                                                fontSize: ScreenUtil.getInstance().setSp(15),
+                                                fontSize: ScreenUtil().setSp(15),
                                                 fontFamily: "NotoSans",
                                                 fontWeight: FontWeight.w500
                                             ),
