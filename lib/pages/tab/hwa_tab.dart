@@ -6,6 +6,7 @@ import 'dart:ui';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
+import 'package:Hwa/pages/trend/trend_page.dart';
 import 'package:Hwa/utility/customRoute.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:flutter/cupertino.dart';
@@ -453,12 +454,9 @@ class HwaTabState extends State<HwaTab> {
 
             setState(() {
                 isLoading = false;
-                HwaBeacon().stopRanging();
-                stopOldChatRemoveTimer();
-                chatList.clear();
-                chatIdxList.clear();
-                _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
             });
+
+            exitPage();
 
             Navigator.push(
                 context,
@@ -489,13 +487,7 @@ class HwaTabState extends State<HwaTab> {
        * @description : 프로필 설정 입장
       */
     void enterProfile() async {
-        setState(() {
-            HwaBeacon().stopRanging();
-            stopOldChatRemoveTimer();
-            chatList.clear();
-            chatIdxList.clear();
-            _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
-        });
+        exitPage();
 
         Navigator.push(
             context,
@@ -505,7 +497,38 @@ class HwaTabState extends State<HwaTab> {
         ).then((val) => {
             startBleService()
         });
+    }
 
+    /*
+       * @author : hs
+       * @date : 2019-12-28
+       * @description : 트렌드 입장
+      */
+    void enterTrend() async {
+        exitPage();
+
+        Navigator.push(
+            context, MaterialPageRoute(
+            builder: (context) => TrendPage()
+            )
+        ).then((val) => {
+            startBleService()
+        });
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-11
+     * @description : 타 페이지로 이동시 기능 처리
+    */
+    void exitPage() async {
+        setState(() {
+            HwaBeacon().stopRanging();
+            stopOldChatRemoveTimer();
+            chatList.clear();
+            chatIdxList.clear();
+            _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
+        });
     }
 
     /*

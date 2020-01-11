@@ -114,6 +114,9 @@ flutter:
     - assets/images/businesscard.png
     - assets/images/bgGradeLogin.png
     - assets/images/bgGrade.png
+    - assets/images/trendnoneImg.png
+    - assets/images/trendnoneImGside.png
+    - assets/images/trendnonListImg.png
     #Background Image
     - assets/images/background/noChatackgroundImg.png
     - assets/images/background/noRoomBackgroundImg.png

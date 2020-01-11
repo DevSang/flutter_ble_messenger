@@ -20,340 +20,363 @@ import 'package:Hwa/constant.dart';
 
 
 class TrendPage extends StatefulWidget {
-  _TrendPageState createState() => _TrendPageState();
+    _TrendPageState createState() => _TrendPageState();
 }
 
 class _TrendPageState extends State<TrendPage> {
-  bool showSearch;
-  double sameSize;
-  bool isLoading;
+    bool showSearch;
+    double sameSize;
+    bool isLoading;
 
-  List<TrendChatListItem> trendChatList = <TrendChatListItem>[];
-  List<TrendChatListItem> topTrendChatList = <TrendChatListItem>[];
+    List<TrendChatListItem> trendChatList = <TrendChatListItem>[];
+    List<TrendChatListItem> topTrendChatList = <TrendChatListItem>[];
 
-  @override
-  void initState() {
-    super.initState();
-    showSearch = false;
-    sameSize = GetSameSize().main();
-    isLoading = false;
-    _getChatList();
-  }
+    Widget screenContext;           // 상황에 따른 화면
 
-  /*
+    @override
+    void initState() {
+        super.initState();
+        showSearch = false;
+        sameSize = GetSameSize().main();
+        isLoading = false;
+        screenContext = Container();
+        _getChatList();
+    }
+
+    /*
     * @author : hs
     * @date : 2019-12-28
     * @description : 채팅 리스트 받아오기 API 호출
     */
-  void _getChatList() async {
-      setState(() {
-          isLoading = true;
-      });
+    void _getChatList() async {
+        setState(() {
+            isLoading = true;
+        });
 
-      try {
-          String uri = "/danhwa/trend";
+        try {
+            String uri = "/danhwa/trend";
 
-          final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
-          TrendChatListItem chatInfo;
-          List<dynamic> jsonParseList = json.decode(response.body);
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
+            TrendChatListItem chatInfo;
+            List<dynamic> jsonParseList = json.decode(response.body);
 
-          for (var index = jsonParseList.length; index > 0; index--) {
-              chatInfo = new TrendChatListItem.fromJSON(jsonParseList[index - 1]);
+            for (var index = jsonParseList.length; index > 0; index--) {
+                chatInfo = new TrendChatListItem.fromJSON(jsonParseList[index - 1]);
 
-              if (topTrendChatList.length < 2) {
+                if (topTrendChatList.length < 2) {
                   // 채팅 리스트에 추가
-                  topTrendChatList.add(chatInfo);
-              } else {
+                    topTrendChatList.add(chatInfo);
+                } else {
                   // 채팅 리스트에 추가
-                  trendChatList.add(chatInfo);
-              }
-          }
+                    trendChatList.add(chatInfo);
+                }
+            }
 
-          setState(() {
-              isLoading = false;
-          });
+            _setScreenContext();
 
-      } catch (e) {
-          developer.log("#### Error :: " + e.toString());
-      }
-  }
 
-  /*
-   * @author : hs
-   * @date : 2020-01-01
-   * @description : 단화방 조인
-  */
-  void _joinChat(int chatIdx) async {
-      setState(() {
-          isLoading = true;
-      });
+        } catch (e) {
+            developer.log("#### Error :: " + e.toString());
+        }
+    }
 
-      try {
-          /// 참여 타입 수정
-          String uri = "/danhwa/join?roomIdx=" + chatIdx.toString() + "&type=ONLINE";
-          final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+    /*
+     * @author : hs
+     * @date : 2020-01-11
+     * @description : 상황에 따른 화면 셋팅
+    */
+    void _setScreenContext() {
+        if (topTrendChatList.length == 0) {
 
-          Map<String, dynamic> jsonParse = json.decode(response.body);
+        } else if (topTrendChatList.length == 1) {
 
-          // 단화방 입장
-          _enterChat(jsonParse);
+        } else if (trendChatList.length == 0) {
 
-      } catch (e) {
+        } else {
+            screenContext = Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                    Container(
+                        color: Color.fromRGBO(240, 240, 240, 1),
+                        child: Column(
+                            children: <Widget>[
+                                // 검색 영역
+                                showSearch ? _searchTrend() : Container(),
+
+                                // 상단 탭 영역
+                                trendHeader(),
+
+                                // 상단 Top2 영역
+                                topChat(),
+                            ],
+                        )
+                    ),
+
+                    // 하단 단화 리스트
+                    chatList()
+                ],
+            );
+        }
+
+        setState(() {
+            isLoading = false;
+        });
+    }
+
+    /*
+    * @author : hs
+    * @date : 2020-01-01
+    * @description : 단화방 조인
+    */
+    void _joinChat(int chatIdx) async {
+        setState(() {
+            isLoading = true;
+        });
+
+        try {
+            /// 참여 타입 수정
+            String uri = "/danhwa/join?roomIdx=" + chatIdx.toString() + "&type=ONLINE";
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+            Map<String, dynamic> jsonParse = json.decode(response.body);
+
+            // 단화방 입장
+            _enterChat(jsonParse);
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
+    }
+
+    /*
+    * @author : hs
+    * @date : 2020-01-01
+    * @description : 단화방 입장
+    */
+    void _enterChat(Map<String, dynamic> chatInfoJson) {
+        List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
+        List<ChatMessage> chatMessageList = <ChatMessage>[];
+
+        try {
+            ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
+            bool isLiked = chatInfoJson['isLiked'];
+            int likeCount = chatInfoJson['danhwaLikeCount'];
+            bool alreadyJoined = chatInfoJson['alreadyJoin'];
+            String myJoinType;
+
+            if (alreadyJoined) {
+                myJoinType = chatInfoJson['myJoinType'];
+            }
+
+            try {
+                for (var joinInfo in chatInfoJson['joinList']) {
+                    chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
+                }
+
+                for (var recentMsg in chatInfoJson['recentMsg']) {
+                    chatMessageList.add(new ChatMessage.fromJSON(recentMsg));
+                }
+            } catch (e) {
+                developer.log("#### Error :: "+ e.toString());
+            }
+
+            setState(() {
+                isLoading = false;
+            });
+
+            Navigator.push(context,
+                CustomRoute(builder: (context) {
+                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "Trend", disable: (!alreadyJoined || myJoinType == "ONLINE"));
+                })
+            );
+
+            isLoading = false;
+        } catch (e) {
           developer.log("#### Error :: "+ e.toString());
-      }
-  }
+        }
+    }
 
-  /*
-   * @author : hs
-   * @date : 2020-01-01
-   * @description : 단화방 입장
-  */
-  void _enterChat(Map<String, dynamic> chatInfoJson) {
-      List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
-      List<ChatMessage> chatMessageList = <ChatMessage>[];
-
-      try {
-          ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
-          bool isLiked = chatInfoJson['isLiked'];
-          int likeCount = chatInfoJson['danhwaLikeCount'];
-          bool alreadyJoined = chatInfoJson['alreadyJoin'];
-          String myJoinType;
-
-          if (alreadyJoined) {
-              myJoinType = chatInfoJson['myJoinType'];
-          }
-
-
-          try {
-              for (var joinInfo in chatInfoJson['joinList']) {
-                  chatJoinInfo.add(new ChatJoinInfo.fromJSON(joinInfo));
-              }
-
-
-              for (var recentMsg in chatInfoJson['recentMsg']) {
-                  chatMessageList.add(new ChatMessage.fromJSON(recentMsg));
-              }
-          } catch (e) {
-              developer.log("#### Error :: "+ e.toString());
-          }
-
-          setState(() {
-              isLoading = false;
-          });
-
-          Navigator.push(context,
-              CustomRoute(builder: (context) {
-                  return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "Trend", disable: (!alreadyJoined || myJoinType == "ONLINE"));
-              })
-          );
-
-          isLoading = false;
-      } catch (e) {
-          developer.log("#### Error :: "+ e.toString());
-      }
-  }
-
-  /*
+    /*
      * @author : hs
      * @date : 2019-12-29
      * @description : 단화방 좋아요
     */
-  void _likeChat(List<TrendChatListItem> chatList, int listIdx) async {
+    void _likeChat(List<TrendChatListItem> chatList, int listIdx) async {
 
-      try {
-          /// 참여 타입 수정
-          String uri = "/danhwa/like?roomIdx=" + chatList[listIdx].chatIdx.toString();
-          final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+        try {
+            /// 참여 타입 수정
+            String uri = "/danhwa/like?roomIdx=" + chatList[listIdx].chatIdx.toString();
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
-          developer.log(response.body);
+            developer.log(response.body);
 
-          setState(() {
-              chatList[listIdx].isLiked = true;
-              chatList[listIdx].likeCount++;
-          });
+            setState(() {
+                chatList[listIdx].isLiked = true;
+                chatList[listIdx].likeCount++;
+            });
 
-      } catch (e) {
-          developer.log("#### Error :: "+ e.toString());
-      }
-  }
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
+    }
 
-  /*
+    /*
      * @author : hs
      * @date : 2019-12-29
      * @description : 단화방 좋아요 취소
     */
-  void _unLikeChat(List<TrendChatListItem> chatList, int listIdx) async {
+    void _unLikeChat(List<TrendChatListItem> chatList, int listIdx) async {
 
-      try {
-          /// 참여 타입 수정
-          String uri = "/danhwa/likeCancel?roomIdx=" + chatList[listIdx].chatIdx.toString();
-          final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+        try {
+            /// 참여 타입 수정
+            String uri = "/danhwa/likeCancel?roomIdx=" + chatList[listIdx].chatIdx.toString();
+            final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
-          developer.log(response.body);
+            developer.log(response.body);
 
-          setState(() {
-              chatList[listIdx].isLiked = false;
-              chatList[listIdx].likeCount--;
-          });
+            setState(() {
+                chatList[listIdx].isLiked = false;
+                chatList[listIdx].likeCount--;
+            });
 
-      } catch (e) {
-          developer.log("#### Error :: "+ e.toString());
-      }
-  }
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+        }
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            centerTitle: true,
-            backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-            title: Text(
-              "실시간 단화 트랜드",
-              style: TextStyle(
-                  fontFamily: "NotoSans",
-                  color: Color.fromRGBO(39, 39, 39, 1),
-                  fontSize: ScreenUtil.getInstance().setSp(16)),
+    @override
+    Widget build(BuildContext context) {
+        return Scaffold(
+            appBar: AppBar(
+                centerTitle: true,
+                backgroundColor: Color.fromRGBO(255, 255, 255, 1),
+                title: Text(
+                  "실시간 단화 트랜드",
+                  style: TextStyle(
+                      fontFamily: "NotoSans",
+                      color: Color.fromRGBO(39, 39, 39, 1),
+                      fontSize: ScreenUtil.getInstance().setSp(16)),
+                ),
+                brightness: Brightness.light,
+                leading: IconButton(
+                    icon: Image.asset("assets/images/icon/navIconPrev.png"),
+                    onPressed: () => Navigator.of(context).pop(null),
+                ),
+                actions: <Widget>[
+                    IconButton(
+                        icon: Image.asset('assets/images/icon/navIconSearch.png'),
+                        padding: EdgeInsets.only(right: 16),
+                        onPressed: () {
+                            setState(() {
+                                showSearch = true;
+                            });
+                        },
+                    )
+                ],
+                elevation: 0.0,
             ),
-            brightness: Brightness.light,
-            leading: IconButton(
-              icon: Image.asset("assets/images/icon/navIconPrev.png"),
-              onPressed: () => Navigator.of(context).pop(null),
+            body: Stack(
+                children: <Widget>[
+                    // 상황에 따른 화면
+                    screenContext,
+
+                    isLoading ? Loading() : new Container()
+                ],
             ),
-            actions: <Widget>[
-              IconButton(
-                icon: Image.asset('assets/images/icon/navIconSearch.png'),
-                padding: EdgeInsets.only(right: 16),
-                onPressed: () {
-                    setState(() {
-                        showSearch = true;
-                    });
-                },
-              )
-            ],
-            elevation: 0.0,
-        ),
-        body: Stack(
-            children: <Widget>[
-                Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                        Container(
-                            color: Color.fromRGBO(240, 240, 240, 1),
-                            child: Column(
-                                children: <Widget>[
-                                    // 검색 영역
-                                    showSearch ? _searchTrend() : Container(),
+        );
+    }
 
-                                    // 상단 탭 영역
-                                    trendHeader(),
-
-                                    // 상단 Top2 영역
-                                    topChat(),
-                                ],
+    Widget _searchTrend() {
+        return Container(
+            height: ScreenUtil().setHeight(48),
+            color: Color.fromRGBO(0, 0, 0, 0.2),
+            child: Row(
+                children: <Widget>[
+                    Container(
+                        width: ScreenUtil().setWidth(314),
+                        height: ScreenUtil().setHeight(36),
+                        margin: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(8)
+                        ),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.white
+                        ),
+                        child: TextField(
+                            style: TextStyle(
+                                fontFamily: 'NotoSans',
+                                color: Color.fromRGBO(39, 39, 39, 1),
+                                fontSize: ScreenUtil().setSp(15),
+                                fontWeight: FontWeight.w500,
+                                fontStyle: FontStyle.normal,
+                                letterSpacing: ScreenUtil().setWidth(-0.75),
+                            ),
+                            decoration: InputDecoration(
+                                prefixIcon: Icon(
+                                    Icons.search,
+                                    color: Colors.grey,
+                                ),
+                                border: InputBorder.none,
+                                hintStyle: TextStyle(
+                                    fontFamily: 'NotoSans',
+                                    color: Color.fromRGBO(39, 39, 39, 0.4),
+                                    fontSize: ScreenUtil().setSp(15),
+                                    fontWeight: FontWeight.w500,
+                                    fontStyle: FontStyle.normal,
+                                    letterSpacing: ScreenUtil().setWidth(-0.75),
+                                ),
+                                hintText: "단화방 검색",
+                            ),
+                        ),
+                    ),
+                    InkWell(
+                        child: Container(
+                            height: ScreenUtil().setHeight(48),
+                            padding: EdgeInsets.only(
+                                left: ScreenUtil().setWidth(13)
+                            ),
+                            child: Center(
+                                child: Text(
+                                    '취소',
+                                    style: TextStyle(
+                                        height: 1,
+                                        fontFamily: 'NotoSans',
+                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                        fontSize: ScreenUtil().setSp(15),
+                                        fontWeight: FontWeight.w500,
+                                        fontStyle: FontStyle.normal,
+                                        letterSpacing: ScreenUtil().setWidth(-0.75),
+                                    ),
+                                )
                             )
                         ),
+                        onTap: () {
+                            setState(() {
+                                showSearch = false;
+                            });
+                        },
+                    )
+                ],
+            )
+        );
+    }
 
-                        // 하단 단화 리스트
-                        chatList()
-                    ],
-                ),
-                isLoading ? Loading() : new Container()
-            ],
-        ),
-    );
-  }
-
-  Widget _searchTrend() {
-    return Container(
-        height: ScreenUtil().setHeight(48),
-        color: Color.fromRGBO(0, 0, 0, 0.2),
-        child: Row(
-          children: <Widget>[
-              Container(
-                  width: ScreenUtil().setWidth(314),
-                  height: ScreenUtil().setHeight(36),
-                  margin: EdgeInsets.only(
-                      left: ScreenUtil().setWidth(8)
-                  ),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Colors.white
-                  ),
-                  child: TextField(
-                      style: TextStyle(
-                          fontFamily: 'NotoSans',
-                          color: Color.fromRGBO(39, 39, 39, 1),
-                          fontSize: ScreenUtil().setSp(15),
-                          fontWeight: FontWeight.w500,
-                          fontStyle: FontStyle.normal,
-                          letterSpacing: ScreenUtil().setWidth(-0.75),
-                      ),
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(
-                              Icons.search,
-                              color: Colors.grey,
-                          ),
-                          border: InputBorder.none,
-                          hintStyle: TextStyle(
-                              fontFamily: 'NotoSans',
-                              color: Color.fromRGBO(39, 39, 39, 0.4),
-                              fontSize: ScreenUtil().setSp(15),
-                              fontWeight: FontWeight.w500,
-                              fontStyle: FontStyle.normal,
-                              letterSpacing: ScreenUtil().setWidth(-0.75),
-                          ),
-                          hintText: "단화방 검색",
-                      ),
-                  ),
-              ),
-              InkWell(
-                  child: Container(
-                      height: ScreenUtil().setHeight(48),
-                      padding: EdgeInsets.only(
-                          left: ScreenUtil().setWidth(13)
-                      ),
-                      child: Center(
-                          child: Text(
-                              '취소',
-                              style: TextStyle(
-                                  height: 1,
-                                  fontFamily: 'NotoSans',
-                                  color: Color.fromRGBO(39, 39, 39, 1),
-                                  fontSize: ScreenUtil().setSp(15),
-                                  fontWeight: FontWeight.w500,
-                                  fontStyle: FontStyle.normal,
-                                  letterSpacing: ScreenUtil().setWidth(-0.75),
-                              ),
-                          )
-                      )
-                  ),
-                  onTap: () {
-                      setState(() {
-                        showSearch = false;
-                      });
-                  },
-              )
-          ],
-        )
-    );
-  }
-
-  Widget trendHeader() {
-    return new Container(
-        height: ScreenUtil().setHeight(36),
-        margin: EdgeInsets.only(
-          top: ScreenUtil().setHeight(17),
-          bottom: ScreenUtil().setHeight(18 - sameSize*8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-              headerTab(1),
+    Widget trendHeader() {
+        return new Container(
+            height: ScreenUtil().setHeight(36),
+            margin: EdgeInsets.only(
+                top: ScreenUtil().setHeight(17),
+                bottom: ScreenUtil().setHeight(18 - sameSize*8),
+            ),
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                    headerTab(1),
 //              headerTab(2)
-          ],
-        )
-    );
-  }
+                ],
+            )
+        );
+    }
 
     Widget headerTab(int index) {
         Color tabColor = index == 1

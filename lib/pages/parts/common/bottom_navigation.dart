@@ -328,10 +328,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 
 				    child: InkWell(
 					    child: Image.asset('assets/images/icon/navIconHot.png'),
-					    onTap: () =>
-							    Navigator.push(
-									    context, MaterialPageRoute(
-									    builder: (context) => TrendPage())),
+					    onTap: () => hwaTabStateKey.currentState.enterTrend(),
 				    )
 			    ),
 			    Container(
