@@ -3,17 +3,17 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:developer' as developer;
 import 'dart:ui';
-import 'package:Hwa/constant.dart';
-import 'package:Hwa/data/models/chat_message.dart';
-import 'package:Hwa/pages/profile/profile_page.dart';
-import 'package:Hwa/utility/customRoute.dart';
-import 'package:Hwa/utility/custom_dialog.dart';
+
+import 'package:easy_localization/easy_localization.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:simple_animations/simple_animations.dart';
+
 import 'package:hwa_beacon/hwa_beacon.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
@@ -22,8 +22,12 @@ import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:Hwa/service/get_time_difference.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:easy_localization/easy_localization.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/data/models/chat_message.dart';
+import 'package:Hwa/pages/profile/profile_page.dart';
+import 'package:Hwa/utility/customRoute.dart';
+import 'package:Hwa/utility/custom_dialog.dart';
+import 'package:Hwa/animate/rotate.dart';
 
 
 /*
@@ -39,7 +43,7 @@ class HwaTab extends StatefulWidget {
 	HwaTabState createState() => HwaTabState();
 }
 
-class HwaTabState extends State<HwaTab> {
+class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
@@ -66,7 +70,7 @@ class HwaTabState extends State<HwaTab> {
     // GPS 관련
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     Position _currentPosition;
-    String _currentAddress = '위치 검색 중..';
+    String _currentAddress = '위치 검색 중 ';
 
     // 사용자 GPS, BLE 권한 관련
     bool isAllowedGPS = true;
@@ -76,6 +80,12 @@ class HwaTabState extends State<HwaTab> {
     bool isAuthBLE = true;
 
     bool isBeaconSupport = false;
+    bool isRefreshLocation = false;
+
+    //Animation설정
+    AnimationController _animationController;
+    Animation<double> _animation;
+    Animation<int> _stringAnimation;
 
     @override
     void initState() {
@@ -83,6 +93,13 @@ class HwaTabState extends State<HwaTab> {
         isLoading = false;
         sameSize  = GetSameSize().main();
         super.initState();
+
+        _animationController = new AnimationController(
+            vsync: this,
+            duration: Duration(seconds: 3),
+        );
+        _animation = Tween(begin: 0.0, end: 40.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.linear));
+        _stringAnimation = new StepTween(begin:0 , end: 4).animate(new CurvedAnimation(parent: _animationController, curve: Curves.ease));
     }
 
     /*
@@ -273,7 +290,12 @@ class HwaTabState extends State<HwaTab> {
      * @description : GPS 찾아서 주소 셋팅
      */
     void startGpsService() async {
-	    developer.log("# start GpsService!");
+//        _animationController.forward();
+        _animationController.repeat();
+        developer.log("# start GpsService!");
+        setState(() {
+            _currentAddress = "위치 검색 중 ";
+        });
 
 	    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
 	    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
@@ -290,6 +312,10 @@ class HwaTabState extends State<HwaTab> {
 
 		    });
 	    }
+        developer.log("# finish GpsService!");
+
+        _animationController.stop();
+        _animationController.reset();
     }
 
     /*
@@ -808,26 +834,50 @@ class HwaTabState extends State<HwaTab> {
 		                        Row(
 		                            children: <Widget>[
 		                                Container(
-				                                child: Image.asset('assets/images/icon/iconRefresh.png'),
-			                                margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
+                                            margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
+                                            child: AnimatedBuilder(
+                                                animation: _animation,
+                                                child: Container(child: Image.asset('assets/images/icon/iconRefresh.png')),
+                                                builder: (context, child) {
+                                                    return Transform.rotate(
+                                                        angle: _animation.value,
+                                                        child: child,
+                                                    );
+                                                })
 		                                ),
-		                                Text(
-		                                    '$_currentAddress',
-		                                    style: TextStyle(
-		                                        height: 1,
-		                                        fontFamily: "NotoSans",
-		                                        fontWeight: FontWeight.w400,
-		                                        fontSize: ScreenUtil(allowFontScaling: true)
-		                                            .setSp(15),
-		                                        color: Color.fromRGBO(39, 39, 39, 1),
-		                                        letterSpacing: ScreenUtil().setWidth(-0.75),
-		                                    ),
-		                                ),
+                                        Text(
+                                            '$_currentAddress',
+                                            style: TextStyle(
+                                                height: 1,
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
+                                                color: Color.fromRGBO(39, 39, 39, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.75),
+                                            ),
+                                        ),
+                                        AnimatedBuilder(
+                                            animation: _stringAnimation,
+                                            builder: (context, child) {
+                                                String text ='.'*_stringAnimation.value;
+                                                return  Text(
+                                                    text,
+                                                    style: TextStyle(
+                                                        height: 1,
+                                                        fontFamily: "NotoSans",
+                                                        fontWeight: FontWeight.w400,
+                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(15),
+                                                        color: Color.fromRGBO(39, 39, 39, 1),
+                                                        letterSpacing: ScreenUtil().setWidth(-0.75),
+                                                    ),
+                                                );
+                                            }
+                                        )
 		                            ]
 		                        ),
 						    onTap: () => {
 							    startGpsService()
-						    },
+                            },
 					    ),
                     ),
                 ],
