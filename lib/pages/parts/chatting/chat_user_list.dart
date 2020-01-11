@@ -62,8 +62,6 @@ class ChatUserListState extends State<ChatUserList> with TickerProviderStateMixi
     */
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
-
         return new Container(
             color: Colors.white,
               // 유저 목록이 존재하면

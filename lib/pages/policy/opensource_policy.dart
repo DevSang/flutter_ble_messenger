@@ -21,7 +21,7 @@ class _OpenSourcePageState extends State<OpenSourcePage> {
               fontFamily: "NotoSans",
               fontWeight: FontWeight.w500,
               color: Color.fromRGBO(39, 39, 39, 1),
-              fontSize: ScreenUtil.getInstance().setSp(16)
+              fontSize: ScreenUtil().setSp(16)
           ),
         ),
         leading:  IconButton(

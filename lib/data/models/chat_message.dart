@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -25,15 +25,16 @@ class ChatMessage {
     factory ChatMessage.fromJSON (Map<String, dynamic> json) {
         try {
 	        return ChatMessage (
-	                    chatType : json['type'],
-	                    roomIdx : json['roomIdx'],
-	                    msgIdx : json['msgIdx'],
-	                    senderIdx : json['senderIdx'],
-	                    nickName : json['nickname'] ?? "닉네임 없음",
-	                    message : json['message'],
-	                    userCountObj : json['userCountObj'] != null ? new ChatCountUser.fromJSON(json['userCountObj']) : null,
-	                    chatTime : json['createTs']
-	                );
+                chatType : json['type'],
+                roomIdx : json['roomIdx'],
+                msgIdx : json['msgIdx'],
+                senderIdx : json['senderIdx'],
+                nickName : json['nickname'] ?? "닉네임 없음",
+                message : json['message'],
+                userCountObj : json['userCountObj'] != null ? new ChatCountUser.fromJSON(json['userCountObj']) : null,
+                chatTime : json['createTs'],
+                profileImgUri: json['profile_picture_idx'] != null ? Constant.getUserProfileImgUri(json['senderIdx']) : null
+            );
         } catch (e) {
 	        return null;
         }

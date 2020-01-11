@@ -199,8 +199,6 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
     }
 
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
-
         return new Scaffold(
             appBar: new AppBar(
                 iconTheme: IconThemeData(
@@ -211,7 +209,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                     "단화방 설정",
                     style: TextStyle(
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(16),
+                        fontSize: ScreenUtil().setSp(16),
                         fontFamily: "NotoSans"
                     ),
                 ),
@@ -237,7 +235,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                                 style: TextStyle(
                                                     color: Color.fromRGBO(77, 96, 191, 1),
                                                     letterSpacing: ScreenUtil().setWidth(-0.75),
-                                                    fontSize: ScreenUtil.getInstance().setSp(15),
+                                                    fontSize: ScreenUtil().setSp(15),
                                                     fontFamily: "NotoSans",
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -410,8 +408,8 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
                             color: Color.fromRGBO(39, 39, 39, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(15),
-                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                            fontSize: ScreenUtil().setSp(15),
+                            letterSpacing: ScreenUtil().setWidth(-0.75)
                         )
                     ),
                     InkWell(
@@ -424,8 +422,8 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                         fontFamily: "NotoSans",
                                         fontWeight: FontWeight.w400,
                                         color: Color.fromRGBO(107, 107, 107, 1),
-                                        fontSize: ScreenUtil.getInstance().setSp(15),
-                                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                                        fontSize: ScreenUtil().setSp(15),
+                                        letterSpacing: ScreenUtil().setWidth(-0.75)
                                     )
                                 ),
                                 Container(
@@ -494,8 +492,8 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
                             color: Color.fromRGBO(39, 39, 39, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(15),
-                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                            fontSize: ScreenUtil().setSp(15),
+                            letterSpacing: ScreenUtil().setWidth(-0.75)
                         )
                     ),
                     CustomSwitch(
@@ -537,8 +535,8 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
                             color: Color.fromRGBO(39, 39, 39, 1),
-                            fontSize: ScreenUtil.getInstance().setSp(15),
-                            letterSpacing: ScreenUtil.getInstance().setWidth(-0.75)
+                            fontSize: ScreenUtil().setSp(15),
+                            letterSpacing: ScreenUtil().setWidth(-0.75)
                         )
                     ),
                     Container(
@@ -598,7 +596,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
                                         style: TextStyle(
                                             color: Color.fromRGBO(107, 107, 107, 1),
                                             letterSpacing: ScreenUtil().setWidth(-0.75),
-                                            fontSize: ScreenUtil.getInstance().setSp(15),
+                                            fontSize: ScreenUtil().setSp(15),
                                             fontFamily: "NotoSans",
                                             fontWeight: FontWeight.w500
                                         ),

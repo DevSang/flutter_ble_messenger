@@ -72,14 +72,10 @@ PODS:
     - FBSDKCoreKit (~> 5.5)
     - FBSDKLoginKit (~> 5.5)
     - Flutter
-  - flutter_ijkplayer (0.0.1):
-    - Flutter
-    - FlutterIJK (~> 0.1.0)
   - flutter_mailer (0.0.1):
     - Flutter
   - flutter_plugin_android_lifecycle (0.0.1):
     - Flutter
-  - FlutterIJK (0.1.0)
   - fluttertoast (0.0.2):
     - Flutter
   - FMDB (2.7.5):
@@ -187,7 +183,6 @@ DEPENDENCIES:
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
   - Flutter (from `Flutter`)
   - flutter_facebook_login (from `.symlinks/plugins/flutter_facebook_login/ios`)
-  - flutter_ijkplayer (from `.symlinks/plugins/flutter_ijkplayer/ios`)
   - flutter_mailer (from `.symlinks/plugins/flutter_mailer/ios`)
   - flutter_plugin_android_lifecycle (from `.symlinks/plugins/flutter_plugin_android_lifecycle/ios`)
   - fluttertoast (from `.symlinks/plugins/fluttertoast/ios`)
@@ -223,7 +218,6 @@ SPEC REPOS:
     - FirebaseCoreDiagnosticsInterop
     - FirebaseInstanceID
     - FirebaseMessaging
-    - FlutterIJK
     - FMDB
     - GoogleAppMeasurement
     - GoogleDataTransport
@@ -249,8 +243,6 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_facebook_login:
     :path: ".symlinks/plugins/flutter_facebook_login/ios"
-  flutter_ijkplayer:
-    :path: ".symlinks/plugins/flutter_ijkplayer/ios"
   flutter_mailer:
     :path: ".symlinks/plugins/flutter_mailer/ios"
   flutter_plugin_android_lifecycle:
@@ -312,10 +304,8 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 089b7a4991425783384acc8bcefcd78c0af913bd
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_facebook_login: cfb5659f686b1c575ef205c6b6fd20db9679d3c4
-  flutter_ijkplayer: ef9006131553deb6d8ae6d7fbd3bcbf93b135930
   flutter_mailer: 2ef5a67087bc8c6c4cefd04a178bf1ae2c94cd83
   flutter_plugin_android_lifecycle: 47de533a02850f070f5696a623995e93eddcdb9b
-  FlutterIJK: 68b00c1d11162b5016f3611853aa699e198bd1d2
   fluttertoast: b644586ef3b16f67fae9a1f8754cef6b2d6b634b
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   geolocator: 80aba2bb48f8c7dfc5a8b70b9d13fc3edc8399c4

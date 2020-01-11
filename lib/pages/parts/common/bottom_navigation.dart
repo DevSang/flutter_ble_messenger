@@ -124,7 +124,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 														        height: 1,
 														        fontFamily: "NotoSans",
 														        fontWeight: FontWeight.w700,
-														        fontSize: ScreenUtil(allowFontScaling: true).setSp(20),
+														        fontSize: ScreenUtil().setSp(20),
 														        color: Color.fromRGBO(39, 39, 39, 1),
 														        letterSpacing: ScreenUtil().setWidth(-0.5),
 													        ),

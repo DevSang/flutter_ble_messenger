@@ -61,8 +61,8 @@ class CustomDialog extends StatelessWidget {
                                         fontFamily: "NotoSans",
                                         fontWeight: FontWeight.w700,
                                         color: Color.fromRGBO(39, 39, 39, 1),
-                                        fontSize: ScreenUtil.getInstance().setSp(16),
-                                        letterSpacing: ScreenUtil.getInstance().setWidth(-0.8)
+                                        fontSize: ScreenUtil().setSp(16),
+                                        letterSpacing: ScreenUtil().setWidth(-0.8)
                                     )
                                 ),
                             ),

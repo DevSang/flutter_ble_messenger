@@ -15,9 +15,10 @@ import 'package:provider/provider.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/utility/fade_in.dart';
+import 'package:Hwa/animate/fade_in.dart';
 import 'package:Hwa/data/models/friend_info.dart';
 import 'package:Hwa/data/models/friend_request_info.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/data/state/friend_list_info_provider.dart';
 import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 
@@ -53,19 +54,16 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
     TextEditingController searchController = TextEditingController();
     double sameSize;
     bool isLoading;
-    ScrollController _scrollController;
     int requestListHeight;
     bool requestExpandFlag;
     bool isSearching;
 
     @override
     void initState() {
-        print("@@init");
         friendListInfoProvider = Provider.of<FriendListInfoProvider>(context, listen: false);
         friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
 
         searchController.addListener(() {
-            print(searchController.text.length);
             if (searchController.text.length > 0) {
                 searchFriends();
             } else {
@@ -77,7 +75,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
 
         _initState();
 
-        _scrollController = new ScrollController()..addListener(_sc);
         sameSize = GetSameSize().main();
         isLoading = false;
         isSearching = false;
@@ -96,7 +93,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
             requestExpandFlag = true;
         });
         await setDefaultList();
-
         friendList.sort((a, b) => a.nickname.compareTo(b.nickname));
     }
 
@@ -114,21 +110,11 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                 requestListHeight = 31;
             }
         });
-
     }
 
     @override
     void dispose() {
         super.dispose();
-    }
-
-    void _sc() {
-        developer.log(_scrollController.position.extentAfter.toString());
-        if (_scrollController.position.extentAfter < 500) {
-            setState(() {
-                new List.generate(42, (index) => 'Inserted $index');
-            });
-        }
     }
 
     /*
@@ -185,8 +171,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                 'user_status': friendInfo.user_status
             });
             friendRequestListInfoProvider.removeFriendRequest(friendInfo.req_idx);
-
-//            _initState();
             developer.log("## 친구요청을 수락하였습니다.");
         } else {
             developer.log("## 친구요청을 수락에 실패하였습니다.");
@@ -207,8 +191,6 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
 
         if(response.statusCode == 200){
             friendRequestListInfoProvider.removeFriendRequest(friendInfo.req_idx);
-
-            _initState();
             developer.log("## 친구요청을 거절하였습니다.");
         } else {
             developer.log("## 친구요청을 거절에 실패하였습니다.");
@@ -697,7 +679,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                                         height: 1,
                                                         fontFamily: "NotoSans",
                                                         fontWeight: FontWeight.w500,
-                                                        fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                        fontSize: ScreenUtil().setSp(16),
                                                         color: Color.fromRGBO(39, 39, 39, 1),
                                                         letterSpacing: ScreenUtil()
                                                             .setWidth(-0.8),
@@ -713,7 +695,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                                             height: 1,
                                                             fontFamily: "NotoSans",
                                                             fontWeight: FontWeight.w400,
-                                                            fontSize: ScreenUtil(allowFontScaling: true).setSp(14),
+                                                            fontSize: ScreenUtil().setSp(14),
                                                             color: Color.fromRGBO(107, 107, 107, 1),
                                                             letterSpacing: ScreenUtil()
                                                                 .setWidth(-0.8),
@@ -913,13 +895,16 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                         )
                                     ),
                                     onTap: () {
-                                        Navigator.push(
-                                            context, MaterialPageRoute(
-                                            builder: (context) => FullPhoto(
-                                                url: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=BIG"
-                                                , header: Constant.HEADER
-                                            )
-                                        ));
+                                        if(Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null){
+                                            Navigator.push(
+                                                context, MaterialPageRoute(
+                                                builder: (context) =>
+                                                    FullPhoto(
+                                                        url: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + friendInfo.user_idx.toString() + "&type=BIG"
+                                                        , header: Constant.HEADER
+                                                    )
+                                            ));
+                                        }
                                     },
                                 ),
                                 Container(

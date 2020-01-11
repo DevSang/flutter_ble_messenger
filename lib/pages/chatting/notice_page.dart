@@ -57,8 +57,6 @@ class NoticePageState extends State<NoticePage> {
 
     @override
     Widget build(BuildContext context) {
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
-
         return Scaffold(
             appBar: AppBar(
                 iconTheme: IconThemeData(
@@ -70,7 +68,7 @@ class NoticePageState extends State<NoticePage> {
                     style: TextStyle(
                         fontFamily: "NotoSans",
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(16)
+                        fontSize: ScreenUtil().setSp(16)
                     ),
                 ),
                 leading: new IconButton(

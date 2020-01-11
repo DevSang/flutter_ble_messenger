@@ -183,7 +183,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
                     style: TextStyle(
                         height: 1,
                         color: Color.fromRGBO(250, 250, 250, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(16),
+                        fontSize: ScreenUtil().setSp(16),
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w400
                     ),
@@ -322,7 +322,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
                                                         style: TextStyle(
                                                             color: Colors.white,
                                                             letterSpacing: ScreenUtil().setWidth(-0.75),
-                                                            fontSize: ScreenUtil.getInstance().setSp(11),
+                                                            fontSize: ScreenUtil().setSp(11),
                                                             fontFamily: "NanumSquare",
                                                             fontWeight: FontWeight.w500
                                                         )
@@ -332,7 +332,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
                                                         style: TextStyle(
                                                             color: Colors.white,
                                                             letterSpacing: ScreenUtil().setWidth(-0.75),
-                                                            fontSize: ScreenUtil.getInstance().setSp(11),
+                                                            fontSize: ScreenUtil().setSp(11),
                                                             fontFamily: "NanumSquare",
                                                             fontWeight: FontWeight.w500
                                                         )

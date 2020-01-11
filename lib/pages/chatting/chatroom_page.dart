@@ -64,11 +64,10 @@ class ChatScreenState extends State<ChatroomPage> {
 
     ChatScreenState({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList});
 
-    List<ChatJoinInfo> joinedUserNow;   // 실시간 입장 유저 리스트
+    List<ChatJoinInfo> joinedUserNow;                       // 실시간 입장 유저 리스트
     final List<ChatMessage> messageList = <ChatMessage>[];  // 채팅방 메세지 리스트
-    ChatMessage message;                // 받은 메세지
-    int uploadingImageCount;            // 업로드 중인 이미지 갯수
 
+    int uploadingImageCount;    // 업로드 중인 이미지 갯수
     bool isLoading;             // 로딩
     bool isShowMenu;            // 하단 메뉴 관련
     bool disable;               // 온라인 입장 유저 입력 불가
@@ -76,7 +75,7 @@ class ChatScreenState extends State<ChatroomPage> {
     bool openedNf;              // 현재 채팅 Advertising condition
     bool isFocused;             // ChatTextField Focused
     bool isLike;                // 현재 채팅 좋아요 TODO: 추후 맵핑
-    int focusMsg;               // Focus된 메세지
+    int focusMsg;               // Focus 된 메세지
     bool isEmpty;               // 채팅 입력 여부
     int inputLineCount;         // 채팅 입력 줄 수
     int _inputHeight;           // 입력칸 높이
@@ -207,12 +206,11 @@ class ChatScreenState extends State<ChatroomPage> {
     /*
      * @author : hs
      * @date : 2019-12-22
-     * @description : 화면 입장 후 메세지/유저 리스트 받아오기
+     * @description : 화면 입장 후 메세지/유저 리스트 받아오기, 가공
     */
     getMessageList() async {
         // 단화방 생성 시
         if (widget.isCreated != null && widget.isCreated) {
-
             joinedUserNow.add(
                 ChatJoinInfo(
                     joinType: "BLE_JOIN",
@@ -220,14 +218,16 @@ class ChatScreenState extends State<ChatroomPage> {
                     userNick: chatInfo.createUser.nick
                 )
             );
-            developer.log(joinedUserNow[0].userNick);
         }
 
+        // 최근 메시지에 대해 유튜브, 프로필 이미지 체크 수행
         for (var recentMsg in recentMessageList) {
+	        if(recentMsg != null && recentMsg.message != null) {
+	        	checkYoutubeAndSetVideo(recentMsg);
+	        	checkAndSetProfileImg(recentMsg);
 
-	        if(recentMsg != null && recentMsg.message != null) checkYoutubeAndSetVideo(recentMsg);
-
-            messageList.add(recentMsg);
+		        messageList.add(recentMsg);
+	        }
         }
     }
 
@@ -277,7 +277,14 @@ class ChatScreenState extends State<ChatroomPage> {
     */
     void connectStomp() async {
         // connect to MsgServer
-        s = StompClient(urlBackend: Constant.CHAT_SERVER_WS);
+        s = StompClient(Constant.CHAT_SERVER_WS, (e, e1){
+			developer.log("####### StompClient error");
+			developer.log("####### StompClient e: ${e.toString()}");
+			developer.log("####### StompClient e1: ${e1.toString()}");
+        },
+        onDone: (){
+	        developer.log("####### StompClient onDone");
+        });
         await s.connectWebSocket();
         s.connectStomp();
 
@@ -299,16 +306,12 @@ class ChatScreenState extends State<ChatroomPage> {
      * @description : 메세지 수신 후 처리
     */
     void messageReceived(HashMap data) async {
-        message = new ChatMessage.fromJSON(json.decode(data['contents']));
-
-        // 프로필 이미지 있는 사용자는 메시지에 사용자 프로필 경로 설정
-        String profileImgUri;
-        bool existProfileImg = isExistUserProfileImg(message.senderIdx);
-        if(existProfileImg) profileImgUri = Constant.getUserProfileImgUri(message.senderIdx);
+	    ChatMessage message = ChatMessage.fromJSON(json.decode(data['contents']));
 
         developer.log("# messageReceieved : " + json.decode(data['contents']).toString());
-        developer.log("# existProfileImg : $existProfileImg");
 
+        // 프로필 이미지 체크
+	    checkAndSetProfileImg(message);
 
         // TODO 입장한 사용자가 프로필 이미지 있으면 profileImgExistUserSet 에 userIdx 넣어주기, (채팅방을 아예 나갈때도 빼주기?)
         if (message.chatType == "ENTER") {
@@ -319,6 +322,10 @@ class ChatScreenState extends State<ChatroomPage> {
                     userNick: message.nickName
                 )
             );
+
+            // 입장한 사용자 프로필 이미지 있으면 profileImgExistUserSet 에 추가
+	        if(message.profileImgUri != null) profileImgExistUserSet.add(message.senderIdx);
+
         } else if ((message.chatType == "IMAGE" || message.chatType == "VIDEO")  && message.senderIdx == Constant.USER_IDX) {
             // 업로드 완료된 항목 삭제
             for(var i=0; i<uploadingImageCount; i++) {
@@ -329,23 +336,28 @@ class ChatScreenState extends State<ChatroomPage> {
             }
         }
 
-        ChatMessage cmb = ChatMessage(
-            chatType: message.chatType,
-            roomIdx: message.roomIdx,
-            senderIdx: message.senderIdx,
-            nickName: message.nickName,
-            message: message.message,
-            chatTime: message.chatTime,
-	        msgIdx: message.msgIdx,
-	        profileImgUri: profileImgUri
-        );
-
         // youtube 체크
-        checkYoutubeAndSetVideo(cmb);
+        checkYoutubeAndSetVideo(message);
 
-        messageList.insert(uploadingImageCount, cmb);
+        messageList.insert(uploadingImageCount, message);
 
         setState(() {});
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-11
+     * @description : 프로필 이미지 있는 사용자는 메시지에 사용자 프로필 경로 설정
+     */
+    void checkAndSetProfileImg(ChatMessage message){
+	    if(message != null && message.profileImgUri == null && message.senderIdx != null){
+		    String profileImgUri;
+		    bool existProfileImg = isExistUserProfileImg(message.senderIdx);
+		    if(existProfileImg) {
+		    	profileImgUri = Constant.getUserProfileImgUri(message.senderIdx);
+			    message.profileImgUri = profileImgUri;
+		    }
+	    }
     }
 
     /*
@@ -360,7 +372,6 @@ class ChatScreenState extends State<ChatroomPage> {
 		    if(lowerCase.contains("youtu.be") || lowerCase.contains("youtube")){
 			    // 우튜브 Video Id 추출
 			    String videoId = YoutubePlayer.convertUrlToId(cm.message);
-			    developer.log("### videoId: $videoId");
 
 			    if(videoId != null){
 				    YoutubePlayerController _controller = YoutubePlayerController(
@@ -373,7 +384,7 @@ class ChatScreenState extends State<ChatroomPage> {
 				    String thumbnailUrl = YoutubePlayer.getThumbnail(videoId: videoId);
 
 				    YoutubePlayer video = YoutubePlayer(controller: _controller, thumbnailUrl: thumbnailUrl, showVideoProgressIndicator: true, onReady: (){
-					    developer.log("###### onReady");
+
 				    });
 
 				    cm.youtubePlayer = video;
@@ -630,7 +641,7 @@ class ChatScreenState extends State<ChatroomPage> {
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil.getInstance().setSp(16)
+                        fontSize: ScreenUtil().setSp(16)
                     ),
                 ),
                 leading: new IconButton(
@@ -835,7 +846,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                             style: TextStyle(
                                                 fontFamily: "NotoSans",
                                                 fontWeight: FontWeight.w400,
-                                                letterSpacing: ScreenUtil.getInstance().setWidth(-0.65),
+                                                letterSpacing: ScreenUtil().setWidth(-0.65),
                                                 fontSize: ScreenUtil().setSp(13),
                                                 color: Color.fromRGBO(39, 39, 39, 1)
                                             ),
@@ -1223,7 +1234,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                             style: TextStyle(
                                                 fontFamily: "NotoSans",
                                                 fontWeight: FontWeight.w500,
-                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(16),
+                                                fontSize: ScreenUtil().setSp(16),
                                                 color: Color.fromRGBO(39, 39, 39, 1),
                                                 letterSpacing: ScreenUtil().setWidth(-0.8),
                                             ),
@@ -1263,8 +1274,8 @@ class ChatScreenState extends State<ChatroomPage> {
                                                 height: 1,
                                                 fontFamily: "NotoSans",
                                                 fontWeight: FontWeight.w400,
-                                                letterSpacing: ScreenUtil.getInstance().setHeight(-0.33),
-                                                fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                                                letterSpacing: ScreenUtil().setHeight(-0.33),
+                                                fontSize: ScreenUtil().setSp(13),
                                                 color: Color.fromRGBO(107, 107, 107, 1)
                                             )
                                         )
@@ -1327,8 +1338,8 @@ class ChatScreenState extends State<ChatroomPage> {
                         style: TextStyle(
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
-                            letterSpacing: ScreenUtil.getInstance().setHeight(-0.33),
-                            fontSize: ScreenUtil(allowFontScaling: true).setSp(13),
+                            letterSpacing: ScreenUtil().setHeight(-0.33),
+                            fontSize: ScreenUtil().setSp(13),
                             color: textColor
                         ),
                     ),
