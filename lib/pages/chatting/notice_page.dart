@@ -1,16 +1,19 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
-import 'package:Hwa/utility/call_api.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Hwa/pages/parts/chatting/notice/set_chat_notice_data.dart';
-import 'package:Hwa/utility/convert_time.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:Hwa/utility/action_sheet.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import 'package:Hwa/pages/chatting/notice_write_page.dart';
 import 'package:Hwa/pages/chatting/notice_detail_page.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/convert_time.dart';
+import 'package:Hwa/constant.dart';
+import 'package:intl/intl.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -29,26 +32,36 @@ class NoticePage extends StatefulWidget {
 
 class NoticePageState extends State<NoticePage> {
     final int chatIdx;
-
     NoticePageState({Key key, this.chatIdx});
-
-    List<ChatNoticeItem> chatNoticeList =  SetChatNoticeData().main();
+    List<ChatNoticeItem> chatNoticeList =  <ChatNoticeItem>[];
 
     @override
     void initState() {
         getNoticeList();
+
         super.initState();
     }
 
+    /*
+    * @author : sh
+    * @date : 2020-01-01
+    * @description : chat user list build 위젯
+    */
     getNoticeList() async {
         try {
             /// 참여 타입 수정
             String uri = "/api/v2/chat/announce/all?chat_idx=" +  chatIdx.toString();
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-            print(response.body);
-            Map<String, dynamic> jsonParse = json.decode(response.body);
 
-            print(jsonParse);
+            List resList = json.decode(response.body)['data'];
+
+            for(var i = 0; i < resList.length; i++){
+                chatNoticeList.add(ChatNoticeItem.fromJSON(resList[i]));
+            }
+            setState(() {
+                chatNoticeList = chatNoticeList;
+            });
+            print(chatNoticeList.length.toString());
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
@@ -183,9 +196,11 @@ class NoticePageState extends State<NoticePage> {
                 )
             )
         );
+
     }
 
     Widget buildNoticeItem(ChatNoticeItem chatNoticeItem) {
+
         return new GestureDetector(
             child: Container(
                 padding: EdgeInsets.only(
@@ -208,10 +223,14 @@ class NoticePageState extends State<NoticePage> {
                             ),
                             child: ClipRRect(
                                 borderRadius:  BorderRadius.circular(ScreenUtil().setWidth(45)),
-                                child: Image.asset(
-                                    chatNoticeItem.userImg,
-                                    width: ScreenUtil().setWidth(45),
-                                    height: ScreenUtil().setWidth(45),
+                                child: FadeInImage(
+                                    width: ScreenUtil().setHeight(40),
+                                    height: ScreenUtil().setHeight(40),
+                                    placeholder: AssetImage("assets/images/icon/profile.png"),
+                                    image: chatNoticeItem.profile_picture_idx == 0 ? AssetImage("assets/images/icon/profile.png")
+                                        : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + chatNoticeItem.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
+                                    fit: BoxFit.cover,
+                                    fadeInDuration: Duration(milliseconds: 1)
                                 )
                             )
                         ),
@@ -228,7 +247,7 @@ class NoticePageState extends State<NoticePage> {
                                             bottom: ScreenUtil().setWidth(6)
                                         ),
                                         child: Text(
-                                            chatNoticeItem.content,
+                                            chatNoticeItem.contents,
                                             style: TextStyle(
                                                 fontFamily: "NotoSans",
                                                 fontWeight: FontWeight.w400,
@@ -251,7 +270,7 @@ class NoticePageState extends State<NoticePage> {
                                                         right: ScreenUtil().setWidth(13.5)
                                                     ),
                                                     child: Text(
-                                                        ConvertTime().getTime(chatNoticeItem.regTime),
+                                                        DateFormat("yyyy-MM-DD HH:mm:ss").format(DateTime.parse(chatNoticeItem.reg_ts)).toString(),
                                                         style: TextStyle(
                                                             fontFamily: "NanumSquare",
                                                             fontWeight: FontWeight.w400,
@@ -278,7 +297,7 @@ class NoticePageState extends State<NoticePage> {
                                                 ),
                                                 Container(
                                                     child: Text(
-                                                        chatNoticeItem.replyCount.toString(),
+                                                        chatNoticeItem.reply_cnt.toString(),
                                                         style: TextStyle(
                                                             fontFamily: "NanumSquare",
                                                             fontWeight: FontWeight.w400,

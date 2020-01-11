@@ -6,7 +6,6 @@ import 'package:Hwa/utility/red_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
-import 'package:Hwa/pages/parts/chatting/notice/set_chat_notice_data.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 
@@ -28,7 +27,6 @@ class NoticeWritePageState extends State<NoticeWritePage> {
     final int chatIdx;
     NoticeWritePageState({Key key, @required this.chatIdx});
 
-    List<ChatNoticeItem> chatNoticeList = new SetChatNoticeData().main();
     TextEditingController textEditingController = TextEditingController();
 
     @override
