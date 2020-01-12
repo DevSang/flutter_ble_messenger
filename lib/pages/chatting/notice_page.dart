@@ -179,43 +179,43 @@ class NoticePageState extends State<NoticePage> {
 
         return new GestureDetector(
             child: Container(
-                padding: EdgeInsets.only(
-                    top: ScreenUtil().setWidth(17),
-                    bottom: ScreenUtil().setWidth(18),
-                    left: ScreenUtil().setWidth(16),
-                    right: ScreenUtil().setWidth(16),
+                padding: EdgeInsets.symmetric(
+                    vertical: ScreenUtil().setWidth(18),
+                    horizontal: ScreenUtil().setWidth(16),
                 ),
                 margin: EdgeInsets.only(
                     bottom: ScreenUtil().setHeight(10)
                 ),
                 color: Colors.white,
                 child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                         Container(
+                            width: ScreenUtil().setWidth(45),
+                            height: ScreenUtil().setWidth(45),
                             margin: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(2),
-                                right: ScreenUtil().setWidth(11.5)
+                                right: ScreenUtil().setWidth(12)
                             ),
-                            child: ClipRRect(
-                                borderRadius:  BorderRadius.circular(ScreenUtil().setWidth(45)),
-                                child: FadeInImage(
-                                    width: ScreenUtil().setHeight(40),
-                                    height: ScreenUtil().setHeight(40),
-                                    placeholder: AssetImage("assets/images/icon/profile.png"),
-                                    image: chatNoticeItem.profile_picture_idx == 0 ? AssetImage("assets/images/icon/profile.png")
-                                        : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + chatNoticeItem.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    image: chatNoticeItem.profile_picture_idx == 0
+                                        ? AssetImage("assets/images/icon/profile.png")
+                                        : CachedNetworkImageProvider(
+                                        Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + chatNoticeItem.user_idx.toString() + "&type=SMALL",
+                                        headers: Constant.HEADER
+                                    ),
                                     fit: BoxFit.cover,
-                                    fadeInDuration: Duration(milliseconds: 1)
                                 )
-                            )
+                            ),
                         ),
                         Container(
                             margin: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(0),
                                 right: ScreenUtil().setWidth(21)
                             ),
                             child: Column (
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                     Container(
                                         width: ScreenUtil().setWidth(245),
@@ -237,7 +237,6 @@ class NoticePageState extends State<NoticePage> {
                                     ),
                                     Container(
                                         width: ScreenUtil().setWidth(245),
-                                        height: ScreenUtil().setHeight(13.5),
                                         child: Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: <Widget>[
@@ -289,13 +288,23 @@ class NoticePageState extends State<NoticePage> {
                                 ],
                             )
                         ),
-                        GestureDetector(
-                            child:Container(
-                                child: Image.asset("assets/images/icon/iconActionMenuOpen.png")
-                            ),
-                            onTap:(){
-                                showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet(chatNoticeItem));
-                            }
+                        Container(
+                            width: ScreenUtil().setWidth(20),
+                            height: ScreenUtil().setHeight(45),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                    GestureDetector(
+                                        child: Image.asset(
+                                            "assets/images/icon/iconActionMenuOpen.png",
+                                            fit: BoxFit.fitWidth,
+                                        ),
+                                        onTap:(){
+                                            showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet(chatNoticeItem));
+                                        }
+                                    )
+                                ],
+                            )
                         )
                     ],
                 )
