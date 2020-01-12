@@ -31,6 +31,7 @@ class UserInfoProvider with ChangeNotifier{
     String profileURL;
     String nickname;
     String token;
+    String countryCode;
     CachedNetworkImage cacheProfileImg;
 
     setUserInfo(dynamic value) {
@@ -52,6 +53,7 @@ class UserInfoProvider with ChangeNotifier{
         ,this.profileURL
         ,this.nickname
         ,this.token
+        ,this.countryCode
     });
 
     /*
@@ -117,6 +119,7 @@ class UserInfoProvider with ChangeNotifier{
         this.profileURL =  info['profileURL'] ?? "";
         this.nickname =  info['nickname'];
         this.token =  info['token'];
+        this.countryCode =  info['country_code'];
     }
 
     /*

@@ -1,18 +1,20 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
+import 'dart:ui';
+import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
+import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/chatting/notice_write_page.dart';
 import 'package:Hwa/pages/chatting/notice_detail_page.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
-import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/utility/convert_time.dart';
-import 'package:Hwa/constant.dart';
-import 'package:intl/intl.dart';
+import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/data/state/chat_notice_item_provider.dart';
 
 
 /*
@@ -23,53 +25,27 @@ import 'package:intl/intl.dart';
  */
 class NoticePage extends StatefulWidget {
     final int hostIdx;
-    final int chatIdx;
-    NoticePage({Key key, @required this.hostIdx, this.chatIdx}) :super(key: key);
+    final ChatInfo chatInfo;
+    NoticePage({Key key, @required this.hostIdx, this.chatInfo}) :super(key: key);
 
     @override
-    State createState() =>  NoticePageState(chatIdx: chatIdx);
+    State createState() =>  NoticePageState(chatInfo: chatInfo);
 }
 
 class NoticePageState extends State<NoticePage> {
-    final int chatIdx;
-    NoticePageState({Key key, this.chatIdx});
-    List<ChatNoticeItem> chatNoticeList =  <ChatNoticeItem>[];
+    final ChatInfo chatInfo;
+    NoticePageState({Key key, this.chatInfo});
+    ChatRoomNoticeInfoProvider chatRoomNoticeInfoProvider;
 
     @override
     void initState() {
-        getNoticeList();
-
         super.initState();
-    }
-
-    /*
-    * @author : sh
-    * @date : 2020-01-01
-    * @description : chat user list build 위젯
-    */
-    getNoticeList() async {
-        try {
-            /// 참여 타입 수정
-            String uri = "/api/v2/chat/announce/all?chat_idx=" +  chatIdx.toString();
-            final response = await CallApi.commonApiCall(method: HTTP_METHOD.get, url: uri);
-
-            List resList = json.decode(response.body)['data'];
-
-            for(var i = 0; i < resList.length; i++){
-                chatNoticeList.add(ChatNoticeItem.fromJSON(resList[i]));
-            }
-            setState(() {
-                chatNoticeList = chatNoticeList;
-            });
-            print(chatNoticeList.length.toString());
-
-        } catch (e) {
-            developer.log("#### Error :: "+ e.toString());
-        }
     }
 
     @override
     Widget build(BuildContext context) {
+        chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: true);
+
         return Scaffold(
             appBar: AppBar(
                 iconTheme: IconThemeData(
@@ -77,7 +53,7 @@ class NoticePageState extends State<NoticePage> {
                 ),
                 brightness: Brightness.light,
                 title: Text(
-                    "코엑스 별마당 도서관",
+                    chatInfo.title,
                     style: TextStyle(
                         fontFamily: "NotoSans",
                         color: Color.fromRGBO(39, 39, 39, 1),
@@ -97,7 +73,7 @@ class NoticePageState extends State<NoticePage> {
                             onPressed: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                        return NoticeWritePage(chatIdx: chatIdx);
+                                        return NoticeWritePage(chatInfo: chatInfo);
                                     })
                                 );
                             },
@@ -191,8 +167,8 @@ class NoticePageState extends State<NoticePage> {
         return new Container(
             child: Flexible(
                 child: ListView.builder(
-                    itemCount: chatNoticeList.length,
-                    itemBuilder: (BuildContext context, int index) => buildNoticeItem(chatNoticeList[index])
+                    itemCount: chatRoomNoticeInfoProvider.chatNoticeList.length,
+                    itemBuilder: (BuildContext context, int index) => buildNoticeItem(chatRoomNoticeInfoProvider.chatNoticeList[index])
                 )
             )
         );
@@ -313,24 +289,13 @@ class NoticePageState extends State<NoticePage> {
                                 ],
                             )
                         ),
-                        Container(
-                            margin: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(2),
+                        GestureDetector(
+                            child:Container(
+                                child: Image.asset("assets/images/icon/iconActionMenuOpen.png")
                             ),
-                            child: GestureDetector(
-                                child: Container(
-                                    width: ScreenUtil().setWidth(20),
-                                    height: ScreenUtil().setHeight(20),
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image:AssetImage("assets/images/icon/iconActionMenuOpen.png")
-                                        ),
-                                    )
-                                ),
-                                onTap:(){
-                                    showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet());
-                                }
-                            ),
+                            onTap:(){
+                                showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet());
+                            }
                         )
                     ],
                 )
@@ -338,7 +303,7 @@ class NoticePageState extends State<NoticePage> {
             onTap: () {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) {
-                        return NoticeDetailPage(notice: chatNoticeItem);
+                        return NoticeDetailPage(notice: chatNoticeItem, chatInfo: chatInfo);
                     })
                 );
             },
