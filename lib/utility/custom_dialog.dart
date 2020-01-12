@@ -93,7 +93,7 @@ class CustomDialog extends StatelessWidget {
                                                     ),
                                                     decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.all(
-                                                            Radius.circular(ScreenUtil().setWidth(10))
+                                                            Radius.circular(ScreenUtil().setWidth(8))
                                                         ),
                                                         color: Color.fromRGBO(235, 235, 235, 1)
                                                     ),
@@ -122,7 +122,7 @@ class CustomDialog extends StatelessWidget {
                                                     height: ScreenUtil().setHeight(36),
                                                     decoration: BoxDecoration(
                                                         borderRadius: BorderRadius.all(
-                                                            Radius.circular(ScreenUtil().setWidth(10))
+                                                            Radius.circular(ScreenUtil().setWidth(8))
                                                         ),
                                                         color: Color.fromRGBO(76, 96, 191, 1)
                                                     ),
@@ -167,7 +167,7 @@ class CustomDialog extends StatelessWidget {
                     width: ScreenUtil().setWidth(1)
                 ),
                 borderRadius: BorderRadius.all(
-                    Radius.circular(ScreenUtil().setWidth(10))
+                    Radius.circular(ScreenUtil().setWidth(8))
                 )
             ),
             child: Row(

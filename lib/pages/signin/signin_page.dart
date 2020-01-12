@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 
 import 'package:Hwa/pages/signin/signup_name.dart';
+import 'package:Hwa/utility/inputStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -372,46 +373,6 @@ class _SignInPageState extends State<SignInPage> {
         );
     }
 
-    Color _getBackgroundColor(FocusNode _focusNode) {
-        return _focusNode.hasFocus ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(245, 245, 245, 1);
-    }
-
-    OutlineInputBorder _getEnableBorder = OutlineInputBorder(
-        borderRadius:  BorderRadius.circular(
-            ScreenUtil().setHeight(10.0),
-        ),
-        borderSide: BorderSide(
-            color: Color.fromRGBO(245, 245, 245, 1),
-            width: ScreenUtil().setWidth(1)
-        ),
-    );
-
-    OutlineInputBorder _getFocusBorder = OutlineInputBorder(
-        borderSide: BorderSide(
-            color: Color.fromRGBO(214, 214, 214, 1),
-            width: ScreenUtil().setWidth(1)
-        ),
-        borderRadius: BorderRadius.circular(
-            ScreenUtil().setHeight(10.0)
-        ),
-    );
-
-    TextStyle inputHintText = TextStyle(
-        color: Color.fromRGBO(39, 39, 39, 0.4),
-        fontSize: ScreenUtil().setSp(15),
-        fontFamily: 'NotoSans',
-        fontWeight: FontWeight.w500,
-        letterSpacing: ScreenUtil().setWidth(-0.75),
-    );
-
-    TextStyle inputValue = TextStyle(
-        color: Color.fromRGBO(39, 39, 39, 1),
-        fontSize: ScreenUtil().setSp(15),
-        fontFamily: 'NanumSquare',
-        fontWeight: FontWeight.w500,
-        letterSpacing: ScreenUtil().setWidth(-0.38),
-    );
-
     /*
      * @author : sh
      * @date : 2019-12-30
@@ -466,17 +427,17 @@ class _SignInPageState extends State<SignInPage> {
                         WhitelistingTextInputFormatter.digitsOnly
                     ],
                     controller: _phoneController,
-                    style: inputValue,
+                    style: InputStyle().inputValue,
                     decoration:  InputDecoration(
                         contentPadding: EdgeInsets.only(
                             left: ScreenUtil().setWidth(15),
                         ),
                         counterText: "",
-                        hintStyle: inputHintText,
+                        hintStyle: InputStyle().inputHintText,
                         hintText: AppLocalizations.of(context).tr('sign.signIn.phoneNumber'),
-                        enabledBorder:  _getEnableBorder,
-                        focusedBorder: _getFocusBorder,
-                        fillColor: _getBackgroundColor(phoneFocusNode),
+                        enabledBorder:  InputStyle().getEnableBorder,
+                        focusedBorder: InputStyle().getFocusBorder,
+                        fillColor: InputStyle().getBackgroundColor(phoneFocusNode),
                         filled: true,
                         suffixIcon:
                         Container(
@@ -550,7 +511,7 @@ class _SignInPageState extends State<SignInPage> {
                     ],
                     controller: _authCodeController,
                     obscureText: true,
-                    style: inputValue,
+                    style: InputStyle().inputValue,
                     decoration:  InputDecoration(
                         contentPadding: EdgeInsets.only(
                             left: ScreenUtil().setWidth(15),
@@ -566,11 +527,11 @@ class _SignInPageState extends State<SignInPage> {
                             ),
                         ),
                         counterText: "",
-                        hintStyle: inputHintText,
+                        hintStyle: InputStyle().inputHintText,
                         hintText: AppLocalizations.of(context).tr('sign.signIn.authCode'),
-                        enabledBorder:  _getEnableBorder,
-                        focusedBorder: _getFocusBorder,
-                        fillColor: _getBackgroundColor(authFocusNode),
+                        enabledBorder:  InputStyle().getEnableBorder,
+                        focusedBorder: InputStyle().getFocusBorder,
+                        fillColor: InputStyle().getBackgroundColor(authFocusNode),
                         filled: true,
                     ),
                 )
@@ -666,12 +627,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         onTap: () {
                             developer.log('# [Navigator] SignInPage -> SignUpPage');
-//                            Navigator.pushNamed(context, '/register');
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                                    return SignUpNamePage();
-                                })
-                            );
+                            Navigator.pushNamed(context, '/register');
                         },
                     )
                 ],

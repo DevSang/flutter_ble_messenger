@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:Hwa/utility/inputStyle.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -283,11 +284,11 @@ class _SignUpPageState extends State<SignUpPage>{
                         title: Text(
                             AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),
                             style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 20,
-                                fontFamily: 'NotoSans',
-                                fontWeight: FontWeight.w700
-                            ),
+                                fontFamily: "NotoSans",
+                                color: Color.fromRGBO(39, 39, 39, 1),
+                                fontSize: ScreenUtil().setSp(16),
+                                letterSpacing: ScreenUtil().setWidth(-0.8),
+                            )
                         ),
                     ),
                 ),
@@ -295,46 +296,6 @@ class _SignUpPageState extends State<SignUpPage>{
             ],
         );
     }
-
-    Color _getBackgroundColor(FocusNode _focusNode) {
-        return _focusNode.hasFocus ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(245, 245, 245, 1);
-    }
-
-    OutlineInputBorder _getEnableBorder = OutlineInputBorder(
-        borderRadius:  BorderRadius.circular(
-            ScreenUtil().setHeight(10.0),
-        ),
-        borderSide: BorderSide(
-            color: Color.fromRGBO(245, 245, 245, 1),
-            width: ScreenUtil().setWidth(1)
-        ),
-    );
-
-    OutlineInputBorder _getFocusBorder = OutlineInputBorder(
-        borderSide: BorderSide(
-            color: Color.fromRGBO(214, 214, 214, 1),
-            width: ScreenUtil().setWidth(1)
-        ),
-        borderRadius: BorderRadius.circular(
-            ScreenUtil().setHeight(10.0)
-        ),
-    );
-
-    TextStyle inputHintText = TextStyle(
-        color: Color.fromRGBO(39, 39, 39, 0.4),
-        fontSize: ScreenUtil().setSp(15),
-        fontFamily: 'NotoSans',
-        fontWeight: FontWeight.w500,
-        letterSpacing: ScreenUtil().setWidth(-0.75),
-    );
-
-    TextStyle inputValue = TextStyle(
-        color: Color.fromRGBO(39, 39, 39, 1),
-        fontSize: ScreenUtil().setSp(15),
-        fontFamily: 'NanumSquare',
-        fontWeight: FontWeight.w500,
-        letterSpacing: ScreenUtil().setWidth(-0.38),
-    );
 
     Color buttonColor(bool isActive) {
         return isActive ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
@@ -401,7 +362,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 controller: phoneRegController,
                 cursorColor: Colors.black,
                 obscureText: false,
-                style: inputValue,
+                style: InputStyle().inputValue,
                 decoration: InputDecoration(
                     contentPadding: EdgeInsets.only(
                         left: ScreenUtil().setWidth(15),
@@ -438,10 +399,10 @@ class _SignUpPageState extends State<SignUpPage>{
                     ),
                     counterText:"",
                     hintText: AppLocalizations.of(context).tr('sign.signUp.phoneNumber'),
-                    hintStyle: inputHintText,
-                    enabledBorder:  _getEnableBorder,
-                    focusedBorder: _getFocusBorder,
-                    fillColor: _getBackgroundColor(phoneFocusNode),
+                    hintStyle: InputStyle().inputHintText,
+                    enabledBorder:  InputStyle().getEnableBorder,
+                    focusedBorder: InputStyle().getFocusBorder,
+                    fillColor: InputStyle().getBackgroundColor(phoneFocusNode),
                     filled: true,
                 )
             ),
@@ -479,7 +440,7 @@ class _SignUpPageState extends State<SignUpPage>{
                 controller: _regAuthCodeController,
                 cursorColor: Colors.black,
                 obscureText: true,
-                style: inputValue,
+                style: InputStyle().inputValue,
                 decoration: InputDecoration(
                     contentPadding: EdgeInsets.only(
                         left: ScreenUtil().setWidth(15),
@@ -496,10 +457,10 @@ class _SignUpPageState extends State<SignUpPage>{
                     ),
                     counterText: "",
                     hintText: AppLocalizations.of(context).tr('sign.signUp.authCode'),
-                    hintStyle: inputHintText,
-                    enabledBorder:  _getEnableBorder,
-                    focusedBorder:_getFocusBorder,
-                    fillColor: _getBackgroundColor(authFocusNode),
+                    hintStyle: InputStyle().inputHintText,
+                    enabledBorder:  InputStyle().getEnableBorder,
+                    focusedBorder: InputStyle().getFocusBorder,
+                    fillColor: InputStyle().getBackgroundColor(authFocusNode),
                     filled: true,
                 )
             ),

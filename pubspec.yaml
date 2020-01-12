@@ -117,6 +117,7 @@ flutter:
     - assets/images/bgGradeLogin.png
     - assets/images/bgGrade.png
     - assets/images/trendnoneImg.png
+    - assets/images/trendnoneImg2.png
     - assets/images/trendnoneImGside.png
     - assets/images/trendnonListImg.png
     #Background Image
@@ -139,6 +140,7 @@ flutter:
     - assets/images/icon/appIcon2.png
     - assets/images/icon/crown.png
     - assets/images/icon/editButton.png
+    - assets/images/icon/error.png
     - assets/images/icon/eye50.png
     - assets/images/icon/heart50.png
     - assets/images/icon/iconActionMenuOpen.png

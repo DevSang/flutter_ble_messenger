@@ -57,7 +57,8 @@ class NoticePageState extends State<NoticePage> {
                     style: TextStyle(
                         fontFamily: "NotoSans",
                         color: Color.fromRGBO(39, 39, 39, 1),
-                        fontSize: ScreenUtil().setSp(16)
+                        fontSize: ScreenUtil().setSp(16),
+                        letterSpacing: ScreenUtil().setWidth(-0.8),
                     ),
                 ),
                 leading: new IconButton(

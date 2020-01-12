@@ -69,14 +69,14 @@ class _TrendPageState extends State<TrendPage> {
 
             for (var index = jsonParseList.length; index > 0; index--) {
                 chatInfo = new TrendChatListItem.fromJSON(jsonParseList[index - 1]);
-
-                if (topTrendChatList.length < 2) {
-                  // 채팅 리스트에 추가
-                    topTrendChatList.add(chatInfo);
-                } else {
-                  // 채팅 리스트에 추가
-                    trendChatList.add(chatInfo);
-                }
+//
+//                if (topTrendChatList.length < 2) {
+//                  // 채팅 리스트에 추가
+//                    topTrendChatList.add(chatInfo);
+//                } else {
+//                  // 채팅 리스트에 추가
+//                    trendChatList.add(chatInfo);
+//                }
             }
 
             setState(() {});
@@ -963,33 +963,14 @@ class _TrendPageState extends State<TrendPage> {
     }
 
     Widget noneList() {
-        double topPosition = ScreenUtil().setHeight(145) + 32;
         return Stack(
             children: <Widget>[
                 Positioned(
-                    top: topPosition,
-                    right: ScreenUtil().setWidth(301),
+                    top: ScreenUtil().setHeight(145) + 32,
+                    left: 0,
                     child: Image.asset(
-                        'assets/images/trendnoneImGside.png',
-                        width: ScreenUtil().setWidth(171.5),
-                        fit: BoxFit.fitWidth,
-                    )
-                ),
-                Positioned(
-                    top: topPosition,
-                    left: ScreenUtil().setWidth(102),
-                    child: Image.asset(
-                        'assets/images/trendnoneImg.png',
-                        width: ScreenUtil().setWidth(171.5),
-                        fit: BoxFit.fitWidth,
-                    )
-                ),
-                Positioned(
-                    top: topPosition,
-                    left: ScreenUtil().setWidth(301.5),
-                    child: Image.asset(
-                        'assets/images/trendnoneImGside.png',
-                        width: ScreenUtil().setWidth(171.5),
+                        'assets/images/trendnoneImg2.png',
+                        width: ScreenUtil().setWidth(375),
                         fit: BoxFit.fitWidth,
                     )
                 ),
