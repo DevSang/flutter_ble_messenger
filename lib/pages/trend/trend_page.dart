@@ -16,8 +16,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:showcaseview/showcaseview.dart';
 import 'package:Hwa/constant.dart';
-import 'package:geolocator/geolocator.dart';
 
 
 class TrendPage extends StatefulWidget {
@@ -29,11 +29,14 @@ class _TrendPageState extends State<TrendPage> {
     double sameSize;
     bool isLoading;
 
-    List<TrendChatListItem> trendChatList = <TrendChatListItem>[];
-    List<TrendChatListItem> topTrendChatList = <TrendChatListItem>[];
+    List<TrendChatListItem> trendChatList;
+    List<TrendChatListItem> topTrendChatList;
 
     Widget screenContext;           // 상황에 따른 화면
     bool isPositioned;              // 절대 위치 위젯 여부
+
+    double dragGestureInit;
+    double dragGestureDistance;
 
     @override
     void initState() {
@@ -61,6 +64,8 @@ class _TrendPageState extends State<TrendPage> {
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
             TrendChatListItem chatInfo;
             List<dynamic> jsonParseList = json.decode(response.body);
+            trendChatList = <TrendChatListItem>[];
+            topTrendChatList = <TrendChatListItem>[];
 
             for (var index = jsonParseList.length; index > 0; index--) {
                 chatInfo = new TrendChatListItem.fromJSON(jsonParseList[index - 1]);
@@ -203,36 +208,40 @@ class _TrendPageState extends State<TrendPage> {
     }
 
     void setScreenContext() {
-        // 상황에 따른 화면 셋팅
-        if (topTrendChatList.length == 0) {
-            isPositioned = true;
-            screenContext = noneList(); // 공백 리스트
-        } else if (trendChatList.length == 0) {
-            isPositioned = false;
-            screenContext = Expanded(
-                child: Column(
-                    children: <Widget>[
-                        // 상단 Top2 영역
-                        topChat(),
-
-                        // 하단 단화 공백 리스트
-                        incompleteList()
-                    ],
-                )
-            );
+        if (topTrendChatList == null) {
+            screenContext = Container();
         } else {
-            isPositioned = false;
-            screenContext = Expanded(
-                child: Column(
-                    children: <Widget>[
-                        // 상단 Top2 영역
-                        topChat(),
+            // 상황에 따른 화면 셋팅
+            if (topTrendChatList.length == 0) {
+                isPositioned = true;
+                screenContext = noneList(); // 공백 리스트
+            } else if (trendChatList.length == 0) {
+                isPositioned = false;
+                screenContext = Expanded(
+                    child: Column(
+                        children: <Widget>[
+                            // 상단 Top2 영역
+                            topChat(),
 
-                        // 하단 단화 리스트
-                        chatList()
-                    ],
-                )
-            );
+                            // 하단 단화 공백 리스트
+                            incompleteList()
+                        ],
+                    )
+                );
+            } else {
+                isPositioned = false;
+                screenContext = Expanded(
+                    child: Column(
+                        children: <Widget>[
+                            // 상단 Top2 영역
+                            topChat(),
+
+                            // 하단 단화 리스트
+                            chatList()
+                        ],
+                    )
+                );
+            }
         }
 
         setState(() {
@@ -273,28 +282,42 @@ class _TrendPageState extends State<TrendPage> {
                 ],
                 elevation: 0.0,
             ),
-            body: Stack(
-                children: <Widget>[
+            body: GestureDetector(
+                child: Stack(
+                    children: <Widget>[
 
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                            // 검색 영역
-                            showSearch ? _searchTrend() : Container(),
+                        Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                                // 검색 영역
+                                showSearch ? _searchTrend() : Container(),
 
-                            // 상단 탭 영역
-                            trendHeader(),
+                                // 상단 탭 영역
+                                trendHeader(),
 
-                            // 상황에 따른 화면
-                            !isPositioned ? screenContext : Container()
-                        ],
-                    ),
+                                // 상황에 따른 화면
+                                !isPositioned ? screenContext : Container()
+                            ],
+                        ),
 
-                    // 상황에 따른 화면
-                    isPositioned ? screenContext : Container(),
+                        // 상황에 따른 화면
+                        isPositioned ? screenContext : Container(),
 
-                    isLoading ? Loading() : new Container()
-                ],
+                        isLoading ? Loading() : new Container()
+                    ],
+                ),
+                onPanStart: (DragStartDetails details) {
+                    dragGestureInit = details.globalPosition.dy;
+                },
+                onPanUpdate: (DragUpdateDetails details) {
+                    dragGestureDistance= details.globalPosition.dy - dragGestureInit;
+                },
+                onPanEnd: (DragEndDetails details) {
+                    dragGestureInit = 0.0;
+                    if (dragGestureDistance > 0) {
+                        Navigator.of(context).pop(null);
+                    }
+                }
             ),
         );
     }
@@ -484,7 +507,7 @@ class _TrendPageState extends State<TrendPage> {
                                         decoration: BoxDecoration(
                                             color: isNull
                                                     ? Color.fromRGBO(214, 214, 214, 1)
-                                                    : trendChatInfo.chatImg != null ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(0, 0, 0, 0.02)
+                                                    : trendChatInfo.chatImg != null ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(248, 248, 248, 1)
                                             ,
                                             borderRadius: BorderRadius.only(
                                                 topLeft: Radius.circular(ScreenUtil().setWidth(8)),
@@ -501,8 +524,8 @@ class _TrendPageState extends State<TrendPage> {
                                                 ? Container()
                                                 : CachedNetworkImage(
 				                                        imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + trendChatInfo.chatIdx.toString(),
-				                                        placeholder: (context, url) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
-				                                        errorWidget: (context, url, error) => Image.asset('assets/images/icon/thumbnailUnset1.png'),
+				                                        placeholder: (context, url) => Image.asset('assets/images/icon/iconChatActiveNoImg.png'),
+				                                        errorWidget: (context, url, error) => Image.asset('assets/images/icon/iconChatActiveNoImg.png'),
 				                                        httpHeaders: Constant.HEADER, fit: BoxFit.fill
 		                                        )
                                         ),
@@ -597,7 +620,29 @@ class _TrendPageState extends State<TrendPage> {
 
     Widget getCount(List<TrendChatListItem> chatList, int index, bool isViewCount) {
         bool isNull = false;
-        if (chatList.length == 1) isNull = true;
+        String iconPath;
+        if (chatList.length == 1 && index == 1) isNull = true;
+        if (isViewCount) {      // 참여자 수 아이콘일 경우
+            if (!isNull) {      // 단화방 있을 경우
+                iconPath = "assets/images/icon/iconViewCount.png";
+            }
+            else {              // 단화방 없을 경우
+                iconPath = "assets/images/icon/eye50.png";
+            }
+        } else {                // 좋아요 수 아이콘일 경우
+            if (!isNull) {      // 단화방 있을 경우
+                if (chatList[index].isLiked) {
+                    iconPath = "assets/images/icon/iconHeartRed.png";
+                }
+                else {
+                    iconPath = "assets/images/icon/iconLikeCount.png";
+                }
+            }
+            else {              // 단화방 없을 경우
+                iconPath = "assets/images/icon/heart50.png";
+            }
+
+        }
 
         return InkWell(
             child: Container(
@@ -608,18 +653,15 @@ class _TrendPageState extends State<TrendPage> {
                 child: Row(
                     children: <Widget>[
                         Container(
-                            width: ScreenUtil().setWidth(20),
+                            // 단화방 유,무에 따른 아이콘 사이즈가 달라서 각각 넓이 설정
+                            width: isNull
+                                    ? ScreenUtil().setWidth(17)
+                                    : ScreenUtil().setWidth(20),
                             height: ScreenUtil().setHeight(20),
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                     image:AssetImage(
-                                        isViewCount
-                                            ? "assets/images/icon/iconViewCount.png"
-                                            : isNull
-                                                ? "assets/images/icon/iconLikeCount.png"
-                                                : chatList[index].isLiked
-                                                    ? "assets/images/icon/iconHeartRed.png"
-                                                    : "assets/images/icon/iconLikeCount.png"
+                                        iconPath
                                     ),
                                     fit: BoxFit.contain
                                 ),

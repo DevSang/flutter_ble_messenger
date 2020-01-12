@@ -368,7 +368,7 @@ class _SignInPageState extends State<SignInPage> {
             width: ScreenUtil().setWidth(219.7),
             height: ScreenUtil().setHeight(80.5),
             margin: EdgeInsets.only(
-                top: ScreenUtil().setHeight(100.5),
+                top: ScreenUtil().setHeight(87.5),
                 bottom: ScreenUtil().setHeight(64),
             ),
             child: Image.asset(
@@ -388,8 +388,7 @@ class _SignInPageState extends State<SignInPage> {
             height: ScreenUtil().setHeight(50),
             width: ScreenUtil().setWidth(343),
             margin: EdgeInsets.symmetric(
-                horizontal: ScreenUtil().setWidth(16),
-                vertical: ScreenUtil().setHeight(3)
+                horizontal: ScreenUtil().setWidth(16)
             ),
             decoration: new BoxDecoration(
                 color: Color.fromRGBO(245, 245, 245, 1),
@@ -492,9 +491,10 @@ class _SignInPageState extends State<SignInPage> {
         return Container(
             height: ScreenUtil().setHeight(50),
             width: ScreenUtil().setWidth(343),
-            margin: EdgeInsets.symmetric(
-                horizontal: ScreenUtil().setWidth(16),
-                vertical: ScreenUtil().setHeight(3)
+            margin: EdgeInsets.only(
+                left: ScreenUtil().setWidth(16),
+                right: ScreenUtil().setWidth(16),
+                top: ScreenUtil().setHeight(6)
             ),
             decoration: new BoxDecoration(
                 color: Color.fromRGBO(245, 245, 245, 1),
@@ -564,8 +564,8 @@ class _SignInPageState extends State<SignInPage> {
             width: ScreenUtil().setWidth(343),
             height: ScreenUtil().setHeight(50),
             margin: EdgeInsets.only(
-                top:ScreenUtil().setHeight(3),
-                bottom:ScreenUtil().setHeight(16),
+                top: 10,
+                bottom: 16,
             ),
             decoration: BoxDecoration(
                 color: color,
@@ -601,7 +601,7 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _registerSection(BuildContext context) {
         return Container(
-            height: ScreenUtil().setHeight(56.5),
+            height: ScreenUtil().setHeight(52),
             decoration:  BoxDecoration(
                 border:  Border(
                     bottom: BorderSide(
@@ -611,7 +611,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
             ),
             padding: EdgeInsets.only(
-                bottom: ScreenUtil().setHeight(34)
+                bottom: ScreenUtil().setHeight(29)
             ),
             margin: EdgeInsets.symmetric(
                 horizontal: ScreenUtil().setWidth(16)

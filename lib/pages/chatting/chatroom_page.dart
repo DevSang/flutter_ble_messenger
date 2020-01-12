@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
@@ -1169,6 +1168,14 @@ class ChatScreenState extends State<ChatroomPage> {
 
     Widget _buildActionSheet(bool fromCamera) {
         return CupertinoActionSheet(
+            title: Text(
+                fromCamera ?  "카메라" : "앨범",
+                style: TextStyle(
+                    fontFamily: "NotoSans",
+                    fontWeight: FontWeight.w500,
+                    fontSize: ScreenUtil().setSp(16),
+                ),
+            ),
             message: Text(
                 "단화방에 공유할 미디어를 선택해주세요.",
                 style: TextStyle(

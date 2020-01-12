@@ -520,8 +520,8 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
             MaterialPageRoute(builder: (context) {
                 return ProfilePage();
             })
-        ).then((val) => {
-            startBleService()
+        ).then((val) {
+            comebackPage();
         });
     }
 
@@ -537,8 +537,8 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
             context, MaterialPageRoute(
             builder: (context) => TrendPage()
             )
-        ).then((val) => {
-            startBleService()
+        ).then((val) {
+            comebackPage();
         });
     }
 
@@ -555,6 +555,16 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
             chatIdxList.clear();
             _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
         });
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-11
+     * @description : 타 페이지에서 돌아올 시 기능 처리
+    */
+    void comebackPage() async {
+        startBleService();
+        checkGpsBleAndStartService();
     }
 
     /*
