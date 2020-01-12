@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:Hwa/pages/signin/signup_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -44,6 +45,8 @@ class _SignInPageState extends State<SignInPage> {
     bool lengthConfirmLogin = false;
     UserInfoProvider userInfoProvider;
     double sameSize;
+    FocusNode phoneFocusNode;
+    FocusNode authFocusNode;
 
     //Social signin - Google
     GoogleSignInAccount _currentUser;
@@ -59,6 +62,10 @@ class _SignInPageState extends State<SignInPage> {
         userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
         sameSize = GetSameSize().main();
         googleAccountListner();
+        phoneFocusNode = new FocusNode();
+        phoneFocusNode.addListener(_onOnFocusNodeEvent);
+        authFocusNode = new FocusNode();
+        authFocusNode.addListener(_onOnFocusNodeEvent);
 	    super.initState();
     }
 
@@ -315,7 +322,14 @@ class _SignInPageState extends State<SignInPage> {
         setState(() { _isLoading = false; });
     }
 
-
+    /*
+     * @author : hs
+     * @date : 2020-01-12
+     * @description : 텍스트 필드 포커스에 따른 스타일 적용
+    */
+    _onOnFocusNodeEvent() {
+        setState(() {});
+    }
 
     /*
      * @author : sh
@@ -358,6 +372,46 @@ class _SignInPageState extends State<SignInPage> {
         );
     }
 
+    Color _getBackgroundColor(FocusNode _focusNode) {
+        return _focusNode.hasFocus ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(245, 245, 245, 1);
+    }
+
+    OutlineInputBorder _getEnableBorder = OutlineInputBorder(
+        borderRadius:  BorderRadius.circular(
+            ScreenUtil().setHeight(10.0),
+        ),
+        borderSide: BorderSide(
+            color: Color.fromRGBO(245, 245, 245, 1),
+            width: ScreenUtil().setWidth(1)
+        ),
+    );
+
+    OutlineInputBorder _getFocusBorder = OutlineInputBorder(
+        borderSide: BorderSide(
+            color: Color.fromRGBO(214, 214, 214, 1),
+            width: ScreenUtil().setWidth(1)
+        ),
+        borderRadius: BorderRadius.circular(
+            ScreenUtil().setHeight(10.0)
+        ),
+    );
+
+    TextStyle inputHintText = TextStyle(
+        color: Color.fromRGBO(39, 39, 39, 0.4),
+        fontSize: ScreenUtil().setSp(15),
+        fontFamily: 'NotoSans',
+        fontWeight: FontWeight.w500,
+        letterSpacing: ScreenUtil().setWidth(-0.75),
+    );
+
+    TextStyle inputValue = TextStyle(
+        color: Color.fromRGBO(39, 39, 39, 1),
+        fontSize: ScreenUtil().setSp(15),
+        fontFamily: 'NanumSquare',
+        fontWeight: FontWeight.w500,
+        letterSpacing: ScreenUtil().setWidth(-0.38),
+    );
+
     /*
      * @author : sh
      * @date : 2019-12-30
@@ -385,99 +439,77 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _loginInputText() {
         return Container(
-            height: ScreenUtil().setHeight(50),
-            width: ScreenUtil().setWidth(343),
             margin: EdgeInsets.symmetric(
                 horizontal: ScreenUtil().setWidth(16)
             ),
-            decoration: new BoxDecoration(
-                color: Color.fromRGBO(245, 245, 245, 1),
-                borderRadius: new BorderRadius.all(
-                    Radius.circular(ScreenUtil().setHeight(8.0))
-                )
-            ),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                    Container(
-                        margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
-                        width: ScreenUtil().setWidth(217),
-                        child: TextFormField(
-                            maxLength: 11,
-                            onChanged: (loginAuthCode) {
-                                if(loginAuthCode.length == 11 && !lengthConfirmSMS) {
-                                    setState(() {
-                                        lengthConfirmSMS = true;
-                                    });
-                                } else if (loginAuthCode.length != 11 && lengthConfirmSMS){
-                                    setState(() {
-                                        lengthConfirmSMS = false;
-                                    });
-                                }
-                            },
-                            onFieldSubmitted: (loginAuthCode) {
-                                developer.log('login phone number 입력 :$loginAuthCode');
-                            },
-                            keyboardType: TextInputType.number,
-                            inputFormatters: <TextInputFormatter>[
-                                WhitelistingTextInputFormatter.digitsOnly
-                            ],
-                            controller: _phoneController,
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'NotoSans',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 15
+            child: Container(
+                child: TextFormField(
+                    autofocus: true,
+                    focusNode: phoneFocusNode,
+                    maxLength: 11,
+                    onChanged: (loginAuthCode) {
+                        if(loginAuthCode.length == 11 && !lengthConfirmSMS) {
+                            setState(() {
+                                lengthConfirmSMS = true;
+                            });
+                        } else if (loginAuthCode.length != 11 && lengthConfirmSMS){
+                            setState(() {
+                                lengthConfirmSMS = false;
+                            });
+                        }
+                    },
+                    onFieldSubmitted: (loginAuthCode) {
+                        developer.log('login phone number 입력 :$loginAuthCode');
+                    },
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                        WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    controller: _phoneController,
+                    style: inputValue,
+                    decoration:  InputDecoration(
+                        contentPadding: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(15),
+                        ),
+                        counterText: "",
+                        hintStyle: inputHintText,
+                        hintText: AppLocalizations.of(context).tr('sign.signIn.phoneNumber'),
+                        enabledBorder:  _getEnableBorder,
+                        focusedBorder: _getFocusBorder,
+                        fillColor: _getBackgroundColor(phoneFocusNode),
+                        filled: true,
+                        suffixIcon:
+                        Container(
+                            width: ScreenUtil().setWidth(100),
+                            height: ScreenUtil().setHeight(40),
+                            margin: EdgeInsets.only(
+                                right: ScreenUtil().setWidth(5),
+                                top: ScreenUtil().setWidth(5),
+                                bottom: ScreenUtil().setWidth(5),
                             ),
-                            decoration:  InputDecoration(
-                                border: InputBorder.none,
-                                counterText: "",
-                                hintStyle: TextStyle(
-                                    color: Color.fromRGBO(39, 39, 39, 0.4),
-                                    fontSize: ScreenUtil().setSp(15),
-                                    fontFamily: 'NotoSans',
-                                    fontWeight: FontWeight.w500,
-                                    letterSpacing: ScreenUtil().setWidth(-0.75)
+                            child :RaisedButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(ScreenUtil().setHeight(8.0))
                                 ),
-                                hintText: AppLocalizations.of(context).tr('sign.signIn.phoneNumber')
-                            ),
+                                color: lengthConfirmSMS ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1),
+                                child: Text(
+                                    AppLocalizations.of(context).tr('sign.signUp.getAuthCode'),
+                                    style: TextStyle(
+                                        color: Color.fromRGBO(255, 255, 255, 1),
+                                        fontSize: ScreenUtil().setSp(13),
+                                        fontFamily: 'NotoSans',
+                                        fontWeight: FontWeight.w500,
+                                        letterSpacing: ScreenUtil().setWidth(-0.65),
+                                    ),
+                                ),
+                                elevation: 0,
+                                onPressed: () {
+                                    loginCodeRequest();
+                                },
+                            )
                         )
                     ),
-                    Container(
-                        height: ScreenUtil().setHeight(40),
-                        width: ScreenUtil().setWidth(100),
-                        margin: EdgeInsets.only(
-                            right: ScreenUtil().setWidth(5)
-                        ),
-                        child: InkWell(
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: lengthConfirmSMS ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1),
-                                    borderRadius: BorderRadius.all(
-                                        Radius.circular(ScreenUtil().setHeight(8.0))
-                                    )
-                                ),
-                                child: Align(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                        AppLocalizations.of(context).tr('sign.signIn.getAuthCode'),
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontFamily: 'NotoSans',
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: ScreenUtil().setSp(13),
-                                            letterSpacing: ScreenUtil().setWidth(-0.65)
-                                        ),
-                                    )
-                                ),
-//                                focusNode: contextFocus,
-                            ),
-                            onTap: () {
-                                loginCodeRequest();
-                            }
-                        )
-                    )
-                ],
+                )
             ),
         );
     }
@@ -489,66 +521,59 @@ class _SignInPageState extends State<SignInPage> {
      */
     Widget _loginInputCodeField() {
         return Container(
-            height: ScreenUtil().setHeight(50),
-            width: ScreenUtil().setWidth(343),
             margin: EdgeInsets.only(
                 left: ScreenUtil().setWidth(16),
                 right: ScreenUtil().setWidth(16),
                 top: ScreenUtil().setHeight(6)
             ),
-            decoration: new BoxDecoration(
-                color: Color.fromRGBO(245, 245, 245, 1),
-                borderRadius: new BorderRadius.all(
-                    Radius.circular(ScreenUtil().setHeight(8.0))
-                )
-            ),
-            child:  Align(
-                alignment: Alignment.centerLeft,
-                child: Container(
-                    margin: EdgeInsets.only(left:ScreenUtil().setWidth(15)),
-                    width: ScreenUtil().setWidth(217),
-                    child: TextFormField(
-                        maxLength: 6,
-                        onChanged: (regAuthCode) {
-                            if(regAuthCode.length == 6 && !lengthConfirmLogin) {
-                                setState(() {
-                                    lengthConfirmLogin = true;
-                                });
-                            } else if (regAuthCode.length != 6 && lengthConfirmLogin){
-                                setState(() {
-                                    lengthConfirmLogin = false;
-                                });
-                            }
-                        },
-                        onFieldSubmitted: (loginAuthCode) {
-                            developer.log('login authcode 입력 :$loginAuthCode');
-                        },
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                            WhitelistingTextInputFormatter.digitsOnly
-                        ],
-                        controller: _authCodeController,
-                        obscureText: true,
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'NotoSans',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 15
+            child:  Container(
+                child: TextFormField(
+                    focusNode: authFocusNode,
+                    maxLength: 6,
+                    onChanged: (regAuthCode) {
+                        if(regAuthCode.length == 6 && !lengthConfirmLogin) {
+                            setState(() {
+                                lengthConfirmLogin = true;
+                            });
+                        } else if (regAuthCode.length != 6 && lengthConfirmLogin){
+                            setState(() {
+                                lengthConfirmLogin = false;
+                            });
+                        }
+                    },
+                    onFieldSubmitted: (loginAuthCode) {
+                        developer.log('login authcode 입력 :$loginAuthCode');
+                    },
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                        WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    controller: _authCodeController,
+                    obscureText: true,
+                    style: inputValue,
+                    decoration:  InputDecoration(
+                        contentPadding: EdgeInsets.only(
+                            left: ScreenUtil().setWidth(15),
                         ),
-                        decoration:  InputDecoration(
-                            border: InputBorder.none,
-                            counterText: "",
-                            hintStyle: TextStyle(
-                                color: Color.fromRGBO(39, 39, 39, 0.4),
-                                fontSize: ScreenUtil().setSp(15),
-                                fontFamily: 'NotoSans',
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: ScreenUtil().setWidth(-0.75)
+                        suffixIcon:
+                        Container(
+                            width: ScreenUtil().setWidth(100),
+                            height: ScreenUtil().setHeight(40),
+                            margin: EdgeInsets.only(
+                                right: ScreenUtil().setWidth(5),
+                                top: ScreenUtil().setWidth(5),
+                                bottom: ScreenUtil().setWidth(5),
                             ),
-                            hintText: AppLocalizations.of(context).tr('sign.signIn.authCode')
                         ),
-                    )
-                ),
+                        counterText: "",
+                        hintStyle: inputHintText,
+                        hintText: AppLocalizations.of(context).tr('sign.signIn.authCode'),
+                        enabledBorder:  _getEnableBorder,
+                        focusedBorder: _getFocusBorder,
+                        fillColor: _getBackgroundColor(authFocusNode),
+                        filled: true,
+                    ),
+                )
             )
         );
     }
@@ -641,7 +666,12 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         onTap: () {
                             developer.log('# [Navigator] SignInPage -> SignUpPage');
-                            Navigator.pushNamed(context, '/register');
+//                            Navigator.pushNamed(context, '/register');
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                                    return SignUpNamePage();
+                                })
+                            );
                         },
                     )
                 ],

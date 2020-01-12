@@ -75,7 +75,7 @@ class ChatScreenState extends State<ChatroomPage> {
     bool isShowMenu;            // 하단 메뉴 관련
     bool disable;               // 온라인 입장 유저 입력 불가
     BoxDecoration adCondition;  // 현재 채팅 Advertising condition
-    bool openedNf;              // 현재 채팅 Advertising condition
+    bool openedNf;              // 공지사항 관련
     bool isFocused;             // ChatTextField Focused
     bool isLike;                // 현재 채팅 좋아요 TODO: 추후 맵핑
     int focusMsg;               // Focus 된 메세지
@@ -105,8 +105,7 @@ class ChatScreenState extends State<ChatroomPage> {
     @override
     void initState() {
         chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: false);
-        chatRoomNoticeInfoProvider.getNoticeList(chatInfo.chatIdx);
-
+        _initState();
         super.initState();
 
         // 입장한 사용자 중 프로필 이미지가 있는 사용자 정보 추출
@@ -142,6 +141,10 @@ class ChatScreenState extends State<ChatroomPage> {
         } else {
             getMessageList();
         }
+    }
+
+    void _initState() async {
+        await chatRoomNoticeInfoProvider.getNoticeList(chatInfo.chatIdx);
     }
 
     @override
@@ -726,7 +729,9 @@ class ChatScreenState extends State<ChatroomPage> {
                                 ),
 
                                 // Notification
-                                openedNf ? buildNoticeOpen() : buildNotice(),
+                                Provider.of<ChatRoomNoticeInfoProvider>(context, listen: true).chatNoticeList.length > 0 ?
+                                openedNf ? buildNoticeOpen() : buildNotice()
+                                :Container(),
 
                                 // Loading
                                 isLoading ? Loading() : Container()

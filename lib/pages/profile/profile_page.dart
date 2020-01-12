@@ -370,11 +370,7 @@ class _ProfilePageState extends State <ProfilePage>{
 
                     buildTextInfoItem((AppLocalizations.of(context).tr('profile.phoneNumber')), phoneNum),
 
-                    buildTextItem(
-                        "명함 관리",
-                        "",
-                        () {}
-                    )
+                    buildTextItem((AppLocalizations.of(context).tr('profile.bncardManage')), "", () {})
                 ]
             ),
         );
@@ -421,11 +417,11 @@ class _ProfilePageState extends State <ProfilePage>{
             ),
             child: Column(
                 children: <Widget>[
-                    buildSettingHeader("앱 정보"),
+                    buildSettingHeader(AppLocalizations.of(context).tr('profile.appInfo')),
 
-                    buildTextInfoItem("앱 버젼", "0.0.5"),
+                    buildTextInfoItem(AppLocalizations.of(context).tr('profile.appVer'), "0.0.5"),
 
-                    buildTextItem("약관", "", null),
+                    buildTextItem(AppLocalizations.of(context).tr('profile.termsAndCondition'), "", null),
 
                     buildTextItem(
                         (AppLocalizations.of(context).tr('profile.opensource')),

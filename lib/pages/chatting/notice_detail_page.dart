@@ -8,6 +8,7 @@ import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
 import 'package:Hwa/data/models/chat_notice_reply.dart';
 import 'package:Hwa/data/state/chat_notice_reply_provider.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/utility/convert_time.dart';
 import 'package:Hwa/constant.dart';
 
@@ -32,16 +33,19 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
 
     NoticeDetailPageState({Key key, this.notice, this.chatInfo});
     ChatRoomNoticeReplyProvider chatRoomNoticeReplyProvider;
+    UserInfoProvider userInfoProvider;
 
     bool isEmpty;           // 채팅 입력 여부
     int inputLineCount;     // 채팅 입력 줄 수
     int _inputHeight;       // 입력칸 높이
-    TextEditingController textEditingController;
+    TextEditingController textEditingController = TextEditingController();
 
     @override
     void initState() {
         chatRoomNoticeReplyProvider = Provider.of<ChatRoomNoticeReplyProvider>(context, listen: false);
-        chatRoomNoticeReplyProvider.getNoticeReplyList(chatInfo.chatIdx, notice.idx);
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+        _initState();
+
 
         super.initState();
         isEmpty = true;
@@ -49,7 +53,9 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
         _inputHeight = 36;
     }
 
-
+    void _initState() async {
+        await chatRoomNoticeReplyProvider.getNoticeReplyList(chatInfo.chatIdx, notice.idx);
+    }
 
     @override
     Widget build(BuildContext context) {
@@ -71,6 +77,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                 leading: new IconButton(
                     icon: new Image.asset('assets/images/icon/navIconClose.png'),
                     onPressed: (){
+                        chatRoomNoticeReplyProvider.noticeReplyList = <ChatNoticeReply>[];
                         Navigator.of(context).pop();
                     }
                 ),
@@ -87,6 +94,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
     }
 
     Widget buildNotice() {
+        chatRoomNoticeReplyProvider = Provider.of<ChatRoomNoticeReplyProvider>(context, listen: true);
         return Container(
             color: Color.fromRGBO(235, 235, 235, 1),
             child: Column(
@@ -95,17 +103,17 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                     buildNoticeBody(),
 
                     // 공지 댓글 영역
-//                    Flexible(
-//                        child: ListView.builder(
-//                            padding: EdgeInsets.only(
-//                                left: ScreenUtil().setWidth(16.0),
-//                                right: ScreenUtil().setWidth(16.0)
-//                            ),
-//
-//                            itemCount: notice.reply_cnt,
-//                            itemBuilder: (BuildContext context, int index) => buildNoticeReply(noticeReplyList[index]),
-//                        )
-//                    ),
+                    Flexible(
+                        child: ListView.builder(
+                            padding: EdgeInsets.only(
+                                left: ScreenUtil().setWidth(16.0),
+                                right: ScreenUtil().setWidth(16.0)
+                            ),
+
+                            itemCount: chatRoomNoticeReplyProvider.noticeReplyList.length,
+                            itemBuilder: (BuildContext context, int index) => buildNoticeReply(chatRoomNoticeReplyProvider.noticeReplyList[index]),
+                        )
+                    ),
 
                     // 댓글 입력 영역
                     inputReply(),
@@ -151,7 +159,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                         width: ScreenUtil().setHeight(40),
                                         height: ScreenUtil().setHeight(40),
                                         placeholder: AssetImage("assets/images/icon/profile.png"),
-                                        image: widget.notice.profile_picture_idx == null ? AssetImage("assets/images/icon/profile.png")
+                                        image: widget.notice.profile_picture_idx == null ? Image.asset("assets/images/icon/profile.png")
                                             : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + widget.notice.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
                                         fit: BoxFit.cover,
                                         fadeInDuration: Duration(milliseconds: 1)
@@ -278,19 +286,16 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                     Container(
                         margin: EdgeInsets.only(
                             top: ScreenUtil().setHeight(1),
-                            right: ScreenUtil().setWidth(11)
+                            right: ScreenUtil().setWidth(16)
                         ),
                         child: ClipRRect(
                             borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(45)),
-                            child: Image.asset(
-                                noticeReply.userImg,
-                                width: ScreenUtil().setWidth(40),
-                                height: ScreenUtil().setWidth(40),
-                            )
+                            child: noticeReply.profile_picture_idx == 0 ? Image.asset("assets/images/icon/profile.png")
+                                : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + noticeReply.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
                         )
                     ),
                     Container(
-                        width: ScreenUtil().setWidth(291),
+                        width: ScreenUtil().setWidth(277),
                         margin: EdgeInsets.only(
                             top: ScreenUtil().setHeight(5)
                         ),
@@ -319,7 +324,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                             right: ScreenUtil().setWidth(7.5)
                                                         ),
                                                         child: Text(
-                                                            noticeReply.userNick,
+                                                            noticeReply.nickname,
                                                             style: TextStyle(
                                                                 fontSize: ScreenUtil().setSp(13),
                                                                 fontFamily: "NotoSans",
@@ -332,7 +337,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                     ),
                                                     Container(
                                                         child: Text(
-                                                            ConvertTime().getTime(noticeReply.regTime),
+                                                            DateFormat("yyyy-MM-DD HH:mm:ss").format(DateTime.parse(noticeReply.reg_ts)).toString(),
                                                             style: TextStyle(
                                                                 fontSize: ScreenUtil().setSp(11),
                                                                 fontFamily: "NanumSquare",
@@ -345,7 +350,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                 ],
                                             ),
                                         ),
-                                        Container(
+                                        notice.user_idx == userInfoProvider.idx || noticeReply.user_idx == userInfoProvider.idx ? Container(
                                             child: GestureDetector(
                                                 child: Container(
                                                     width: ScreenUtil().setWidth(20),
@@ -357,21 +362,21 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                     )
                                                 ),
                                                 onTap:(){
-
+                                                    chatRoomNoticeReplyProvider.deleteNoticeReply(noticeReply.idx);
                                                 }
                                             ),
-                                        )
+                                        ) : Container()
                                     ],
                                 ),
                                 Row(
                                     children: <Widget>[
                                         Container(
-                                            width: ScreenUtil().setWidth(291),
+                                            width: ScreenUtil().setWidth(277),
                                             margin: EdgeInsets.only(
                                                 top: ScreenUtil().setWidth(12)
                                             ),
                                             child: Text(
-                                                noticeReply.content,
+                                                noticeReply.contents,
                                                 style: TextStyle(
                                                     fontSize: ScreenUtil().setSp(15),
                                                     fontFamily: "NotoSans",
@@ -521,7 +526,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                     )
                                 ),
                                 onTap:(){
-                                    /// 댓글 입력
+                                    chatRoomNoticeReplyProvider.writeNoticeReply(textEditingController.text, chatInfo.chatIdx, notice.idx, userInfoProvider);
                                 }
                             ),
                             decoration: BoxDecoration(

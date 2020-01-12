@@ -46,7 +46,7 @@ class NoticePageState extends State<NoticePage> {
     Widget build(BuildContext context) {
         chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: true);
 
-        return Scaffold(
+            return Scaffold(
             appBar: AppBar(
                 iconTheme: IconThemeData(
                     color: Color.fromRGBO(77, 96, 191, 1), //change your color here
@@ -73,7 +73,7 @@ class NoticePageState extends State<NoticePage> {
                             onPressed: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                        return NoticeWritePage(chatInfo: chatInfo);
+                                        return NoticeWritePage(chatInfo: chatInfo, isUpdate: false);
                                     })
                                 );
                             },
@@ -131,7 +131,6 @@ class NoticePageState extends State<NoticePage> {
 
     Widget headerTab(int index) {
         Color tabColor = index == 1 ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(158, 158, 158, 1);
-        Color textColor = index == 1 ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(107, 107, 107, 1);
 
         return new Container(
             width: ScreenUtil().setWidth(74),
@@ -140,10 +139,8 @@ class NoticePageState extends State<NoticePage> {
                 left: index == 2 ? ScreenUtil().setWidth(20) : 0,
             ),
             decoration: BoxDecoration(
-                border: Border.all(
-                    width: ScreenUtil().setWidth(1),
-                    color: tabColor,
-                ),
+                color: tabColor,
+
                 borderRadius: BorderRadius.all(
                     Radius.circular(ScreenUtil().setWidth(20))
                 )
@@ -156,7 +153,7 @@ class NoticePageState extends State<NoticePage> {
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
                         fontSize: ScreenUtil().setSp(14),
-                        color: textColor
+                        color: Color.fromRGBO(255, 255, 255, 1)
                     ),
                 ),
             ),
@@ -179,43 +176,43 @@ class NoticePageState extends State<NoticePage> {
 
         return new GestureDetector(
             child: Container(
-                padding: EdgeInsets.only(
-                    top: ScreenUtil().setWidth(17),
-                    bottom: ScreenUtil().setWidth(18),
-                    left: ScreenUtil().setWidth(16),
-                    right: ScreenUtil().setWidth(16),
+                padding: EdgeInsets.symmetric(
+                    vertical: ScreenUtil().setWidth(18),
+                    horizontal: ScreenUtil().setWidth(16),
                 ),
                 margin: EdgeInsets.only(
                     bottom: ScreenUtil().setHeight(10)
                 ),
                 color: Colors.white,
                 child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                         Container(
+                            width: ScreenUtil().setWidth(45),
+                            height: ScreenUtil().setWidth(45),
                             margin: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(2),
-                                right: ScreenUtil().setWidth(11.5)
+                                right: ScreenUtil().setWidth(12)
                             ),
-                            child: ClipRRect(
-                                borderRadius:  BorderRadius.circular(ScreenUtil().setWidth(45)),
-                                child: FadeInImage(
-                                    width: ScreenUtil().setHeight(40),
-                                    height: ScreenUtil().setHeight(40),
-                                    placeholder: AssetImage("assets/images/icon/profile.png"),
-                                    image: chatNoticeItem.profile_picture_idx == 0 ? AssetImage("assets/images/icon/profile.png")
-                                        : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + chatNoticeItem.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    image: chatNoticeItem.profile_picture_idx == 0
+                                        ? AssetImage("assets/images/icon/profile.png")
+                                        : CachedNetworkImageProvider(
+                                        Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + chatNoticeItem.user_idx.toString() + "&type=SMALL",
+                                        headers: Constant.HEADER
+                                    ),
                                     fit: BoxFit.cover,
-                                    fadeInDuration: Duration(milliseconds: 1)
                                 )
-                            )
+                            ),
                         ),
                         Container(
                             margin: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(0),
                                 right: ScreenUtil().setWidth(21)
                             ),
                             child: Column (
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                     Container(
                                         width: ScreenUtil().setWidth(245),
@@ -237,7 +234,6 @@ class NoticePageState extends State<NoticePage> {
                                     ),
                                     Container(
                                         width: ScreenUtil().setWidth(245),
-                                        height: ScreenUtil().setHeight(13.5),
                                         child: Row(
                                             mainAxisAlignment: MainAxisAlignment.start,
                                             children: <Widget>[
@@ -289,13 +285,23 @@ class NoticePageState extends State<NoticePage> {
                                 ],
                             )
                         ),
-                        GestureDetector(
-                            child:Container(
-                                child: Image.asset("assets/images/icon/iconActionMenuOpen.png")
-                            ),
-                            onTap:(){
-                                showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet());
-                            }
+                        Container(
+                            width: ScreenUtil().setWidth(20),
+                            height: ScreenUtil().setHeight(45),
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                    GestureDetector(
+                                        child: Image.asset(
+                                            "assets/images/icon/iconActionMenuOpen.png",
+                                            fit: BoxFit.fitWidth,
+                                        ),
+                                        onTap:(){
+                                            showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet(chatNoticeItem));
+                                        }
+                                    )
+                                ],
+                            )
                         )
                     ],
                 )
@@ -310,19 +316,26 @@ class NoticePageState extends State<NoticePage> {
         );
     }
 
-    Widget _buildActionSheet() {
+    Widget _buildActionSheet(ChatNoticeItem chatNoticeItem) {
         return CupertinoActionSheet(
             actions: <Widget>[
                 CupertinoActionSheetAction(
                     child: Text("수정하기"),
                     onPressed: () {
                         Navigator.pop(context);
+
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                                return NoticeWritePage(chatInfo: chatInfo, isUpdate: true, notice: chatNoticeItem);
+                            })
+                        );
                     },
                 ),
                 CupertinoActionSheetAction(
                     child: Text("삭제하기"),
                     isDestructiveAction: true,
                     onPressed: () {
+                        chatRoomNoticeInfoProvider.deleteNotice(chatNoticeItem.idx);
                         Navigator.pop(context);
                     },
                 )
