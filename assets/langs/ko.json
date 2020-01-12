@@ -54,7 +54,6 @@
         "friend": "단화 친구",
         "chat": "참여했던 단화방"
     },
-
     "tabNavigation": {
         "hwa": {
             "main": {
@@ -82,15 +81,12 @@
                     "titleText": "GPS가 꺼져있습니다.",
                     "subTitle": "설정 > GPS 켜기",
                     "buttonText": "설정으로 이동"
-
                 }
             },
-
             "location" : {
                 "nowLocation": "현재 위치",
                 "searchLocation": "위치 검색 중.."
             },
-
             "createRoom" : {
                 "title": "단화 생성하기",
                 "cancel": "취소",
@@ -99,8 +95,6 @@
                 "pleaseRoomName" : "단화방 이름을 입력해주세요"
             }
         },
-
-
         "friend": {
             "search": "검색",
             "friendRequest": "친구 요청",
@@ -117,26 +111,26 @@
             "searchChat": "지금 단화방 탐색하기",
             "people": "명"
         }
-
-
     },
-
-
     "profile": {
-           "profileAppbar": "프로필 설정",
-           "profile": "프로필",
-           "username": "사용자 이름",
-           "introduce": "한 줄 소개",
-           "phoneNumber": "연락처",
-           "appSetting": "앱 설정",
-           "pushAlarm": "푸시 알림",
-           "friendAllow": "친구 요청 허용",
-           "account": "계정",
-           "logout": "로그아웃",
-           "leave": "탈퇴하기",
-           "cancel": "취소",
-           "save": "저장하기",
-           "textIntroduce": "소개글을 입력해 보세요 :)",
-           "opensource": "OpenSource License"
+        "profileAppbar": "프로필 설정",
+        "profile": "프로필",
+        "username": "사용자 이름",
+        "introduce": "한 줄 소개",
+        "phoneNumber": "연락처",
+        "bncardManage": "명함 관리",
+        "appSetting": "앱 설정",
+        "pushAlarm": "푸시 알림",
+        "friendAllow": "친구 요청 허용",
+        "appInfo": "앱 정보",
+        "account": "계정",
+        "logout": "로그아웃",
+        "leave": "탈퇴하기",
+        "cancel": "취소",
+        "save": "저장하기",
+        "textIntroduce": "소개글을 입력해 보세요 :)",
+        "opensource": "OpenSource License",
+        "appVer": "앱 버젼",
+        "termsAndCondition": "이용 약관"
     }
 }

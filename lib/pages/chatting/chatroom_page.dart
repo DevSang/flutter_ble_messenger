@@ -732,7 +732,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                 ),
 
                                 // Notification
-                                chatRoomNoticeInfoProvider.chatNoticeList.length > 0 ?
+                                Provider.of<ChatRoomNoticeInfoProvider>(context, listen: true).chatNoticeList.length > 0 ?
                                 openedNf ? buildNoticeOpen() : buildNotice()
                                 :Container(),
 
