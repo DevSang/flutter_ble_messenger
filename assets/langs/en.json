@@ -26,16 +26,16 @@
             "authCode": "Auth Code",
             "nextBtn": "Next",
             "toast": {
-            "request200": "You have requested a verification code.",
-            "inputPhone": "Please enter your mobile number.",
-            "alreadyUser": "You are already an authenticated user.",
-            "alreadyPhone": "This phone number is already taken.",
-            "inputCode": "Please enter the verification code.",
-            "authFinish": "Certification completed.",
-            "authFail": "Authentication failed. Please check the verification number.",
-            "start": "Here we are. Start danhwa with friends around you.",
-            "fail": "Server request failed"
-          }
+                "request200": "You have requested a verification code.",
+                "inputPhone": "Please enter your mobile number.",
+                "alreadyUser": "You are already an authenticated user.",
+                "alreadyPhone": "This phone number is already taken.",
+                "inputCode": "Please enter the verification code.",
+                "authFinish": "Certification completed.",
+                "authFail": "Authentication failed. Please check the verification number.",
+                "start": "Here we are. Start danhwa with friends around you.",
+                "fail": "Server request failed"
+            }
         },
         "signUpName": {
             "signUpAppbar": "Sign In",
@@ -54,7 +54,6 @@
         "friend": "Friend",
         "chat": "Chat"
     },
-
     "tabNavigation": {
         "hwa": {
             "main": {
@@ -82,15 +81,12 @@
                     "titleText": "gps is off.",
                     "subTitle": "Settings > Gps ON",
                     "buttonText": "Go to Settings"
-
                 }
             },
-
             "location" : {
                 "nowLocation": "Current Location",
                 "searchLocation": "Searching for locations.."
             },
-
             "createRoom" : {
                 "title": "Danhwa Create",
                 "cancel": "Cancel",
@@ -106,7 +102,9 @@
             "noNewRequest": "There's no new friend request.",
             "noFriend": "No friends added yet",
             "accept": "Accept",
-            "delete": "Delete"
+            "delete": "Delete",
+            "personalChat": "Personal chat",
+            "block" : "Block"
         },
         "chat": {
             "noMsg": "No Message",
@@ -116,22 +114,26 @@
             "people": "People"
         }
     },
-
     "profile": {
         "profileAppbar": "Profile Setting",
         "profile": "Profile",
         "username": "Username",
         "introduce": "Introduce one line",
         "phoneNumber": "Contact",
+        "bncardManage": "Business card manage",
         "appSetting": "App Setting",
         "pushAlarm": "Push Notification",
         "friendAllow": "Allow friend requests",
+        "appInfo": "App information",
         "account": "Account",
         "logout": "Logout",
         "leave": "Account delete",
         "cancel": "Cancel",
         "save": "Save",
         "textIntroduce": "Please enter an introduction. :)",
-        "opensource": "OpenSource License"
+        "opensource": "OpenSource License",
+        "appVer": "App version",
+        "termsAndCondition": "Terms and condition"
+
     }
 }

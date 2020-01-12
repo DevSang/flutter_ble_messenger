@@ -307,8 +307,7 @@ class ChatUserInfoListState extends State<ChatUserInfoList> with TickerProviderS
                                                             Navigator.push(
                                                                 context, MaterialPageRoute(
                                                                 builder: (context) => FullPhoto(
-                                                                    url: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=BIG"
-                                                                    , header: Constant.HEADER
+		                                                                photoUrl: Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userInfo.userIdx.toString() + "&type=BIG"
                                                                 )
                                                             ));
                                                         }

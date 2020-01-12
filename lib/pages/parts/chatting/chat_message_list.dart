@@ -86,7 +86,6 @@ class ChatMessageListState extends State<ChatMessageList> {
      * @description : 마지막 보낸 메세지 여부
     */
     bool checkMessage(int index) {
-
         if (index == 0) { return true; }
         else if (index > 0 && messageList != null) {
 
@@ -501,13 +500,11 @@ class ChatMessageListState extends State<ChatMessageList> {
                             ),
                         ),
                         onTap: () {
-                            if(Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null) {
-                                Navigator.push(
-                                    context, MaterialPageRoute(
-                                    builder: (context) =>
-                                        FullPhoto(url: getOriginImgUri(chatMessage.message), header: Constant.HEADER)
-                                ));
-                            }
+                            Navigator.push(
+                                context, MaterialPageRoute(
+                                builder: (context) =>
+                                    FullPhoto(photoUrl: getOriginImgUri(chatMessage.message))
+                            ));
                         },
                     ),
                     receivedMsg ? msgTime(chatMessage.chatTime, receivedMsg) : Container()
@@ -848,8 +845,7 @@ class ChatMessageListState extends State<ChatMessageList> {
                             if(Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null) {
                                 Navigator.push(
                                     context, MaterialPageRoute(
-                                    builder: (context) => FullPhoto(url: getOriginImgUri(chatMessage.message),
-                                        header: Constant.HEADER))
+                                    builder: (context) => FullPhoto(photoUrl: getOriginImgUri(chatMessage.message)))
                                 );
                             };
                         }

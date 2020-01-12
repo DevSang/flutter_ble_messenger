@@ -108,9 +108,6 @@ class ChatScreenState extends State<ChatroomPage> {
         _initState();
         super.initState();
 
-
-        developer.log("### joinInfo : ${joinInfo.toString()}");
-
         // 입장한 사용자 중 프로필 이미지가 있는 사용자 정보 추출
         if(joinInfo != null) {
 	        joinInfo.forEach((ChatJoinInfo user) {
@@ -269,7 +266,7 @@ class ChatScreenState extends State<ChatroomPage> {
     /*
      * @author : hs
      * @date : 2020-01-02
-     * @description : 자신의 닉네임 얻어오기 (임시)
+     * @description : 자신의 닉네임 얻어오기 (임시) TODO
     */
     getMyNick() async {
         /// 참여 타입 수정
@@ -732,7 +729,7 @@ class ChatScreenState extends State<ChatroomPage> {
                                 ),
 
                                 // Notification
-                                chatRoomNoticeInfoProvider.chatNoticeList.length > 0 ?
+                                Provider.of<ChatRoomNoticeInfoProvider>(context, listen: true).chatNoticeList.length > 0 ?
                                 openedNf ? buildNoticeOpen() : buildNotice()
                                 :Container(),
 

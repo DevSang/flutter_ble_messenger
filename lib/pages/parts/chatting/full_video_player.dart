@@ -126,23 +126,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 		                // => dio 를 통한 다운로드 -> defaultCacheManager 에 넣기 -> dio 다운파일 삭제 -> CacheManager 에 있는 파일로 동영상 init
 		                File file = File(videoFilePath);
 
-		                String contentType = response.headers.value(Headers.contentTypeHeader);
-
-		                try {
-			                if(contentType != null){
-				                vExtension = contentType.split(";")[0].split("/")[1].trim();
-                            } else{
-				                String disposition = response.headers.value("content-disposition");
-				                vExtension = disposition
-						                .split(";")[1]
-						                .split("=")[1].trim()
-						                .replaceAll('"', '')
-						                .replaceAll(" ", "_")
-						                .substring(disposition.lastIndexOf(".") + 1);
-                            }
-		                } catch (e) {
-			                vExtension = "mp4";
-		                }
+		                getExtension(response);
 
 		                String newVideoFilePath = videoFilePath + "." + vExtension;
 		                file = await file.rename(newVideoFilePath);
@@ -192,6 +176,11 @@ class VideoPlayerState extends State<FullVideoPlayer> {
         }); // memoizer.runOnce
     }
 
+    /*
+     * @author : hs
+     * @date : 2020-01-12
+     * @description : 플레이어 바 시간 셋팅
+     */
     String getTime(int minutes, int seconds) {
         String _stringTime;
         String _stringMinutes;
@@ -202,6 +191,31 @@ class VideoPlayerState extends State<FullVideoPlayer> {
         _stringTime = _stringMinutes + ":" + _stringSeconds;
 
         return _stringTime;
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-12
+     * @description : 파일 확장자 얻기
+     */
+    void getExtension(Response response){
+	    String contentType = response.headers.value(Headers.contentTypeHeader);
+
+	    try {
+		    if(contentType != null){
+			    vExtension = contentType.split(";")[0].split("/")[1].trim();
+		    } else{
+			    String disposition = response.headers.value("content-disposition");
+			    vExtension = disposition
+					    .split(";")[1]
+					    .split("=")[1].trim()
+					    .replaceAll('"', '')
+					    .replaceAll(" ", "_")
+					    .substring(disposition.lastIndexOf(".") + 1);
+		    }
+	    } catch (e) {
+		    vExtension = "mp4";
+	    }
     }
 
     /*
