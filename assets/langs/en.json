@@ -102,7 +102,9 @@
             "noNewRequest": "There's no new friend request.",
             "noFriend": "No friends added yet",
             "accept": "Accept",
-            "delete": "Delete"
+            "delete": "Delete",
+            "personalChat": "Personal chat",
+            "block" : "Block"
         },
         "chat": {
             "noMsg": "No Message",

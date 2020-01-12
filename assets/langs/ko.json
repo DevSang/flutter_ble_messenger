@@ -102,7 +102,9 @@
             "noNewRequest": "새로운 친구 요청이 없어요",
             "noFriend": "아직 추가된 친구가 없어요",
             "accept": "수락",
-            "delete": "삭제"
+            "delete": "삭제",
+            "personalChat": "1:1 채팅",
+            "block": "차단하기"
         },
         "chat": {
             "noMsg": "메시지 없음",

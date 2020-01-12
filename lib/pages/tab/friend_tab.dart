@@ -931,8 +931,14 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                     child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children:  <Widget> [
-                                            userFunc("assets/images/icon/iconDirectChat.png", "1:1 채팅", _createChat, friendInfo, setStateBuild),
-                                            userFunc("assets/images/icon/iconBlock.png", "차단하기", null, friendInfo, setStateBuild)
+                                            userFunc(
+                                                "assets/images/icon/iconDirectChat.png"
+                                                ,AppLocalizations.of(context).tr('tabNavigation.friend.personalChat')
+                                                ,_createChat, friendInfo, setStateBuild),
+                                            userFunc(
+                                                "assets/images/icon/iconBlock.png"
+                                                , AppLocalizations.of(context).tr('tabNavigation.friend.block')
+                                                , null, friendInfo, setStateBuild)
                                         ]
                                     ),
                                 )
