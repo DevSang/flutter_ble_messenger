@@ -52,6 +52,20 @@ class CallApi {
 
     /*
      * @author : hk
+     * @date : 2020-01-11
+     * @description : JWT 셋팅된 Dio 얻기
+     */
+    static Future<Dio> getDio() async {
+	    SharedPreferences prefs = await Constant.getSPF();
+	    var token = jsonDecode(prefs.getString('userInfo'))['token'].toString();
+
+	    Dio dio = Dio();
+	    dio.options.headers['X-Authorization'] = 'Bearer ' + token;
+	    return dio;
+    }
+
+    /*
+     * @author : hk
      * @date : 2019-12-31
      * @description : 파일업로드 API 연동 util
      */
@@ -66,12 +80,8 @@ class CallApi {
 
         String fileName = filePath.substring(filePath.lastIndexOf("/") + 1, filePath.length);
 
-	    SharedPreferences prefs = await Constant.getSPF();
-	    var token = jsonDecode(prefs.getString('userInfo'))['token'].toString();
-
 	    Response response;
-	    Dio dio = new Dio();
-	    dio.options.headers['X-Authorization'] = 'Bearer ' + token;
+	    Dio dio = await getDio();
 
 	    contentsType = contentsType ?? lookupMimeType(filePath) ?? "multipart/form-data";
         dio.options.headers['Content-Type'] = contentsType;
