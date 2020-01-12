@@ -12,8 +12,6 @@ class ChatNoticeItem {
     final int reply_cnt;
     final String reg_ts;
 
-
-
     ChatNoticeItem({
         this.idx
         , this.chat_idx
@@ -30,10 +28,8 @@ class ChatNoticeItem {
     });
 
     factory ChatNoticeItem.fromJSON (Map json) {
-
         Map jbUserData = json['jb_user_data'];
         int profilePictureIdx = jbUserData.containsKey("profile_picture_idx") ? jbUserData["profile_picture_idx"] : 0;
-
         try{
             return ChatNoticeItem (
                 idx : json['idx'],

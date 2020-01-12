@@ -1,3 +1,4 @@
+import 'package:Hwa/data/models/chat_notice_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -15,15 +16,19 @@ import 'package:Hwa/data/state/user_info_provider.dart';
  */
 class NoticeWritePage extends StatefulWidget {
     final ChatInfo chatInfo;
-    NoticeWritePage({Key key, @required this.chatInfo}) :super(key: key);
+    final bool isUpdate;
+    final ChatNoticeItem notice;
+    NoticeWritePage({Key key, @required this.chatInfo, this.isUpdate, this.notice}) :super(key: key);
 
     @override
-    State createState() => new NoticeWritePageState(chatInfo: chatInfo);
+    State createState() => new NoticeWritePageState(chatInfo: chatInfo, isUpdate: isUpdate, notice: notice);
 }
 
 class NoticeWritePageState extends State<NoticeWritePage> {
     final ChatInfo chatInfo;
-    NoticeWritePageState({Key key, @required this.chatInfo});
+    final bool isUpdate;
+    final ChatNoticeItem notice;
+    NoticeWritePageState({Key key, @required this.chatInfo, this.isUpdate, this.notice});
 
     TextEditingController textEditingController = TextEditingController();
     ChatRoomNoticeInfoProvider chatRoomNoticeInfoProvider;
@@ -33,6 +38,7 @@ class NoticeWritePageState extends State<NoticeWritePage> {
     void initState() {
         chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: false);
         userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+        if(isUpdate) textEditingController.text = notice.contents;
 
         super.initState();
     }
@@ -48,7 +54,7 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                 title: Column(
                         children: <Widget>[
                             Text(
-                                "공지 작성",
+                                isUpdate ? "공지사항 수정" : "공지사항 작성",
                                 style: TextStyle(
                                     height: 1,
                                     color: Color.fromRGBO(39, 39, 39, 1),
@@ -95,7 +101,11 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                                             ),
                                         ),
                                         onTap: () {
-                                            if (textEditingController.text.length > 0) chatRoomNoticeInfoProvider.writeNotice(textEditingController.text, chatInfo.chatIdx, userInfoProvider);
+                                            if (textEditingController.text.length > 0){
+                                                if(!isUpdate){
+                                                    chatRoomNoticeInfoProvider.writeNotice(textEditingController.text, chatInfo.chatIdx, userInfoProvider);
+                                                }
+                                            }
                                             Navigator.of(context).pop();
                                         },
                                     )
