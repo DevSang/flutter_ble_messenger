@@ -131,7 +131,6 @@ class NoticePageState extends State<NoticePage> {
 
     Widget headerTab(int index) {
         Color tabColor = index == 1 ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(158, 158, 158, 1);
-        Color textColor = index == 1 ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(107, 107, 107, 1);
 
         return new Container(
             width: ScreenUtil().setWidth(74),
@@ -140,10 +139,8 @@ class NoticePageState extends State<NoticePage> {
                 left: index == 2 ? ScreenUtil().setWidth(20) : 0,
             ),
             decoration: BoxDecoration(
-                border: Border.all(
-                    width: ScreenUtil().setWidth(1),
-                    color: tabColor,
-                ),
+                color: tabColor,
+
                 borderRadius: BorderRadius.all(
                     Radius.circular(ScreenUtil().setWidth(20))
                 )
@@ -156,7 +153,7 @@ class NoticePageState extends State<NoticePage> {
                         fontFamily: "NotoSans",
                         fontWeight: FontWeight.w500,
                         fontSize: ScreenUtil().setSp(14),
-                        color: textColor
+                        color: Color.fromRGBO(255, 255, 255, 1)
                     ),
                 ),
             ),
