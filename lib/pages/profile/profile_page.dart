@@ -122,13 +122,12 @@ class _ProfilePageState extends State <ProfilePage>{
         }
     }
 
+    /*
+     * @author : hk
+     * @date : 2020-01-12
+     * @description : 뒤로가기
+     */
     void popNav() async {
-        setState(() {isLoading = true;});
-
-        await saveSettingInfo();
-
-        setState(() {isLoading = false;});
-
         Navigator.of(context).pop();
     }
 
@@ -160,6 +159,7 @@ class _ProfilePageState extends State <ProfilePage>{
 		    });
 
 		    if(response.statusCode == 200){
+		    	// 사용자 프로필 캐시 지우고 새로 로딩
 			    await Provider.of<UserInfoProvider>(context, listen: false).changedProfileImg();
 			    Provider.of<UserInfoProvider>(context, listen: false).createProfileCacheImg();
 
