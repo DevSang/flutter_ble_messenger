@@ -53,16 +53,39 @@ class _SignUpPageState extends State<SignUpPage>{
 
     //local var
     SharedPreferences SPF;
-    FocusNode myFocusNode;
+    FocusNode phoneFocusNode;
+    FocusNode authFocusNode;
     final TextEditingController _regAuthCodeController = new TextEditingController();
-    bool lengthConfirm;
+    bool lengthConfirmPhone;
+    bool lengthConfirmAuth;
     bool _isLoading = false;
 
 
     @override
     void initState() {
         super.initState();
-        lengthConfirm = false;
+        lengthConfirmPhone = false;
+        lengthConfirmAuth = false;
+        phoneFocusNode = new FocusNode();
+        phoneFocusNode.addListener(_onOnFocusNodeEvent);
+        authFocusNode = new FocusNode();
+        authFocusNode.addListener(_onOnFocusNodeEvent);
+    }
+
+    @override
+    void dispose() {
+        super.dispose();
+        phoneRegController.clear();
+        _regAuthCodeController.clear();
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-12
+     * @description : 텍스트 필드 포커스에 따른 스타일 적용
+    */
+    _onOnFocusNodeEvent() {
+        setState(() {});
     }
 
     /*
@@ -225,6 +248,9 @@ class _SignUpPageState extends State<SignUpPage>{
                             FocusScope.of(context).requestFocus( FocusNode());
                         },
                         child:  Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: ScreenUtil().setWidth(16)
+                            ),
                             decoration: BoxDecoration(
                                 border: Border(
                                     top: BorderSide(
@@ -236,9 +262,9 @@ class _SignUpPageState extends State<SignUpPage>{
 
                             child: ListView(
                                 children: <Widget>[
-                                    _regPhoneTextField(),
+                                    _regTextFieldLabel(AppLocalizations.of(context).tr('sign.signUp.textPhoneNumber')),
                                     _regPhoneNumTextField(),
-                                    _regAuthCodeText(),
+                                    _regTextFieldLabel(AppLocalizations.of(context).tr('sign.signUp.textAuthCode')),
                                     _regAuthTextField(),
                                     _regNextButton(),
                                 ]
@@ -249,15 +275,19 @@ class _SignUpPageState extends State<SignUpPage>{
                         brightness: Brightness.light,
                         backgroundColor: Color.fromRGBO(250, 250, 250, 1),
                         elevation: 0.0,
-                        leading: Padding(
-                            padding: EdgeInsets.only(left: 16),
-                            child: IconButton(
-                                icon: Image.asset("assets/images/icon/navIconPrev.png"),
-                                onPressed: () => Navigator.of(context).pop(null),
-                            ),
+                        leading: IconButton(
+                            icon: Image.asset("assets/images/icon/navIconClose.png"),
+                            onPressed: () => Navigator.of(context).pop(null),
                         ),
                         centerTitle: true,
-                        title: Text(AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w700),
+                        title: Text(
+                            AppLocalizations.of(context).tr('sign.signUp.signUpAppbar'),
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 20,
+                                fontFamily: 'NotoSans',
+                                fontWeight: FontWeight.w700
+                            ),
                         ),
                     ),
                 ),
@@ -266,19 +296,74 @@ class _SignUpPageState extends State<SignUpPage>{
         );
     }
 
+    Color _getBackgroundColor(FocusNode _focusNode) {
+        return _focusNode.hasFocus ? Color.fromRGBO(255, 255, 255, 1) : Color.fromRGBO(245, 245, 245, 1);
+    }
+
+    OutlineInputBorder _getEnableBorder = OutlineInputBorder(
+        borderRadius:  BorderRadius.circular(
+            ScreenUtil().setHeight(10.0),
+        ),
+        borderSide: BorderSide(
+            color: Color.fromRGBO(245, 245, 245, 1),
+            width: ScreenUtil().setWidth(1)
+        ),
+    );
+
+    OutlineInputBorder _getFocusBorder = OutlineInputBorder(
+        borderSide: BorderSide(
+            color: Color.fromRGBO(214, 214, 214, 1),
+            width: ScreenUtil().setWidth(1)
+        ),
+        borderRadius: BorderRadius.circular(
+            ScreenUtil().setHeight(10.0)
+        ),
+    );
+
+    TextStyle inputHintText = TextStyle(
+        color: Color.fromRGBO(39, 39, 39, 0.4),
+        fontSize: ScreenUtil().setSp(15),
+        fontFamily: 'NotoSans',
+        fontWeight: FontWeight.w500,
+        letterSpacing: ScreenUtil().setWidth(-0.75),
+    );
+
+    TextStyle inputValue = TextStyle(
+        color: Color.fromRGBO(39, 39, 39, 1),
+        fontSize: ScreenUtil().setSp(15),
+        fontFamily: 'NanumSquare',
+        fontWeight: FontWeight.w500,
+        letterSpacing: ScreenUtil().setWidth(-0.38),
+    );
+
+    Color buttonColor(bool isActive) {
+        return isActive ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
+    }
+
     /*
      * @author : sh
      * @date : 2019-12-28
      * @description : 휴대폰 번호 입력 타이틀 위젯
      */
-    Widget _regPhoneTextField(){
+    Widget _regTextFieldLabel(String value){
         return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            margin: EdgeInsets.only(top: 20, bottom: 10),
+            margin: EdgeInsets.only(
+                top: ScreenUtil().setHeight(26),
+                bottom: ScreenUtil().setHeight(8)
+            ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text(AppLocalizations.of(context).tr('sign.signUp.textPhoneNumber'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans',fontWeight: FontWeight.w700))
+                    Text(
+                        value,
+                        style: TextStyle(
+                            color: Color.fromRGBO(107, 107, 107, 1),
+                            fontSize: ScreenUtil().setSp(13),
+                            fontFamily: 'NotoSans',
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: ScreenUtil().setWidth(-0.32)
+                        )
+                    )
                 ],
             )
         );
@@ -291,11 +376,20 @@ class _SignUpPageState extends State<SignUpPage>{
     */
     Widget _regPhoneNumTextField(){
         return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: TextFormField(
+                focusNode: phoneFocusNode,
+                autofocus: true,
                 maxLength: 11,
                 onChanged: (regPhoneNum) {
-                    developer.log(regPhoneNum);
+                    if(regPhoneNum.length == 11 && !lengthConfirmPhone) {
+                        setState(() {
+                            lengthConfirmPhone = true;
+                        });
+                    } else if (regPhoneNum.length != 11 && lengthConfirmPhone){
+                        setState(() {
+                            lengthConfirmPhone = false;
+                        });
+                    }
                 },
                 onFieldSubmitted: (regPhoneNum) {
                     developer.log('회원가입 전화번호  :$regPhoneNum');
@@ -304,57 +398,53 @@ class _SignUpPageState extends State<SignUpPage>{
                 inputFormatters: <TextInputFormatter>[
                     WhitelistingTextInputFormatter.digitsOnly
                 ],
-
                 controller: phoneRegController,
                 cursorColor: Colors.black,
                 obscureText: false,
-                style: TextStyle(color: Colors.black, fontFamily: 'NanumSquare',fontWeight: FontWeight.w500
-                ),
+                style: inputValue,
                 decoration: InputDecoration(
+                    contentPadding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(15),
+                    ),
                     suffixIcon:
                     Container(
-                        margin: EdgeInsets.only(right:5),
+                        width: ScreenUtil().setWidth(100),
+                        height: ScreenUtil().setHeight(40),
+                        margin: EdgeInsets.only(
+                            right: ScreenUtil().setWidth(5),
+                            top: ScreenUtil().setWidth(5),
+                            bottom: ScreenUtil().setWidth(5),
+                        ),
                         child :RaisedButton(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8.0),
                             ),
-                            child: Text(AppLocalizations.of(context).tr('sign.signUp.getAuthCode'),style: TextStyle(color: Colors.white, fontFamily: 'NotoSans'),
+                            child: Text(
+                                AppLocalizations.of(context).tr('sign.signUp.getAuthCode'),
+                                style: TextStyle(
+                                    color: Color.fromRGBO(255, 255, 255, 1),
+                                    fontSize: ScreenUtil().setSp(13),
+                                    fontFamily: 'NotoSans',
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: ScreenUtil().setWidth(-0.65),
+                                ),
                             ),
-                            color: Color.fromRGBO(77, 96, 191, 1),
+                            color: buttonColor(lengthConfirmPhone),
+                            elevation: 0,
                             onPressed: () {
                                 registerCodeRequest();
-                            })
+                            }
+                        )
                     ),
                     counterText:"",
                     hintText: AppLocalizations.of(context).tr('sign.signUp.phoneNumber'),
-                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15, fontFamily: 'NotoSans', fontWeight: FontWeight.w700),
-                    border:  OutlineInputBorder(
-                        borderRadius:  BorderRadius.circular(10.0),
-                        borderSide:  BorderSide(
-                        ),
-                    ),
-                    fillColor: Colors.grey[200],
+                    hintStyle: inputHintText,
+                    enabledBorder:  _getEnableBorder,
+                    focusedBorder: _getFocusBorder,
+                    fillColor: _getBackgroundColor(phoneFocusNode),
                     filled: true,
                 )
             ),
-        );
-    }
-
-    /*
-     * @author : sh
-     * @date : 2019-12-28
-     * @description : 인증번호 입력 타이틀 위젯
-     */
-    Widget _regAuthCodeText(){
-        return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            margin: EdgeInsets.only(top: 20, bottom: 10),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                    Text(AppLocalizations.of(context).tr('sign.signUp.textAuthCode'),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans', fontWeight: FontWeight.w700))
-                ],
-            )
         );
     }
 
@@ -365,18 +455,17 @@ class _SignUpPageState extends State<SignUpPage>{
      */
     Widget _regAuthTextField(){
         return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
             child: TextFormField(
-                focusNode: myFocusNode,
+                focusNode: authFocusNode,
                 maxLength: 6,
                 onChanged: (regAuthCode) {
-                    if(regAuthCode.length == 6 && !lengthConfirm) {
+                    if(regAuthCode.length == 6 && !lengthConfirmAuth) {
                         setState(() {
-                            lengthConfirm = true;
+                            lengthConfirmAuth = true;
                         });
-                    } else if (regAuthCode.length != 6 && lengthConfirm){
+                    } else if (regAuthCode.length != 6 && lengthConfirmAuth){
                         setState(() {
-                            lengthConfirm = false;
+                            lengthConfirmAuth = false;
                         });
                     }
                 },
@@ -390,17 +479,27 @@ class _SignUpPageState extends State<SignUpPage>{
                 controller: _regAuthCodeController,
                 cursorColor: Colors.black,
                 obscureText: true,
-                style: TextStyle(color: Colors.black, fontFamily: 'NanumSquare',fontWeight: FontWeight.w500),
+                style: inputValue,
                 decoration: InputDecoration(
-                    counterText: "",
-                    hintText: AppLocalizations.of(context).tr('sign.signUp.authCode'),
-                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15, fontFamily: 'NotoSans', fontWeight: FontWeight.w700),
-                    border:  OutlineInputBorder(
-                        borderRadius:  BorderRadius.circular(10.0),
-                        borderSide:  BorderSide(
+                    contentPadding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(15),
+                    ),
+                    suffixIcon:
+                    Container(
+                        width: ScreenUtil().setWidth(100),
+                        height: ScreenUtil().setHeight(40),
+                        margin: EdgeInsets.only(
+                            right: ScreenUtil().setWidth(5),
+                            top: ScreenUtil().setWidth(5),
+                            bottom: ScreenUtil().setWidth(5),
                         ),
                     ),
-                    fillColor: Colors.grey[200],
+                    counterText: "",
+                    hintText: AppLocalizations.of(context).tr('sign.signUp.authCode'),
+                    hintStyle: inputHintText,
+                    enabledBorder:  _getEnableBorder,
+                    focusedBorder:_getFocusBorder,
+                    fillColor: _getBackgroundColor(authFocusNode),
                     filled: true,
                 )
             ),
@@ -413,23 +512,32 @@ class _SignUpPageState extends State<SignUpPage>{
      * @description : 다음 버튼 위젯
      */
     Widget _regNextButton(){
-        var color = lengthConfirm ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
-
         return Container(
-            width: MediaQuery.of(context).size.width,
-            height: 50.0,
-            margin: EdgeInsets.only(top: 15.0),
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            width: ScreenUtil().setWidth(343),
+            height: ScreenUtil().setHeight(50),
+            margin: EdgeInsets.only(
+                top: ScreenUtil().setHeight(10)
+            ),
             child: RaisedButton(
                 onPressed:(){
                     registerNext();
                 },
-                color: color,
+                color: buttonColor(lengthConfirmAuth),
                 elevation: 0.0,
-                child: Text(AppLocalizations.of(context).tr('sign.signUp.nextBtn'),style: TextStyle(color: Colors.white,  fontFamily: 'NotoSans', fontWeight: FontWeight.w700, fontSize: 16)
+                child: Text(
+                    AppLocalizations.of(context).tr('sign.signUp.nextBtn'),
+                    style: TextStyle(
+                        color: Color.fromRGBO(255, 255, 255, 1),
+                        fontFamily: 'NotoSans', 
+                        fontWeight: FontWeight.w500,
+                        fontSize: ScreenUtil().setSp(16),
+                        letterSpacing: ScreenUtil().setWidth(-0.8)
+                    )
                 ),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0)
+                    borderRadius: BorderRadius.circular(
+                        ScreenUtil().setHeight(8)
+                    )
                 ),
             ),
         );
