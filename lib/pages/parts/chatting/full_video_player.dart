@@ -44,7 +44,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 
     bool showDownloadBtn = false;   // 다운로드 버튼 보여줄지 여부
 
-    File videoFile; // 비디오 파일
+    File videoFile;     // 비디오 파일
     String vExtension;  // 온라인에서 받은 파일의 최종 확장자
 
     @override
@@ -147,6 +147,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 		                String newVideoFilePath = videoFilePath + "." + vExtension;
 		                file = await file.rename(newVideoFilePath);
 
+		                // 동영상은 캐시 10일
 		                await defaultCacheManager.putFile(videoUrl, file.readAsBytesSync(), maxAge: const Duration(days: 10), fileExtension: vExtension);
 
 		                file.deleteSync();

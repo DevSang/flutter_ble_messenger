@@ -46,7 +46,7 @@ class NoticePageState extends State<NoticePage> {
     Widget build(BuildContext context) {
         chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: true);
 
-        return Scaffold(
+            return Scaffold(
             appBar: AppBar(
                 iconTheme: IconThemeData(
                     color: Color.fromRGBO(77, 96, 191, 1), //change your color here
@@ -73,7 +73,7 @@ class NoticePageState extends State<NoticePage> {
                             onPressed: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                        return NoticeWritePage(chatInfo: chatInfo);
+                                        return NoticeWritePage(chatInfo: chatInfo, isUpdate: false);
                                     })
                                 );
                             },
@@ -294,7 +294,7 @@ class NoticePageState extends State<NoticePage> {
                                 child: Image.asset("assets/images/icon/iconActionMenuOpen.png")
                             ),
                             onTap:(){
-                                showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet());
+                                showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet(chatNoticeItem));
                             }
                         )
                     ],
@@ -310,19 +310,26 @@ class NoticePageState extends State<NoticePage> {
         );
     }
 
-    Widget _buildActionSheet() {
+    Widget _buildActionSheet(ChatNoticeItem chatNoticeItem) {
         return CupertinoActionSheet(
             actions: <Widget>[
                 CupertinoActionSheetAction(
                     child: Text("수정하기"),
                     onPressed: () {
                         Navigator.pop(context);
+
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                                return NoticeWritePage(chatInfo: chatInfo, isUpdate: true, notice: chatNoticeItem);
+                            })
+                        );
                     },
                 ),
                 CupertinoActionSheetAction(
                     child: Text("삭제하기"),
                     isDestructiveAction: true,
                     onPressed: () {
+                        chatRoomNoticeInfoProvider.deleteNotice(chatNoticeItem.idx);
                         Navigator.pop(context);
                     },
                 )
