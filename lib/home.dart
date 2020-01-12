@@ -20,6 +20,7 @@ import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 import 'package:Hwa/utility/call_api.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:showcaseview/showcase_widget.dart';
 // KV Store 전역 선언
 final kvStore = KvStore();
 
@@ -206,16 +207,21 @@ class HomePageState extends State<HomePage> {
 
         ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: false)..init(context);
 
+        // ShowCaseWidget - Tooltip(화면 안내 말풍선) Package
         return Scaffold(
-            body: Container(
-                width: ScreenUtil().setWidth(375),
-                height: ScreenUtil().setHeight(667),
-                color: Colors.black,
-                child:Image.asset(
-                    "assets/images/splash.png",
-                    fit: BoxFit.cover,
-                ),
-            ),
+            body: ShowCaseWidget(
+                builder: Builder(
+                    builder: (context) => Container(
+                        width: ScreenUtil().setWidth(375),
+                        height: ScreenUtil().setHeight(667),
+                        color: Colors.black,
+                        child:Image.asset(
+                            "assets/images/splash.png",
+                            fit: BoxFit.cover,
+                        ),
+                    )
+                )
+            )
         );
     }
 }

@@ -27,6 +27,7 @@ dependencies:
     json_annotation:
     video_thumbnail: ^0.2.0           # Video Thumbnail
     video_player:                     # Video Player Added Header
+    showcaseview: 0.1.5               # Tool Tip
 
     ### Add by HK ###
     dio: 3.0.8                        # Http, File Upload
@@ -138,6 +139,8 @@ flutter:
     - assets/images/icon/appIcon2.png
     - assets/images/icon/crown.png
     - assets/images/icon/editButton.png
+    - assets/images/icon/eye50.png
+    - assets/images/icon/heart50.png
     - assets/images/icon/iconActionMenuOpen.png
     - assets/images/icon/iconAddress.png
     - assets/images/icon/iconAttachCamera.png
@@ -151,6 +154,7 @@ flutter:
     - assets/images/icon/iconBlock.png
     - assets/images/icon/iconBounds.png
     - assets/images/icon/iconCar.png
+    - assets/images/icon/iconChatActiveNoImg.png
     - assets/images/icon/iconClosePopup.png
     - assets/images/icon/iconDeleteSmall.png
     - assets/images/icon/iconDirectChat.png
