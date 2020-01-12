@@ -1,13 +1,11 @@
-import 'dart:convert';
-import 'dart:developer' as developer;
-
-import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/utility/red_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:Hwa/data/models/chat_notice_item.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+
+import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/data/state/chat_notice_item_provider.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -16,44 +14,27 @@ import 'package:intl/intl.dart';
  * @description : 공지사항 리스트
  */
 class NoticeWritePage extends StatefulWidget {
-    final int chatIdx;
-    NoticeWritePage({Key key, @required this.chatIdx}) :super(key: key);
+    final ChatInfo chatInfo;
+    NoticeWritePage({Key key, @required this.chatInfo}) :super(key: key);
 
     @override
-    State createState() => new NoticeWritePageState(chatIdx: chatIdx);
+    State createState() => new NoticeWritePageState(chatInfo: chatInfo);
 }
 
 class NoticeWritePageState extends State<NoticeWritePage> {
-    final int chatIdx;
-    NoticeWritePageState({Key key, @required this.chatIdx});
+    final ChatInfo chatInfo;
+    NoticeWritePageState({Key key, @required this.chatInfo});
 
     TextEditingController textEditingController = TextEditingController();
+    ChatRoomNoticeInfoProvider chatRoomNoticeInfoProvider;
+    UserInfoProvider userInfoProvider;
 
     @override
     void initState() {
+        chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: false);
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+
         super.initState();
-    }
-
-    writeNotice(String contents) async {
-        try {
-            /// 참여 타입 수정
-            String uri = "/api/v2/chat/announce";
-            final response = await CallApi.commonApiCall(
-                method: HTTP_METHOD.post,
-                url: uri,
-                data: {
-                    "chat_idx" : chatIdx,
-                    "contents" : contents
-                }
-            );
-
-            print(response.body);
-            RedToast.toast("공지사항이 등록되었습니다.", ToastGravity.TOP);
-
-        } catch (e) {
-            developer.log("#### Error :: "+ e.toString());
-            RedToast.toast("공지사항이 등록되었습니다.", ToastGravity.TOP);
-        }
     }
 
     @override
@@ -76,7 +57,7 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                                 ),
                             ),
                             Text(
-                                "코엑스 별마당 도서관",
+                                chatInfo.title,
                                 style: TextStyle(
                                     height: 1.5,
                                     color: Color.fromRGBO(107, 107, 107, 1),
@@ -114,7 +95,8 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                                             ),
                                         ),
                                         onTap: () {
-                                            if (textEditingController.text.length > 0) writeNotice(textEditingController.text);
+                                            if (textEditingController.text.length > 0) chatRoomNoticeInfoProvider.writeNotice(textEditingController.text, chatInfo.chatIdx, userInfoProvider);
+                                            Navigator.of(context).pop();
                                         },
                                     )
                                 ),

@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
+import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_notice_item.dart';
-import 'package:Hwa/pages/parts/chatting/notice/set_chat_notice_reply_data.dart';
 import 'package:Hwa/data/models/chat_notice_reply.dart';
+import 'package:Hwa/data/state/chat_notice_reply_provider.dart';
 import 'package:Hwa/utility/convert_time.dart';
 import 'package:Hwa/constant.dart';
 
@@ -17,30 +19,37 @@ import 'package:Hwa/constant.dart';
  */
 class NoticeDetailPage extends StatefulWidget {
     final ChatNoticeItem notice;
-    NoticeDetailPage({Key key, @required this.notice}) :super(key: key);
+    final ChatInfo chatInfo;
+    NoticeDetailPage({Key key, @required this.notice, this.chatInfo}) :super(key: key);
 
     @override
-    State createState() => new NoticeDetailPageState();
+    State createState() => new NoticeDetailPageState(notice: notice, chatInfo: chatInfo);
 }
 
 class NoticeDetailPageState extends State<NoticeDetailPage> {
-    List<ChatNoticeReply> noticeReplyList = new SetChatNoticeReplyData().main();
+    final ChatNoticeItem notice;
+    final ChatInfo chatInfo;
 
-    // 채팅 입력 여부
-    bool isEmpty;
-    // 채팅 입력 줄 수
-    int inputLineCount;
-    // 입력칸 높이
-    int _inputHeight;
+    NoticeDetailPageState({Key key, this.notice, this.chatInfo});
+    ChatRoomNoticeReplyProvider chatRoomNoticeReplyProvider;
+
+    bool isEmpty;           // 채팅 입력 여부
+    int inputLineCount;     // 채팅 입력 줄 수
+    int _inputHeight;       // 입력칸 높이
     TextEditingController textEditingController;
 
     @override
-  void initState() {
-    super.initState();
-    isEmpty = true;
-    inputLineCount = 1;
-    _inputHeight = 36;
-  }
+    void initState() {
+        chatRoomNoticeReplyProvider = Provider.of<ChatRoomNoticeReplyProvider>(context, listen: false);
+        chatRoomNoticeReplyProvider.getNoticeReplyList(chatInfo.chatIdx, notice.idx);
+
+        super.initState();
+        isEmpty = true;
+        inputLineCount = 1;
+        _inputHeight = 36;
+    }
+
+
 
     @override
     Widget build(BuildContext context) {
@@ -51,7 +60,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                 ),
                 brightness: Brightness.light,
                 title: Text(
-                    "코엑스 별마당 도서관",
+                    chatInfo.title,
                     style: TextStyle(
                         color: Color.fromRGBO(39, 39, 39, 1),
                         fontSize: ScreenUtil().setSp(16),
@@ -64,39 +73,16 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                     onPressed: (){
                         Navigator.of(context).pop();
                     }
-                ),                actions:[
-                    Builder(
-                        builder: (context) =>
-                            Row(
-                                children: <Widget>[
-                                    Container (
-                                        margin: EdgeInsets.only(
-                                            right: ScreenUtil().setWidth(16),
-                                        ),
-                                        child: GestureDetector(
-                                            child: Text(
-                                                '글목록',
-                                                style: TextStyle(
-                                                    color: Color.fromRGBO(107, 107, 107, 1),
-                                                    letterSpacing: ScreenUtil().setWidth(-0.75),
-                                                    fontSize: ScreenUtil().setSp(15),
-                                                    fontFamily: "NotoSans",
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                            ),
-                                            onTap: () {
-                                                Navigator.of(context).pop();
-                                            },
-                                        )
-                                    ),
-                                ],
-                            ),
-                    ),
-                ],
+                ),
                 centerTitle: true,
                 backgroundColor: Color.fromRGBO(250, 250, 250, 1),
             ),
-            body: buildNotice(),
+            body: new GestureDetector(
+                child: buildNotice(),
+                onTap: (){
+                    FocusScope.of(context).requestFocus(new FocusNode());
+                },
+            ),
         );
     }
 
@@ -109,18 +95,17 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                     buildNoticeBody(),
 
                     // 공지 댓글 영역
-                    Flexible(
-                        child: ListView.builder(
-                            padding: EdgeInsets.only(
-                                left: ScreenUtil().setWidth(16.0),
-                                right: ScreenUtil().setWidth(16.0)
-                            ),
-
-                            itemCount: noticeReplyList.length,
-
-                            itemBuilder: (BuildContext context, int index) => buildNoticeReply(noticeReplyList[index]),
-                        )
-                    ),
+//                    Flexible(
+//                        child: ListView.builder(
+//                            padding: EdgeInsets.only(
+//                                left: ScreenUtil().setWidth(16.0),
+//                                right: ScreenUtil().setWidth(16.0)
+//                            ),
+//
+//                            itemCount: notice.reply_cnt,
+//                            itemBuilder: (BuildContext context, int index) => buildNoticeReply(noticeReplyList[index]),
+//                        )
+//                    ),
 
                     // 댓글 입력 영역
                     inputReply(),
@@ -184,7 +169,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                     bottom: ScreenUtil().setWidth(5)
                                                 ),
                                                 child: Text(
-                                                    '강희근',
+                                                    notice.nickname.toString(),
                                                     style: TextStyle(
                                                         fontSize: ScreenUtil().setSp(13),
                                                         fontFamily: "NotoSans",
@@ -206,7 +191,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                                 right: ScreenUtil().setWidth(13.5)
                                                             ),
                                                             child: Text(
-                                                                widget.notice.reg_ts.toString(),
+                                                                DateFormat("yyyy-MM-DD HH:mm:ss").format(DateTime.parse(notice.reg_ts)).toString(),
                                                                 style: TextStyle(
                                                                     fontSize: ScreenUtil().setSp(13),
                                                                     fontFamily: "NanumSquare",
@@ -231,7 +216,7 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                                         ),
                                                         Container(
                                                             child: Text(
-                                                                widget.notice.reply_cnt.toString(),
+                                                                notice.reply_cnt.toString(),
                                                                 style: TextStyle(
                                                                     fontSize: ScreenUtil().setSp(13),
                                                                     fontFamily: "NanumSquare",
