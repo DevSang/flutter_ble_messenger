@@ -1,15 +1,16 @@
 import 'dart:io';
-import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:async/async.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/data/models/chat_message.dart';
-import 'package:Hwa/constant.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+
 
 /*
  * @project : HWA - Mobile
@@ -28,7 +29,9 @@ class FullVideoPlayer extends StatefulWidget {
 }
 
 class VideoPlayerState extends State<FullVideoPlayer> {
-    final AsyncMemoizer<bool> _memoizer = AsyncMemoizer();
+    final AsyncMemoizer<bool> _memorizer = AsyncMemoizer();                 // memorizer
+    final DefaultCacheManager defaultCacheManager = DefaultCacheManager();  // 캐시 매니저
+
     final String videoUrl;
     ChatMessage chatMessage;
     VideoPlayerState({Key key, this.videoUrl, this.chatMessage});
@@ -38,6 +41,11 @@ class VideoPlayerState extends State<FullVideoPlayer> {
     bool _showController;
     double dragGestureInit;
     double dragGestureDistance;
+
+    bool showDownloadBtn = false;   // 다운로드 버튼 보여줄지 여부
+
+    File videoFile; // 비디오 파일
+    String vExtension;  // 온라인에서 받은 파일의 최종 확장자
 
     @override
     void initState() {
@@ -66,27 +74,19 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 		 *                video init, play 를 다시 누적하여 오류 일으킴
 		 *                AsyncMemoizer 사용하여 초기화 결과는 Cache에서 반환
 		 */
-        return this._memoizer.runOnce(() async {
+        return this._memorizer.runOnce(() async {
         	try {
-		        Directory tempDir = await getTemporaryDirectory();
-		        String tempPath = tempDir.path;
+        		// 캐시에서 파일 검색
+		        FileInfo vFileInfo = await defaultCacheManager.getFileFromCache(videoUrl);
 
-		        // Video file Path : tempPath/roomIdx_msgIdx_videoFile
-		        String videoFilePath = tempPath + "/" + chatMessage.roomIdx.toString() + "_" + chatMessage.msgIdx.toString() + "_videoFile";
-		        File videoFile = File(videoFilePath);
-
-		        bool isVideoExist = await videoFile.exists();
-
-		        if(isVideoExist){
-	                // 이미 한번 봐서 파일이 있으면
-	                _controller = VideoPlayerController.file(videoFile);
+		        if(vFileInfo != null){
+	                // 이미 한번 봐서 다운로드된 파일이 있으면 플레이
+	                _controller = VideoPlayerController.file(vFileInfo.file);
+	                showDownloadBtn = true;
+	                videoFile = vFileInfo.file;
                 } else {
 	                // 동영상 처음 봄, 다운로드 및 저장, 플레이
-	                SharedPreferences prefs = await Constant.getSPF();
-	                var token = jsonDecode(prefs.getString('userInfo'))['token'].toString();
-
-	                Dio dio = new Dio();
-	                dio.options.headers['X-Authorization'] = 'Bearer ' + token;
+	                Dio dio = await CallApi.getDio();
 
 	                // TODO file download 요청 및 진행시 발생하는 에러 처리
 	                dio.interceptors.add(InterceptorsWrapper(
@@ -108,19 +108,54 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 			                }
 	                ));
 
+	                Directory tempDir = await getTemporaryDirectory();
+	                String tempPath = tempDir.path;
+
+	                // Video file Path : tempPath/roomIdx_msgIdx_videoFile
+	                String videoFilePath = tempPath + "/" + chatMessage.roomIdx.toString() + "_" + chatMessage.msgIdx.toString() + "_videoFile";
+
 	                // TODO 파일 다운로드 중지에 사용, 중지 및 후처리
 	                CancelToken cancelToken = CancelToken();
-
 	                Response response = await dio.download(videoUrl, videoFilePath, cancelToken: cancelToken, onReceiveProgress: (received, total){
+	                	// TODO 프로그레스 보여주기
 		                developer.log("$received : $total");
 	                });
 
 	                if(response.statusCode == 200){
-		                // TODO file name을 원본 확장자로...?
-		                // TODO => 나중에 파일 다시 볼 때 파일 확장자를 알수가 없음. 추후 필요시 서버와 연동하여 업데이트
+		                // TODO file cache 시간, 다운로드 프로그레스 표시를 위해 이렇게까지 해야하나..? (defaultCacheManager - download 는 파일 다운로드 프로그레스 표시가 안됨)
+		                // => dio 를 통한 다운로드 -> defaultCacheManager 에 넣기 -> dio 다운파일 삭제 -> CacheManager 에 있는 파일로 동영상 init
 		                File file = File(videoFilePath);
 
-		                _controller = VideoPlayerController.file(file);
+		                String contentType = response.headers.value(Headers.contentTypeHeader);
+
+		                try {
+			                if(contentType != null){
+				                vExtension = contentType.split(";")[0].split("/")[1].trim();
+                            } else{
+				                String disposition = response.headers.value("content-disposition");
+				                vExtension = disposition
+						                .split(";")[1]
+						                .split("=")[1].trim()
+						                .replaceAll('"', '')
+						                .replaceAll(" ", "_")
+						                .substring(disposition.lastIndexOf(".") + 1);
+                            }
+		                } catch (e) {
+			                vExtension = "mp4";
+		                }
+
+		                String newVideoFilePath = videoFilePath + "." + vExtension;
+		                file = await file.rename(newVideoFilePath);
+
+		                await defaultCacheManager.putFile(videoUrl, file.readAsBytesSync(), maxAge: const Duration(days: 10), fileExtension: vExtension);
+
+		                file.deleteSync();
+
+		                FileInfo vFileInfo = await defaultCacheManager.getFileFromCache(videoUrl);
+
+		                _controller = VideoPlayerController.file(vFileInfo.file);
+		                showDownloadBtn = true;
+		                videoFile = vFileInfo.file;
 	                } else {
 		                return false;
 	                }
@@ -135,7 +170,6 @@ class VideoPlayerState extends State<FullVideoPlayer> {
                     setState(() {
                         positionTime = getTime(_controller.value.position.inMinutes, _controller.value.position.inSeconds);
                     });
-
 
 			        if(_controller.value.position == _controller.value.duration){
 				        await _controller.seekTo(Duration(seconds: 0, minutes: 0, hours: 0));
@@ -167,6 +201,34 @@ class VideoPlayerState extends State<FullVideoPlayer> {
         _stringTime = _stringMinutes + ":" + _stringSeconds;
 
         return _stringTime;
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-12
+     * @description : 동영상 다운로드
+     */
+    void downloadFile() async {
+    	if(videoFile != null){
+    		int fileLength = await videoFile.length();
+
+		    developer.log("## videoFile download : ${videoFile.path}");
+		    developer.log("## videoFile fileLenth : $fileLength");
+
+		    await videoFile.setLastModified(new DateTime.now());
+
+		    bool result = await GallerySaver.saveVideo(videoFile.path);
+		    developer.log("## download result: $result.");
+
+		    // TODO 결과에 따라 성공 여부 보여주기, 휴대폰에 저장된 파일의 경로, 갤러리 등 확인 필요, 다운로드 받은 파일의 용량이 늘어남? 확인 필요
+		    if(result){
+			    setState(() {
+				    showDownloadBtn = false;
+			    });
+		    }
+	    } else {
+		    developer.log("download fail.");
+	    }
     }
 
 
@@ -201,6 +263,18 @@ class VideoPlayerState extends State<FullVideoPlayer> {
                 backgroundColor: Color.fromRGBO(0, 0, 0, 0),
                 centerTitle: true,
                 elevation: 0,
+	            actions: <Widget>[
+		            Visibility(
+			            child: IconButton(
+				            icon: Icon(Icons.file_download),
+				            onPressed: () {
+					            downloadFile();
+				            },
+				            color: Colors.white,
+			            ),
+			            visible: showDownloadBtn,
+		            )
+	            ],
             )
             : new AppBar(
                 elevation: 0,

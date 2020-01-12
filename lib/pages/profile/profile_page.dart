@@ -160,7 +160,7 @@ class _ProfilePageState extends State <ProfilePage>{
 		    });
 
 		    if(response.statusCode == 200){
-			    Provider.of<UserInfoProvider>(context, listen: false).changedProfileImg();
+			    await Provider.of<UserInfoProvider>(context, listen: false).changedProfileImg();
 			    Provider.of<UserInfoProvider>(context, listen: false).createProfileCacheImg();
 
 			    setState((){
