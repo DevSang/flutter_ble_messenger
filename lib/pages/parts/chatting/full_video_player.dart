@@ -114,7 +114,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 	                // Video file Path : tempPath/roomIdx_msgIdx_videoFile
 	                String videoFilePath = tempPath + "/" + chatMessage.roomIdx.toString() + "_" + chatMessage.msgIdx.toString() + "_videoFile";
 
-	                // TODO 파일 다운로드 중지에 사용, 중지 및 후처리
+	                // TODO 파일 다운로드 중지에 사용 - 파일 다운로드중에 중지 처리 가능, 중지 및 후처리
 	                CancelToken cancelToken = CancelToken();
 	                Response response = await dio.download(videoUrl, videoFilePath, cancelToken: cancelToken, onReceiveProgress: (received, total){
 	                	// TODO 프로그레스 보여주기
