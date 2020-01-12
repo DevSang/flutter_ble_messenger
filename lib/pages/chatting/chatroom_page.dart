@@ -14,10 +14,13 @@ import 'package:dio/dio.dart';
 import 'package:mime/mime.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:provider/provider.dart';
+
 import 'package:Hwa/package/gauge/gauge_driver.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/data/models/chat_notice_item.dart';
 import 'package:Hwa/utility/action_sheet.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/call_api.dart';
@@ -27,6 +30,7 @@ import 'package:Hwa/pages/chatting/notice_page.dart';
 import 'package:Hwa/pages/parts/chatting/chat_side_menu.dart';
 import 'package:Hwa/pages/parts/chatting/chat_message_list.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
+import 'package:Hwa/data/state/chat_notice_item_provider.dart';
 
 /*
  * @project : HWA - Mobile
@@ -96,10 +100,15 @@ class ChatScreenState extends State<ChatroomPage> {
     final TextEditingController textEditingController = new TextEditingController();
     final ScrollController listScrollController = new ScrollController();
     final FocusNode focusNode = new FocusNode();
+    ChatRoomNoticeInfoProvider chatRoomNoticeInfoProvider;
 
     @override
     void initState() {
+        chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: false);
+        chatRoomNoticeInfoProvider.getNoticeList(chatInfo.chatIdx);
+
         super.initState();
+
 
         developer.log("### joinInfo : ${joinInfo.toString()}");
 
@@ -624,6 +633,7 @@ class ChatScreenState extends State<ChatroomPage> {
             isLoading = false;
         });
 
+        chatRoomNoticeInfoProvider.chatNoticeList = <ChatNoticeItem>[];
 	    Navigator.of(context).pop();
     }
 
@@ -796,6 +806,8 @@ class ChatScreenState extends State<ChatroomPage> {
     }
 
     Widget buildNoticeOpen() {
+        chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: true);
+
         return Positioned(
             top: ScreenUtil().setHeight(8),
             left: ScreenUtil().setWidth(8),
@@ -841,7 +853,9 @@ class ChatScreenState extends State<ChatroomPage> {
                                             right: ScreenUtil().setHeight(8.5)
                                         ),
                                         child: Text(
-                                            '타인을 향한 비방시 강퇴 조치를 취합니다.',
+                                            chatRoomNoticeInfoProvider.chatNoticeList.length > 0 ?
+                                            chatRoomNoticeInfoProvider.chatNoticeList[0].contents
+                                            : "",
                                             style: TextStyle(
                                                 fontFamily: "NotoSans",
                                                 fontWeight: FontWeight.w400,
@@ -856,7 +870,7 @@ class ChatScreenState extends State<ChatroomPage> {
                             onTap: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                        return NoticePage(hostIdx: chatInfo.createUser.userIdx, chatIdx: chatInfo.chatIdx);
+                                        return NoticePage(hostIdx: chatInfo.createUser.userIdx, chatInfo: chatInfo);
                                     })
                                 );
                             },

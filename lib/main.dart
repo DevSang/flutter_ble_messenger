@@ -23,8 +23,13 @@ import 'package:Hwa/data/state/friend_count.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 import 'package:Hwa/data/state/friend_list_info_provider.dart';
+import 'package:Hwa/data/state/chat_notice_item_provider.dart';
+import 'package:Hwa/data/state/chat_notice_reply_provider.dart';
+
 import 'package:Hwa/data/models/friend_request_info.dart';
 import 'package:Hwa/data/models/friend_info.dart';
+import 'package:Hwa/data/models/chat_notice_item.dart';
+import 'package:Hwa/data/models/chat_notice_reply.dart';
 //import 'package:kakao_flutter_sdk/auth.dart';
 
 Future main() async {
@@ -60,7 +65,9 @@ class HereWeAreApp extends StatelessWidget {
 	            ChangeNotifierProvider(create: (_) => FriendCount()),
 	            ChangeNotifierProvider(create: (_) => UserInfoProvider()),
 	            ChangeNotifierProvider(create: (_) => FriendListInfoProvider(friendList: List<FriendInfo>())),
-	            ChangeNotifierProvider(create: (_) => FriendRequestListInfoProvider(friendRequestList: List<FriendRequestInfo>()))
+	            ChangeNotifierProvider(create: (_) => FriendRequestListInfoProvider(friendRequestList: List<FriendRequestInfo>())),
+	            ChangeNotifierProvider(create: (_) => ChatRoomNoticeInfoProvider(chatNoticeList: List<ChatNoticeItem>())),
+	            ChangeNotifierProvider(create: (_) => ChatRoomNoticeReplyProvider(noticeReplyList: List<ChatNoticeReply>())),
             ],
             child: EasyLocalizationProvider(
 			     	data: data,

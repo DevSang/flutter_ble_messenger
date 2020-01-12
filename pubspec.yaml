@@ -43,6 +43,7 @@ dependencies:
     youtube_player_flutter: ^6.0.3+2  # Youtube
     path_provider: ^1.5.1             # file download
     async: ^2.4.0                     # async
+    gallery_saver: ^1.0.7             # photo, video save
 
     ### Add by JH ###
     shared_preferences:             # SharedPreferences
