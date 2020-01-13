@@ -12,9 +12,11 @@
         static String pattern = '[\s|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|(\₩;\-=+,_#\/\?:^\$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》)|(ㄱ-ㅎ)]';
     String validateName(String value) {
       RegExp regExp =  RegExp(pattern);
-       if (value.length == 0) {
+       if (value.isEmpty) {
         RedToast.toast("이름을 입력하세요", ToastGravity.TOP);
-      return "이름을 입력하세요";
+        if (value.length < 2) {
+          RedToast.toast("이름을 한 글자 이상 입력하세요 ", ToastGravity.TOP);
+        }
     } else if (!regExp.hasMatch(value)) {
         RedToast.toast("Name must be a-z and A-Z", ToastGravity.TOP);
       return "Name must be a-z and A-Z";
