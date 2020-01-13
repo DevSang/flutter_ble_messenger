@@ -71,7 +71,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     // GPS 관련
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     Position _currentPosition;
-    String _currentAddress = '위치 검색 중 ';
+    String _currentAddress;
 
     // 사용자 GPS, BLE 권한 관련
     bool isAllowedGPS = true;
@@ -185,7 +185,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 				    result.beacons.forEach((beacon) {
 					    if (!chatIdxList.contains(beacon.roomId))  {
 						    _setChatItem(beacon.roomId);
-					    }else {
+					    } else {
 						    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
 						    for(ChatListItem chatItem in chatList){
 							    if(chatItem.chatIdx == beacon.roomId){
@@ -220,8 +220,8 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 
 		    // 채팅 리스트에 추가
 		    setState(() {
+                chatIdxList.insert(0, chatIdx);
 			    chatList.insert(0, chatItem);
-			    chatIdxList.insert(0, chatItem.chatIdx);
 		    });
 	    } catch (e) {
 		    developer.log("#### Error :: "+ e.toString());
@@ -295,7 +295,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
         _animationController.repeat();
         developer.log("# start GpsService!");
         setState(() {
-            _currentAddress = "위치 검색 중 ";
+            _currentAddress;
         });
 
 	    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
@@ -605,9 +605,12 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                 leftButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.cancel')),
                 rightButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.create')),
                 value: _currentAddress,
-                hintText: _currentAddress == (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'))
-                    ? (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.pleaseRoomName'))
-                    : _currentAddress,
+                hintText: _currentAddress != null
+                            ? _currentAddress == (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'))
+                                ? (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.pleaseRoomName'))
+                                : _currentAddress
+                            : '단화방 제목을 입력해 주세요'
+                ,
                 maxLength: 15,
             ),
         ).then((onValue){
@@ -878,7 +881,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                                 })
 		                                ),
                                         Text(
-                                            '$_currentAddress',
+                                            _currentAddress != null ? '$_currentAddress' : '위치 검색 중 ',
                                             style: TextStyle(
                                                 height: 1,
                                                 fontFamily: "NotoSans",
