@@ -65,6 +65,7 @@ class _ChatTabState extends State<ChatTab> {
 
             for (var info in json.decode(response.body)) {
                 jsonParse = info;
+                print(info);
                 chatInfo = new ChatListItem.fromJSON(jsonParse);
                 // 채팅 리스트에 추가
                 chatList.add(chatInfo);
@@ -318,7 +319,7 @@ class _ChatTabState extends State<ChatTab> {
                 width: ScreenUtil().setWidth(343),
                 margin: EdgeInsets.only(
                     top: ScreenUtil().setHeight(10),
-                    bottom: isLastItem ? ScreenUtil().setHeight(10) : 0,
+                    bottom: isLastItem ? ScreenUtil().setHeight(40) + 10 : 0,
                     left: ScreenUtil().setWidth(16),
                     right: ScreenUtil().setWidth(16)
                 ),
@@ -352,12 +353,6 @@ class _ChatTabState extends State<ChatTab> {
                                             ScreenUtil().setWidth(10)
                                         ),
                                         child:
-                                        //	                                Image.asset(
-                                        //	                                    chatListItem.chatImg ?? "assets/images/icon/thumbnailUnset1.png",
-                                        //	                                    width: sameSize * 50,
-                                        //	                                    height: sameSize * 50,
-                                        //	                                    fit: BoxFit.cover,
-                                        //	                                ),
                                         chatListItem.roomImgIdx == null ? Image.asset(
                                             (index % 2 == 0)
                                                 ? 'assets/images/icon/thumbnailUnset1.png'
@@ -386,28 +381,70 @@ class _ChatTabState extends State<ChatTab> {
                                     Container(
                                         height: ScreenUtil().setHeight(23.5),
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment: CrossAxisAlignment.end,
-                                          children: <Widget>[
-                                            Container(
-                                              constraints: BoxConstraints(
-                                                  maxWidth: ScreenUtil().setWidth(190)),
-                                              child: Align(
-                                                  alignment: Alignment.centerLeft,
-                                                  child: Text(
-                                                      chatListItem.title.length > 13 ? chatListItem.title.substring(0, 13) + ".." : chatListItem.title,
-                                                      style: TextStyle(
-                                                          height: 1,
-                                                          fontFamily: "NotoSans",
-                                                          fontWeight: FontWeight.w500,
-                                                          fontSize: ScreenUtil().setSp(16),
-                                                          color: Color.fromRGBO(39, 39, 39, 1),
-                                                          letterSpacing: ScreenUtil().setWidth(-0.8),
-                                                      ),
-                                                  )
-                                              ),
-                                            ),
-                                          ],
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: <Widget>[
+                                                Container(
+                                                    constraints: BoxConstraints(
+                                                        maxWidth: ScreenUtil().setWidth(190)),
+                                                    child: Align(
+                                                        alignment: Alignment.centerLeft,
+                                                        child: Text(
+                                                            chatListItem.title.length > 13 ? chatListItem.title.substring(0, 13) + ".." : chatListItem.title,
+                                                            style: TextStyle(
+                                                                height: 1,
+                                                                fontFamily: "NotoSans",
+                                                                fontWeight: FontWeight.w500,
+                                                                fontSize: ScreenUtil().setSp(16),
+                                                                color: Color.fromRGBO(39, 39, 39, 1),
+                                                                letterSpacing: ScreenUtil().setWidth(-0.8),
+                                                            ),
+                                                        )
+                                                    ),
+                                                ),
+//                                                chatListItem.unreadMsgCnt != null
+//                                                    ? Container(
+//                                                    constraints: BoxConstraints(
+//                                                        maxWidth: ScreenUtil().setWidth(46)
+//                                                    ),
+//                                                    child: Align(
+//                                                        alignment: Alignment.centerRight,
+//                                                        child: Text(
+//                                                            chatListItem.unreadMsgCnt.toString(),
+//                                                            style: TextStyle(
+//                                                                height: 1,
+//                                                                fontFamily: "NotoSans",
+//                                                                fontWeight: FontWeight.w700,
+//                                                                fontSize: ScreenUtil().setSp(13),
+//                                                                color: Color.fromRGBO(221, 54, 67, 1),
+//                                                            ),
+//                                                        )
+//                                                    ),
+//                                                )
+//                                                : Container()
+                                                Container(
+                                                    constraints: BoxConstraints(
+                                                        maxWidth: ScreenUtil().setWidth(46)
+                                                    ),
+                                                    child: Row(
+                                                        children: <Widget>[
+                                                            Container(),
+                                                            Container(
+                                                                child: Text(
+                                                                    0.toString(),
+                                                                    style: TextStyle(
+                                                                        height: 1,
+                                                                        fontFamily: "NotoSans",
+                                                                        fontWeight: FontWeight.w700,
+                                                                        fontSize: ScreenUtil().setSp(13),
+                                                                        color: Color.fromRGBO(221, 54, 67, 1),
+                                                                    ),
+                                                                ),
+                                                            ),
+                                                        ],
+                                                    )
+                                                ),
+                                            ],
                                         )
                                     ),
 

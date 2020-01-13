@@ -93,5 +93,19 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<!-- When in use -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We use Location information to locate HWA beacon</string>
+    <!-- Always -->
+    <!-- for iOS 11 + -->
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>We use Location information to locate HWA beacon</string>
+    <!-- for iOS 9/10 -->
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We use Location information to locate HWA beacon</string>
+    <!-- Bluetooth Privacy -->
+    <!-- for iOS 13 + -->
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>We use Bluetooth to emit and find HWA beacon</string>
 </dict>
 </plist>
