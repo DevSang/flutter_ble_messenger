@@ -120,6 +120,7 @@ flutter:
     - assets/images/trendnoneImg2.png
     - assets/images/trendnoneImGside.png
     - assets/images/trendnonListImg.png
+    - assets/images/tutorialImg.png
     #Background Image
     - assets/images/background/noChatackgroundImg.png
     - assets/images/background/noRoomBackgroundImg.png

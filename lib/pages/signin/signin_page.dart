@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:Hwa/pages/guide/guide_page.dart';
 import 'package:Hwa/pages/signin/signup_name.dart';
+import 'package:Hwa/utility/customRoute.dart';
 import 'package:Hwa/utility/inputStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -542,7 +544,7 @@ class _SignInPageState extends State<SignInPage> {
     /*
      * @author : sh
      * @date : 2019-12-30
-     * @description : Signin button widget
+     * @description : SignIn button widget
      */
     Widget _SignInButton() {
         var color = lengthConfirmLogin ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
@@ -561,7 +563,8 @@ class _SignInPageState extends State<SignInPage> {
             ),
             child: InkWell(
                 onTap: () {
-                    authCodeLoginRequest();
+//                    authCodeLoginRequest();
+                    Navigator.push(context, CustomRoute(builder: (context){return GuidePage();}));
                 },
                 child: Align(
                     alignment: Alignment.center,
