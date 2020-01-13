@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:developer' as developer;
 import 'package:async/async.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -88,53 +89,24 @@ class VideoPlayerState extends State<FullVideoPlayer> {
 	                // 동영상 처음 봄, 다운로드 및 저장, 플레이
 	                Dio dio = await CallApi.getDio();
 
-	                // TODO file download 요청 및 진행시 발생하는 에러 처리
-	                dio.interceptors.add(InterceptorsWrapper(
-			                onRequest:(RequestOptions options) async {
-				                // Do something before request is sent
-				                developer.log("### onRequest");
-				                return options; //continue
-			                },
-			                onResponse:(Response response) async {
-				                // Do something with response data
-				                developer.log("### response");
-				                return response; // continue
-			                },
-			                onError: (DioError e) async {
-				                // Do something with response error
-				                developer.log("### onError");
-				                developer.log("### e: ${e.toString()}");
-				                return  e;//continue
-			                }
-	                ));
-
-	                Directory tempDir = await getTemporaryDirectory();
-	                String tempPath = tempDir.path;
-
-	                // Video file Path : tempPath/roomIdx_msgIdx_videoFile
-	                String videoFilePath = tempPath + "/" + chatMessage.roomIdx.toString() + "_" + chatMessage.msgIdx.toString() + "_videoFile";
+	                dio.options.responseType = ResponseType.bytes;
 
 	                // TODO 파일 다운로드 중지에 사용 - 파일 다운로드중에 중지 처리 가능, 중지 및 후처리
 	                CancelToken cancelToken = CancelToken();
-	                Response response = await dio.download(videoUrl, videoFilePath, cancelToken: cancelToken, onReceiveProgress: (received, total){
+	                Response response = await dio.get(videoUrl, cancelToken: cancelToken, onReceiveProgress: (received, total){
 	                	// TODO 프로그레스 보여주기
 		                developer.log("$received : $total");
 	                });
 
 	                if(response.statusCode == 200){
-		                // TODO file cache 시간, 다운로드 프로그레스 표시를 위해 이렇게까지 해야하나..? (defaultCacheManager - download 는 파일 다운로드 프로그레스 표시가 안됨)
-		                // => dio 를 통한 다운로드 -> defaultCacheManager 에 넣기 -> dio 다운파일 삭제 -> CacheManager 에 있는 파일로 동영상 init
-		                File file = File(videoFilePath);
-
+		                // 이미지 확장자 얻기 (from response header)
 		                getExtension(response);
 
-		                String newVideoFilePath = videoFilePath + "." + vExtension;
-		                file = await file.rename(newVideoFilePath);
+		                List<int> intList = response.data;
+		                Uint8List videoData = Uint8List.fromList(intList);
 
-		                // 동영상은 캐시 10일
-		                await defaultCacheManager.putFile(videoUrl, file.readAsBytesSync(), maxAge: const Duration(days: 10), fileExtension: vExtension);
-
-		                file.deleteSync();
+		                // 동영상 캐시 10일
+		                await defaultCacheManager.putFile(videoUrl, videoData, maxAge: const Duration(days: 10), fileExtension: vExtension);
 
 		                FileInfo vFileInfo = await defaultCacheManager.getFileFromCache(videoUrl);
 
@@ -221,7 +193,7 @@ class VideoPlayerState extends State<FullVideoPlayer> {
     /*
      * @author : hk
      * @date : 2020-01-12
-     * @description : 동영상 다운로드
+     * @description : 동영상 다운로드, TODO 현재 다운로드 파일명이 UUID 형태, 조금 난잡함
      */
     void downloadFile() async {
     	if(videoFile != null){
