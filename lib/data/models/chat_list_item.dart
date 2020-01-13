@@ -2,21 +2,20 @@ import 'package:Hwa/data/models/chat_count_user.dart';
 import 'package:Hwa/data/models/chat_message.dart';
 
 class ChatListItem {
-    final int chatIdx;
-    final String chatImg;
-    final String title;
+    final int chatIdx;		    // 단화방 Idx
+    final String title; 		// 이름
     double lat;					// 위도
     double lon;					// 경도
     double score;               // 랭킹 점수
     ChatMessage lastMsg;		// 마지막 메시지
     ChatCountUser userCount;	// 참여 사용자 수
     int adReceiveTs;	        // AD 받아서 chatList에 넣은 시간
-    int roomImgIdx;
-    final bool isAlreadyJoin;
+    int roomImgIdx;             // 대표 이미지 Idx
+    final bool isAlreadyJoin;   // 기존 참여 여부
+    final int unreadMsgCnt;     // 안읽은 메세지 수
 
     ChatListItem({
         this.chatIdx,
-        this.chatImg,
         this.roomImgIdx,
         this.title,
         this.lat,
@@ -24,13 +23,13 @@ class ChatListItem {
         this.score,
         this.lastMsg,
         this.userCount,
-        this.isAlreadyJoin
+        this.isAlreadyJoin,
+        this.unreadMsgCnt
     });
 
     factory ChatListItem.fromJSON (Map<String, dynamic> jsonData) {
         return ChatListItem (
             chatIdx : jsonData['roomIdx'],
-            chatImg : jsonData['roomImg'] ?? 'assets/images/icon/thumbnailUnset1.png',
 	        roomImgIdx: jsonData['roomImgIdx'],
             title : jsonData['title'] ?? "단화방 제목입니다.",
             lat : jsonData['lat'],
@@ -40,7 +39,8 @@ class ChatListItem {
                 ?? {"type":null, "roomIdx":null, "msgIdx":null, "senderIdx":null, "nickname":null, "message":null, "userCountObj":null, "createTs": null}),
             userCount : new ChatCountUser.fromJSON(jsonData['userCount']
                 ?? {"roomIdx":null, "bleJoin":null, "bleOut":null, "online":null, "totalCount":null}),
-            isAlreadyJoin: jsonData['isAlreadyJoin']
+            isAlreadyJoin: jsonData['isAlreadyJoin'],
+            unreadMsgCnt: jsonData['unreadMsgCnt']
         );
     }
     /*
