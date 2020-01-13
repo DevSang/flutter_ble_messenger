@@ -97,14 +97,16 @@
         },
         "friend": {
             "search": "Search",
-            "friendRequest": "Friend Request",
+            "friendRequest": "Friend request",
+            "friendRequestComplete": "Request complete",
             "friendList": "Friend List",
             "noNewRequest": "There's no new friend request.",
             "noFriend": "No friends added yet",
             "accept": "Accept",
             "delete": "Delete",
             "personalChat": "Personal chat",
-            "block" : "Block"
+            "block" : "Block",
+            "ban": "Dropout"
         },
         "chat": {
             "noMsg": "No Message",
