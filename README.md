@@ -13,9 +13,7 @@ pod install
 
 
 ## Use Library 
-### Dart API
-    flutter_localizations:          # MIT LICENSE
-    
+
 ### External library    
     intl:                           # BSD LICENSE
     configurable_expansion_tile:    # BSD LICENSE
@@ -46,6 +44,9 @@ pod install
     flutter_slidable:               # MIT LICENSE
     expandable:                     # MIT LICENSE
     fluttertoast:                   # MIT LICENSE 
+    contacts_service:               # MIT LICENSE
+    simple_animations:              # MIT LICENSE
+    js:                             # ?
     
 ### LICENSE
 

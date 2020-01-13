@@ -117,23 +117,18 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
      * @description : 파일 확장자 얻기
      */
     void getExtension(Response response){
-    	developer.log("## getExtension. response.headers");
-    	developer.log(response.headers.toString());
-
-	    String contentType = response.headers.value(Headers.contentTypeHeader);
-
 	    try {
-		    if(contentType != null){
-			    iExtension = contentType.split(";")[0].split("/")[1].trim();
-		    } else{
-			    String disposition = response.headers.value("content-disposition");
-			    iExtension = disposition
-					    .split(";")[1]
-					    .split("=")[1].trim()
-					    .replaceAll('"', '')
-					    .replaceAll(" ", "_")
-					    .substring(disposition.lastIndexOf(".") + 1);
-		    }
+		    String disposition = response.headers.value("content-disposition");
+
+		    String fileName = disposition
+				    .split(";")[1]
+				    .split("=")[1].trim()
+				    .replaceAll('"', '')
+				    .replaceAll(" ", "_");
+
+		    developer.log("## FullPhoto. fileName : $fileName");
+
+		    iExtension = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length);
 	    } catch (e) {
 		    iExtension = "jpeg";
 	    }

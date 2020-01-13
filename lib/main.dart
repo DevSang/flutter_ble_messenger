@@ -1,3 +1,4 @@
+import 'package:Hwa/pages/guide/guide_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -90,7 +91,8 @@ class HereWeAreApp extends StatelessWidget {
 			            '/notice_write': (context) => NoticeWritePage(),
 			            '/notice_detail': (context) => NoticeDetailPage(),
 						'/opensource': (context) => OpenSourcePage(),
-						'/service_policy': (context) => ServicePolicyPage()
+						'/service_policy': (context) => ServicePolicyPage(),
+						'/guide': (context) => GuidePage(),
 		            },
 		            localizationsDelegates: [
 		                GlobalMaterialLocalizations.delegate,

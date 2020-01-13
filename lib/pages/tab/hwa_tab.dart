@@ -184,7 +184,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 		    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
 			    if (result != null && result.beacons.isNotEmpty && mounted) {
 				    result.beacons.forEach((beacon) {
-					    if (!requiredChatIdxList.contains(beacon.roomId))  {
+					    if (!requiredChatIdxList.contains(beacon.roomId) && !chatIdxList.contains(beacon.roomId))  {
 						    _setChatItem(beacon.roomId);
 					    } else {
 						    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
@@ -228,9 +228,10 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 			    chatList.insert(0, chatItem);
 		    });
 	    } catch (e) {
-            requiredChatIdxList.removeWhere((item)=>item == chatIdx);
 		    developer.log("#### Error :: "+ e.toString());
 	    }
+
+        requiredChatIdxList.removeWhere((item)=>item == chatIdx);
     }
 
     /*
@@ -560,7 +561,12 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     */
     void exitPage() async {
         setState(() {
-            HwaBeacon().stopRanging();
+
+        	// TODO BLE
+	        if(Platform.isAndroid){
+		        HwaBeacon().stopRanging();
+	        }
+
             stopOldChatRemoveTimer();
             chatList.clear();
             chatIdxList.clear();
@@ -781,7 +787,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                     padding: EdgeInsets.symmetric(horizontal: 15.0),
                                     child: RaisedButton(
                                         onPressed: (){
-                                            (buttonClick != displayDialog) ? buttonClick() : buttonClick(context);
+                                            buttonClick();
                                         },
                                         color: Color.fromRGBO(77, 96, 191, 1),
                                         elevation: 0.0,

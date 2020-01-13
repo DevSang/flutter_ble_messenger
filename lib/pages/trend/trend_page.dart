@@ -531,9 +531,11 @@ class _TrendPageState extends State<TrendPage> {
                                         ),
                                     ),
                                     Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: ScreenUtil().setWidth(10),
-                                            vertical: ScreenUtil().setHeight(10)
+                                        height: ScreenUtil().setHeight(67.5),
+                                        padding: EdgeInsets.only(
+                                            left: ScreenUtil().setWidth(10),
+                                            right: ScreenUtil().setWidth(10),
+                                            top: ScreenUtil().setHeight(10)
                                         ),
                                         child: Column(
                                             children: <Widget>[
