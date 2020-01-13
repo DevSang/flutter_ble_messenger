@@ -33,7 +33,6 @@ class BottomNavigation extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation>{
-	UserInfoProvider userInfoProvider;
 	final List<Widget> list = <Widget>[];
     int _currentIndex;
 

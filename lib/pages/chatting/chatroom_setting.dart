@@ -55,7 +55,7 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 		    cachedNetworkImage = CachedNetworkImage(
 				    imageUrl: profileImgUri,
 				    placeholder: (context, url) => CircularProgressIndicator(),
-				    errorWidget: (context, url, error) => Image.asset(chatInfo.chatImgIdx,fit: BoxFit.cover),
+				    errorWidget: (context, url, error) => Image.asset("assets/images/icon/thumbnailUnset1.png", fit: BoxFit.cover),
 				    httpHeaders: Constant.HEADER
 		    );
 	    } else {
