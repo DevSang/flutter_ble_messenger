@@ -143,8 +143,8 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
 		if(imageFile != null){
 			int fileLength = await imageFile.length();
 
-			developer.log("## videoFile download : ${imageFile.path}");
-			developer.log("## videoFile fileLenth : $fileLength");
+			developer.log("## imageFile download : ${imageFile.path}");
+			developer.log("## imageFile fileLenth : $fileLength");
 
 			await imageFile.setLastModified(new DateTime.now());
 
