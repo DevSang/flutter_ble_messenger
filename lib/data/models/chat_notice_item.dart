@@ -4,13 +4,14 @@ class ChatNoticeItem {
     final int user_idx;
     final String country_code;
     final String phone_number;
-    final String nickname;
-    final String user_status;
-    final int profile_picture_idx;
-    final String contents;
-    final bool is_delete;
-    final int reply_cnt;
-    final String reg_ts;
+    String nickname;
+    String user_status;
+    int profile_picture_idx;
+    String contents;
+    bool is_delete;
+    int reply_cnt;
+    String reg_ts;
+    String update_ts;
 
     ChatNoticeItem({
         this.idx
@@ -25,6 +26,7 @@ class ChatNoticeItem {
         , this.is_delete
         , this.reply_cnt
         , this.reg_ts
+        , this.update_ts
     });
 
     factory ChatNoticeItem.fromJSON (Map json) {
@@ -44,6 +46,7 @@ class ChatNoticeItem {
                 is_delete : json['is_delete'],
                 reply_cnt : json['reply_cnt'],
                 reg_ts : json['reg_ts'],
+                update_ts : json['update_ts'],
             );
         } catch(e){
             print("###" + e.toString());

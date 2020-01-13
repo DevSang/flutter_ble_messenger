@@ -49,6 +49,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];
+    List<int> requiredChatIdxList = <int>[];
     ChatInfo chatInfo;
     double sameSize;
     TextEditingController _textFieldController = TextEditingController();
@@ -71,7 +72,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     // GPS 관련
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
     Position _currentPosition;
-    String _currentAddress = '위치 검색 중 ';
+    String _currentAddress;
 
     // 사용자 GPS, BLE 권한 관련
     bool isAllowedGPS = true;
@@ -183,9 +184,9 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 		    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
 			    if (result != null && result.beacons.isNotEmpty && mounted) {
 				    result.beacons.forEach((beacon) {
-					    if (!chatIdxList.contains(beacon.roomId))  {
+					    if (!requiredChatIdxList.contains(beacon.roomId))  {
 						    _setChatItem(beacon.roomId);
-					    }else {
+					    } else {
 						    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
 						    for(ChatListItem chatItem in chatList){
 							    if(chatItem.chatIdx == beacon.roomId){
@@ -209,6 +210,9 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     * @description : 단화방 정보 받아오기 API 호출
     */
     void _setChatItem(int chatIdx) async {
+        // 요청중인 단화 리스트에 추가
+        requiredChatIdxList.add(chatIdx);
+
 	    try {
 		    String uri = "/danhwa/room?roomIdx=" + chatIdx.toString();
 
@@ -220,10 +224,11 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 
 		    // 채팅 리스트에 추가
 		    setState(() {
+                chatIdxList.insert(0, chatIdx);
 			    chatList.insert(0, chatItem);
-			    chatIdxList.insert(0, chatItem.chatIdx);
 		    });
 	    } catch (e) {
+            requiredChatIdxList.removeWhere((item)=>item == chatIdx);
 		    developer.log("#### Error :: "+ e.toString());
 	    }
     }
@@ -611,9 +616,12 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                 leftButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.cancel')),
                 rightButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.create')),
                 value: _currentAddress,
-                hintText: _currentAddress == (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'))
-                    ? (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.pleaseRoomName'))
-                    : _currentAddress,
+                hintText: _currentAddress != null
+                            ? _currentAddress == (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'))
+                                ? (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.pleaseRoomName'))
+                                : _currentAddress
+                            : '단화방 제목을 입력해 주세요'
+                ,
                 maxLength: 15,
             ),
         ).then((onValue){
@@ -890,7 +898,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                                 maxHeight: ScreenUtil().setHeight(40)
                                             ),
                                             child: Text(
-                                                '$_currentAddress',
+                                                _currentAddress != null ? '$_currentAddress' : '위치 검색 중 ',
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                                 style: TextStyle(
