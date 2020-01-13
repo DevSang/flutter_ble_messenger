@@ -87,6 +87,7 @@ class ChatRoomNoticeInfoProvider with ChangeNotifier{
                     is_delete : false,
                     reply_cnt : 0,
                     reg_ts : new DateTime.now().toString(),
+                    update_ts : new DateTime.now().toString(),
                 )
             );
             sortNotice();
@@ -106,37 +107,29 @@ class ChatRoomNoticeInfoProvider with ChangeNotifier{
     * @description : 공지사항 수정
     */
     //TODO 수정하기 API요청
-    updateNotice(String contents, int chatIdx, UserInfoProvider userInfo) async {
+    updateNotice(String contents, int chatIdx, noticeIdx, UserInfoProvider userInfo) async {
         try {
             /// 참여 타입 수정
             String uri = "/api/v2/chat/announce";
             final response = await CallApi.commonApiCall(
-                method: HTTP_METHOD.post,
+                method: HTTP_METHOD.put,
                 url: uri,
                 data: {
+                    "idx": noticeIdx,
                     "chat_idx" : chatIdx,
                     "contents" : contents
                 }
             );
 
-            int noticeIdx = jsonDecode(jsonDecode(response.body)['data'])['announce_idx'];
-            chatNoticeList.add(
-                ChatNoticeItem(
-                    idx : noticeIdx,
-                    chat_idx : chatIdx,
-                    user_idx : userInfo.idx,
-                    country_code : userInfo.countryCode.toString(),
-                    phone_number : userInfo.phoneNumber,
-                    nickname : userInfo.nickname,
-                    user_status : userInfo.userStatus,
-                    contents : contents,
-                    is_delete : false,
-                    reply_cnt : 0,
-                    reg_ts : new DateTime.now().toString(),
-                )
+            ChatNoticeItem oldNotice = chatNoticeList.singleWhere((notice)=>
+                notice.idx == noticeIdx
             );
+
+            oldNotice.contents = contents;
+            oldNotice.update_ts = new DateTime.now().toString();
+
             sortNotice();
-            RedToast.toast("공지사항이 등록되었습니다.", ToastGravity.TOP);
+            RedToast.toast("공지사항이 수정되었습니다.", ToastGravity.TOP);
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
@@ -181,7 +174,7 @@ class ChatRoomNoticeInfoProvider with ChangeNotifier{
     * @description : 공지사항 sorting
     */
     sortNotice() async {
-        chatNoticeList.sort((a, b) => b.idx.compareTo(a.idx));
+        chatNoticeList.sort((a, b) => b.update_ts.compareTo(a.update_ts));
         notifyListeners();
     }
 }
