@@ -465,8 +465,6 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
         List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
         List<ChatMessage> chatMessageList = <ChatMessage>[];
 
-        print("#### chatInfoJson : $chatInfoJson");
-
         try {
             ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);
             bool isLiked = chatInfoJson['isLiked'];

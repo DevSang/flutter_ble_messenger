@@ -213,9 +213,6 @@ class ChatScreenState extends State<ChatroomPage> {
      * @description : 화면 입장 후 메세지/유저 리스트 받아오기, 가공
     */
     getMessageList() async {
-
-    	print("## chatInfo.createUser.profilePictureIdx: ${chatInfo.createUser.profilePictureIdx}");
-
         // 단화방 생성 시
         if (widget.isCreated != null && widget.isCreated) {
             joinedUserNow.add(
