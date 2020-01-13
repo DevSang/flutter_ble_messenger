@@ -12,7 +12,12 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:Hwa/utility/call_api.dart';
 
-
+/*
+ * @project : HWA - Mobile
+ * @author : hk
+ * @date : 2020-01-13
+ * @description : 사진 전체보기 화면
+ */
 class FullPhoto extends StatelessWidget {
     final String photoUrl;
 
