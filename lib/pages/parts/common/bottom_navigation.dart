@@ -270,11 +270,7 @@ class _BottomNavigationState extends State<BottomNavigation>{
 								)
 
 							),
-                            title: Text ('Friend',
-								style: TextStyle(
-
-								),
-							)
+                            title: Text ('Friend')
                         ),
                         BottomNavigationBarItem(
                             icon: _currentIndex == 2 ? Image.asset('assets/images/icon/tabIconChatActive.png') : Image.asset('assets/images/icon/tabIconChat.png'),

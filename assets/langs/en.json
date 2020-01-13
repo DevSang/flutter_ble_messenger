@@ -58,9 +58,9 @@
         "hwa": {
             "main": {
                 "roomFlag": {
-                    "titleText": "There is currently no location single room.",
-                    "subTitle": "Would you like to make the room you want?",
-                    "buttonText": "Creating a room"
+                    "titleText": "No Danhwa room in this area :(",
+                    "subTitle": "Try to make a room!",
+                    "buttonText": "Create a room"
                 },
                 "authBle": {
                     "titleText": "Bluetooth permission is required.",
@@ -84,14 +84,14 @@
                 }
             },
             "location" : {
-                "nowLocation": "Current Location",
-                "searchLocation": "Searching for locations.."
+                "nowLocation": "Current location",
+                "searchLocation": "Searching for location"
             },
             "createRoom" : {
                 "title": "Danhwa Create",
                 "cancel": "Cancel",
                 "create": "Create",
-                "searchLocation": "Searching for locations..",
+                "searchLocation": "Searching for locations",
                 "pleaseRoomName" : "Please enter the name of the Danhwabang."
             }
         },
