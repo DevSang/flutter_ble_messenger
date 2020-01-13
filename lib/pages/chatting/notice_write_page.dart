@@ -1,7 +1,9 @@
 import 'package:Hwa/data/models/chat_notice_item.dart';
+import 'package:Hwa/utility/red_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/state/chat_notice_item_provider.dart';
@@ -104,9 +106,13 @@ class NoticeWritePageState extends State<NoticeWritePage> {
                                             if (textEditingController.text.length > 0){
                                                 if(!isUpdate){
                                                     chatRoomNoticeInfoProvider.writeNotice(textEditingController.text, chatInfo.chatIdx, userInfoProvider);
+                                                } else {
+                                                    chatRoomNoticeInfoProvider.updateNotice(textEditingController.text, chatInfo.chatIdx, notice.idx, userInfoProvider);
                                                 }
+                                                Navigator.of(context).pop();
+                                            } else {
+                                                RedToast.toast("내용을 입력해주세요.", ToastGravity.TOP);
                                             }
-                                            Navigator.of(context).pop();
                                         },
                                     )
                                 ),
