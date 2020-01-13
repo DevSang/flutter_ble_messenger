@@ -49,6 +49,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];
+    List<int> requiredChatIdxList = <int>[];
     ChatInfo chatInfo;
     double sameSize;
     TextEditingController _textFieldController = TextEditingController();
@@ -183,7 +184,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 		    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
 			    if (result != null && result.beacons.isNotEmpty && mounted) {
 				    result.beacons.forEach((beacon) {
-					    if (!chatIdxList.contains(beacon.roomId))  {
+					    if (!requiredChatIdxList.contains(beacon.roomId))  {
 						    _setChatItem(beacon.roomId);
 					    } else {
 						    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
@@ -209,6 +210,9 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     * @description : 단화방 정보 받아오기 API 호출
     */
     void _setChatItem(int chatIdx) async {
+        // 요청중인 단화 리스트에 추가
+        requiredChatIdxList.add(chatIdx);
+
 	    try {
 		    String uri = "/danhwa/room?roomIdx=" + chatIdx.toString();
 
@@ -224,6 +228,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 			    chatList.insert(0, chatItem);
 		    });
 	    } catch (e) {
+            requiredChatIdxList.removeWhere((item)=>item == chatIdx);
 		    developer.log("#### Error :: "+ e.toString());
 	    }
     }

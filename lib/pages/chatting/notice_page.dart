@@ -286,23 +286,23 @@ class NoticePageState extends State<NoticePage> {
                                 ],
                             )
                         ),
-                        Container(
-                            width: ScreenUtil().setWidth(20),
-                            height: ScreenUtil().setHeight(45),
-                            child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                    GestureDetector(
-                                        child: Image.asset(
-                                            "assets/images/icon/iconActionMenuOpen.png",
-                                            fit: BoxFit.fitWidth,
-                                        ),
-                                        onTap:(){
-                                            showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet(chatNoticeItem));
-                                        }
+                        GestureDetector(
+                            child:Container(
+                                width: ScreenUtil().setWidth(20),
+                                height: ScreenUtil().setHeight(45),
+                                    child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: <Widget>[
+                                                Image.asset(
+                                                    "assets/images/icon/iconActionMenuOpen.png",
+                                                    fit: BoxFit.fitWidth,
+                                                )
+                                        ],
                                     )
-                                ],
-                            )
+                            ),
+                            onTap:(){
+                                showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet(chatNoticeItem));
+                            }
                         )
                     ],
                 )
