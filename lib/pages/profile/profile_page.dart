@@ -17,6 +17,7 @@ import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/utility/validators.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -336,7 +337,11 @@ class _ProfilePageState extends State <ProfilePage>{
         return Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-                Container(
+            GestureDetector(
+                 onTap: (){
+                     print("Container Clicked");
+                        },
+                child: Container(
                     width: ScreenUtil().setWidth(28.5),
                     height: ScreenUtil().setWidth(28.5),
                     margin: EdgeInsets.only(
@@ -350,6 +355,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             fit: BoxFit.cover
                         )
                     ),
+                )
                 )
             ],
         );
