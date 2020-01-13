@@ -211,6 +211,7 @@ flutter:
     - assets/images/icon/iconRefresh.png
     - assets/images/icon/gpsIconUnconnected.png
     - assets/images/icon/howmanyIcon.png
+    - assets/images/icon/unreadIcon.png
 
     # langs
     - assets/langs/en.json

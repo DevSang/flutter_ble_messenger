@@ -10,6 +10,7 @@ import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 
 /*
@@ -317,8 +318,8 @@ class ChatUserInfoListState extends State<ChatUserInfoList> with TickerProviderS
                                                     height: ScreenUtil().setHeight(12),
                                                     child: Text(
                                                         // TODO: 인삿말 맵핑
-//                                                userInfo.userIntro,
-                                                        '안녕하세요! ' + userInfo.userNick.toString() + "입니다! :)",
+                                                        userInfo.description.toString() == 'null' ?
+                                                        '안녕하세요! ' + userInfo.userNick.toString() + "입니다! :)" : userInfo.description.toString(),
                                                         style: TextStyle(
                                                             height: 1,
                                                             fontSize: ScreenUtil().setSp(13),
@@ -339,11 +340,11 @@ class ChatUserInfoListState extends State<ChatUserInfoList> with TickerProviderS
                                                         mainAxisAlignment: MainAxisAlignment.center,
                                                         children:  <Widget> [
                                                             isSendRequestFriend ?
-                                                            userFunc("assets/images/icon/iconRequestCalling.png", "요청 완료", null, userInfo.userIdx, setStateBuild)
-                                                                : userFunc("assets/images/icon/iconRequest.png", "친구 요청", requestFriend, userInfo.userIdx, setStateBuild),
-                                                            userFunc("assets/images/icon/iconDirectChat.png", "1:1 채팅", null, userInfo.userIdx, setStateBuild),
-                                                            userFunc("assets/images/icon/iconBlock.png", "차단하기", null, userInfo.userIdx, setStateBuild),
-                                                            hostIdx  == Constant.USER_IDX ? userFunc("assets/images/icon/iconEject.png", "내보내기", null, userInfo.userIdx, setStateBuild) : Container()
+                                                            userFunc("assets/images/icon/iconRequestCalling.png", AppLocalizations.of(context).tr('tabNavigation.friend.friendRequestComplete'), null, userInfo.userIdx, setStateBuild)
+                                                                : userFunc("assets/images/icon/iconRequest.png", AppLocalizations.of(context).tr('tabNavigation.friend.friendRequest'), requestFriend, userInfo.userIdx, setStateBuild),
+                                                            userFunc("assets/images/icon/iconDirectChat.png", AppLocalizations.of(context).tr('tabNavigation.friend.personalChat'), null, userInfo.userIdx, setStateBuild),
+                                                            userFunc("assets/images/icon/iconBlock.png", AppLocalizations.of(context).tr('tabNavigation.friend.block'), null, userInfo.userIdx, setStateBuild),
+                                                            hostIdx  == Constant.USER_IDX ? userFunc("assets/images/icon/iconEject.png", AppLocalizations.of(context).tr('tabNavigation.friend.ban'), null, userInfo.userIdx, setStateBuild) : Container()
                                                         ]
                                                     ),
                                                 )

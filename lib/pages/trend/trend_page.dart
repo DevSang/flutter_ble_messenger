@@ -69,14 +69,14 @@ class _TrendPageState extends State<TrendPage> {
 
             for (var index = jsonParseList.length; index > 0; index--) {
                 chatInfo = new TrendChatListItem.fromJSON(jsonParseList[index - 1]);
-//
-//                if (topTrendChatList.length < 2) {
-//                  // 채팅 리스트에 추가
-//                    topTrendChatList.add(chatInfo);
-//                } else {
-//                  // 채팅 리스트에 추가
-//                    trendChatList.add(chatInfo);
-//                }
+
+                if (topTrendChatList.length < 2) {
+                  // 채팅 리스트에 추가
+                    topTrendChatList.add(chatInfo);
+                } else {
+                  // 채팅 리스트에 추가
+                    trendChatList.add(chatInfo);
+                }
             }
 
             setState(() {});

@@ -98,13 +98,15 @@
         "friend": {
             "search": "검색",
             "friendRequest": "친구 요청",
+            "friendRequestComplete": "요청 완료",
             "friendList": " 친구 목록",
             "noNewRequest": "새로운 친구 요청이 없어요",
             "noFriend": "아직 추가된 친구가 없어요",
             "accept": "수락",
             "delete": "삭제",
             "personalChat": "1:1 채팅",
-            "block": "차단하기"
+            "block": "차단하기",
+            "ban": "내보내기"
         },
         "chat": {
             "noMsg": "메시지 없음",
