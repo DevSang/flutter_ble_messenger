@@ -782,7 +782,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                     padding: EdgeInsets.symmetric(horizontal: 15.0),
                                     child: RaisedButton(
                                         onPressed: (){
-                                            (buttonClick != displayDialog) ? buttonClick() : buttonClick(context);
+                                            buttonClick();
                                         },
                                         color: Color.fromRGBO(77, 96, 191, 1),
                                         elevation: 0.0,

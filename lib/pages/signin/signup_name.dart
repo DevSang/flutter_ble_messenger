@@ -78,21 +78,27 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      * @description : 닉네임 검증 request
      */
     void validateNickname(nickname) async {
-        await http.get("https://api.hwaya.net/api/v2/auth/A03-Nickname?nickname=$nickname")
-            .then((response) {
-            var jsonResult = jsonDecode(response.body).toString();
-            if(jsonResult.indexOf("사용 가능한 닉네임입니다") > -1){
-                developer.log("# Vaild nickname");
-                setState(() {
-                    availNick = true;
-                });
-            } else {
-                developer.log("# Invalid nickname");
-                setState(() {
-                    availNick = false;
-                });
-            }
-        });
+        if (nickname == '') {
+            setState(() {
+                availNick = false;
+            });
+        } else {
+            await http.get("https://api.hwaya.net/api/v2/auth/A03-Nickname?nickname=$nickname")
+                .then((response) {
+                var jsonResult = jsonDecode(response.body).toString();
+                if(jsonResult.indexOf("사용 가능한 닉네임입니다") > -1){
+                    developer.log("# Vaild nickname");
+                    setState(() {
+                        availNick = true;
+                    });
+                } else {
+                    developer.log("# Invalid nickname");
+                    setState(() {
+                        availNick = false;
+                    });
+                }
+            });
+        }
     }
 
     /*
@@ -235,8 +241,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 autofocus: true,
                 validator: (value) {
                     if (value.isEmpty) {
-                        return Validator().validateName
-                            (AppLocalizations.of(context).tr('sign.signUpName.NicknameValidator'));
+                        return (AppLocalizations.of(context).tr('sign.signUpName.NicknameValidator'));
                     } else if(!availNick) {
                         return (AppLocalizations.of(context).tr('sign.signUpName.NicknameAlready'));
                     }
@@ -274,11 +279,20 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                             top: ScreenUtil().setWidth(5),
                             bottom: ScreenUtil().setWidth(5),
                         ),
-                        child: IconButton(
-                            icon: availNick
-                                ? Image.asset("assets/images/icon/iconDeleteSmall.png")
-                                : Image.asset("assets/images/icon/error.png"),
-                            onPressed: () => _regNameController.clear(),
+                        child: Visibility(
+                            visible: _regNameController.text.length > 0,
+                            child: IconButton(
+                                icon: availNick
+                                    ? Image.asset("assets/images/icon/iconDeleteSmall.png")
+                                    : Image.asset("assets/images/icon/error.png"),
+                                onPressed: () {
+                                    nickFocusNode.requestFocus();
+                                    Future.delayed(Duration(milliseconds: 50), () {
+                                        _regNameController.clear();
+                                    });
+
+                                },
+                            )
                         )
                     ),
                     focusedErrorBorder: InputStyle().getErrorBorder,
