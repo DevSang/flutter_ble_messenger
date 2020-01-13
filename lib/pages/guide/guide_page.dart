@@ -58,21 +58,57 @@ class GuidePage extends StatelessWidget {
                                     ),
                                     Container(
                                         margin: EdgeInsets.only(
-                                            bottom: 8,
+                                            top: 8,
+                                            bottom: 10,
                                         ),
                                         child: Text(
                                             '내 주변 사람들과 채팅 할 수 있는 공간',
                                             style: TextStyle(
                                                 fontFamily: "NotoSans",
                                                 fontWeight: FontWeight.w700,
-                                                fontSize: ScreenUtil().setSp(24),
+                                                fontSize: ScreenUtil().setSp(16),
                                                 color: Color.fromRGBO(43, 43, 43, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.8)
                                             ),
                                         )
                                     ),
-                                    Container(),
-                                    Container(),
-                                    Container(),
+                                    Container(
+                                        child: Text(
+                                            '위치 및 블루투스 권한이 필요합니다.',
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: ScreenUtil().setSp(13),
+                                                color: Color.fromRGBO(107, 107, 107, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.65)
+                                            ),
+                                        )
+                                    ),
+                                    Container(
+                                        child: Text(
+                                            'HWA 는 사용자의 위치를 추적하지 않아요 :)',
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: ScreenUtil().setSp(13),
+                                                color: Color.fromRGBO(107, 107, 107, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.65)
+                                            ),
+                                        )
+                                    ),
+                                    Container(
+                                        height: ScreenUtil().setHeight(44),
+                                        margin: EdgeInsets.only(
+                                            top: ScreenUtil().setHeight(27),
+                                            bottom: ScreenUtil().setHeight(28),
+                                        ),
+                                        decoration: BoxDecoration(
+                                            color: Color.fromRGBO(76, 96, 191, 1),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(ScreenUtil().setSp(13))
+                                            )
+                                        ),
+                                    ),
                                 ],
                             )
                         )
