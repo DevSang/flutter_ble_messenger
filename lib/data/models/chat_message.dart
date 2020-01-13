@@ -23,6 +23,9 @@ class ChatMessage {
     ChatMessage({this.chatType ,this.roomIdx, this.msgIdx, this.senderIdx, this.nickName, this.message, this.userCountObj, this.chatTime, this.gaugeDriver, this.uploaded, this.thumbnailFile, this.profileImgUri});
 
     factory ChatMessage.fromJSON (Map<String, dynamic> json) {
+
+    	if(json == null) return null;
+
         try {
 	        return ChatMessage (
                 chatType : json['type'],

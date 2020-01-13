@@ -1,7 +1,9 @@
+import 'package:Hwa/utility/red_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CustomDialog extends StatelessWidget {
     final String title, leftButtonText, rightButtonText, hintText, value;
@@ -141,7 +143,13 @@ class CustomDialog extends StatelessWidget {
                                                     ),
                                                 ),
                                                 onTap: () {
-                                                    func != null ? func() : Navigator.pop(context, _textEditingController.text);
+                                                    if (_textEditingController.text == '') {
+                                                        RedToast.toast("단화방 제목을 입력해 주세요.", ToastGravity.CENTER);
+                                                    } else {
+                                                        func != null
+                                                            ? func()
+                                                            : Navigator.pop(context, _textEditingController.text);
+                                                    }
                                                 },
                                             ),
                                         ],

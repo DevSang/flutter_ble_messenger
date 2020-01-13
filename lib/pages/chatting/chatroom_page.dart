@@ -149,10 +149,10 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     void dispose() {
-	    if(Platform.isAndroid){{
-		    HwaBeacon().stopAdvertising();
-	    }}
+    	// 비콘 중지
+	    HwaBeacon().stopAdvertising();
 
+	    // WS 중지
         s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
         s.disconnect();
         super.dispose();
@@ -163,7 +163,7 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2020-01-10
      * @description : 사용자가 프로필 이미지를 가지고있는지 체크 - 사용자 채팅 올라오면 이미지 보여줄때 사용
      */
-    bool isExistUserProfileImg(int userIdx){
+    bool isExistUserProfileImg(int userIdx) {
     	if(profileImgExistUserSet != null){
     		if(profileImgExistUserSet.contains(userIdx)) return true;
     		else return false;
@@ -175,20 +175,18 @@ class ChatScreenState extends State<ChatroomPage> {
     /*
      * @author : hs
      * @date : 2019-12-30
-     * @description : 입장 시 기존 Advertising Stop
+     * @description : 입장 시 기존 Advertising Stop, 현재 Ad start
     */
     void checkAd() async {
     	if(Constant.USER_IDX == chatInfo.createUserIdx){
-		    if(Platform.isAndroid){
-			    bool advertising = await HwaBeacon().isAdvertising();
+		    bool advertising = await HwaBeacon().isAdvertising();
 
-			    if (advertising) {
-				    await HwaBeacon().stopAdvertising();
-				    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
-			    }
-			    else
-				    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+		    if (advertising) {
+			    await HwaBeacon().stopAdvertising();
+			    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
 		    }
+		    else
+			    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
 	    }
     }
 
@@ -198,16 +196,14 @@ class ChatScreenState extends State<ChatroomPage> {
      * @description : Advertising Stop/Start
     */
     void advertiseChange() async {
-	    if(Platform.isAndroid){
-		    if (advertising) {
-			    await HwaBeacon().stopAdvertising();
-			    setState(() {advertising = false;});
-			    developer.log('##BLE STOP!!!');
-		    } else {
-			    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
-			    setState(() {advertising = true;});
-                developer.log('##BLE START!!!');
-		    }
+	    if (advertising) {
+		    await HwaBeacon().stopAdvertising();
+		    setState(() {advertising = false;});
+		    developer.log('##BLE STOP!!!');
+	    } else {
+		    await HwaBeacon().startAdvertising(chatInfo.chatIdx, _ttl);
+		    setState(() {advertising = true;});
+            developer.log('##BLE START!!!');
 	    }
     }
 
