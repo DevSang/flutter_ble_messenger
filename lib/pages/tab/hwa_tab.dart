@@ -226,12 +226,12 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 		    setState(() {
                 chatIdxList.insert(0, chatIdx);
 			    chatList.insert(0, chatItem);
-                requiredChatIdxList.removeWhere((item)=>item == chatIdx);
 		    });
 	    } catch (e) {
-            requiredChatIdxList.removeWhere((item)=>item == chatIdx);
 		    developer.log("#### Error :: "+ e.toString());
 	    }
+
+        requiredChatIdxList.removeWhere((item)=>item == chatIdx);
     }
 
     /*
