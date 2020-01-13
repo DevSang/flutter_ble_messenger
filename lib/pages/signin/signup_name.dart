@@ -133,7 +133,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
 
             RedToast.toast((AppLocalizations.of(context).tr('sign.signUpName.toast.start')), ToastGravity.TOP);
 
-            Navigator.pushNamed(context, '/main');
+            Navigator.pushNamed(context, '/guide');
         } else {
             developer.log('#Request failed：${response.statusCode}');
         }
