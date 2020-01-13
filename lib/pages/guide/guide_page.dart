@@ -32,10 +32,6 @@ class GuidePage extends StatelessWidget {
                         child: Container(
                             width: MediaQuery.of(context).size.width,
                             height: ScreenUtil().setHeight(236.5),
-                            padding: EdgeInsets.only(
-                                top: ScreenUtil().setHeight(22),
-                                bottom: ScreenUtil().setHeight(28),
-                            ),
                             decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.only(
@@ -44,8 +40,13 @@ class GuidePage extends StatelessWidget {
                                 )
                             ),
                             child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                     Container(
+                                        height: ScreenUtil().setHeight(35.5),
+                                        margin: EdgeInsets.only(
+                                            top: ScreenUtil().setHeight(24),
+                                        ),
                                         child: Text(
                                             '단화방 이란?',
                                             style: TextStyle(
@@ -57,22 +58,80 @@ class GuidePage extends StatelessWidget {
                                         )
                                     ),
                                     Container(
+                                        height: ScreenUtil().setHeight(23.5),
                                         margin: EdgeInsets.only(
-                                            bottom: 8,
+                                            top: 8,
+                                            bottom: 10,
                                         ),
                                         child: Text(
                                             '내 주변 사람들과 채팅 할 수 있는 공간',
                                             style: TextStyle(
                                                 fontFamily: "NotoSans",
                                                 fontWeight: FontWeight.w700,
-                                                fontSize: ScreenUtil().setSp(24),
+                                                fontSize: ScreenUtil().setSp(16),
                                                 color: Color.fromRGBO(43, 43, 43, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.8)
                                             ),
                                         )
                                     ),
-                                    Container(),
-                                    Container(),
-                                    Container(),
+                                    Container(
+                                        child: Text(
+                                            '위치 및 블루투스 권한이 필요합니다.',
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: ScreenUtil().setSp(13),
+                                                color: Color.fromRGBO(107, 107, 107, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.65)
+                                            ),
+                                        )
+                                    ),
+                                    Container(
+                                        child: Text(
+                                            'HWA 는 사용자의 위치를 추적하지 않아요 :)',
+                                            style: TextStyle(
+                                                fontFamily: "NotoSans",
+                                                fontWeight: FontWeight.w400,
+                                                fontSize: ScreenUtil().setSp(13),
+                                                color: Color.fromRGBO(107, 107, 107, 1),
+                                                letterSpacing: ScreenUtil().setWidth(-0.65)
+                                            ),
+                                        )
+                                    ),
+                                    InkWell(
+                                        child: Container(
+                                            width: ScreenUtil().setWidth(319),
+                                            height: ScreenUtil().setHeight(44),
+                                            margin: EdgeInsets.only(
+                                                top: ScreenUtil().setHeight(27),
+                                                bottom: ScreenUtil().setHeight(28),
+                                            ),
+                                            decoration: BoxDecoration(
+                                                color: Color.fromRGBO(76, 96, 191, 1),
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(
+                                                        ScreenUtil().setHeight(8)
+                                                    )
+                                                )
+                                            ),
+                                            child: Align(
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                    '단화 시작하기',
+                                                    style: TextStyle(
+                                                        fontFamily: "NotoSans",
+                                                        fontWeight: FontWeight.w500,
+                                                        fontSize: ScreenUtil().setSp(16),
+                                                        color: Color.fromRGBO(255, 255, 255, 1),
+                                                        letterSpacing: ScreenUtil().setWidth(-0.8)
+                                                    ),
+                                                ),
+                                            )
+                                        ),
+                                        onTap: () {
+                                            Navigator.pushNamed(context, '/main');
+                                        },
+                                    ),
                                 ],
                             )
                         )

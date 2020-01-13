@@ -2,19 +2,21 @@ import 'dart:ui';
 import 'dart:convert';
 import 'dart:developer' as developer;
 
+import 'package:Hwa/utility/inputStyle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'package:Hwa/data/state/user_info_provider.dart';
-
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/home.dart';
-import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:Hwa/utility/validators.dart';
 
 /*
@@ -47,14 +49,27 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
 
     //local var
     bool availNick;
+    FocusNode nickFocusNode;
     final TextEditingController _regNameController =  TextEditingController();
+    bool _isLoading = false;
 
     @override
     void initState() {
         userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+        nickFocusNode = new FocusNode();
+        nickFocusNode.addListener(_onOnFocusNodeEvent);
 
         super.initState();
         availNick = false;
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-12
+     * @description : 텍스트 필드 포커스에 따른 스타일 적용
+    */
+    _onOnFocusNodeEvent() {
+        setState(() {});
     }
 
     /*
@@ -64,7 +79,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      */
     void validateNickname(nickname) async {
         await http.get("https://api.hwaya.net/api/v2/auth/A03-Nickname?nickname=$nickname")
-        .then((response) {
+            .then((response) {
             var jsonResult = jsonDecode(response.body).toString();
             if(jsonResult.indexOf("사용 가능한 닉네임입니다") > -1){
                 developer.log("# Vaild nickname");
@@ -86,6 +101,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      * @description : 회원가입 완료 request
      */
     registerFinish(BuildContext context) async {
+        setState(() { _isLoading = true; });
 
         String url = "https://api.hwaya.net/api/v2/auth/A04-SignUp";
         final response = await http.post(url,
@@ -117,10 +133,12 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
 
             RedToast.toast((AppLocalizations.of(context).tr('sign.signUpName.toast.start')), ToastGravity.TOP);
 
-            Navigator.pushNamed(context, '/main');
+            Navigator.pushNamed(context, '/guide');
         } else {
             developer.log('#Request failed：${response.statusCode}');
         }
+        setState(() { _isLoading = false; });
+
     }
 
     /*
@@ -130,30 +148,46 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      */
     @override
     Widget build(BuildContext context) {
-        return Scaffold(
-            appBar: AppBar(
-                brightness: Brightness.light,
-                backgroundColor: Color.fromRGBO(250, 250, 250, 1),
-                elevation: 0.0,
-                leading: Padding(
-                    padding: EdgeInsets.only(left: 16),
-                    child: IconButton(
-                        icon: Image.asset("assets/images/icon/navIconClose.png"),
-                        onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+        return Stack(
+            children: <Widget>[
+                Scaffold(
+                    appBar: AppBar(
+                        brightness: Brightness.light,
+                        backgroundColor: Color.fromRGBO(250, 250, 250, 1),
+                        elevation: 0.0,
+                        leading: Padding(
+                            padding: EdgeInsets.only(left: 16),
+                            child: IconButton(
+                                icon: Image.asset("assets/images/icon/navIconClose.png"),
+                                onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+                            ),
+                        ),
+                        centerTitle: true,
+                        title: Text(
+                            (AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),
+                            style: TextStyle(
+                                fontFamily: "NotoSans",
+                                color: Color.fromRGBO(39, 39, 39, 1),
+                                fontSize: ScreenUtil().setSp(16),
+                                letterSpacing: ScreenUtil().setWidth(-0.8),
+                            )
+                        )
                     ),
+                    body: Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: ScreenUtil().setWidth(16)
+                        ),
+                        child: ListView(
+                            children: <Widget>[
+                                _regNickTextField(),
+                                _regAuthTextField(),
+                                _regStartBtn(context)
+                            ]
+                        ),
+                    )
                 ),
-                centerTitle: true,
-                title: Text((AppLocalizations.of(context).tr('sign.signUpName.signUpAppbar')),style: TextStyle(color: Colors.black, fontSize: 20, fontFamily: 'NotoSans',fontWeight: FontWeight.w700))
-            ),
-            body: Container(
-                child: ListView(
-                    children: <Widget>[
-                        _regNickTextField(),
-                        _regAuthTextField(),
-                        _regStartBtn(context)
-                    ]
-                ),
-            )
+                _isLoading ? Loading() : Container()
+            ],
         );
     }
 
@@ -164,13 +198,23 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
      */
     Widget _regNickTextField(){
         return Container(
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
-            margin: EdgeInsets.only(top: 30),
+            margin: EdgeInsets.only(
+                top: ScreenUtil().setHeight(26),
+                bottom: ScreenUtil().setHeight(8)
+            ),
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                    Text((AppLocalizations.of(context).tr('sign.signUpName.textNickname')),style: TextStyle(color: Colors.black87, fontSize: 13,fontFamily: 'NotoSans',fontWeight: FontWeight.w700,
-                    ))
+                    Text(
+                        AppLocalizations.of(context).tr('sign.signUpName.textNickname'),
+                        style: TextStyle(
+                            color: Color.fromRGBO(107, 107, 107, 1),
+                            fontSize: ScreenUtil().setSp(13),
+                            fontFamily: 'NotoSans',
+                            fontWeight: FontWeight.w500,
+                            letterSpacing: ScreenUtil().setWidth(-0.32)
+                        )
+                    )
                 ],
             )
         );
@@ -185,49 +229,60 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
     Widget _regAuthTextField(){
         return Form(
             key: _formKey,
-            child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
-                child: TextFormField(
-                    validator: (value) {
-                        if (value.isEmpty) {
-                            return Validator().validateName
+            child: TextFormField(
+                autovalidate: true,
+                focusNode: nickFocusNode,
+                autofocus: true,
+                validator: (value) {
+                    if (value.isEmpty) {
+                        return Validator().validateName
                             (AppLocalizations.of(context).tr('sign.signUpName.NicknameValidator'));
-                        } else if(!availNick) {
-                            return (AppLocalizations.of(context).tr('sign.signUpName.NicknameAlready'));
-                        }
-                        return null;
-                    },
-                    onChanged: (value){
-                        validateNickname(value);
-                    },
-                    onFieldSubmitted: (regNickname) {
-                        developer.log('닉네임 입력 :$regNickname');
-                    },
-                    keyboardType: TextInputType.text,
-                    inputFormatters: <TextInputFormatter>[
-                    ],
-                    controller: _regNameController,
-                    textAlign: TextAlign.left,
-                    cursorColor: Colors.black,
-                    obscureText: false,
-                    style: TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                        counterText: "",
-                        hintText: (AppLocalizations.of(context).tr('sign.signUpName.nickName')),
-                        suffixIcon: IconButton(
-                            icon: Image.asset("assets/images/icon/iconDeleteSmall.png"),
+                    } else if(!availNick) {
+                        return (AppLocalizations.of(context).tr('sign.signUpName.NicknameAlready'));
+                    }
+                    return null;
+                },
+                onChanged: (value){
+                    validateNickname(value);
+                },
+                onFieldSubmitted: (regNickname) {
+                    developer.log('닉네임 입력 :$regNickname');
+                },
+                keyboardType: TextInputType.text,
+                inputFormatters: <TextInputFormatter>[
+                ],
+                controller: _regNameController,
+                textAlign: TextAlign.left,
+                cursorColor: Colors.black,
+                obscureText: false,
+                style: InputStyle().inputValue,
+                decoration: InputDecoration(
+                    contentPadding: EdgeInsets.only(
+                        left: ScreenUtil().setWidth(15),
+                    ),
+                    counterText: "",
+                    hintText: (AppLocalizations.of(context).tr('sign.signUpName.nickName')),
+                    hintStyle: InputStyle().inputHintText,
+                    enabledBorder:  InputStyle().getEnableBorder,
+                    focusedBorder: InputStyle().getFocusBorder,
+                    fillColor: InputStyle().getBackgroundColor(nickFocusNode),
+                    filled: true,
+                    suffixIcon: Container(
+                        width: ScreenUtil().setWidth(15),
+                        height: ScreenUtil().setHeight(40),
+                        margin: EdgeInsets.only(
+                            top: ScreenUtil().setWidth(5),
+                            bottom: ScreenUtil().setWidth(5),
+                        ),
+                        child: IconButton(
+                            icon: availNick
+                                ? Image.asset("assets/images/icon/iconDeleteSmall.png")
+                                : Image.asset("assets/images/icon/error.png"),
                             onPressed: () => _regNameController.clear(),
-                        ),
-                        hintStyle: TextStyle(color: Colors.black38),
-                        border:  OutlineInputBorder(
-                            borderRadius:  BorderRadius.circular(10.0),
-                            borderSide:  BorderSide(
-                            ),
-                        ),
-                        fillColor: Colors.grey[200],
-                        filled: true,
-                    )
-                ),
+                        )
+                    ),
+                    focusedErrorBorder: InputStyle().getErrorBorder,
+                )
             ),
         );
     }
@@ -241,10 +296,11 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
         var color = availNick ? Color.fromRGBO(77, 96, 191, 1) : Color.fromRGBO(204, 204, 204, 1);
 
         return Container(
-            width: MediaQuery.of(context).size.width,
-            height: 50.0,
-            margin: EdgeInsets.only(top: 10),
-            padding: EdgeInsets.symmetric(horizontal: 15.0),
+            width: ScreenUtil().setWidth(343),
+            height: ScreenUtil().setHeight(50),
+            margin: EdgeInsets.only(
+                top: ScreenUtil().setHeight(34)
+            ),
             child: RaisedButton(
                 onPressed:(){
                     if (_formKey.currentState.validate()) {
@@ -253,14 +309,22 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 },
                 color: color,
                 elevation: 0.0,
-                child: Text((AppLocalizations.of(context).tr('sign.signUpName.startBtn')), style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500)),
+                child: Text(
+                    AppLocalizations.of(context).tr('sign.signUpName.startBtn'),
+                    style: TextStyle(
+                        color: Color.fromRGBO(255, 255, 255, 1),
+                        fontFamily: 'NotoSans',
+                        fontWeight: FontWeight.w500,
+                        fontSize: ScreenUtil().setSp(16),
+                        letterSpacing: ScreenUtil().setWidth(-0.8)
+                    )
+                ),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0)
-                )
+                    borderRadius: BorderRadius.circular(
+                        ScreenUtil().setHeight(8)
+                    )
+                ),
             )
         );
     }
 }
-
-
-

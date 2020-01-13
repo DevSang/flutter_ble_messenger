@@ -184,7 +184,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 		    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
 			    if (result != null && result.beacons.isNotEmpty && mounted) {
 				    result.beacons.forEach((beacon) {
-					    if (!requiredChatIdxList.contains(beacon.roomId))  {
+					    if (!requiredChatIdxList.contains(beacon.roomId) && !chatIdxList.contains(beacon.roomId))  {
 						    _setChatItem(beacon.roomId);
 					    } else {
 						    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록

@@ -558,8 +558,7 @@ class _SignInPageState extends State<SignInPage> {
             ),
             child: InkWell(
                 onTap: () {
-//                    authCodeLoginRequest();
-                    Navigator.push(context, CustomRoute(builder: (context){return GuidePage();}));
+                    authCodeLoginRequest();
                 },
                 child: Align(
                     alignment: Alignment.center,
