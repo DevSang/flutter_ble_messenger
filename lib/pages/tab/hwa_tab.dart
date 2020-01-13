@@ -300,7 +300,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
         _animationController.repeat();
         developer.log("# start GpsService!");
         setState(() {
-            _currentAddress;
+            _currentAddress = AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation');
         });
 
 	    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
@@ -826,8 +826,8 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 
     Widget getLocation() {
         return Container(
-            height: ScreenUtil().setHeight(22),
-            margin: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(21)),
+            height: ScreenUtil().setHeight(42),
+            margin: EdgeInsets.symmetric(vertical: ScreenUtil().setHeight(11)),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -872,6 +872,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 	                    child: InkWell(
 	                        child:
 		                        Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
 		                            children: <Widget>[
 		                                Container(
                                             margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
@@ -885,15 +886,23 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                                     );
                                                 })
 		                                ),
-                                        Text(
-                                            _currentAddress != null ? '$_currentAddress' : '위치 검색 중 ',
-                                            style: TextStyle(
-                                                height: 1,
-                                                fontFamily: "NotoSans",
-                                                fontWeight: FontWeight.w400,
-                                                fontSize: ScreenUtil().setSp(15),
-                                                color: Color.fromRGBO(39, 39, 39, 1),
-                                                letterSpacing: ScreenUtil().setWidth(-0.75),
+                                        Container(
+                                            constraints: BoxConstraints(
+                                                maxWidth: ScreenUtil().setWidth(154),
+                                                maxHeight: ScreenUtil().setHeight(40)
+                                            ),
+                                            child: Text(
+                                                _currentAddress != null ? '$_currentAddress' : '위치 검색 중 ',
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 2,
+                                                style: TextStyle(
+                                                    height: 1,
+                                                    fontFamily: "NotoSans",
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: ScreenUtil().setSp(15),
+                                                    color: Color.fromRGBO(39, 39, 39, 1),
+                                                    letterSpacing: ScreenUtil().setWidth(-0.75),
+                                                ),
                                             ),
                                         ),
                                         AnimatedBuilder(

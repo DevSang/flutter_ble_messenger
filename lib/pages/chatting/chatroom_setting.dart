@@ -44,21 +44,25 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
 
     String profileImgUri;
 
-    CachedNetworkImage cachedNetworkImage;
+    Widget cachedNetworkImage;
 
     @override
     void initState() {
 
 	    profileImgUri = Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?chat_idx=" + chatInfo.chatIdx.toString() + "&type=SMALL";
 
-	    cachedNetworkImage = CachedNetworkImage(
-            imageUrl: profileImgUri,
-            placeholder: (context, url) => CircularProgressIndicator(),
-            errorWidget: (context, url, error) => Image.asset(chatInfo.chatImg,fit: BoxFit.cover),
-            httpHeaders: Constant.HEADER
-	    );
+	    if(chatInfo.chatImgIdx != null ) {
+		    cachedNetworkImage = CachedNetworkImage(
+				    imageUrl: profileImgUri,
+				    placeholder: (context, url) => CircularProgressIndicator(),
+				    errorWidget: (context, url, error) => Image.asset(chatInfo.chatImgIdx,fit: BoxFit.cover),
+				    httpHeaders: Constant.HEADER
+		    );
+	    } else {
+		    cachedNetworkImage = Image.asset("assets/images/icon/thumbnailUnset1.png", fit: BoxFit.cover);
+	    }
 
-        chatSettingUpdated.chatImg = chatInfo.chatImg;
+        chatSettingUpdated.chatImgIdx = chatInfo.chatImgIdx;
         chatSettingUpdated.title = chatInfo.title;
         chatSettingUpdated.intro = chatInfo.intro;
         chatSettingUpdated.isPublic = chatInfo.isPublic;
@@ -105,16 +109,6 @@ class ChatroomSettingPageState extends State<ChatroomSettingPage> {
      * @description : 설정 저장 및 페이지 이동
     */
     void popNav() async {
-        setState(() {
-            isLoading = true;
-        });
-
-        await saveSettingInfo();
-
-        setState(() {
-            isLoading = false;
-        });
-
         Navigator.of(context).pop();
     }
 
