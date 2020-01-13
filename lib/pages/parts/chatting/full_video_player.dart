@@ -171,21 +171,20 @@ class VideoPlayerState extends State<FullVideoPlayer> {
      * @description : 파일 확장자 얻기
      */
     void getExtension(Response response){
-	    String contentType = response.headers.value(Headers.contentTypeHeader);
-
 	    try {
-		    if(contentType != null){
-			    vExtension = contentType.split(";")[0].split("/")[1].trim();
-		    } else{
-			    String disposition = response.headers.value("content-disposition");
-			    vExtension = disposition
-					    .split(";")[1]
-					    .split("=")[1].trim()
-					    .replaceAll('"', '')
-					    .replaceAll(" ", "_")
-					    .substring(disposition.lastIndexOf(".") + 1);
-		    }
+		    String disposition = response.headers.value("content-disposition");
+
+		    String fileName = disposition
+				    .split(";")[1]
+				    .split("=")[1].trim()
+				    .replaceAll('"', '')
+				    .replaceAll(" ", "_");
+
+		    vExtension = fileName.substring(fileName.lastIndexOf(".") + 1, fileName.length);
+
+		    developer.log("## FullVideoPlayer. vExtension : $vExtension");
 	    } catch (e) {
+	    	print(e);
 		    vExtension = "mp4";
 	    }
     }
