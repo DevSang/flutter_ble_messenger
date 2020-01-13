@@ -235,6 +235,12 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
+
+    /*
+     * @author : JH
+     * @date : 2020-01-13
+     * @description : 프로필 상단 설정
+    */
     Widget _profileTopSection(BuildContext context) {
         return Container(
             height: ScreenUtil().setHeight(110),
@@ -269,6 +275,12 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
+
+    /*
+     * @author : JH
+     * @date : 2020-01-13
+     * @description : 프로필 이미지 설정
+    */
     Widget _profileImageSection(BuildContext context) {
         return InkWell(
             child: Container(
@@ -292,6 +304,12 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
+
+    /*
+     * @author : JH
+     * @date : 2020-01-13
+     * @description : 닉네임 설정
+    */
     Widget _profileNickSection(BuildContext context) {
         return Container(
             width: ScreenUtil().setWidth(228.5) - 28,
@@ -333,6 +351,11 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
+    /*
+     * @author : JH
+     * @date : 2020-01-13
+     * @description : 프로필 소개 수정 버튼
+    */
     Widget _profileEditBtnSection(BuildContext context) {
         return Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -382,6 +405,12 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
+    /*
+     * @author : JH
+     * @date : 2020-01-13
+     * @description : 푸쉬 알림 설정
+    */
+
     Widget _appSetting(BuildContext context){
         return Container(
             margin: EdgeInsets.only(
@@ -415,6 +444,11 @@ class _ProfilePageState extends State <ProfilePage>{
             )
         );
     }
+    /*
+     * @author : JH
+     * @date : 2020-01-13
+     * @description : 앱 정보
+    */
 
     Widget _appInfo(BuildContext context){
         return Container(
@@ -425,7 +459,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 children: <Widget>[
                     buildSettingHeader(AppLocalizations.of(context).tr('profile.appInfo')),
 
-                    buildTextInfoItem(AppLocalizations.of(context).tr('profile.appVer'), "0.0.5"),
+                    buildTextInfoItem(AppLocalizations.of(context).tr('profile.appVer'), "0.0.7"),
 
                     buildTextItem(AppLocalizations.of(context).tr('profile.termsAndCondition'), "", null),
 
@@ -442,6 +476,11 @@ class _ProfilePageState extends State <ProfilePage>{
         );
     }
 
+    /*
+     * @author : JH
+     * @date : 2020-01-13
+     * @description : 계정 설정
+    */
     Widget _accountSetting(BuildContext context){
       return Container(
           margin: EdgeInsets.only(
