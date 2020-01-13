@@ -1,17 +1,22 @@
 import 'dart:developer' as developer;
-import 'package:Hwa/constant.dart';
-import 'package:Hwa/data/models/chat_info.dart';
-import 'package:Hwa/data/models/chat_join_info.dart';
-import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
-import 'package:Hwa/service/stomp_client.dart';
-import 'package:Hwa/utility/call_api.dart';
-import 'package:Hwa/utility/get_same_size.dart';
+
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'package:Hwa/constant.dart';
+import 'package:Hwa/service/stomp_client.dart';
+import 'package:Hwa/utility/call_api.dart';
+import 'package:Hwa/utility/get_same_size.dart';
+
 import 'package:Hwa/pages/parts/chatting/chat_user_list.dart';
 import 'package:Hwa/pages/chatting/chatroom_setting.dart';
+import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
+import 'package:Hwa/pages/chatting/notice_page.dart';
 
+import 'package:Hwa/data/models/chat_info.dart';
+import 'package:Hwa/data/models/chat_join_info.dart';
 
 /*
  * @project : HWA - Mobile
@@ -389,26 +394,51 @@ class ChatSideMenuState extends State<ChatSideMenu> {
                                             quitChat();
                                         },
                                     ),
-                                    Constant.USER_IDX == chatInfo.createUser.userIdx
-                                        ? InkWell(
-                                            child: Container(
-                                                width: sameSize*28,
-                                                height: sameSize*28,
-                                                decoration: BoxDecoration(
-                                                    image: DecorationImage(
-                                                        image:AssetImage("assets/images/icon/iconSetting.png")
+                                    Row(
+                                        children: <Widget>[
+                                            InkWell(
+                                                child: Container(
+                                                    width: sameSize*28,
+                                                    height: sameSize*28,
+                                                    margin: EdgeInsets.only(
+                                                        right: ScreenUtil().setWidth(10)
                                                     ),
-                                                )
+                                                    decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                            image:AssetImage("assets/images/icon/iconBell.png")
+                                                        ),
+                                                    )
+                                                ),
+                                                onTap: () {
+                                                    Navigator.push(context,
+                                                        MaterialPageRoute(builder: (context) {
+                                                            return NoticePage(hostIdx: chatInfo.createUser.userIdx, chatInfo: chatInfo);
+                                                        })
+                                                    );
+                                                },
                                             ),
-                                            onTap: () {
-                                                Navigator.push(context,
-                                                    MaterialPageRoute(builder: (context) {
-                                                        return ChatroomSettingPage(chatInfo: chatInfo);
-                                                    })
-                                                );
-                                            },
-                                        )
-                                        : Container()
+                                            Constant.USER_IDX == chatInfo.createUser.userIdx
+                                                ? InkWell(
+                                                child: Container(
+                                                    width: sameSize*28,
+                                                    height: sameSize*28,
+                                                    decoration: BoxDecoration(
+                                                        image: DecorationImage(
+                                                            image:AssetImage("assets/images/icon/iconSetting.png")
+                                                        ),
+                                                    )
+                                                ),
+                                                onTap: () {
+                                                    Navigator.push(context,
+                                                        MaterialPageRoute(builder: (context) {
+                                                            return ChatroomSettingPage(chatInfo: chatInfo);
+                                                        })
+                                                    );
+                                                },
+                                            )
+                                                : Container()
+                                        ],
+                                    )
                                 ],
                             ),
                         )

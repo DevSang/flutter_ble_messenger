@@ -12,9 +12,12 @@ import 'package:provider/provider.dart';
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/chatting/notice_write_page.dart';
 import 'package:Hwa/pages/chatting/notice_detail_page.dart';
+
 import 'package:Hwa/data/models/chat_notice_item.dart';
 import 'package:Hwa/data/models/chat_info.dart';
+
 import 'package:Hwa/data/state/chat_notice_item_provider.dart';
+import 'package:Hwa/data/state/user_info_provider.dart';
 
 
 /*
@@ -33,9 +36,12 @@ class NoticePage extends StatefulWidget {
 }
 
 class NoticePageState extends State<NoticePage> {
+    final int hostIdx;
     final ChatInfo chatInfo;
-    NoticePageState({Key key, this.chatInfo});
+
+    NoticePageState({Key key, this.hostIdx, this.chatInfo});
     ChatRoomNoticeInfoProvider chatRoomNoticeInfoProvider;
+    UserInfoProvider userInfoProvider;
 
     @override
     void initState() {
@@ -174,7 +180,7 @@ class NoticePageState extends State<NoticePage> {
     }
 
     Widget buildNoticeItem(ChatNoticeItem chatNoticeItem) {
-
+        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: true);
         return new GestureDetector(
             child: Container(
                 padding: EdgeInsets.symmetric(
@@ -198,12 +204,9 @@ class NoticePageState extends State<NoticePage> {
                             decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                    image: chatNoticeItem.profile_picture_idx == 0
-                                        ? AssetImage("assets/images/icon/profile.png")
-                                        : CachedNetworkImageProvider(
-                                        Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + chatNoticeItem.user_idx.toString() + "&type=SMALL",
-                                        headers: Constant.HEADER
-                                    ),
+                                    image: Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null ?
+                                        Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg
+                                        : AssetImage("assets/images/icon/profile.png"),
                                     fit: BoxFit.cover,
                                 )
                             ),
@@ -286,7 +289,7 @@ class NoticePageState extends State<NoticePage> {
                                 ],
                             )
                         ),
-                        GestureDetector(
+                        hostIdx == userInfoProvider.idx ? GestureDetector(
                             child:Container(
                                 width: ScreenUtil().setWidth(20),
                                 height: ScreenUtil().setHeight(45),
@@ -303,7 +306,7 @@ class NoticePageState extends State<NoticePage> {
                             onTap:(){
                                 showCupertinoModalPopup(context: context, builder: (context) => _buildActionSheet(chatNoticeItem));
                             }
-                        )
+                        ) : Container()
                     ],
                 )
             ),
