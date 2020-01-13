@@ -58,6 +58,7 @@ class CallApi {
                     await reTryCallApi(method, url, data, prefixUrl);
                 } else {
                     developer.log("# [Error] Refresh token failed.");
+                    //TODO logout처리?????
                 }
             } else {
                 developer.log("# [Error] Status Code :" + statusCode);
@@ -108,7 +109,7 @@ class CallApi {
         ///실패했을때 다시 시도 (5번까지)
         if(retryCount < 5){
             retryCount ++;
-            new Duration(seconds: 1);
+            Future.delayed(Duration(milliseconds: 1000));
 
             developer.log("# Retry refresh the accessToken.");
             developer.log("# Retry count : " + retryCount.toString());

@@ -33,7 +33,7 @@
                 "inputCode": "Please enter the verification code.",
                 "authFinish": "Certification completed.",
                 "authFail": "Authentication failed. Please check the verification number.",
-                "start": "Here we are. Start danhwa with friends around you.",
+                "start": "Here we are. Start chatting with friends around you.",
                 "fail": "Server request failed"
             }
         },
@@ -45,7 +45,7 @@
             "nickName": "Please enter your nickname",
             "startBtn": "Start",
             "toast": {
-                "start": "Here we are. Start danhwa with friends around you."
+                "start": "Here we are. Start chatting with friends around you."
             }
         }
     },

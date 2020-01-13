@@ -904,7 +904,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                                 maxHeight: ScreenUtil().setHeight(40)
                                             ),
                                             child: Text(
-                                                _currentAddress != null ? '$_currentAddress' : '위치 검색 중 ',
+                                                _currentAddress != null ? '$_currentAddress' : AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                                 style: TextStyle(
