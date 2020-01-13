@@ -15,7 +15,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-
 import 'package:Hwa/pages/signin/signup_page.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/get_same_size.dart';
@@ -179,6 +178,7 @@ class _SignInPageState extends State<SignInPage> {
         if (response.statusCode == 200) {
             var data = jsonDecode(response.body)['data'];
             var token = data['token'];
+            var refreshToken = data['refreshToken'];
 
             if(data['userInfo']['profile_picture_idx'] != null) {
                 photoUrl = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + data['userInfo']['idx'].toString() + "&type=SMALL";
@@ -186,7 +186,7 @@ class _SignInPageState extends State<SignInPage> {
 
             data['userInfo']['profileURL'] = photoUrl;
             data['userInfo']['token'] = token;
-            data['userInfo']['nickname'] = data['userInfo']['jb_user_info']['nickname'];
+            data['userInfo']['refreshToken'] = refreshToken;
 
             await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['userInfo']);
             await userInfoProvider.getUserInfoFromSPF();
@@ -299,13 +299,9 @@ class _SignInPageState extends State<SignInPage> {
                     developer.log("# 로그인정보 :" + response.body);
 
                     var token = data['token'];
+                    var refreshToken = data['refreshToken'];
                     data['userInfo']['token'] = token;
-
-                    if(data['userInfo']['jb_user_info']['profile_picture_idx'] != null) {
-                        spf.setBool("IS_UPLOAD_PROFILE_IMG", true);
-                    } else {
-                        spf.setBool("IS_UPLOAD_PROFILE_IMG", false);
-                    }
+                    data['userInfo']['refreshToken'] = refreshToken;
 
                     await userInfoProvider.setStateAndSaveUserInfoAtSPF(data['userInfo']);
                     await userInfoProvider.getUserInfoFromSPF();
@@ -407,7 +403,6 @@ class _SignInPageState extends State<SignInPage> {
             ),
             child: Container(
                 child: TextFormField(
-                    autofocus: true,
                     focusNode: phoneFocusNode,
                     maxLength: 11,
                     onChanged: (loginAuthCode) {

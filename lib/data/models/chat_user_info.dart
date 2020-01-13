@@ -3,12 +3,13 @@ import 'dart:io';
 class ChatUserInfo {
     int userIdx;
     String nick;
-    Future<File> profileImg;
+    File profileImg;
     String partType;
     bool existContact;
     String businessCard;
     String userIntro;
     bool addFriend;
+    int profilePictureIdx;
 
     ChatUserInfo({
         this.userIdx
@@ -19,6 +20,7 @@ class ChatUserInfo {
         , this.businessCard
         , this.userIntro
         , this.addFriend
+        , this.profilePictureIdx
     });
 
     factory ChatUserInfo.fromJSON (Map json) {
@@ -26,7 +28,7 @@ class ChatUserInfo {
             userIdx : json['user_idx'],
             nick : json['nickname'],
             profileImg : json['masterUserIdx'],
-            partType : json['profile_picture_idx'],
+	        profilePictureIdx : json['profile_picture_idx'],
 //            existContact : json['roomImg'],
 //            businessCard : json['lat'],
 //            userIntro : json['lon'],

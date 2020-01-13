@@ -11,7 +11,7 @@ class ChatInfo {
     int masterUserIdx;			// 단화룸 현재 방장 userIdx
     String title;				// 단화룸 타이틀
     String intro;               // 단화룸 소개글
-    String chatImgIdx;			// 단화룸 이미지 idx
+    int chatImgIdx;			    // 단화룸 이미지 idx
     double lat;					// 위도
     double lon;					// 경도
     double score;				// 랭킹 점수

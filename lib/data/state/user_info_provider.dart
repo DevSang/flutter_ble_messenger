@@ -29,8 +29,11 @@ class UserInfoProvider with ChangeNotifier{
     String regTs;
     String updateTs;
     String profileURL;
+    int profilePictureIdx;
     String nickname;
+    String description;
     String token;
+    String refreshToken;
     String countryCode;
     CachedNetworkImage cacheProfileImg;
 
@@ -93,7 +96,9 @@ class UserInfoProvider with ChangeNotifier{
                 'X-Authorization': 'Bearer ' + token
             };
 
-            profileURL = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+            if(profileURL == null && profilePictureIdx != null){
+	            profileURL = Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + Constant.USER_IDX.toString() + "&type=SMALL";
+            }
 
             // 사용자 Cache 프로필 이미지 생성
             createProfileCacheImg();
@@ -101,7 +106,6 @@ class UserInfoProvider with ChangeNotifier{
             developer.log("# userInfo is loaded from SPF.");
             developer.log("# userInfo : " + jsonDecode(spf.getString('userInfo')).toString());
             developer.log("# userIdx : " + idx.toString());
-            developer.log("# token : " + token);
         }
     }
 
@@ -116,9 +120,12 @@ class UserInfoProvider with ChangeNotifier{
         this.lastLoginTs  = info['last_login_ts'];
         this.regTs  = info['reg_ts'];
         this.updateTs  = info['update_ts'];
-        this.profileURL =  info['profileURL'] ?? "";
-        this.nickname =  info['nickname'];
+        this.profilePictureIdx =  info['jb_user_info']['profile_picture_idx'];
+        this.profileURL =  info['profileURL'];
+        this.nickname =  info['jb_user_info']['nickname'];
+        this.description =  info['jb_user_info']['description'];
         this.token =  info['token'];
+        this.refreshToken =  info['refreshToken'];
         this.countryCode =  info['country_code'];
     }
 
@@ -137,13 +144,15 @@ class UserInfoProvider with ChangeNotifier{
      * @description : 사용자 Cache 프로필 이미지 생성
      */
     void createProfileCacheImg() {
-	    cacheProfileImg = CachedNetworkImage(
-			    imageUrl: profileURL,
-			    placeholder: (context, url) => CircularProgressIndicator(),
-			    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png',fit: BoxFit.cover),
-			    httpHeaders: Constant.HEADER
-	    );
-	    notifyListeners();
+    	if(profileURL != null){
+		    cacheProfileImg = CachedNetworkImage(
+				    imageUrl: profileURL,
+				    placeholder: (context, url) => CircularProgressIndicator(),
+				    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png', fit: BoxFit.cover),
+				    httpHeaders: Constant.HEADER
+		    );
+		    notifyListeners();
+	    }
     }
 
     /*

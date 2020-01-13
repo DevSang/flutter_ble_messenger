@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io' show Platform;
 import 'dart:developer' as developer;
 import 'dart:ui';
-
+import 'package:provider/provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:simple_animations/simple_animations.dart';
-
+import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:Hwa/data/models/chat_info.dart';
 import 'package:Hwa/data/models/chat_list_item.dart';
@@ -447,6 +447,12 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
             Map<String, dynamic> jsonParse = json.decode(response.body);
+
+            UserInfoProvider userInfo = Provider.of<UserInfoProvider>(context, listen: false);
+            int profileImgIdx = userInfo.profilePictureIdx;
+
+            // 방 생성시에 만든 사용자 프로필사진 넣어줌
+            jsonParse['danhwaRoom']['createUser']['profile_picture_idx'] = profileImgIdx;
 
             // 단화방 입장
             _enterChat(jsonParse, true);

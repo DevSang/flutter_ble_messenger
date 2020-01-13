@@ -219,7 +219,8 @@ class ChatScreenState extends State<ChatroomPage> {
                 ChatJoinInfo(
                     joinType: "BLE_JOIN",
                     userIdx: chatInfo.createUser.userIdx,
-                    userNick: chatInfo.createUser.nick
+                    userNick: chatInfo.createUser.nick,
+	                profilePictureIdx: chatInfo.createUser.profilePictureIdx
                 )
             );
         }
