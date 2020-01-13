@@ -561,7 +561,12 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     */
     void exitPage() async {
         setState(() {
-            HwaBeacon().stopRanging();
+
+        	// TODO BLE
+	        if(Platform.isAndroid){
+		        HwaBeacon().stopRanging();
+	        }
+
             stopOldChatRemoveTimer();
             chatList.clear();
             chatIdxList.clear();

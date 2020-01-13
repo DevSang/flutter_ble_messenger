@@ -263,7 +263,7 @@ class ChatScreenState extends State<ChatroomPage> {
     /*
      * @author : hs
      * @date : 2020-01-02
-     * @description : 자신의 닉네임 얻어오기 (임시) TODO
+     * @description : 자신의 닉네임 얻어오기 (TODO 임시)
     */
     getMyNick() async {
         /// 참여 타입 수정
