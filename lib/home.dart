@@ -73,6 +73,7 @@ class HomePageState extends State<HomePage> {
 	    // 사용자 로그인 여부 판별 및 사용자 정보 셋팅
         await userInfoProvider.getUserInfoFromSPF();
 
+
 	    // 로그인된 사용자 처리
 	    if(Constant.isUserLogin){
 		    await initApiCall(context); // TODO 부하증가에 따라 API 호출 시간이 너무 길어질 경우 어떻게 할것인가?
@@ -102,15 +103,16 @@ class HomePageState extends State<HomePage> {
 
 
         _firebaseMessaging.onTokenRefresh.listen((token){
-            developer.log("############## _firebaseMessaging.onTokenRefresh. token: $token");
+            developer.log("# firebaseMessaging.onTokenRefresh. token: $token");
             callPushTokenRequest(token);
         });
 
         _firebaseMessaging.configure(
             onMessage: (Map<String, dynamic> message) async {
-                developer.log('on message $message');
+                developer.log('# on message $message');
                 dynamic data = message['data'];
 
+                ///친구요청 push message 이면
                 if(data['request_idx'] != null){
                     developer.log('# Add friend reuqest : $data');
                     friendRequestListInfoProvider.addFriendRequest(data);
