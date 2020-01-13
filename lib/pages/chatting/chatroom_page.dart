@@ -868,7 +868,7 @@ class ChatScreenState extends State<ChatroomPage> {
                             onTap: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                        return NoticePage(hostIdx: chatInfo.createUser.userIdx, chatInfo: chatInfo);
+                                        return NoticePage(chatInfo: chatInfo);
                                     })
                                 );
                             },

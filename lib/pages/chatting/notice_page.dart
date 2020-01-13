@@ -27,24 +27,23 @@ import 'package:Hwa/data/state/user_info_provider.dart';
  * @description : 공지사항 리스트
  */
 class NoticePage extends StatefulWidget {
-    final int hostIdx;
     final ChatInfo chatInfo;
-    NoticePage({Key key, @required this.hostIdx, this.chatInfo}) :super(key: key);
+    NoticePage({Key key, @required this.chatInfo}) :super(key: key);
 
     @override
     State createState() =>  NoticePageState(chatInfo: chatInfo);
 }
 
 class NoticePageState extends State<NoticePage> {
-    final int hostIdx;
     final ChatInfo chatInfo;
 
-    NoticePageState({Key key, this.hostIdx, this.chatInfo});
+    NoticePageState({Key key, this.chatInfo});
     ChatRoomNoticeInfoProvider chatRoomNoticeInfoProvider;
     UserInfoProvider userInfoProvider;
-
+    int hostIdx;
     @override
     void initState() {
+        hostIdx = chatInfo.createUser.userIdx;
         super.initState();
     }
 
@@ -181,6 +180,9 @@ class NoticePageState extends State<NoticePage> {
 
     Widget buildNoticeItem(ChatNoticeItem chatNoticeItem) {
         userInfoProvider = Provider.of<UserInfoProvider>(context, listen: true);
+        print("###" + userInfoProvider.idx.toString());
+        print("###" + hostIdx.toString());
+
         return new GestureDetector(
             child: Container(
                 padding: EdgeInsets.symmetric(
@@ -201,13 +203,16 @@ class NoticePageState extends State<NoticePage> {
                             margin: EdgeInsets.only(
                                 right: ScreenUtil().setWidth(12)
                             ),
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg.errorWidget == null ?
-                                        Provider.of<UserInfoProvider>(context, listen: false).cacheProfileImg
-                                        : AssetImage("assets/images/icon/profile.png"),
+                            child: ClipRRect(
+                                borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                child:FadeInImage(
+                                    width: ScreenUtil().setHeight(40),
+                                    height: ScreenUtil().setHeight(40),
+                                    placeholder: AssetImage("assets/images/icon/profile.png"),
+                                    image: chatNoticeItem.profile_picture_idx == null ? AssetImage("assets/images/icon/profile.png")
+                                        : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + chatNoticeItem.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
                                     fit: BoxFit.cover,
+                                    fadeInDuration: Duration(milliseconds: 1)
                                 )
                             ),
                         ),
@@ -289,7 +294,8 @@ class NoticePageState extends State<NoticePage> {
                                 ],
                             )
                         ),
-                        hostIdx == userInfoProvider.idx ? GestureDetector(
+                        ///방 주인 이거나, 공지사항 주인이면
+                        hostIdx == userInfoProvider.idx || chatNoticeItem.user_idx == userInfoProvider.idx? GestureDetector(
                             child:Container(
                                 width: ScreenUtil().setWidth(20),
                                 height: ScreenUtil().setHeight(45),
