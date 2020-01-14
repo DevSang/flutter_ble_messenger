@@ -43,11 +43,11 @@ class CallApi {
 
     static setResponse(http.Response response, HTTP_METHOD method, String url, Map data, String prefixUrl) async {
         var statusCode = response.statusCode.toString();
-        int errorCode = jsonDecode(response.body)['errorCode'];
 
         if(statusCode.indexOf("20") > -1) {
             return response;
         } else {
+	        int errorCode = jsonDecode(response.body)['errorCode'];
             ///Expired token 처리
             if(errorCode == 12){
                 developer.log("# Token expired");
