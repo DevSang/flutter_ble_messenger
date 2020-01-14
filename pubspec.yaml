@@ -28,6 +28,7 @@ dependencies:
     video_thumbnail: ^0.2.0           # Video Thumbnail
     video_player:                     # Video Player Added Header
     showcaseview: 0.1.5               # Tool Tip
+    keyboard_visibility: 0.5.6        # Keyboard 여부 체크
 
     ### Add by HK ###
     dio: 3.0.8                        # Http, File Upload

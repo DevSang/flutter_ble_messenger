@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
+import 'package:Hwa/utility/validate_nickname.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +39,8 @@ class _ProfilePageState extends State <ProfilePage>{
 
     bool isSwitched = true;
     double sameSize = GetSameSize().main();
-
     bool allowedPush;
     bool allowedFriend;
-
     bool isLoading;
 
     @override
@@ -337,7 +336,8 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Text(
-                        Provider.of<UserInfoProvider>(context).description ?? "안녕하세요 :) " + "${Emojis.smilingFaceWithSmilingEyes} " + (Provider.of<UserInfoProvider>(context).nickname ?? "") + "입니다. ",
+                        Provider.of<UserInfoProvider>(context).description
+                            ?? "안녕하세요 :) " + Provider.of<UserInfoProvider>(context).nickname + "입니다. ",
                         style: TextStyle(
                             height: 1,
                             fontFamily: "NotoSans",
