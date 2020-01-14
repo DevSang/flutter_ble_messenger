@@ -132,9 +132,14 @@
         "leave": "탈퇴하기",
         "cancel": "취소",
         "save": "저장하기",
-        "textIntroduce": "소개글을 입력해 보세요 :)",
+        "textIntroduce": "소개글을 입력해 보세요.",
         "opensource": "OpenSource License",
         "appVer": "앱 버젼",
         "termsAndCondition": "이용 약관"
+    },
+    "validator": {
+        "isEmpty": "이름을 입력하세요.",
+        "length": "이름을 한 글자 이상 입력하세요.",
+        "available": "사용할 수 있는 닉네임입니다."
     }
 }

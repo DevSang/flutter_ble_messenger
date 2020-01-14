@@ -132,10 +132,14 @@
         "leave": "Account delete",
         "cancel": "Cancel",
         "save": "Save",
-        "textIntroduce": "Please enter an introduction. :)",
+        "textIntroduce": "Please enter an introduction.",
         "opensource": "OpenSource License",
         "appVer": "App version",
         "termsAndCondition": "Terms and condition"
-
+    },
+    "validator": {
+        "isEmpty": "Please enter your name.",
+        "length": "Please enter at least one letter of your name.",
+        "available": "Nickname that can be used."
     }
 }
