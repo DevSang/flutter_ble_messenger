@@ -81,8 +81,8 @@ class FriendListInfoProvider with ChangeNotifier{
                 user_idx: int.parse(data['user_idx'].toString()),
                 nickname: data['nickname'],
                 phone_number: data['phone_number'],
-                profile_picture_idx: int.parse(data['profile_picture_idx'].toString() ?? "0"),
-                business_card_idx: int.parse(data['business_card_idx'].toString() ?? "0"),
+                profile_picture_idx: int.parse(data['profile_picture_idx'] ?? "0"),
+                business_card_idx: int.parse(data['business_card_idx'] ?? "0"),
                 user_status: data['user_status'],
                 description: data['description']
             )
