@@ -81,8 +81,8 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
     String _currentAddress;
 
     // 사용자 GPS, BLE 권한 관련
-    bool isAllowedGPS = false;
-    bool isAuthGPS = false;
+    bool isAllowedGPS = true;
+    bool isAuthGPS = true;
 
     bool isAllowedBLE = true;
     bool isAuthBLE = true;
@@ -102,12 +102,12 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
 		if(state == AppLifecycleState.paused){
 			// App 이 background 로 변환 될때 BLE 서비스 등 중지
-			developer.log("### App state. paused");
+			developer.log("### App state. paused - Main");
 			stopAllService();
 
 		} else if(state == AppLifecycleState.resumed){
 			// App 이 foreground 로 변환 될때 BLE 서비스 등 재 시작
-			developer.log("### App state. resumed");
+			developer.log("### App state. resumed - Main");
 			checkGpsBleAndStartService();
 		}
 	}
@@ -160,21 +160,9 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @description : GPS와 BLE의 권한을 체크. 권한이 있으면 서비스 시작, 권한 없으면 권한 들어올때까지 타이머 돌며 listen
      */
     void checkGpsBleAndStartService() async {
-        bool gpsStatus = await checkGPS();
-	    if(gpsStatus) startGpsService();
-	    else {
-		    _gpsTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
-			    bool gpsStatus = await checkGPS();
-			    if(gpsStatus) {
-				    startGpsService();
-				    timer.cancel();
-			    }
-		    });
-	    }
-
 	    bool bleStatus = await checkBLE();
 
-	    print("######## bleStatus : $bleStatus");
+	    developer.log("######## bleStatus : $bleStatus");
 
 	    if(bleStatus) startBleService();
 	    else {
@@ -182,6 +170,18 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 			    bool bleStatus = await checkBLE();
 			    if(bleStatus) {
 				    startBleService();
+				    timer.cancel();
+			    }
+		    });
+	    }
+
+	    bool gpsStatus = await checkGPS();
+	    if(gpsStatus) startGpsService();
+	    else {
+		    _gpsTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
+			    bool gpsStatus = await checkGPS();
+			    if(gpsStatus) {
+				    startGpsService();
 				    timer.cancel();
 			    }
 		    });
@@ -295,21 +295,29 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 	    });
     }
 
+    /*
+     * @author : hk
+     * @date : 2020-01-14
+     * @description : GPS 권한 체크
+     */
     Future<bool> checkGPS() async {
+    	// 위치서비스 자체 켜져있는지
         bool isLocationAllowed = await HwaBeacon().checkLocationService();
-        // 안드로이드 위치 서비스 처리
+        // 위치 서비스 처리
 	    if(isLocationAllowed == false) {
 		    isAllowedGPS = false;
             isAuthGPS = false;
+
             developer.log("# 위치서비스 자체가 꺼져있음!");
 
 		    return false;
 	    }else{
 		    isAllowedGPS = true;
+
 		    // 위치 서비스 사용 권한
 		    AuthorizationStatus authLocation = await HwaBeacon().getAuthorizationStatus();
 
-		    if(authLocation.isAndroid){
+		    if(authLocation.value == "ALLOWED" || authLocation.value == "ALWAYS"){
 			    isAuthGPS = true;
 			    developer.log("# 위치서비스, 위치 권한 켜져있음!, Location search Start!");
 
@@ -364,20 +372,20 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
     Future<bool> checkBLE() async {
 	    // Bluetooth 상태 확인
 	    BluetoothState bs = await HwaBeacon().getBluetoothState();
-	    print("## bs : $bs");
+	    developer.log("## bs : $bs");
 
 	    BeaconStatus isBS = await HwaBeacon().checkTxSupported();
-	    print("## isBS : $isBS");
+	    developer.log("## isBS : $isBS");
 
-	    // BLE 처리
-	    if(bs.value == 'STATE_ON'){
+	    // BLE 상태 처리, TODO 현재 HwaBeacon 에서 iOS getBluetoothState 가 unknown 으로 나오는 현상 전무님이 수정중, 수정되면 App 도 적용
+//	    if(bs.value == 'STATE_ON') {
+	    if(isBS == BeaconStatus.SUPPORTED) {
 		    isAllowedBLE = true;
 		    isAuthBLE = true;
 
 		    developer.log("# 블루투스 켜져있음!");
-		    BeaconStatus isBS = await HwaBeacon().checkTxSupported();
 
-		    if(isBS != BeaconStatus.SUPPORTED){
+		    if(isBS != BeaconStatus.SUPPORTED) {
 			    developer.log("# 블루투스 켜져있으나 비콘 송수신을 지원하지 않음!");
 			    return false;
 		    }else{
@@ -398,7 +406,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @date : 2019-12-31
      * @description : 블루투스 서비스 시작. Scan start
      */
-    void startBleService(){
+    void startBleService() {
 	    developer.log("# start BleService!");
 	    _scanBLE();
     }
@@ -408,7 +416,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 	 * @date : 2019-12-30
 	 * @description : 채팅방 삭제 타이머 동작 시작 - 1.5초마다 동작
 	 */
-    void startOldChatRemoveTimer(){
+    void startOldChatRemoveTimer() {
 	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
 
 	    _chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: chatItemRemoveTimerDelay), (timer) {
@@ -421,7 +429,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @date : 2019-12-30
      * @description : 채팅방 삭제 타이머 동작 멈춤
      */
-    void stopOldChatRemoveTimer(){
+    void stopOldChatRemoveTimer() {
 	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
     }
 
@@ -430,7 +438,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @date : 2019-12-30
      * @description : 현재 페이지에 있는 모든 타이머 스톱
      */
-    void stopAllTimer(){
+    void stopAllTimer() {
 	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
 	    timerActiveCheckAndCancel(_gpsTimer);
 	    timerActiveCheckAndCancel(_bleTimer);
@@ -441,7 +449,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @date : 2019-12-30
      * @description : 채팅방 리스트에서 기준 시간 이상 AD를 받지 못한 아이템 삭제
      */
-    void deleteOldChat(){
+    void deleteOldChat() {
     	setState(() {
 		    int current = new DateTime.now().millisecondsSinceEpoch;
 		    if(chatList != null){
