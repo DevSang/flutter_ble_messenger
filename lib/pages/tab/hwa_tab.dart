@@ -49,9 +49,6 @@ class HwaTab extends StatefulWidget {
  *                TickerProviderStateMixin - animation 에 사용
  */
 class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBindingObserver{
-
-	AppLifecycleState _appLifecycleState;
-
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];
@@ -98,8 +95,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
 	@override
 	void didChangeAppLifecycleState(AppLifecycleState state) {
-		_appLifecycleState = state;
-
 		if(state == AppLifecycleState.paused && ModalRoute.of(context).isCurrent){
 			// App 이 background 로 변환 될때 BLE 서비스 등 중지
 			developer.log("### App state. paused - Main");
