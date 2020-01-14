@@ -134,6 +134,15 @@ class UserInfoProvider with ChangeNotifier{
     }
 
     /*
+     * @author : hs
+     * @date : 2020-01-14
+     * @description : 사용자 프로필 이미지 return, 없어도 기본 이미지 반환 X
+    */
+    Widget getUserProfileImgNotDefault() {
+        return cacheProfileImg;
+    }
+
+    /*
      * @author : hk
      * @date : 2020-01-10
      * @description : 사용자 Cache 프로필 이미지 생성

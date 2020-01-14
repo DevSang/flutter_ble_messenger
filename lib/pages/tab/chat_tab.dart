@@ -21,7 +21,7 @@ import 'package:easy_localization/easy_localization.dart';
  * @project : HWA - Mobile
  * @author : hk
  * @date : 2019-12-30
- * @description : Chat page
+ * @description : Chat Tab Page
  */
 class ChatTab extends StatefulWidget {
     final Function setCurrentIndex;

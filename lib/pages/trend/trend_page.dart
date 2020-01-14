@@ -20,6 +20,12 @@ import 'package:showcaseview/showcaseview.dart';
 import 'package:Hwa/constant.dart';
 
 
+/*
+ * @project : HWA - Mobile
+ * @author : hs
+ * @date : 2020-01-14
+ * @description : Trend HWA Page
+ */
 class TrendPage extends StatefulWidget {
     _TrendPageState createState() => _TrendPageState();
 }

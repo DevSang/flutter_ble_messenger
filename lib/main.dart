@@ -1,4 +1,5 @@
 import 'package:Hwa/pages/guide/guide_page.dart';
+import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -71,46 +72,52 @@ class HereWeAreApp extends StatelessWidget {
 	            ChangeNotifierProvider(create: (_) => ChatRoomNoticeReplyProvider(noticeReplyList: List<ChatNoticeReply>())),
             ],
             child: EasyLocalizationProvider(
-			     	data: data,
-	            child: Theme(
-					data: ThemeData(
-						fontFamily: data.locale == 'kr' ? "NotoSans" : "Manrope",
-					),
-					child:MaterialApp(
-						title: 'HWA',
-						theme: ThemeData.light(),
-						home: HomePage(),
-						navigatorKey: Catcher.navigatorKey,
-						debugShowCheckedModeBanner: false,
-						initialRoute: '/',
-						routes: {
-							'/login': (context) => SignInPage(),                // login
-							'/register': (context) => SignUpPage(),             // register
-							'/register2': (context) => SignUpNamePage(),        // register name check
-							'/main': (context) => BottomNavigation(),           // main
-							'/profile': (context) => ProfilePage(),             // profile
-							'/trend': (context) => TrendPage(),                 // trend
-							'/chatroom': (context) => ChatroomPage(),
-							'/notice': (context) => NoticePage(),
-							'/notice_write': (context) => NoticeWritePage(),
-							'/notice_detail': (context) => NoticeDetailPage(),
-							'/opensource': (context) => OpenSourcePage(),
-							'/service_policy': (context) => ServicePolicyPage(),
-							'/guide': (context) => GuidePage(),
-						},
-						localizationsDelegates: [
-							GlobalMaterialLocalizations.delegate,
-							GlobalWidgetsLocalizations.delegate,
-							EasylocaLizationDelegate(
-								locale: data.locale,
-								path: 'assets/langs',
-								useOnlyLangCode: true
-							),
-						],
-						supportedLocales: [Locale('en'), Locale('ko')],
-						locale: data.locale,
-					),
-				)
+                data: data,
+                child:MaterialApp(
+                    title: 'HWA',
+                    supportedLocales: [Locale('en'), Locale('ko')],
+                    theme: ThemeData.light(),
+                    home: HomePage(),
+                    navigatorKey: Catcher.navigatorKey,
+                    debugShowCheckedModeBanner: false,
+                    initialRoute: '/',
+                    routes: {
+                        '/login': (context) => SignInPage(),                // login
+                        '/register': (context) => SignUpPage(),             // register
+                        '/register2': (context) => SignUpNamePage(),        // register name check
+                        '/main': (context) => BottomNavigation(),           // main
+                        '/profile': (context) => ProfilePage(),             // profile
+                        '/trend': (context) => TrendPage(),                 // trend
+                        '/chatroom': (context) => ChatroomPage(),
+                        '/notice': (context) => NoticePage(),
+                        '/notice_write': (context) => NoticeWritePage(),
+                        '/notice_detail': (context) => NoticeDetailPage(),
+                        '/opensource': (context) => OpenSourcePage(),
+                        '/service_policy': (context) => ServicePolicyPage(),
+                        '/guide': (context) => GuidePage(),
+                        '/friends': (context) => FriendTab(),
+                    },
+                    localizationsDelegates: [
+                        GlobalMaterialLocalizations.delegate,
+                        GlobalWidgetsLocalizations.delegate,
+                        EasylocaLizationDelegate(
+                            locale: data.locale,
+                            path: 'assets/langs',
+                            useOnlyLangCode: true
+                        ),
+                    ],
+                    locale: data.locale,
+                    builder: (context, navigator) {
+                        var lang = Localizations.localeOf(context).languageCode;
+
+                        return Theme(
+                            data: ThemeData(
+                                fontFamily: lang == 'ko' ? "NotoSans" : "Manrope",
+                            ),
+                            child: navigator,
+                        );
+                    },
+                ),
             )
         );
     }

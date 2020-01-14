@@ -58,9 +58,6 @@ class ChatroomPage extends StatefulWidget {
 }
 
 class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
-
-	AppLifecycleState _appLifecycleState;
-
     final ChatInfo chatInfo;
     final bool isLiked;
     final int likeCount;
@@ -98,9 +95,11 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
     int wsReconnectDelay = 2000;    // WS 재 연결시도 시간
 
     // BLE 관련
-    bool _activateBeacon = false;
     int _ttl = 1;
     bool advertising;
+
+    // App fore, back status
+    bool isFore = true;
 
     final TextEditingController textEditingController = new TextEditingController();
     final ScrollController listScrollController = new ScrollController();
@@ -109,17 +108,29 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
 
 	@override
 	void didChangeAppLifecycleState(AppLifecycleState state) {
-		_appLifecycleState = state;
-
 		if(state == AppLifecycleState.paused && ModalRoute.of(context).isCurrent){
-			// App 이 background 로 변환 될때 BLE 서비스 등 중지
-			developer.log("### App state. paused - Chat Room");
 
+			/// TODO 채팅방에서 App WS 관련 두가지 옵션이 있음. - 현재는 1번 옵션으로 되어있음 - HK
+			/// 1. App 이 background 로 갈때 WS 유지.
+			///  - WS가 유지되므로(iOS, AOS 둘다) background 에서도 WS 메시지를 받음
+			///  - 대신에 백그라운드에서는 WS에 남아있기에 push 가 안옴
+			///  - WS 연결되어 있는 사용자들이 많으므로 MSG 서버 부하(socket 수) 증가 예상
+			///
+			/// 2. App 이 background 로 갈때 WS 해제.
+			///  - WS 끊기 때문에 push 가 옴
+			///  - 대신에 fore 로 돌아오면 WS가 끊겨있을때 push 로 받은 메시지를 다시 화면에 표핸해주는 로직이 필요함 (시간 필요)
+			///  - WS 를 끊었다 연결했다 함(MSG 서버에 붙어있는 Socket 의 수는 적어질듯)
+
+			// App 이 background 로 변환 될때 BLE, WS 서비스 등 중지
+			developer.log("### App state. paused - Chat Room");
+			isFore = false;
+//			stopAllService();
 
 		} else if(state == AppLifecycleState.resumed && ModalRoute.of(context).isCurrent){
-			// App 이 foreground 로 변환 될때 BLE 서비스 등 재 시작
+			// App 이 foreground 로 변환 될때 BLE, WS 서비스 등 재 시작
 			developer.log("### App state. resumed - Chat Room");
-
+			isFore = true;
+//			startAllService();
 		}
 	}
 
@@ -131,7 +142,9 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
 	    WidgetsBinding.instance.addObserver(this);
 
         chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: false);
-        _initState();
+
+        // ble, ws, provider init 등 시작
+	    startAllService();
 
         // 입장한 사용자 중 프로필 이미지가 있는 사용자 정보 추출
         if(joinInfo != null) {
@@ -139,11 +152,6 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
 	        	if(user.profilePictureIdx != null) profileImgExistUserSet.add(user.userIdx);
 	        });
         }
-
-        checkAd();
-        /// Stomp 초기화
-//        connectStomp();
-        connectAndReTryStomp();
 
         disable = widget.disable ?? false;
         focusNode.addListener(onFocusChange);
@@ -167,10 +175,19 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
         } else {
             getMessageList();
         }
+
+        // BLE, WS 이외의 async 초기화 함수 실행
+	    _init();
     }
 
-    void _initState() async {
-        await chatRoomNoticeInfoProvider.getNoticeList(chatInfo.chatIdx);
+    /*
+     * @author : hk
+     * @date : 2020-01-14
+     * @description : BLE, WS 이외의 async 초기화 함수 실행
+     */
+    Future<void> _init() async {
+	    // 공지사항 provider
+	    await chatRoomNoticeInfoProvider.getNoticeList(chatInfo.chatIdx);
     }
 
     @override
@@ -187,10 +204,23 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
     /*
      * @author : hk
      * @date : 2020-01-14
+     * @description : WS, BLE start
+     */
+    void startAllService() async {
+    	// BLE check, start
+	    checkAd();
+
+	    // Stomp 초기화
+	    connectAndReTryStomp();
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-14
      * @description : 현재 페이지 실행중인 서비스 모두 중지
      */
     void stopAllService() async {
-	    // 비콘 중지
+	    // 비콘 중지, TODO Background 에서도 AD 할건지에 따라 로직 수정
 	    HwaBeacon().stopAdvertising();
 
 	    // WS 재 연결 타이머 중지
@@ -331,12 +361,15 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
         },
         onDone: (){
 	        developer.log("# WS connectStomp. StompClient onDone");
+//	        if(mounted && isFore) {
 	        if(mounted) {
 		        setState(() {
 			        isWsConnected = false;
 		        });
+
+		        // 채팅방에 있을때만 다시 접속
+		        connectAndReTryStomp();
 	        }
-	        connectAndReTryStomp();
         });
 
         await s.connectWebSocket();
@@ -368,8 +401,6 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
      * @description : WS 연결 및 재시도
      */
     void connectAndReTryStomp() async {
-    	developer.log("## connectAndReTryStomp.");
-
     	bool connected = await connectStomp();
 
 	    developer.log("## connectAndReTryStomp. connected: $connected");

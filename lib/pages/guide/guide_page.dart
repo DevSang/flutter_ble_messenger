@@ -104,7 +104,6 @@ class GuidePage extends StatelessWidget {
                                             height: ScreenUtil().setHeight(44),
                                             margin: EdgeInsets.only(
                                                 top: ScreenUtil().setHeight(27),
-                                                bottom: ScreenUtil().setHeight(28),
                                             ),
                                             decoration: BoxDecoration(
                                                 color: Color.fromRGBO(76, 96, 191, 1),
