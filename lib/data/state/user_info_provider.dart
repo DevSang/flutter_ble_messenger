@@ -86,7 +86,7 @@ class UserInfoProvider with ChangeNotifier{
             setValue(userInfo);
 
             ///Constant 설정
-            Constant.USER_IDX= idx;
+            Constant.USER_IDX = idx;
             if(idx != null && token != null) Constant.isUserLogin = true;
             Constant.HEADER = {
                 'Content-Type': 'application/json',

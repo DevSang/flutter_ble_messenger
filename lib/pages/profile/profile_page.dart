@@ -4,12 +4,16 @@ import 'dart:io';
 import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/utility/validate_nickname.dart';
 import 'package:dio/dio.dart';
+
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:easy_localization/easy_localization.dart';
+
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:Hwa/utility/call_api.dart';
@@ -18,9 +22,9 @@ import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/utility/profile_dialog.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:Hwa/utility/validators.dart';
 import 'package:Hwa/utility/emojis/emojis.dart';
+import 'package:Hwa/utility/validate_nickname.dart';
 
 
 /*
@@ -35,6 +39,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State <ProfilePage>{
+    PackageInfo packageInfo;
+
     SharedPreferences SPF;
     final store = KvStore();
 
@@ -43,12 +49,19 @@ class _ProfilePageState extends State <ProfilePage>{
     bool allowedPush;
     bool allowedFriend;
     bool isLoading;
+    String appVersion = "Beta";
 
     @override
     void initState() {
+        _initState();
         isLoading = false;
         getSettingInfo();
 	    super.initState();
+    }
+
+    void _initState() async {
+        packageInfo = await PackageInfo.fromPlatform();
+        appVersion = appVersion + " " + packageInfo.version ?? "";
     }
 
   /*
@@ -496,7 +509,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 children: <Widget>[
                     buildSettingHeader(AppLocalizations.of(context).tr('profile.appInfo')),
 
-                    buildTextInfoItem(AppLocalizations.of(context).tr('profile.appVer'), "0.0.7"),
+                    buildTextInfoItem(AppLocalizations.of(context).tr('profile.appVer'), appVersion ),
 
                     buildTextItem(AppLocalizations.of(context).tr('profile.termsAndCondition'), "", null),
 
@@ -587,7 +600,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             height: 1,
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
-                            color: Color.fromRGBO(39, 39, 39, 1),
+                            color: title == "명함 관리" || title == "Business card manage" ? Color.fromRGBO(39, 39, 39, 0.3) : Color.fromRGBO(39, 39, 39, 1) ,
                             fontSize: ScreenUtil().setSp(15),
                             letterSpacing: ScreenUtil().setWidth(-0.75)
                         )
@@ -611,8 +624,9 @@ class _ProfilePageState extends State <ProfilePage>{
                                     margin: EdgeInsets.only(
                                         left: ScreenUtil().setWidth(6)
                                     ),
-                                    child: Image.asset(
-                                        'assets/images/icon/iconMore.png'
+                                    child: title == "명함 관리" || title == "Business card manage" ?
+                                    Container(): Image.asset(
+                                        'assets/images/icon/iconMore.png',
                                     )
                                 )
                             ],
