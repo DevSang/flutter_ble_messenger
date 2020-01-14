@@ -94,7 +94,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
     // Animation 설정
     AnimationController _animationController;
     Animation<double> _animation;
-    Animation<int> _stringAnimation;
 
 	@override
 	void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -104,7 +103,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 			// App 이 background 로 변환 될때 BLE 서비스 등 중지
 			developer.log("### App state. paused - Main");
 			stopAllService();
-
 		} else if(state == AppLifecycleState.resumed && ModalRoute.of(context).isCurrent){
 			// App 이 foreground 로 변환 될때 BLE 서비스 등 재 시작
 			developer.log("### App state. resumed - Main");
@@ -125,10 +123,10 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
         _animationController = new AnimationController(
             vsync: this,
-            duration: Duration(seconds: 3),
+            duration: Duration(seconds: 50)
         );
-        _animation = Tween(begin: 0.0, end: 40.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.linear));
-        _stringAnimation = new StepTween(begin:0 , end: 4).animate(new CurvedAnimation(parent: _animationController, curve: Curves.ease));
+
+        _animation = Tween<double>(begin: 0.0, end: 100.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.linear));
     }
 
     /*
@@ -204,6 +202,12 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
 	    // 모든 타이머 정지
 	    stopAllTimer();
+
+	    // 애니메이션 끄기
+        if(mounted){
+            _animationController.stop();
+            _animationController.reset();
+        }
 
 	    // TODO gps 는?
     }
@@ -342,7 +346,8 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      */
     void startGpsService() async {
 //        _animationController.forward();
-        _animationController.repeat();
+        _animationController.forward();
+
         developer.log("# start GpsService!");
         setState(() {
             _currentAddress = AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation');
@@ -363,10 +368,9 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
 		    });
 	    }
-        developer.log("# finish GpsService!");
-
-        _animationController.stop();
         _animationController.reset();
+        _animationController.stop();
+        developer.log("# finish GpsService!");
     }
 
     /*
@@ -945,23 +949,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
                                                 ),
                                             ),
                                         ),
-                                        AnimatedBuilder(
-                                            animation: _stringAnimation,
-                                            builder: (context, child) {
-                                                String text ='.'*_stringAnimation.value;
-                                                return  Text(
-                                                    text,
-                                                    style: TextStyle(
-                                                        height: 1,
-                                                        fontFamily: "NotoSans",
-                                                        fontWeight: FontWeight.w400,
-                                                        fontSize: ScreenUtil().setSp(15),
-                                                        color: Color.fromRGBO(39, 39, 39, 1),
-                                                        letterSpacing: ScreenUtil().setWidth(-0.75),
-                                                    ),
-                                                );
-                                            }
-                                        )
 		                            ]
 		                        ),
 						    onTap: () => {

@@ -22,6 +22,7 @@ import 'package:Hwa/constant.dart';
 import 'package:Hwa/home.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/pages/parts/common/loading.dart';
+import 'package:Hwa/home.dart';
 
 
 /*
@@ -192,6 +193,7 @@ class _SignInPageState extends State<SignInPage> {
             await userInfoProvider.getUserInfoFromSPF();
 
             HomePageState.initApiCall(context);
+
 
             RedToast.toast("로그인에 성공하였습니다.", ToastGravity.TOP);
             developer.log("# 로그인에 성공하였습니다.");
@@ -450,6 +452,7 @@ class _SignInPageState extends State<SignInPage> {
                                 bottom: ScreenUtil().setWidth(5),
                             ),
                             child :RaisedButton(
+                                padding: EdgeInsets.all(0),
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(ScreenUtil().setHeight(8.0))
                                 ),

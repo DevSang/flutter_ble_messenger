@@ -684,23 +684,28 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                                             .setWidth(-0.8),
                                                     ),
                                                 ),
-                                                !isFriendList ? Padding(
-                                                    padding: EdgeInsets.only(
-                                                        top: ScreenUtil().setHeight(8)
-                                                    ),
-                                                    child:  Text(
-                                                        friendInfo.description,
-                                                        style: TextStyle(
-                                                            height: 1,
-                                                            fontFamily: "NotoSans",
-                                                            fontWeight: FontWeight.w400,
-                                                            fontSize: ScreenUtil().setSp(14),
-                                                            color: Color.fromRGBO(107, 107, 107, 1),
-                                                            letterSpacing: ScreenUtil()
-                                                                .setWidth(-0.8),
+                                                !isFriendList ? Container(
+                                                    width: ScreenUtil().setWidth(159),
+                                                    child: Padding(
+                                                        padding: EdgeInsets.only(
+                                                            top: ScreenUtil().setHeight(8)
+                                                        ),
+                                                        child:  Text(
+                                                            friendInfo.description.toString() == 'null' ?
+                                                            '안녕하세요! ' + friendInfo.nickname + "입니다! :)"
+                                                                : friendInfo.description.toString(),
+                                                            overflow: TextOverflow.ellipsis,
+                                                            maxLines: 1,
+                                                            style: TextStyle(
+                                                                fontFamily: "NotoSans",
+                                                                fontWeight: FontWeight.w400,
+                                                                fontSize: ScreenUtil().setSp(14),
+                                                                color: Color.fromRGBO(107, 107, 107, 1),
+                                                                letterSpacing: ScreenUtil().setWidth(-0.8),
+                                                            ),
                                                         ),
                                                     ),
-                                                ): Container()
+                                                ) : Container()
                                             ],
                                         ),
                                         !isFriendList

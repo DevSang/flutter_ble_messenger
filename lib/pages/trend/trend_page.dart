@@ -60,16 +60,16 @@ class _TrendPageState extends State<TrendPage> {
 
         try {
             String uri = "/danhwa/trend";
-
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
+
             TrendChatListItem chatInfo;
-            List<dynamic> jsonParseList = json.decode(response.body);
+            List<dynamic> jsonParseList = json.decode(response.body)['data'];
+
             trendChatList = <TrendChatListItem>[];
             topTrendChatList = <TrendChatListItem>[];
 
             for (var index = jsonParseList.length; index > 0; index--) {
                 chatInfo = new TrendChatListItem.fromJSON(jsonParseList[index - 1]);
-
                 if (topTrendChatList.length < 2) {
                   // 채팅 리스트에 추가
                     topTrendChatList.add(chatInfo);

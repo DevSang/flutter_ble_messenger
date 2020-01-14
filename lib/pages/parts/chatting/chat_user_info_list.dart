@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:developer' as developer;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
+import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/get_same_size.dart';
+import 'package:Hwa/utility/red_toast.dart';
+
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/data/models/chat_join_info.dart';
 import 'package:Hwa/pages/parts/chatting/full_photo.dart';
-import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
-import 'package:easy_localization/easy_localization.dart';
+
+
 
 
 /*
@@ -61,6 +66,7 @@ class ChatUserInfoListState extends State<ChatUserInfoList> with TickerProviderS
                 });
             });
         } else {
+            RedToast.toast("서버 요청에 실패하였습니다. 잠시 후 다시 시도해주세요.", ToastGravity.TOP);
             developer.log("## 친구요청에 실패하였습니다.");
         }
     }
