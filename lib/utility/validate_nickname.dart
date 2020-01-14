@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:js';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/pages/policy/opensource_license.dart';
 import 'package:Hwa/utility/red_toast.dart';
@@ -26,11 +25,12 @@ class ValidateNickname {
     Future<bool> nickAllFactCheck(String nick) async {
         if (checkLength(nick)) {
             if (await checkAlreadyUsed(nick)) {
-                return true;
                 // TODO Validator 적용
-//                if (Validator().validateName(nick)) {
-//                    return true;
-//                }
+                if (Validator.validateName(nick)) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }

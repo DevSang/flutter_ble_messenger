@@ -1,5 +1,5 @@
-import 'package:Hwa/utility/red_toast.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+//import 'package:Hwa/utility/red_toast.dart';
+//import 'package:fluttertoast/fluttertoast.dart';
 
 
 /*
@@ -10,10 +10,10 @@ import 'package:fluttertoast/fluttertoast.dart';
  */
 class Validator {
     // 정규표현식 (한글 완성, 특수문자, 공백)
-    static String pattern = '/^[\Wㄱ-ㅎㅏ-ㅣ가-힣]\$/';
+//    static String pattern = '/^[가-힣a-zA-Z]/';
 
-    bool validateName(String value) {
-        RegExp regExp =  RegExp(pattern);
+    static bool validateName(String value) {
+        RegExp regExp =  RegExp(r'^[a-zA-Z0-9가-힣]+$');
         if (regExp.hasMatch(value)) {
             return true;
         } else {

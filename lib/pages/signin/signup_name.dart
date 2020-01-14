@@ -250,7 +250,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                         return (AppLocalizations.of(context).tr('sign.signUpName.NicknameAlready'));
                     } else if(value.length < 2) {
                         return '닉네임을 한 글자 이상 입력하세요.';
-                    } else if (!Validator().validateName(value)) {
+                    } else if (!Validator.validateName(value)) {
                         return '사용할 수 없는 닉네임입니다.';
                     } else {
                         availNick = true;
