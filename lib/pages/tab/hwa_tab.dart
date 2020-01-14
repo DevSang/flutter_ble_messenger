@@ -81,8 +81,8 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
     String _currentAddress;
 
     // 사용자 GPS, BLE 권한 관련
-    bool isAllowedGPS = false;
-    bool isAuthGPS = false;
+    bool isAllowedGPS = true;
+    bool isAuthGPS = true;
 
     bool isAllowedBLE = true;
     bool isAuthBLE = true;
@@ -102,12 +102,12 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
 		if(state == AppLifecycleState.paused){
 			// App 이 background 로 변환 될때 BLE 서비스 등 중지
-			developer.log("### App state. paused");
+			developer.log("### App state. paused - Main");
 			stopAllService();
 
 		} else if(state == AppLifecycleState.resumed){
 			// App 이 foreground 로 변환 될때 BLE 서비스 등 재 시작
-			developer.log("### App state. resumed");
+			developer.log("### App state. resumed - Main");
 			checkGpsBleAndStartService();
 		}
 	}
