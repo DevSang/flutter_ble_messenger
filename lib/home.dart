@@ -101,12 +101,6 @@ class HomePageState extends State<HomePage> {
         // 푸시 권한 획득 및 token 저장
         if (Platform.isIOS) iOSPermission();
 
-
-        _firebaseMessaging.onTokenRefresh.listen((token){
-            developer.log("# firebaseMessaging.onTokenRefresh. token: $token");
-            callPushTokenRequest(token);
-        });
-
         _firebaseMessaging.configure(
             onMessage: (Map<String, dynamic> message) async {
                 developer.log('# on message $message');
@@ -132,7 +126,7 @@ class HomePageState extends State<HomePage> {
      * @date : 2020-01-08
      * @description : 푸쉬토큰 서버에 저장
      */
-    addFirebasePushToken() async {
+    static addFirebasePushToken() async {
         _firebaseMessaging.getToken().then((token) async {
             await callPushTokenRequest(token.toString());
         });
@@ -156,7 +150,7 @@ class HomePageState extends State<HomePage> {
      * @date : 2019-12-30
      * @description : Save push token function
      */
-    callPushTokenRequest(String pushToken) async {
+    static callPushTokenRequest(String pushToken) async {
         try {
             String url = "/api/v2/user/push_token?push_token=" + pushToken;
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
@@ -184,6 +178,8 @@ class HomePageState extends State<HomePage> {
 
         await friendListProvider.getFriendList();
         await friendRequestListInfoProvider.getFriendRequestList();
+
+        await addFirebasePushToken();
         return;
     }
 
@@ -207,7 +203,7 @@ class HomePageState extends State<HomePage> {
             statusBarBrightness: Brightness.dark
         ));
 
-        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: false)..init(context);
+        ScreenUtil.instance = ScreenUtil(width: 375, height: 667, allowFontScaling: true)..init(context);
 
         // ShowCaseWidget - Tooltip(화면 안내 말풍선) Package
         return Scaffold(
