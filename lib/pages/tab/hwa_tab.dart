@@ -100,12 +100,12 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 	void didChangeAppLifecycleState(AppLifecycleState state) {
 		_appLifecycleState = state;
 
-		if(state == AppLifecycleState.paused){
+		if(state == AppLifecycleState.paused && ModalRoute.of(context).isCurrent){
 			// App 이 background 로 변환 될때 BLE 서비스 등 중지
 			developer.log("### App state. paused - Main");
 			stopAllService();
 
-		} else if(state == AppLifecycleState.resumed){
+		} else if(state == AppLifecycleState.resumed && ModalRoute.of(context).isCurrent){
 			// App 이 foreground 로 변환 될때 BLE 서비스 등 재 시작
 			developer.log("### App state. resumed - Main");
 			checkGpsBleAndStartService();
@@ -160,6 +160,8 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @description : GPS와 BLE의 권한을 체크. 권한이 있으면 서비스 시작, 권한 없으면 권한 들어올때까지 타이머 돌며 listen
      */
     void checkGpsBleAndStartService() async {
+	    developer.log("### Main. checkGpsBleAndStartService()");
+
 	    bool bleStatus = await checkBLE();
 
 	    developer.log("######## bleStatus : $bleStatus");
@@ -194,6 +196,9 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @description : BLE, Timer, GPS 등 모든 서비스 중단
      */
     void stopAllService() async {
+
+    	developer.log("### Main. stopAllService()");
+
 	    // BLE Scan stop
 	    HwaBeacon().stopRanging();
 
