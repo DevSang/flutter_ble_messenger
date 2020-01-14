@@ -225,7 +225,6 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             )
         );
     }
-
     /*
      * @author : sh
      * @date : 2019-12-30
