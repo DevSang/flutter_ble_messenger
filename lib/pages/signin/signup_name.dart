@@ -225,7 +225,6 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             )
         );
     }
-
     /*
      * @author : sh
      * @date : 2019-12-30
@@ -239,6 +238,7 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 autovalidate: true,
                 focusNode: nickFocusNode,
                 autofocus: true,
+                maxLength: 8,
                 validator: (value) {
                     if (value.isEmpty) {
                         return (AppLocalizations.of(context).tr('sign.signUpName.NicknameValidator'));
