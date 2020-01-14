@@ -15,7 +15,6 @@ class Validator {
     //
     String validateName(String value) {
         RegExp regExp =  RegExp(pattern);
-
         if (value.isEmpty) {
             RedToast.toast("이름을 입력하세요.", ToastGravity.TOP);
         } else if (value.length < 2) {
@@ -24,7 +23,8 @@ class Validator {
             RedToast.toast("이름은 8자까지 입력할 수 있습니다.", ToastGravity.TOP);
         } else if (!regExp.hasMatch(value)) {
             RedToast.toast("사용할 수 있는 닉네임입니다.", ToastGravity.TOP);
+        } else {
+            return null;
         }
-        return null;
     }
 }
