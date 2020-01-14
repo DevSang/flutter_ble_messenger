@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io' show Platform;
 import 'dart:developer' as developer;
 import 'dart:ui';
 import 'package:provider/provider.dart';
@@ -11,7 +10,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:simple_animations/simple_animations.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:hwa_beacon/hwa_beacon.dart';
 import 'package:Hwa/data/models/chat_info.dart';
@@ -28,7 +26,6 @@ import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/utility/customRoute.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
-import 'package:Hwa/animate/rotate.dart';
 
 
 /*
@@ -44,7 +41,17 @@ class HwaTab extends StatefulWidget {
 	HwaTabState createState() => HwaTabState();
 }
 
-class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
+/*
+ * @project : HWA - Mobile
+ * @author : hk
+ * @date : 2020-01-14
+ * @description : WidgetsBindingObserver - App background, foreground 판단
+ *                TickerProviderStateMixin - animation 에 사용
+ */
+class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBindingObserver{
+
+	AppLifecycleState _appLifecycleState;
+
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];
@@ -61,7 +68,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     int chatItemRemoveTimerDelay = 2500;
 
     // GPS, BLE 권한 들어왔는지 체크 타이머 반복 시간 (ms)
-    int permitTimerDelay = 1500;
+    int permitTimerDelay = 2000;
 
     // 채팅방 삭제, GPS 권한 있는지 체크, BLE 권한 체크 타이머
     Timer _chatItemRemoveTimer;
@@ -81,19 +88,40 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     bool isAuthBLE = true;
 
     bool isBeaconSupport = false;
+
     bool isRefreshLocation = false;
 
-    //Animation설정
+    // Animation 설정
     AnimationController _animationController;
     Animation<double> _animation;
     Animation<int> _stringAnimation;
 
+	@override
+	void didChangeAppLifecycleState(AppLifecycleState state) {
+		_appLifecycleState = state;
+
+		if(state == AppLifecycleState.paused && ModalRoute.of(context).isCurrent){
+			// App 이 background 로 변환 될때 BLE 서비스 등 중지
+			developer.log("### App state. paused - Main");
+			stopAllService();
+
+		} else if(state == AppLifecycleState.resumed && ModalRoute.of(context).isCurrent){
+			// App 이 foreground 로 변환 될때 BLE 서비스 등 재 시작
+			developer.log("### App state. resumed - Main");
+			checkGpsBleAndStartService();
+		}
+	}
+
     @override
     void initState() {
+	    super.initState();
+
+    	// App Lifecycle observer 등록
+	    WidgetsBinding.instance.addObserver(this);
+
         _initState();
         isLoading = false;
         sameSize  = GetSameSize().main();
-        super.initState();
 
         _animationController = new AnimationController(
             vsync: this,
@@ -110,22 +138,20 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      */
     void _initState() async {
         // BLE Scanning API 초기화
-        if(Platform.isAndroid){
-            await HwaBeacon().initializeScanning();
-        }
+        bool initResult = await HwaBeacon().initializeScanning();
 
         checkGpsBleAndStartService();
     }
 
     @override
     void dispose() {
+	    // App Lifecycle observer 해제
+	    WidgetsBinding.instance.removeObserver(this);
+
+	    // BLE, Timer, GPS 등 서비스 해제
+	    stopAllService();
+
 	    super.dispose();
-	    // BLE Scanning API 초기화
-	    if(Platform.isAndroid){
-		    HwaBeacon().stopRanging();
-	    }
-	    // 모든 타이머 정지
-	    stopAllTimer();
     }
 
     /*
@@ -134,20 +160,12 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      * @description : GPS와 BLE의 권한을 체크. 권한이 있으면 서비스 시작, 권한 없으면 권한 들어올때까지 타이머 돌며 listen
      */
     void checkGpsBleAndStartService() async {
-
-        bool gpsStatus = await checkGPS();
-	    if(gpsStatus) startGpsService();
-	    else {
-		    _gpsTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
-			    bool gpsStatus = await checkGPS();
-			    if(gpsStatus) {
-				    startGpsService();
-				    timer.cancel();
-			    }
-		    });
-	    }
+	    developer.log("### Main. checkGpsBleAndStartService()");
 
 	    bool bleStatus = await checkBLE();
+
+	    developer.log("######## bleStatus : $bleStatus");
+
 	    if(bleStatus) startBleService();
 	    else {
 		    _bleTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
@@ -158,6 +176,36 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 			    }
 		    });
 	    }
+
+	    bool gpsStatus = await checkGPS();
+	    if(gpsStatus) startGpsService();
+	    else {
+		    _gpsTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
+			    bool gpsStatus = await checkGPS();
+			    if(gpsStatus) {
+				    startGpsService();
+				    timer.cancel();
+			    }
+		    });
+	    }
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-14
+     * @description : BLE, Timer, GPS 등 모든 서비스 중단
+     */
+    void stopAllService() async {
+
+    	developer.log("### Main. stopAllService()");
+
+	    // BLE Scan stop
+	    HwaBeacon().stopRanging();
+
+	    // 모든 타이머 정지
+	    stopAllTimer();
+
+	    // TODO gps 는?
     }
 
     /*
@@ -179,29 +227,27 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     	// 오래된 채팅방 삭제 타이머 시작
 	    startOldChatRemoveTimer();
 
-	    if(Platform.isAndroid){
-		    // 비콘 listen 위한 Stream 설정
-		    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
-			    if (result != null && result.beacons.isNotEmpty && mounted) {
-				    result.beacons.forEach((beacon) {
-					    if (!requiredChatIdxList.contains(beacon.roomId) && !chatIdxList.contains(beacon.roomId))  {
-						    _setChatItem(beacon.roomId);
-					    } else {
-						    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
-						    for(ChatListItem chatItem in chatList){
-							    if(chatItem.chatIdx == beacon.roomId){
-								    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
-								    break;
-							    }
+	    // 비콘 listen 위한 Stream 설정
+	    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
+		    if (result != null && result.beacons.isNotEmpty && mounted) {
+			    result.beacons.forEach((beacon) {
+				    if (!requiredChatIdxList.contains(beacon.roomId) && !chatIdxList.contains(beacon.roomId))  {
+					    _setChatItem(beacon.roomId);
+				    } else {
+					    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
+					    for(ChatListItem chatItem in chatList){
+						    if(chatItem.chatIdx == beacon.roomId){
+							    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
+							    break;
 						    }
 					    }
-				    });
-			    }
-		    });
+				    }
+			    });
+		    }
+	    });
 
-		    // 스캔(비콘 Listen) 시작
-		    HwaBeacon().startRanging();
-	    }
+	    // 스캔(비콘 Listen) 시작
+	    HwaBeacon().startRanging();
     }
 
     /*
@@ -254,40 +300,38 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 	    });
     }
 
+    /*
+     * @author : hk
+     * @date : 2020-01-14
+     * @description : GPS 권한 체크
+     */
     Future<bool> checkGPS() async {
-	    if(Platform.isAndroid) {
-            bool isLocationAllowed = await HwaBeacon().checkLocationService();
-            // 안드로이드 위치 서비스 처리
-		    if(isLocationAllowed == false) {
-			    isAllowedGPS = false;
-                isAuthGPS = false;
-                developer.log("# 위치서비스 자체가 꺼져있음!");
+    	// 위치서비스 자체 켜져있는지
+        bool isLocationAllowed = await HwaBeacon().checkLocationService();
+        // 위치 서비스 처리
+	    if(isLocationAllowed == false) {
+		    isAllowedGPS = false;
+            isAuthGPS = false;
 
-			    return false;
-		    }else{
-			    isAllowedGPS = true;
-			    // 위치 서비스 사용 권한
-			    AuthorizationStatus authLocation = await HwaBeacon().getAuthorizationStatus();
-
-			    if(authLocation.isAndroid){
-				    isAuthGPS = true;
-				    developer.log("# 위치서비스, 위치 권한 켜져있음!, Location search Start!");
-
-				    return true;
-			    } else{
-                    isAuthGPS = false;
-				    developer.log("# 위치서비스 켜있지만, 위치 권한이 없음!");
-				    return false;
-			    }
-		    }
-
-	    } else if (Platform.isIOS) {
-		    // iOS 위치서비스 처리
-		    developer.log("# is iOS!!!");
+            developer.log("# 위치서비스 자체가 꺼져있음!");
 
 		    return false;
-	    } else {
-	    	return false;
+	    }else{
+		    isAllowedGPS = true;
+
+		    // 위치 서비스 사용 권한
+		    AuthorizationStatus authLocation = await HwaBeacon().getAuthorizationStatus();
+
+		    if(authLocation.value == "ALLOWED" || authLocation.value == "ALWAYS"){
+			    isAuthGPS = true;
+			    developer.log("# 위치서비스, 위치 권한 켜져있음!, Location search Start!");
+
+			    return true;
+		    } else{
+                isAuthGPS = false;
+			    developer.log("# 위치서비스 켜있지만, 위치 권한이 없음!");
+			    return false;
+		    }
 	    }
     }
 
@@ -331,40 +375,34 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      * @description : 현재 블루투스 사용 가능 여부 체크
      */
     Future<bool> checkBLE() async {
-
 	    // Bluetooth 상태 확인
 	    BluetoothState bs = await HwaBeacon().getBluetoothState();
+	    developer.log("## bs : $bs");
 
-	    if (Platform.isAndroid) {
-		    // Android BLE 처리
-		    if(bs.value == 'STATE_ON'){
-			    isAllowedBLE = true;
-			    isAuthBLE = true;
+	    BeaconStatus isBS = await HwaBeacon().checkTxSupported();
+	    developer.log("## isBS : $isBS");
 
-			    developer.log("# 블루투스 켜져있음!");
-			    BeaconStatus isBS = await HwaBeacon().checkTxSupported();
+	    // BLE 상태 처리, TODO 현재 HwaBeacon 에서 iOS getBluetoothState 가 unknown 으로 나오는 현상 전무님이 수정중, 수정되면 App 도 적용
+//	    if(bs.value == 'STATE_ON') {
+	    if(isBS == BeaconStatus.SUPPORTED) {
+		    isAllowedBLE = true;
+		    isAuthBLE = true;
 
-			    if(isBS != BeaconStatus.SUPPORTED){
-				    developer.log("# 블루투스 켜져있으나 비콘 송수신을 지원하지 않음!");
-				    return false;
-			    }else{
-				    return true;
-			    }
-		    }else{
-		        setState(() {
-                    isAllowedBLE = false;
-                    isAuthBLE = false;
-		        });
-			    developer.log("# 블루투스 꺼져있음!");
+		    developer.log("# 블루투스 켜져있음!");
+
+		    if(isBS != BeaconStatus.SUPPORTED) {
+			    developer.log("# 블루투스 켜져있으나 비콘 송수신을 지원하지 않음!");
 			    return false;
+		    }else{
+			    return true;
 		    }
-
-	    } else if (Platform.isIOS) {
-		    // iOS BLE 처리
-		    developer.log("# is iOS!!!");
+	    }else{
+	        setState(() {
+                isAllowedBLE = false;
+                isAuthBLE = false;
+	        });
+		    developer.log("# 블루투스 꺼져있음!");
 		    return false;
-	    } else {
-	    	return false;
 	    }
     }
 
@@ -373,7 +411,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      * @date : 2019-12-31
      * @description : 블루투스 서비스 시작. Scan start
      */
-    void startBleService(){
+    void startBleService() {
 	    developer.log("# start BleService!");
 	    _scanBLE();
     }
@@ -383,7 +421,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 	 * @date : 2019-12-30
 	 * @description : 채팅방 삭제 타이머 동작 시작 - 1.5초마다 동작
 	 */
-    void startOldChatRemoveTimer(){
+    void startOldChatRemoveTimer() {
 	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
 
 	    _chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: chatItemRemoveTimerDelay), (timer) {
@@ -396,7 +434,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      * @date : 2019-12-30
      * @description : 채팅방 삭제 타이머 동작 멈춤
      */
-    void stopOldChatRemoveTimer(){
+    void stopOldChatRemoveTimer() {
 	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
     }
 
@@ -405,7 +443,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      * @date : 2019-12-30
      * @description : 현재 페이지에 있는 모든 타이머 스톱
      */
-    void stopAllTimer(){
+    void stopAllTimer() {
 	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
 	    timerActiveCheckAndCancel(_gpsTimer);
 	    timerActiveCheckAndCancel(_bleTimer);
@@ -416,7 +454,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      * @date : 2019-12-30
      * @description : 채팅방 리스트에서 기준 시간 이상 AD를 받지 못한 아이템 삭제
      */
-    void deleteOldChat(){
+    void deleteOldChat() {
     	setState(() {
 		    int current = new DateTime.now().millisecondsSinceEpoch;
 		    if(chatList != null){
@@ -561,13 +599,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
     */
     void exitPage() async {
         setState(() {
-
-        	// TODO BLE
-	        if(Platform.isAndroid){
-		        HwaBeacon().stopRanging();
-	        }
-
-            stopOldChatRemoveTimer();
+	        stopAllService();
             chatList.clear();
             chatIdxList.clear();
             _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
@@ -580,7 +612,6 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      * @description : 타 페이지에서 돌아올 시 기능 처리
     */
     void comebackPage() async {
-        startBleService();
         checkGpsBleAndStartService();
     }
 
@@ -878,11 +909,11 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                         )
                     ),
                     Container(
-                        margin: EdgeInsets.only(right:ScreenUtil().setWidth(16)),
-	                    child: InkWell(
+                      margin: EdgeInsets.only(right:ScreenUtil().setWidth(16)),
+	                    child: GestureDetector(
 	                        child:
 		                        Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
 		                            children: <Widget>[
 		                                Container(
                                             margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
@@ -895,7 +926,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                                         child: child,
                                                     );
                                                 })
-		                                ),
+                                    ),
                                         Container(
                                             constraints: BoxConstraints(
                                                 maxWidth: ScreenUtil().setWidth(154),
@@ -1176,7 +1207,6 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 
     Widget popularBadge() {
         Color color = Color.fromRGBO(77, 96, 191, 1);
-
         return Container(
             width: ScreenUtil().setWidth(43),
             height: ScreenUtil().setHeight(22),

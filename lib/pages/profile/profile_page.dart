@@ -17,6 +17,8 @@ import 'package:Hwa/utility/profile_dialog.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:Hwa/utility/validators.dart';
+import 'package:Hwa/utility/emojis/emojis.dart';
 
 
 /*
@@ -335,7 +337,7 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Text(
-                        Provider.of<UserInfoProvider>(context).description ?? "안녕하세요 :) " + (Provider.of<UserInfoProvider>(context).nickname ?? "") + "입니다. ",
+                        Provider.of<UserInfoProvider>(context).description ?? "안녕하세요 :) " + "${Emojis.smilingFaceWithSmilingEyes} " + (Provider.of<UserInfoProvider>(context).nickname ?? "") + "입니다. ",
                         style: TextStyle(
                             height: 1,
                             fontFamily: "NotoSans",

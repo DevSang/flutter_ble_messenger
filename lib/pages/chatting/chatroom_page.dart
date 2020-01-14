@@ -53,12 +53,14 @@ class ChatroomPage extends StatefulWidget {
 
     ChatroomPage({Key key, this.chatInfo, this.isLiked, this.likeCount, this.joinInfo, this.recentMessageList, this.from, this.disable, this.isCreated, this.isP2P, this.oppIdx, this.oppNick}) : super(key: key);
 
-
     @override
     State createState() => new ChatScreenState(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: joinInfo, recentMessageList: recentMessageList);
 }
 
-class ChatScreenState extends State<ChatroomPage> {
+class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
+
+	AppLifecycleState _appLifecycleState;
+
     final ChatInfo chatInfo;
     final bool isLiked;
     final int likeCount;
@@ -91,6 +93,9 @@ class ChatScreenState extends State<ChatroomPage> {
 
     // Stomp 관련
     StompClient s;
+    bool isWsConnected = false;     // WS 연결 됐는지 여부
+    Timer _wsTimer;                 // WS 접속실패 재 연결 타이머
+    int wsReconnectDelay = 2000;    // WS 재 연결시도 시간
 
     // BLE 관련
     bool _activateBeacon = false;
@@ -102,11 +107,31 @@ class ChatScreenState extends State<ChatroomPage> {
     final FocusNode focusNode = new FocusNode();
     ChatRoomNoticeInfoProvider chatRoomNoticeInfoProvider;
 
+	@override
+	void didChangeAppLifecycleState(AppLifecycleState state) {
+		_appLifecycleState = state;
+
+		if(state == AppLifecycleState.paused && ModalRoute.of(context).isCurrent){
+			// App 이 background 로 변환 될때 BLE 서비스 등 중지
+			developer.log("### App state. paused - Chat Room");
+
+
+		} else if(state == AppLifecycleState.resumed && ModalRoute.of(context).isCurrent){
+			// App 이 foreground 로 변환 될때 BLE 서비스 등 재 시작
+			developer.log("### App state. resumed - Chat Room");
+
+		}
+	}
+
     @override
     void initState() {
+	    super.initState();
+
+	    // App Lifecycle observer 등록
+	    WidgetsBinding.instance.addObserver(this);
+
         chatRoomNoticeInfoProvider = Provider.of<ChatRoomNoticeInfoProvider>(context, listen: false);
         _initState();
-        super.initState();
 
         // 입장한 사용자 중 프로필 이미지가 있는 사용자 정보 추출
         if(joinInfo != null) {
@@ -117,7 +142,8 @@ class ChatScreenState extends State<ChatroomPage> {
 
         checkAd();
         /// Stomp 초기화
-        connectStomp();
+//        connectStomp();
+        connectAndReTryStomp();
 
         disable = widget.disable ?? false;
         focusNode.addListener(onFocusChange);
@@ -149,13 +175,30 @@ class ChatScreenState extends State<ChatroomPage> {
 
     @override
     void dispose() {
-    	// 비콘 중지
+	    // App Lifecycle observer 해제
+	    WidgetsBinding.instance.removeObserver(this);
+
+	    // 서비스 모두 중지
+	    stopAllService();
+
+        super.dispose();
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-14
+     * @description : 현재 페이지 실행중인 서비스 모두 중지
+     */
+    void stopAllService() async {
+	    // 비콘 중지
 	    HwaBeacon().stopAdvertising();
 
+	    // WS 재 연결 타이머 중지
+	    if(_wsTimer != null && _wsTimer.isActive) _wsTimer.cancel();
+
 	    // WS 중지
-        s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
-        s.disconnect();
-        super.dispose();
+	    s.unsubscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString());
+	    s.disconnect();
     }
 
     /*
@@ -280,16 +323,22 @@ class ChatScreenState extends State<ChatroomPage> {
      * @date : 2019-12-22
      * @description : topic 구독
     */
-    void connectStomp() async {
+    Future<bool> connectStomp() async {
         // connect to MsgServer
         s = StompClient(Constant.CHAT_SERVER_WS, (e, e1){
-			developer.log("####### StompClient error");
-			developer.log("####### StompClient e: ${e.toString()}");
-			developer.log("####### StompClient e1: ${e1.toString()}");
+			developer.log("# WS. StompClient error");
+			return false;
         },
         onDone: (){
-	        developer.log("####### StompClient onDone");
+	        developer.log("# WS connectStomp. StompClient onDone");
+	        if(mounted) {
+		        setState(() {
+			        isWsConnected = false;
+		        });
+	        }
+	        connectAndReTryStomp();
         });
+
         await s.connectWebSocket();
         s.connectStomp();
 
@@ -297,12 +346,43 @@ class ChatScreenState extends State<ChatroomPage> {
         s.subscribe(topic: "/sub/danhwa/" + chatInfo.chatIdx.toString(), roomIdx: chatInfo.chatIdx.toString(), userIdx: Constant.USER_IDX.toString()).stream.listen((HashMap data) =>
 		        messageReceived(data),
             onDone: () {
-                developer.log("Listen Done");
+                developer.log("# WS Listen Done");
             },
             onError: (error) {
-                developer.log("Listen Error $error");
+                developer.log("# WS Listen Error $error");
             }
         );
+
+        if(mounted) {
+	        setState(() {
+		        isWsConnected = true;
+	        });
+        }
+
+        return true;
+    }
+
+    /*
+     * @author : hk
+     * @date : 2020-01-13
+     * @description : WS 연결 및 재시도
+     */
+    void connectAndReTryStomp() async {
+    	developer.log("## connectAndReTryStomp.");
+
+    	bool connected = await connectStomp();
+
+	    developer.log("## connectAndReTryStomp. connected: $connected");
+
+	    // 연결 실패하면 일정시간 후 재연결 시도
+    	if(connected == false){
+		    _wsTimer = Timer.periodic(Duration(milliseconds: wsReconnectDelay), (timer) async {
+			    bool connected = await connectStomp();
+			    if(connected) {
+				    timer.cancel();
+			    }
+		    });
+	    }
     }
 
     /*
@@ -426,6 +506,7 @@ class ChatScreenState extends State<ChatroomPage> {
 	 * @description : 단화방 파일 공유
 	 */
     Future<void> uploadContents(int type) async {
+
 	    File contentsFile;
 	    dynamic thumbNailFile;
 

@@ -102,6 +102,13 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
     }
 
     /*
+     * @author : hs
+     * @date : 2020-01-14
+     * @description : Validator
+    */
+
+
+    /*
      * @author : sh
      * @date : 2019-12-30
      * @description : 회원가입 완료 request
@@ -225,7 +232,6 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
             )
         );
     }
-
     /*
      * @author : sh
      * @date : 2019-12-30
@@ -239,13 +245,13 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 autovalidate: true,
                 focusNode: nickFocusNode,
                 autofocus: true,
-                validator: (value) {
-                    if (value.isEmpty) {
-                        return (AppLocalizations.of(context).tr('sign.signUpName.NicknameValidator'));
-                    } else if(!availNick) {
+                maxLength: 8,
+                validator: (String value) {
+                    if(!availNick) {
                         return (AppLocalizations.of(context).tr('sign.signUpName.NicknameAlready'));
+                    } else {
+                        return Validator().validateName(value);
                     }
-                    return null;
                 },
                 onChanged: (value){
                     validateNickname(value);
