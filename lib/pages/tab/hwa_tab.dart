@@ -26,6 +26,8 @@ import 'package:Hwa/data/models/chat_message.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
 import 'package:Hwa/utility/customRoute.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 
 
 /*
@@ -49,6 +51,11 @@ class HwaTab extends StatefulWidget {
  *                TickerProviderStateMixin - animation 에 사용
  */
 class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBindingObserver{
+
+	final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
+
+	FriendRequestListInfoProvider friendRequestListInfoProvider;
+
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];
@@ -74,19 +81,16 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
     // GPS 관련
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
-    Position _currentPosition;
     String _currentAddress;
 
     // 사용자 GPS, BLE 권한 관련
     bool isAllowedGPS = true;
     bool isAuthGPS = true;
-
     bool isAllowedBLE = true;
     bool isAuthBLE = true;
-
     bool isBeaconSupport = false;
-
     bool isRefreshLocation = false;
+    bool isCompleteAuth = false;
 
     // Animation 설정
     AnimationController _animationController;
@@ -98,7 +102,8 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 			// App 이 background 로 변환 될때 BLE 서비스 등 중지
 			developer.log("### App state. paused - Main");
 			stopAllService();
-		} else if(state == AppLifecycleState.resumed && ModalRoute.of(context).isCurrent){
+
+		} else if(state == AppLifecycleState.resumed && ModalRoute.of(context).isCurrent && isCompleteAuth){
 			// App 이 foreground 로 변환 될때 BLE 서비스 등 재 시작
 			developer.log("### App state. resumed - Main");
 			checkGpsBleAndStartService();
@@ -109,10 +114,23 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
     void initState() {
 	    super.initState();
 
-    	// App Lifecycle observer 등록
+	    // App Lifecycle observer 등록
 	    WidgetsBinding.instance.addObserver(this);
 
-        _initState();
+	    friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
+
+	    /*
+	     * HK : 2020-01-15
+	     * BLE, Push, Location 권한 얻고 서비스 시작
+	     * 동시다발적으로 서비스 시작할 경우 서로의 권한 요청 창이 중복되어 난잡해짐.
+	     * 개념적으로 BLE - Location - Push 차례로 권한 요청이 맞음
+	     * 하지만 Location 서비스의 버그(location return 이 너무 늦거나 안옴) 때문에
+	     * BLE - Push - Location 순서로 현재 권한 요청을 함.
+	     */
+	    Future.delayed(const Duration(milliseconds: 1500), () {
+		    checkGpsBleAndStartService();
+	    });
+
         isLoading = false;
         sameSize  = GetSameSize().main();
 
@@ -122,18 +140,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
         );
 
         _animation = Tween<double>(begin: 0.0, end: 100.0).animate(CurvedAnimation(parent: _animationController, curve: Curves.linear));
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-30
-     * @description : 내부 초기화 함수. BLE Scan 시작, 현재 내 위치 검색
-     */
-    void _initState() async {
-        // BLE Scanning API 초기화
-        bool initResult = await HwaBeacon().initializeScanning();
-
-        checkGpsBleAndStartService();
     }
 
     @override
@@ -153,30 +159,17 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @description : GPS와 BLE의 권한을 체크. 권한이 있으면 서비스 시작, 권한 없으면 권한 들어올때까지 타이머 돌며 listen
      */
     void checkGpsBleAndStartService() async {
-	    developer.log("### Main. checkGpsBleAndStartService()");
+	    developer.log("# Main. checkGpsBleAndStartService()");
 
 	    bool bleStatus = await checkBLE();
-
-	    developer.log("######## bleStatus : $bleStatus");
-
 	    if(bleStatus) startBleService();
 	    else {
 		    _bleTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
 			    bool bleStatus = await checkBLE();
 			    if(bleStatus) {
+			    	/// checkGPS, startGPS 를 startBleService 안쪽으로 이동. App 설치시 권한 어수선하게 요청 방지.
+				    /// BLE 허용 후 GPS 허용 여부 물어보게 됨
 				    startBleService();
-				    timer.cancel();
-			    }
-		    });
-	    }
-
-	    bool gpsStatus = await checkGPS();
-	    if(gpsStatus) startGpsService();
-	    else {
-		    _gpsTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
-			    bool gpsStatus = await checkGPS();
-			    if(gpsStatus) {
-				    startGpsService();
 				    timer.cancel();
 			    }
 		    });
@@ -189,7 +182,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @description : BLE, Timer, GPS 등 모든 서비스 중단
      */
     void stopAllService() async {
-
     	developer.log("### Main. stopAllService()");
 
 	    // BLE Scan stop
@@ -203,50 +195,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
             _animationController.stop();
             _animationController.reset();
         }
-
-	    // TODO gps 는?
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-30
-     * @description : 현재 위치 서비스 자체 기능 on/off, HWA APP의 위치 서비스 권한 리턴
-     */
-    Future<GeolocationStatus> getGeolocationStatus() async {
-	    GeolocationStatus geolocationStatus  = await geolocator.checkGeolocationPermissionStatus();
-	    return geolocationStatus;
-    }
-
-    /*
-     * @author : hs
-     * @date : 2019-12-29
-     * @description : BLE Scan
-    */
-    void _scanBLE() async {
-    	// 오래된 채팅방 삭제 타이머 시작
-	    startOldChatRemoveTimer();
-
-	    // 비콘 listen 위한 Stream 설정
-	    HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
-		    if (result != null && result.beacons.isNotEmpty && mounted) {
-			    result.beacons.forEach((beacon) {
-				    if (!requiredChatIdxList.contains(beacon.roomId) && !chatIdxList.contains(beacon.roomId))  {
-					    _setChatItem(beacon.roomId);
-				    } else {
-					    //해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
-					    for(ChatListItem chatItem in chatList){
-						    if(chatItem.chatIdx == beacon.roomId){
-							    chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
-							    break;
-						    }
-					    }
-				    }
-			    });
-		    }
-	    });
-
-	    // 스캔(비콘 Listen) 시작
-	    HwaBeacon().startRanging();
     }
 
     /*
@@ -277,175 +225,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 	    }
 
         requiredChatIdxList.removeWhere((item)=>item == chatIdx);
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-30
-     * @description : 타이머가 존재, 활성화 중이면 비활성화 시키기
-     */
-    timerActiveCheckAndCancel(Timer timer){
-	    if(timer != null && timer.isActive) timer.cancel();
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-30
-     * @description : 타이머가 존재하지 않고, 시작되어 있지 않으면 시작
-     */
-    timerActiveCheckAndStart(Timer timer, func){
-	    if(timer == null || !timer.isActive) timer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async {
-		    func();
-	    });
-    }
-
-    /*
-     * @author : hk
-     * @date : 2020-01-14
-     * @description : GPS 권한 체크
-     */
-    Future<bool> checkGPS() async {
-    	// 위치서비스 자체 켜져있는지
-        bool isLocationAllowed = await HwaBeacon().checkLocationService();
-        // 위치 서비스 처리
-	    if(isLocationAllowed == false) {
-		    isAllowedGPS = false;
-            isAuthGPS = false;
-
-            developer.log("# 위치서비스 자체가 꺼져있음!");
-
-		    return false;
-	    }else{
-		    isAllowedGPS = true;
-
-		    // 위치 서비스 사용 권한
-		    AuthorizationStatus authLocation = await HwaBeacon().getAuthorizationStatus();
-
-		    if(authLocation.value == "ALLOWED" || authLocation.value == "ALWAYS"){
-			    isAuthGPS = true;
-			    developer.log("# 위치서비스, 위치 권한 켜져있음!, Location search Start!");
-
-			    return true;
-		    } else{
-                isAuthGPS = false;
-			    developer.log("# 위치서비스 켜있지만, 위치 권한이 없음!");
-			    return false;
-		    }
-	    }
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-31
-     * @description : GPS 찾아서 주소 셋팅
-     */
-    void startGpsService() async {
-//        _animationController.forward();
-        _animationController.forward();
-
-        developer.log("# start GpsService!");
-        setState(() {
-            _currentAddress = AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation');
-        });
-
-	    // 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
-	    Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-
-	    // 위도, 경도로 주소지 찾기
-	    List<Placemark> placemark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
-
-	    if(placemark != null && placemark.length > 0){
-		    Placemark p = placemark[0];
-
-		    setState(() {
-			    _currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
-			    _textFieldController.text = '$_currentAddress';
-
-		    });
-	    }
-        _animationController.reset();
-        _animationController.stop();
-        developer.log("# finish GpsService!");
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-31
-     * @description : 현재 블루투스 사용 가능 여부 체크
-     */
-    Future<bool> checkBLE() async {
-	    // Bluetooth 상태 확인
-	    BluetoothState bs = await HwaBeacon().getBluetoothState();
-	    developer.log("## bs : $bs");
-
-	    BeaconStatus isBS = await HwaBeacon().checkTxSupported();
-	    developer.log("## isBS : $isBS");
-
-	    // BLE 상태 처리, TODO 현재 HwaBeacon 에서 iOS getBluetoothState 가 unknown 으로 나오는 현상 전무님이 수정중, 수정되면 App 도 적용
-//	    if(bs.value == 'STATE_ON') {
-	    if(isBS == BeaconStatus.SUPPORTED) {
-		    isAllowedBLE = true;
-		    isAuthBLE = true;
-
-		    developer.log("# 블루투스 켜져있음!");
-
-		    if(isBS != BeaconStatus.SUPPORTED) {
-			    developer.log("# 블루투스 켜져있으나 비콘 송수신을 지원하지 않음!");
-			    return false;
-		    }else{
-			    return true;
-		    }
-	    }else{
-	        setState(() {
-                isAllowedBLE = false;
-                isAuthBLE = false;
-	        });
-		    developer.log("# 블루투스 꺼져있음!");
-		    return false;
-	    }
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-31
-     * @description : 블루투스 서비스 시작. Scan start
-     */
-    void startBleService() {
-	    developer.log("# start BleService!");
-	    _scanBLE();
-    }
-
-	/*
-	 * @author : hk
-	 * @date : 2019-12-30
-	 * @description : 채팅방 삭제 타이머 동작 시작 - 1.5초마다 동작
-	 */
-    void startOldChatRemoveTimer() {
-	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
-
-	    _chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: chatItemRemoveTimerDelay), (timer) {
-            deleteOldChat();
-        });
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-30
-     * @description : 채팅방 삭제 타이머 동작 멈춤
-     */
-    void stopOldChatRemoveTimer() {
-	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
-    }
-
-    /*
-     * @author : hk
-     * @date : 2019-12-30
-     * @description : 현재 페이지에 있는 모든 타이머 스톱
-     */
-    void stopAllTimer() {
-	    timerActiveCheckAndCancel(_chatItemRemoveTimer);
-	    timerActiveCheckAndCancel(_gpsTimer);
-	    timerActiveCheckAndCancel(_bleTimer);
     }
 
     /*
@@ -539,7 +318,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
                     return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "HwaTab", isCreated: isCreated);
                 }),
             ).then((onValue) {
-                startBleService();
+	            comebackPage();
             });
 
 //            Navigator.push(context,
@@ -547,7 +326,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 //                    return ChatroomPage(chatInfo: chatInfo, isLiked: isLiked, likeCount: likeCount, joinInfo: chatJoinInfo, recentMessageList: chatMessageList, from: "HwaTab", isCreated: isCreated);
 //                })
 //            ).then((onValue) {
-//                startBleService();
+//                comebackPage();
 //            });
 
             isLoading = false;
@@ -1218,4 +997,319 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
             ),
         );
     }
+
+
+	//------------------------------------------------------------//
+	//----------------------      BLE       ----------------------//
+	//------------------------------------------------------------//
+
+	/*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : 현재 블루투스 사용 가능 여부 체크
+     */
+	Future<bool> checkBLE() async {
+		// Bluetooth 상태 확인
+		BluetoothState bs = await HwaBeacon().getBluetoothState();
+		developer.log("## bs : $bs");
+
+		// BLE 상태 처리, TODO 현재 HwaBeacon 에서 iOS getBluetoothState 가 unknown 으로 나오는 현상 전무님이 수정중, 수정되면 App 도 적용
+		if(bs.value == 'STATE_ON') {
+			isAllowedBLE = true;
+			isAuthBLE = true;
+
+			developer.log("# 블루투스 켜져있음!");
+
+			BeaconStatus isBS = await HwaBeacon().checkTxSupported();
+			developer.log("## isBS : $isBS");
+
+			if(isBS != BeaconStatus.SUPPORTED) {
+				developer.log("# 블루투스 켜져있으나 비콘 송수신을 지원하지 않음!");
+				return false;
+			}else{
+				return true;
+			}
+		}else{
+			setState(() {
+				isAllowedBLE = false;
+				isAuthBLE = false;
+			});
+			developer.log("# 블루투스 꺼져있음!");
+			return false;
+		}
+	}
+
+	/*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : 블루투스 서비스 시작. Scan start
+     */
+	void startBleService() async {
+		developer.log("# start BleService!");
+
+		bool gpsStatus = await checkGPS();
+		if(gpsStatus) {
+			firebaseCloudMessagingListeners();
+			_scanBLE();
+		}
+		else {
+			_gpsTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
+				bool gpsStatus = await checkGPS();
+				if(gpsStatus) {
+//				    startGpsService();
+					firebaseCloudMessagingListeners();
+					_scanBLE();
+					timer.cancel();
+				}
+			});
+		}
+	}
+
+	/*
+     * @author : hs
+     * @date : 2019-12-29
+     * @description : BLE Scan
+    */
+	void _scanBLE() async {
+		// 오래된 채팅방 삭제 타이머 시작
+		startOldChatRemoveTimer();
+
+		bool initResult = await HwaBeacon().initializeScanning();
+
+		if(initResult){
+			// 비콘 listen 위한 Stream 설정
+			HwaBeacon().subscribeRangingHwa().listen((RangingResult result) {
+				if (result != null && result.beacons.isNotEmpty && mounted) {
+					result.beacons.forEach((beacon) {
+						if (!requiredChatIdxList.contains(beacon.roomId) && !chatIdxList.contains(beacon.roomId))  {
+							_setChatItem(beacon.roomId);
+						} else {
+							//해당 채팅방이 존재하면 해당 채팅방의 마지막 AD 타임 기록
+							for(ChatListItem chatItem in chatList){
+								if(chatItem.chatIdx == beacon.roomId){
+									chatItem.adReceiveTs = new DateTime.now().millisecondsSinceEpoch;
+									break;
+								}
+							}
+						}
+					});
+				}
+			});
+
+			// 스캔(비콘 Listen) 시작
+			HwaBeacon().startRanging();
+		}
+	}
+
+
+	//------------------------------------------------------------//
+	//----------------------      GPS       ----------------------//
+	//------------------------------------------------------------//
+
+	/*
+     * @author : hk
+     * @date : 2020-01-14
+     * @description : GPS 권한 체크
+     */
+	Future<bool> checkGPS() async {
+		// 위치서비스 자체 켜져있는지
+		bool isLocationAllowed = await HwaBeacon().checkLocationService();
+
+		// 위치 서비스 처리
+		if(isLocationAllowed == false) {
+			isAllowedGPS = false;
+			isAuthGPS = false;
+
+			developer.log("# 위치서비스 자체가 꺼져있음!");
+
+			return false;
+		}else{
+			isAllowedGPS = true;
+
+			// 위치 서비스 사용 권한
+//		    AuthorizationStatus authLocation = await HwaBeacon().getAuthorizationStatus();
+//		    GeolocationStatus geolocationStatus  = await geolocator.checkGeolocationPermissionStatus();
+
+//		    if(authLocation.value == "ALLOWED" || authLocation.value == "ALWAYS"){
+//		    if(geolocationStatus.value == GeolocationPermission.locationAlways.value || geolocationStatus.value == GeolocationPermission.locationWhenInUse.value){
+			if(true){
+				isAuthGPS = true;
+				developer.log("# 위치서비스, 위치 권한 켜져있음!, Location search Start!");
+
+				return true;
+			} else {
+				isAuthGPS = false;
+				developer.log("# 위치서비스 켜있지만, 위치 권한이 없음!");
+//			    return false;
+				return true;
+			}
+		}
+	}
+
+	/*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : GPS 찾아서 주소 셋팅
+     */
+	void startGpsService() async {
+		_animationController.forward();
+
+		developer.log("# start GpsService!");
+
+		setState(() {
+			_currentAddress = AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation');
+		});
+
+		// 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
+		Position position = await geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+
+		if(position != null){
+			// 위도, 경도로 주소지 찾기
+			List<Placemark> placeMark = await geolocator.placemarkFromCoordinates(position.latitude, position.longitude);
+
+			if(placeMark != null && placeMark.length > 0){
+				Placemark p = placeMark[0];
+
+				setState(() {
+					_currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
+					_textFieldController.text = '$_currentAddress';
+
+				});
+			}
+		}
+
+		_animationController.reset();
+		_animationController.stop();
+
+		isCompleteAuth = true;
+
+		developer.log("# finish GpsService!");
+	}
+
+
+	//-----------------------------------------------------------------//
+	//----------------------      Firebase       ----------------------//
+	//-----------------------------------------------------------------//
+
+    /*
+    * @author : hk
+    * @date : 2019-12-21
+    * @description : FCM listener
+    */
+    void firebaseCloudMessagingListeners() async {
+	    _firebaseMessaging.configure(
+		    onMessage: (Map<String, dynamic> message) async {
+			    developer.log('# on message $message');
+			    dynamic data = message['data'];
+
+			    ///친구요청 push message 이면
+			    if(data['request_idx'] != null){
+				    developer.log('# Add friend reuqest : $data');
+				    friendRequestListInfoProvider.addFriendRequest(data);
+			    }
+		    },
+		    onResume: (Map<String, dynamic> message) async {
+			    developer.log('# on resume $message');
+		    },
+		    onLaunch: (Map<String, dynamic> message) async {
+			    developer.log('# on launch $message');
+		    },
+	    );
+
+	    // 푸시 권한 획득 및 token 저장
+	    await _firebaseMessaging.requestNotificationPermissions(IosNotificationSettings(sound: true, badge: true, alert: true));
+
+	    addFirebasePushToken();
+
+        // GPS 서비스 순차적으로 실행
+	    startGpsService();
+    }
+
+    /*
+     * @author : sh
+     * @date : 2020-01-08
+     * @description : 푸쉬토큰 서버에 저장
+     */
+    void addFirebasePushToken() async {
+	    _firebaseMessaging.getToken().then((token) async {
+		    callPushTokenRequest(token.toString());
+	    });
+    }
+
+    /*
+     * @author : sh
+     * @date : 2019-12-30
+     * @description : Save push token function
+     */
+    void callPushTokenRequest(String pushToken) async {
+	    try {
+		    String url = "/api/v2/user/push_token?push_token=" + pushToken;
+		    final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
+		    if(response != null){
+			    developer.log("# Push token 저장에 성공하였습니다.");
+		    } else {
+			    developer.log('#Request failed：${response.statusCode}');
+		    }
+	    } catch (e) {
+		    developer.log('#Request failed：${e}');
+	    }
+    }
+
+
+	//--------------------------------------------------------------//
+	//----------------------      Timer       ----------------------//
+	//--------------------------------------------------------------//
+
+	/*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 타이머가 존재, 활성화 중이면 비활성화 시키기
+     */
+	timerActiveCheckAndCancel(Timer timer){
+		if(timer != null && timer.isActive) timer.cancel();
+	}
+
+	/*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 타이머가 존재하지 않고, 시작되어 있지 않으면 시작
+     */
+	timerActiveCheckAndStart(Timer timer, func){
+		if(timer == null || !timer.isActive) timer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async {
+			func();
+		});
+	}
+
+	/*
+	 * @author : hk
+	 * @date : 2019-12-30
+	 * @description : 채팅방 삭제 타이머 동작 시작 - 1.5초마다 동작
+	 */
+	void startOldChatRemoveTimer() {
+		timerActiveCheckAndCancel(_chatItemRemoveTimer);
+
+		_chatItemRemoveTimer = Timer.periodic(Duration(milliseconds: chatItemRemoveTimerDelay), (timer) {
+			deleteOldChat();
+		});
+	}
+
+	/*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 채팅방 삭제 타이머 동작 멈춤
+     */
+	void stopOldChatRemoveTimer() {
+		timerActiveCheckAndCancel(_chatItemRemoveTimer);
+	}
+
+	/*
+     * @author : hk
+     * @date : 2019-12-30
+     * @description : 현재 페이지에 있는 모든 타이머 스톱
+     */
+	void stopAllTimer() {
+		timerActiveCheckAndCancel(_chatItemRemoveTimer);
+		timerActiveCheckAndCancel(_gpsTimer);
+		timerActiveCheckAndCancel(_bleTimer);
+	}
 }

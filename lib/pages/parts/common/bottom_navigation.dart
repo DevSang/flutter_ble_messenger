@@ -2,15 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
-
+import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 import 'package:Hwa/pages/tab/chat_tab.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:Hwa/pages/tab/hwa_tab.dart';
 import 'package:Hwa/utility/get_same_size.dart';
 import 'package:Hwa/pages/profile/profile_page.dart';
-import 'package:Hwa/pages/trend/trend_page.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
-import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 
 
 final hwaTabStateKey = new GlobalKey<HwaTabState>();
@@ -43,6 +41,8 @@ class _BottomNavigationState extends State<BottomNavigation>{
 
     @override
     void initState() {
+	    super.initState();
+
 		_currentIndex = widget.activeIndex ?? 0;
 
         list
@@ -51,8 +51,6 @@ class _BottomNavigationState extends State<BottomNavigation>{
             ..add(new ChatTab( setCurrentIndex:setCurrentIndex));
 
         sameSize  = GetSameSize().main();
-
-        super.initState();
     }
 
     /*
@@ -60,13 +58,18 @@ class _BottomNavigationState extends State<BottomNavigation>{
     * @date : 2020-01-01
     * @description : bottom navigation
     */
-    setCurrentIndex(int index) {
+	void setCurrentIndex(int index) {
         setState(() {
             _currentIndex = index;
         });
     }
 
-    displayDialog(){
+    /*
+     * @author : hk
+     * @date : 2020-01-14
+     * @description : hwaTab 단화방 만들기 함수 연동
+     */
+	void displayDialog(){
 		hwaTabStateKey.currentState.displayDialog();
     }
 
@@ -75,11 +78,12 @@ class _BottomNavigationState extends State<BottomNavigation>{
      * @date : 2020-01-06
      * @description : appBar title 설정
      */
-    getAppBarTitle(context){
+	String getAppBarTitle(context){
     	if(_currentIndex == 0) return AppLocalizations.of(context).tr('tapMenuTitle.hwa');
     	if(_currentIndex == 1) return AppLocalizations.of(context).tr('tapMenuTitle.friend');
     	if(_currentIndex == 2) return AppLocalizations.of(context).tr('tapMenuTitle.chat');
     }
+
 
     @override
     Widget build(BuildContext context) {
