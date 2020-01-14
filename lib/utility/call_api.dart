@@ -49,7 +49,7 @@ class CallApi {
         } else {
 	        int errorCode = jsonDecode(response.body)['errorCode'];
             ///Expired token 처리
-            if(errorCode == 12){
+            if(errorCode == 11){
                 developer.log("# Token expired");
 
                 bool isUpdateSuccess = await updateExpiredToken();
