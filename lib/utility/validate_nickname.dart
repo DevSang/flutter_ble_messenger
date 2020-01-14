@@ -7,7 +7,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as developer;
 
-import 'package:provider/provider.dart';
 
 
 /*
@@ -22,9 +21,9 @@ class ValidateNickname {
      * @date : 2020-01-14
      * @description : 닉네임 모든 요소 체크
     */
-    Future<bool> nickAllFactCheck(String nick) async {
+    Future<bool> nickAllFactCheck(String nick, String myNick) async {
         if (checkLength(nick)) {
-            if (await checkAlreadyUsed(nick)) {
+            if (await checkAlreadyUsed(nick, myNick)) {
                 // TODO Validator 적용
                 if (Validator.validateName(nick)) {
                     return true;
@@ -44,10 +43,9 @@ class ValidateNickname {
      * @date : 2020-01-14
      * @description : 닉네임 이미 사용 여부 체크
     */
-    Future<bool> checkAlreadyUsed(String nick) async {
-//        String nowNick = Provider.of<UserInfoProvider>(context, listen: false);
+    Future<bool> checkAlreadyUsed(String nick, String myNick) async {
 
-//        if (nick != nowNick) {
+        if (nick != myNick) {
             final response = await http.get("https://api.hwaya.net/api/v2/auth/A03-Nickname?nickname=$nick");
             String jsonResult = jsonDecode(response.body).toString();
 
@@ -59,9 +57,9 @@ class ValidateNickname {
                 developer.log("# Invalid nickname");
                 return false;
             }
-//        } else {
-//            return true;
-//        }
+        } else {
+            return true;
+        }
     }
 
     /*

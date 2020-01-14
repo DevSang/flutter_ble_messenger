@@ -125,6 +125,19 @@ class UserInfoProvider with ChangeNotifier{
     }
 
     /*
+     * @author : hs
+     * @date : 2020-01-14
+     * @description : 사용자 프로필 정보 변경
+    */
+    setProfile(Map profileInfo) {
+        this.updateTs  = profileInfo['update_ts'];
+        this.profilePictureIdx =  profileInfo['jb_user_info']['profile_picture_idx'];
+        this.profileURL =  profileInfo['profileURL'];
+        this.nickname =  profileInfo['jb_user_info']['nickname'];
+        this.description =  profileInfo['jb_user_info']['description'];
+    }
+
+    /*
      * @author : hk
      * @date : 2020-01-10
      * @description : 사용자 프로필 이미지 return, 없으면 기본 이미지
