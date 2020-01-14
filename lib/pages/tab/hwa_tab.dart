@@ -45,7 +45,6 @@ class HwaTab extends StatefulWidget {
 }
 
 class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
-
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
     List<int> chatIdxList = <int>[];

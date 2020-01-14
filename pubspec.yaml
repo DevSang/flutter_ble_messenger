@@ -139,6 +139,7 @@ flutter:
     #Icon Image
     - assets/images/icon/appIcon.jpg
     - assets/images/icon/appIcon2.png
+    - assets/images/icon/cardProfileset.png
     - assets/images/icon/crown.png
     - assets/images/icon/editButton.png
     - assets/images/icon/error.png
@@ -194,6 +195,7 @@ flutter:
     - assets/images/icon/navIconWrite.png
     - assets/images/icon/personIconColor.png
     - assets/images/icon/personIconGrey.png
+    - assets/images/icon/personIconProfileset.png
     - assets/images/icon/photoProfileDefault.png
     - assets/images/icon/profile.png
     - assets/images/icon/profileSeticonBasic.png

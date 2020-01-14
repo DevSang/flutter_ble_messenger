@@ -13,16 +13,21 @@ import 'package:Hwa/pages/parts/common/loading.dart';
 import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/custom_switch.dart';
 import 'package:Hwa/utility/get_same_size.dart';
-import 'package:Hwa/utility/custom_dialog.dart';
+import 'package:Hwa/utility/profile_dialog.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:Hwa/utility/validators.dart';
 
 
+/*
+ * @project : HWA - Mobile
+ * @author : hs
+ * @date : 2020-01-14
+ * @description : Profile Setting Page
+ */
 class ProfilePage extends StatefulWidget {
-  @override
-  _ProfilePageState createState() => _ProfilePageState();
+    @override
+    _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State <ProfilePage>{
@@ -32,9 +37,6 @@ class _ProfilePageState extends State <ProfilePage>{
     bool isSwitched = true;
     double sameSize = GetSameSize().main();
 
-    String nickName;
-    String intro;
-    String phoneNum;
     bool allowedPush;
     bool allowedFriend;
 
@@ -84,9 +86,6 @@ class _ProfilePageState extends State <ProfilePage>{
             Map<String, dynamic> profile = jsonParse['data'];
 
             setState(() {
-                nickName = profile['nickname'];
-                intro = profile['description'];
-                phoneNum = profile['phone_number'];
                 allowedPush = profile['is_push_allowed'];
                 allowedFriend = profile['is_friend_request_allowed'];
             });
@@ -108,8 +107,8 @@ class _ProfilePageState extends State <ProfilePage>{
                 method: HTTP_METHOD.put,
                 url: uri,
                 data: {
-                    "nickname" : nickName,
-                    "description" : intro,
+                    "nickname" : Provider.of<UserInfoProvider>(context).nickname,
+                    "description" : Provider.of<UserInfoProvider>(context).description,
                     "is_push_allowed"  : allowedPush,
                     "is_friend_request_allowed" : allowedFriend
                 }
@@ -325,7 +324,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             bottom: ScreenUtil().setWidth(8)
                         ),
                         child: Text(
-                            nickName ?? "",
+                            Provider.of<UserInfoProvider>(context).nickname ?? "",
                             style: TextStyle(
                                 height: 1,
                                 fontFamily: "NotoSans",
@@ -336,7 +335,7 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Text(
-                        intro ?? "안녕하세요 :) " + (nickName ?? "") + "입니다. ",
+                        Provider.of<UserInfoProvider>(context).description ?? "안녕하세요 :) " + (Provider.of<UserInfoProvider>(context).nickname ?? "") + "입니다. ",
                         style: TextStyle(
                             height: 1,
                             fontFamily: "NotoSans",
@@ -361,9 +360,22 @@ class _ProfilePageState extends State <ProfilePage>{
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
             GestureDetector(
-                 onTap: (){
-                     print("Container Clicked");
-                        },
+                onTap: (){
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => ProfileDialog(
+                            nickName: Provider.of<UserInfoProvider>(context).nickname,
+                            intro: Provider.of<UserInfoProvider>(context).description,
+                            leftButtonText: (AppLocalizations.of(context).tr('profile.cancel')),
+                            rightButtonText: (AppLocalizations.of(context).tr('save')),
+                            profileImgIdx: Provider.of<UserInfoProvider>(context).profilePictureIdx,
+                            // TODO : 명함 불러오기
+//                            bCImgIdx: ,
+                        ),
+                    ).then((onValue) {
+
+                    });
+                },
                 child: Container(
                     width: ScreenUtil().setWidth(28.5),
                     height: ScreenUtil().setWidth(28.5),
@@ -397,7 +409,7 @@ class _ProfilePageState extends State <ProfilePage>{
                 children: <Widget>[
                     buildSettingHeader((AppLocalizations.of(context).tr('profile.profile'))),
 
-                    buildTextInfoItem((AppLocalizations.of(context).tr('profile.phoneNumber')), phoneNum),
+                    buildTextInfoItem((AppLocalizations.of(context).tr('profile.phoneNumber')), Provider.of<UserInfoProvider>(context).phoneNumber),
 
                     buildTextItem((AppLocalizations.of(context).tr('profile.bncardManage')), "", () {})
                 ]
@@ -429,7 +441,6 @@ class _ProfilePageState extends State <ProfilePage>{
                             });
                         }
                     ),
-
                     buildSwitchItem(
                         (AppLocalizations.of(context).tr('profile.friendAllow')),
                         allowedFriend,
@@ -581,19 +592,7 @@ class _ProfilePageState extends State <ProfilePage>{
                             ],
                         ),
                         onTap: (){
-                            showDialog(
-                                context: context,
-                                builder: (BuildContext context) => CustomDialog(
-                                    title: title,
-                                    type: 1,
-                                    leftButtonText: (AppLocalizations.of(context).tr('profile.cancel')),
-                                    rightButtonText: (AppLocalizations.of(context).tr('save')),
-                                    value: value,
-                                    hintText: value == null ? (AppLocalizations.of(context).tr('profile.textIntroduce')) : ""
-                                ),
-                            ).then((onValue) {
-                                if (fn != null && onValue != null) fn(onValue);
-                            });
+                            if (fn != null) fn();
                         },
                     )
                 ],

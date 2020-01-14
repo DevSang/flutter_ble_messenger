@@ -74,7 +74,7 @@ class HereWeAreApp extends StatelessWidget {
 			     	data: data,
 	            child: MaterialApp(
 		            title: 'HWA',
-		            theme: ThemeData.light(),
+		            theme: ThemeData(fontFamily: 'NotoSans'),
 		            home: HomePage(),
                     navigatorKey: Catcher.navigatorKey,
 		            debugShowCheckedModeBanner: false,

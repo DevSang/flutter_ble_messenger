@@ -32,8 +32,6 @@ class TabAppBar extends StatefulWidget implements PreferredSizeWidget {
 }
 
 class TabAppBarState extends State<TabAppBar> {
-    UserInfoProvider userInfoProvider;
-
     final String title;
     final Widget leftChild;
     SharedPreferences SPF;
@@ -50,8 +48,6 @@ class TabAppBarState extends State<TabAppBar> {
 
     @override
     void initState() {
-        userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
-
         super.initState();
     }
 
