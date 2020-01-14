@@ -165,8 +165,8 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                 'user_idx': friendInfo.user_idx,
                 'nickname': friendInfo.nickname,
                 'phone_number': friendInfo.phone_number,
-                'profile_picture_idx': friendInfo.profile_picture_idx,
-                'business_card_idx': friendInfo.business_card_idx,
+                'profile_picture_idx': friendInfo.profile_picture_idx.toString() ?? "0",
+                'business_card_idx': friendInfo.business_card_idx.toString() ?? "0",
                 'user_status': friendInfo.user_status
             });
             friendRequestListInfoProvider.removeFriendRequest(friendInfo.req_idx);

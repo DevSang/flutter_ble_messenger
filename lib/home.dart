@@ -38,6 +38,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
     UserInfoProvider userInfoProvider;
     FriendRequestListInfoProvider friendRequestListInfoProvider;
+    FriendListInfoProvider friendListInfoProvider;
     static FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
     SharedPreferences _sharedPreferences;
@@ -48,6 +49,7 @@ class HomePageState extends State<HomePage> {
     @override
     void initState() {
         userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
+        friendListInfoProvider = Provider.of<FriendListInfoProvider>(context, listen: false);
         friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
 
         initApp(context);
@@ -106,11 +108,18 @@ class HomePageState extends State<HomePage> {
                 developer.log('# on message $message');
                 dynamic data = message['data'];
 
-                ///친구요청 push message 이면
-                if(data['request_idx'] != null){
-                    developer.log('# Add friend reuqest : $data');
-                    friendRequestListInfoProvider.addFriendRequest(data);
+                if(data != null){
+                    ///친구요청 push message 이면
+                    if(data['request_idx'] != null){
+                        developer.log('# Add friend reuqest : $data');
+                        friendRequestListInfoProvider.addFriendRequest(data);
+                    }
+                    ///친구수락 push message 이면
+                    else {
+                        friendListInfoProvider.addFriend(data);
+                    }
                 }
+
             },
             onResume: (Map<String, dynamic> message) async {
                 developer.log('on resume $message');
@@ -144,7 +153,6 @@ class HomePageState extends State<HomePage> {
             .listen((IosNotificationSettings settings) {
         });
     }
-
     /*
      * @author : sh
      * @date : 2019-12-30
@@ -156,6 +164,7 @@ class HomePageState extends State<HomePage> {
             final response = await CallApi.commonApiCall(method: HTTP_METHOD.post, url: url);
             if(response != null){
                 developer.log("# Push token 저장에 성공하였습니다.");
+                developer.log("# Push token : " + pushToken );
             } else {
                 developer.log('#Request failed：${response.statusCode}');
             }
