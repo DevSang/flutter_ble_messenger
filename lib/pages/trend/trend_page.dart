@@ -108,7 +108,7 @@ class _TrendPageState extends State<TrendPage> {
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
             Map<String, dynamic> jsonParse = json.decode(response.body);
-
+            print(response.body);
             // 단화방 입장
             _enterChat(jsonParse);
 

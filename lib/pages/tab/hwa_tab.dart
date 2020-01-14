@@ -134,7 +134,8 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
      * @description : GPS와 BLE의 권한을 체크. 권한이 있으면 서비스 시작, 권한 없으면 권한 들어올때까지 타이머 돌며 listen
      */
     void checkGpsBleAndStartService() async {
-	    bool gpsStatus = await checkGPS();
+
+        bool gpsStatus = await checkGPS();
 	    if(gpsStatus) startGpsService();
 	    else {
 		    _gpsTimer = Timer.periodic(Duration(milliseconds: permitTimerDelay), (timer) async{
@@ -755,7 +756,6 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                     child:Text(
                                         titleText,
                                         style: TextStyle(
-                                            fontFamily: 'NotoSans',
                                             color: Color(0xff272727),
                                             fontSize: ScreenUtil().setSp(20),
                                             fontWeight: FontWeight.w700,
@@ -867,8 +867,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                       (AppLocalizations.of(context).tr('tabNavigation.hwa.location.nowLocation')),
                                       style: TextStyle(
                                             height: 1,
-                                            fontFamily: "NotoSans",
-                                            fontWeight: FontWeight.w400,
+                                                                                        fontWeight: FontWeight.w400,
                                             fontSize: ScreenUtil().setSp(13),
                                             color: Color.fromRGBO(107, 107, 107, 1),
                                             letterSpacing: ScreenUtil().setWidth(-0.33),
@@ -903,12 +902,11 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                                 maxHeight: ScreenUtil().setHeight(40)
                                             ),
                                             child: Text(
-                                                _currentAddress != null ? '$_currentAddress' : '위치 검색 중 ',
+                                                _currentAddress != null ? '$_currentAddress' : AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                                 style: TextStyle(
                                                     height: 1,
-                                                    fontFamily: "NotoSans",
                                                     fontWeight: FontWeight.w400,
                                                     fontSize: ScreenUtil().setSp(15),
                                                     color: Color.fromRGBO(39, 39, 39, 1),

@@ -26,6 +26,8 @@ enum HTTP_METHOD {
 }
 
 class CallApi {
+    static int retryCount = 0;
+
     static setData(Map data) {
         if (data == null) {
             return {};
@@ -39,14 +41,105 @@ class CallApi {
 	    developer.log("#Data : " + data.toString());
     }
 
-    static setResponse(http.Response response){
+    static setResponse(http.Response response, HTTP_METHOD method, String url, Map data, String prefixUrl) async {
         var statusCode = response.statusCode.toString();
+        int errorCode = jsonDecode(response.body)['errorCode'];
 
         if(statusCode.indexOf("20") > -1) {
             return response;
         } else {
-            developer.log("# [Error] Status Code :" + statusCode);
-            return null;
+            ///Expired token 처리
+            if(errorCode == 12){
+                developer.log("# Token expired");
+
+                bool isUpdateSuccess = await updateExpiredToken();
+
+                if(isUpdateSuccess){
+                    await reTryCallApi(method, url, data, prefixUrl);
+                } else {
+                    developer.log("# [Error] Refresh token failed.");
+                    //TODO logout처리?????
+                }
+            } else {
+                developer.log("# [Error] Status Code :" + statusCode);
+                return null;
+            }
+        }
+    }
+
+    /*
+     * @author : sh
+     * @date : 2020-01-12
+     * @description : accessToken 만료 되었을때 업데이트 해주기
+     */
+    static updateExpiredToken () async {
+        SharedPreferences spf = await Constant.getSPF();
+        Map userInfo = jsonDecode(spf.getString('userInfo'));
+        String refreshToken = userInfo['refreshToken'];
+
+        String url = Constant.API_SERVER_HTTP+"/api/v2/auth/A07-RefreshToken";
+
+        final response = await http.get(url,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-Authorization': "Bearer " +refreshToken,
+            }
+        );
+
+        if (response.statusCode == 200) {
+            String token = jsonDecode(response.body)['data']['token'];
+            refreshToken = jsonDecode(response.body)['data']['refreshToken'];
+
+            ///SPF token, refreshToken 저장
+            userInfo['token'] = token;
+            userInfo['refreshToken'] = refreshToken;
+            spf.setString("userInfo", jsonEncode(userInfo));
+
+            ///Constant Header 설정
+            Constant.HEADER = {
+                'Content-Type': 'application/json',
+                'X-Authorization': 'Bearer ' + token
+            };
+
+            developer.log("# Refreshed token and setting Constant.header, SPF.");
+            return true;
+        }
+
+        ///실패했을때 다시 시도 (5번까지)
+        if(retryCount < 5){
+            retryCount ++;
+            Future.delayed(Duration(milliseconds: 1000));
+
+            developer.log("# Retry refresh the accessToken.");
+            developer.log("# Retry count : " + retryCount.toString());
+
+            await updateExpiredToken();
+        }
+
+        return false;
+    }
+
+    /*
+     * @author : sh
+     * @date : 2020-01-12
+     * @description : 실패한 api 다시 요청
+     */
+    static reTryCallApi (HTTP_METHOD method, String url, Map data, String prefixUrl) async {
+        developer.log("# Retry call api :" + url);
+
+        switch(prefixUrl) {
+            case "https://api.hwaya.net": commonApiCall(method: method, url: url, data: data);
+            break;
+
+            case "wss://msg.hwaya.net/danhwa": messageApiCall(method: method, url: url, data: data);
+            break;
+
+            case "https://msg.hwaya.net": chattingApiCall(method: method, url: url, data: data);
+            break;
+
+            default: { developer.log("# Invalid API"); }
+            break;
         }
     }
 
@@ -140,21 +233,21 @@ class CallApi {
         var prefixUrl = Constant.API_SERVER_HTTP;
         logRequest(prefixUrl, method.toString(), url, setData(data));
         var response = await setHttpCallType(prefixUrl, method.toString(), url, setData(data));
-        return await setResponse(response);
+        return await setResponse(response, method, url, data, prefixUrl);
     }
 
     static messageApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
         var prefixUrl = Constant.CHAT_SERVER_HTTP;
         logRequest(prefixUrl, method.toString(), url, setData(data));
         var response = await setHttpCallType(prefixUrl, method.toString(), url, setData(data));
-        return await setResponse(response);
+        return await setResponse(response, method, url, data, prefixUrl);
     }
 
     static chattingApiCall({ @required HTTP_METHOD method, @required String url, Map data}) async {
         var prefixUrl = Constant.CHAT_SERVER_WS;
         logRequest(prefixUrl, method.toString(), url, setData(data));
         var response = await setHttpCallType(prefixUrl, method.toString(), url, setData(data));
-        return await setResponse(response);
+        return await setResponse(response, method, url, data, prefixUrl);
     }
 
     static setHttpCallType(prefixUrl, method, url, data) async {

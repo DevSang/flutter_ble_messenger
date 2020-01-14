@@ -155,14 +155,17 @@ class NoticeDetailPageState extends State<NoticeDetailPage> {
                                     margin: EdgeInsets.only(
                                         right: ScreenUtil().setWidth(11)
                                     ),
-                                    child: FadeInImage(
-                                        width: ScreenUtil().setHeight(40),
-                                        height: ScreenUtil().setHeight(40),
-                                        placeholder: AssetImage("assets/images/icon/profile.png"),
-                                        image: widget.notice.profile_picture_idx == null ? Image.asset("assets/images/icon/profile.png")
-                                            : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + widget.notice.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
-                                        fit: BoxFit.cover,
-                                        fadeInDuration: Duration(milliseconds: 1)
+                                    child:ClipRRect(
+                                        borderRadius: new BorderRadius.circular(ScreenUtil().setWidth(70)),
+                                        child: FadeInImage(
+                                            width: ScreenUtil().setHeight(40),
+                                            height: ScreenUtil().setHeight(40),
+                                            placeholder: AssetImage("assets/images/icon/profile.png"),
+                                            image: widget.notice.profile_picture_idx == null ? AssetImage("assets/images/icon/profile.png")
+                                                : CachedNetworkImageProvider(Constant.API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + widget.notice.user_idx.toString() + "&type=SMALL", headers: Constant.HEADER),
+                                            fit: BoxFit.cover,
+                                            fadeInDuration: Duration(milliseconds: 1)
+                                        )
                                     )
                                 ),
                                 Container(

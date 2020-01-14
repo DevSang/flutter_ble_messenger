@@ -232,8 +232,9 @@ class _SignInPageState extends State<SignInPage> {
 
         if(_phoneController.text == '' ){
             developer.log("# Phone number is empty.");
-            RedToast.toast("휴대폰 번호를 입력해주세요.", ToastGravity.TOP);
+            RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.inputPhone'), ToastGravity.TOP);
         } else {
+            _authCodeController.text = '';
             FocusScope.of(context).requestFocus(new FocusNode());
             developer.log("# Requerst phone number : " + _phoneController.text);
             String url = "https://api.hwaya.net/api/v2/auth/A05-SignInAuth";
@@ -279,6 +280,9 @@ class _SignInPageState extends State<SignInPage> {
             if(_authCodeController.text == ''){
                 developer.log("# Auth code is empty.");
                 RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.inputCode'), ToastGravity.TOP);
+            } else if (_phoneController.text == ''){
+                developer.log("# Auth code is not empty but phonenumber is empty.");
+                RedToast.toast(AppLocalizations.of(context).tr('sign.signIn.toast.inputPhone'), ToastGravity.TOP);
             } else {
                 developer.log("# Auth number : " + _authCodeController.text);
                 String url = "https://api.hwaya.net/api/v2/auth/A06-SignInSmsAuth";

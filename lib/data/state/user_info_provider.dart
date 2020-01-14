@@ -32,8 +32,6 @@ class UserInfoProvider with ChangeNotifier{
     int profilePictureIdx;
     String nickname;
     String description;
-    String token;
-    String refreshToken;
     String countryCode;
     CachedNetworkImage cacheProfileImg;
 
@@ -55,7 +53,6 @@ class UserInfoProvider with ChangeNotifier{
         ,this.updateTs
         ,this.profileURL
         ,this.nickname
-        ,this.token
         ,this.countryCode
     });
 
@@ -85,7 +82,7 @@ class UserInfoProvider with ChangeNotifier{
 
         if(spf.getString('userInfo') != null) {
             Map userInfo = jsonDecode(spf.getString('userInfo'));
-
+            String token = userInfo['token'];
             setValue(userInfo);
 
             ///Constant 설정
@@ -124,8 +121,6 @@ class UserInfoProvider with ChangeNotifier{
         this.profileURL =  info['profileURL'];
         this.nickname =  info['jb_user_info']['nickname'];
         this.description =  info['jb_user_info']['description'];
-        this.token =  info['token'];
-        this.refreshToken =  info['refreshToken'];
         this.countryCode =  info['country_code'];
     }
 
@@ -136,6 +131,15 @@ class UserInfoProvider with ChangeNotifier{
      */
     Widget getUserProfileImg() {
     	return cacheProfileImg ?? Image.asset('assets/images/icon/profile.png', fit: BoxFit.cover);
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-14
+     * @description : 사용자 프로필 이미지 return, 없어도 기본 이미지 반환 X
+    */
+    Widget getUserProfileImgNotDefault() {
+        return cacheProfileImg;
     }
 
     /*
@@ -164,5 +168,4 @@ class UserInfoProvider with ChangeNotifier{
 	    await DefaultCacheManager().removeFile(profileURL);
 	    notifyListeners();
     }
-
 }
