@@ -10,25 +10,15 @@ import 'package:fluttertoast/fluttertoast.dart';
  */
 class Validator {
     // 정규표현식 (한글 완성, 특수문자, 공백)
-    static String pattern = '[\s|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|(\₩;\-=+,_#\/\?:^\$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》)|(ㄱ-ㅎ)]';
+//    static String pattern = '[\s|ㄱ-ㅎ|ㅏ-ㅣ|가-힣|(\₩;\-=+,_#\/\?:^\$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》)|(ㄱ-ㅎ)]';
 
 
-    String validateName(String value) {
-        RegExp regExp =  RegExp(pattern);
-        if (value.isEmpty) {
-//            RedToast.toast("이름을 입력하세요.", ToastGravity.TOP);
-            return "이름을 입력하세요.";
-        } else if (value.length < 2) {
-//            RedToast.toast("이름을 한 글자 이상 입력하세요.", ToastGravity.TOP);
-            return "이름을 한 글자 이상 입력하세요.";
-        } else if (value.length  > 8) {
-//            RedToast.toast("이름은 8자까지 입력할 수 있습니다.", ToastGravity.TOP);
-            return "이름은 8자까지 입력할 수 있습니다.";
-        } else if (!regExp.hasMatch(value)) {
-//            RedToast.toast("사용할 수 있는 닉네임입니다.", ToastGravity.TOP);
-            return "사용할 수 있는 닉네임입니다.";
+    bool validateName(String value) {
+        RegExp regExp =  RegExp(r'^[a-zA-Z0-9]+$');
+        if (regExp.hasMatch(value)) {
+            return true;
         } else {
-            return null;
+            return false;
         }
     }
 }

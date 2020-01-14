@@ -628,12 +628,7 @@ class _SignInPageState extends State<SignInPage> {
                         ),
                         onTap: () {
                             developer.log('# [Navigator] SignInPage -> SignUpPage');
-//                            Navigator.pushNamed(context, '/register');
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                                    return SignUpNamePage();
-                                })
-                            );
+                            Navigator.pushNamed(context, '/register');
                         },
                     )
                 ],
