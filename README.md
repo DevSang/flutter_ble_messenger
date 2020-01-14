@@ -47,12 +47,13 @@ pod install
     contacts_service:               # MIT LICENSE
     simple_animations:              # MIT LICENSE
     js:                             # ?
-    
+    emojis:                         # BSD3 LICENSE    
 ### LICENSE
 
 * MIT License: BSD 라이선스를 기초로 MIT 대학에서 제정. MIT 라이선스를 따르는 소프트웨어 사용하여 개발 시, 만든 개발품을 꼭 오픈소스로 해야 할 필요는 없음. 물론 소스코드 공개 의무도 없음. 
 * Apache License: 아파치 소프트웨어 재단에서 제정. 소스코드 공개 의무 없음. 단, 아파치 라이선스 사용을 밝혀야 함. BSD보다 좀더 완화된 내용. 
 * BSD License: 버클리 캘리포니아 대학에서 제정. BSD 자체가 공공공기관에 만든 것이므로 공공환원의 의도가 강해서 저작권 및 라이선스 명시 이외엔 아무 제약이 없이 사용 가능한 자유로운 라이선스  
+* BSD3 License: 재배포시 저작권 표시, 준수 조건 및 보증부인에 대한 고지사항을 소스코드 또는 문서 및 기타 자료에 포함. 최초개발자나 기여자의 이름을 제품에 대한 보증이나 홍보에 사용하지 못함
 
 ## Reference
 1. Flutter CI/CD

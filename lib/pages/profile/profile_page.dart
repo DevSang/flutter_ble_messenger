@@ -18,6 +18,7 @@ import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:Hwa/utility/validators.dart';
+import 'package:Hwa/utility/emojis/emojis.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -336,7 +337,7 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Text(
-                        intro ?? "안녕하세요 :) " + (nickName ?? "") + "입니다. ",
+                        intro ?? "안녕하세요 " + "${Emojis.smilingFaceWithSmilingEyes} " + (nickName ?? "") + "입니다. ",
                         style: TextStyle(
                             height: 1,
                             fontFamily: "NotoSans",
@@ -589,8 +590,8 @@ class _ProfilePageState extends State <ProfilePage>{
                                     leftButtonText: (AppLocalizations.of(context).tr('profile.cancel')),
                                     rightButtonText: (AppLocalizations.of(context).tr('save')),
                                     value: value,
-                                    hintText: value == null ? (AppLocalizations.of(context).tr('profile.textIntroduce')) : ""
-                                ),
+                                    hintText: value == null ? (AppLocalizations.of(context).tr('profile.textIntroduce' + "${Emojis.smilingFaceWithSmilingEyes}")) : ""
+                            ),
                             ).then((onValue) {
                                 if (fn != null && onValue != null) fn(onValue);
                             });

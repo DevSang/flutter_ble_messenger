@@ -896,11 +896,11 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
                         )
                     ),
                     Container(
-                        margin: EdgeInsets.only(right:ScreenUtil().setWidth(16)),
-	                    child: InkWell(
+                      margin: EdgeInsets.only(right:ScreenUtil().setWidth(16)),
+	                    child: GestureDetector(
 	                        child:
 		                        Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
 		                            children: <Widget>[
 		                                Container(
                                             margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
@@ -913,7 +913,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
                                                         child: child,
                                                     );
                                                 })
-		                                ),
+                                    ),
                                         Container(
                                             constraints: BoxConstraints(
                                                 maxWidth: ScreenUtil().setWidth(154),
@@ -1194,7 +1194,6 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
     Widget popularBadge() {
         Color color = Color.fromRGBO(77, 96, 191, 1);
-
         return Container(
             width: ScreenUtil().setWidth(43),
             height: ScreenUtil().setHeight(22),
