@@ -1177,7 +1177,6 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
 
     Widget popularBadge() {
         Color color = Color.fromRGBO(77, 96, 191, 1);
-
         return Container(
             width: ScreenUtil().setWidth(43),
             height: ScreenUtil().setHeight(22),
