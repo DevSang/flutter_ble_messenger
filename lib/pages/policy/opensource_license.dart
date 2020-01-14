@@ -30,7 +30,7 @@ const alphabet_list_scroll_view = "https://github.com/LiewJunTung/alphabet_list_
 const flutter_slidable = "https://github.com/letsar/flutter_slidable/blob/master/LICENSE \n \nMIT LICENSE";
 const expandable = "https://github.com/aryzhov/flutter-expandable/blob/master/LICENSE \n \nMIT LICENSE";
 const fluttertoast = "https://github.com/PonnamKarthik/FlutterToast/blob/master/LICENSE \n \nMIT LICENSE";
-
+const emojis = "https://github.com/i-Naji/emojis/blob/master/LICENSE \n \nBDS 3 LICENSE \nCopyright 2020 © Naji";
 
 class EasyLocalization extends StatelessWidget {
   @override
@@ -1587,24 +1587,55 @@ class FlutterToast extends StatelessWidget {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class Emojis extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return ExpandableNotifier(
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: Card(
+            clipBehavior: Clip.antiAlias,
+            child: Column(
+              children: <Widget>[
+                ScrollOnExpand(
+                  scrollOnExpand: true,
+                  scrollOnCollapse: false,
+                  child: ExpandablePanel(
+                    tapHeaderToExpand: true,
+                    tapBodyToCollapse: true,
+                    theme: ExpandableThemeData(headerAlignment: ExpandablePanelHeaderAlignment.center),
+                    header: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Text("emojis",
+                          style: Theme.of(context).textTheme.body2,
+                        )
+                    ),
+                    collapsed: Text(emojis, softWrap: true, maxLines: 2, overflow: TextOverflow.ellipsis,),
+                    expanded: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.only(bottom: 10),
+                            child: Text(emojis, softWrap: true, overflow: TextOverflow.fade,)
+                        ),
+                      ],
+                    ),
+                    builder: (_, collapsed, expanded) {
+                      return Padding(
+                        padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                        child: Expandable(
+                          collapsed: collapsed,
+                          expanded: expanded,
+                          theme: ExpandableThemeData(crossFadePoint: 0),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        )
+    );
+  }
+}

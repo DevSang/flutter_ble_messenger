@@ -64,7 +64,8 @@ class _OpenSourcePageState extends State<OpenSourcePage> {
                 AlphabetListScrollView(),
                 FlutterSlidable(),
                 ExpandableLibrary(),
-                FlutterToast()
+                FlutterToast(),
+                Emojis()
               ],
             ),
           ),
