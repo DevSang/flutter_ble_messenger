@@ -239,8 +239,9 @@ class _SignUpNamePageState extends State<SignUpNamePage>{
                 focusNode: nickFocusNode,
                 autofocus: true,
                 maxLength: 8,
-                validator: (value) {
-                    if (value.isEmpty) {
+                validator: (String value) {
+                    String trimEmpty = value.trim();
+                    if (trimEmpty.isEmpty) {
                         return (AppLocalizations.of(context).tr('sign.signUpName.NicknameValidator'));
                     } else if(!availNick) {
                         return (AppLocalizations.of(context).tr('sign.signUpName.NicknameAlready'));
