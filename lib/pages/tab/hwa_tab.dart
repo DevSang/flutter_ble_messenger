@@ -879,11 +879,11 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                         )
                     ),
                     Container(
-                        margin: EdgeInsets.only(right:ScreenUtil().setWidth(16)),
-	                    child: InkWell(
+                      margin: EdgeInsets.only(right:ScreenUtil().setWidth(16)),
+	                    child: GestureDetector(
 	                        child:
 		                        Row(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
 		                            children: <Widget>[
 		                                Container(
                                             margin: EdgeInsets.only(right: ScreenUtil().setWidth(6)),
@@ -896,7 +896,7 @@ class HwaTabState extends State<HwaTab>  with TickerProviderStateMixin {
                                                         child: child,
                                                     );
                                                 })
-		                                ),
+                                    ),
                                         Container(
                                             constraints: BoxConstraints(
                                                 maxWidth: ScreenUtil().setWidth(154),
