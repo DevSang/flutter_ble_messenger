@@ -92,7 +92,7 @@ class FriendRequestListInfoProvider with ChangeNotifier{
                 profile_picture_idx: int.parse(data['profile_picture_idx'] ?? "0"),
                 business_card_idx: int.parse(data['business_card_idx'] ?? "0"),
                 user_status: data['user_status'],
-                description: data['description'] ?? '안녕하세요! ' + data['nickname'] + "입니다! :)"
+                description: data['description'] ?? ''
             )
         );
         notifyListeners();

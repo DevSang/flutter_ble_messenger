@@ -36,7 +36,7 @@ class ChatMessage {
                 message : json['message'],
                 userCountObj : json['userCountObj'] != null ? new ChatCountUser.fromJSON(json['userCountObj']) : null,
                 chatTime : json['createTs'],
-                profileImgUri: json['profile_picture_idx'] != null ? Constant.getUserProfileImgUri(json['senderIdx']) : null
+                profileImgUri: json['profile_picture_idx'] != null ? Constant.getUserProfileImgUriSmall(json['senderIdx']) : null
             );
         } catch (e) {
 	        return null;

@@ -28,6 +28,7 @@ class ValidateNickname {
                 if (Validator.validateName(nick)) {
                     return true;
                 } else {
+                    RedToast.toast("사용할 수 없는 문자가 포함되어 있습니다.", ToastGravity.TOP);
                     return false;
                 }
             } else {

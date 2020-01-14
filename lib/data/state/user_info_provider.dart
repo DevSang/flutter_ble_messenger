@@ -130,11 +130,9 @@ class UserInfoProvider with ChangeNotifier{
      * @description : 사용자 프로필 정보 변경
     */
     setProfile(Map profileInfo) {
-        this.updateTs  = profileInfo['update_ts'];
-        this.profilePictureIdx =  profileInfo['jb_user_info']['profile_picture_idx'];
-        this.profileURL =  profileInfo['profileURL'];
-        this.nickname =  profileInfo['jb_user_info']['nickname'];
-        this.description =  profileInfo['jb_user_info']['description'];
+        this.updateTs  = profileInfo['updateTs'];
+        this.nickname =  profileInfo['nickname'];
+        this.description =  profileInfo['description'];
     }
 
     /*
@@ -149,7 +147,7 @@ class UserInfoProvider with ChangeNotifier{
     /*
      * @author : hs
      * @date : 2020-01-14
-     * @description : 사용자 프로필 이미지 return, 없어도 기본 이미지 반환 X
+     * @description : 사용자 프로필 이미지 Url return, 없어도 기본 이미지 반환 X
     */
     Widget getUserProfileImgNotDefault() {
         return cacheProfileImg;
@@ -161,15 +159,35 @@ class UserInfoProvider with ChangeNotifier{
      * @description : 사용자 Cache 프로필 이미지 생성
      */
     void createProfileCacheImg() {
-    	if(profileURL != null){
+        if(profileURL != null){
 		    cacheProfileImg = CachedNetworkImage(
-				    imageUrl: profileURL,
-				    placeholder: (context, url) => CircularProgressIndicator(),
-				    errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png', fit: BoxFit.cover),
-				    httpHeaders: Constant.HEADER
+                imageUrl: profileURL,
+                errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png', fit: BoxFit.cover),
+                httpHeaders: Constant.HEADER,
+                fit: BoxFit.cover,
 		    );
 		    notifyListeners();
 	    }
+    }
+
+    /*
+     * @author : hs
+     * @date : 2020-01-14
+     * @description : 사용자 이미지 업로드 및 Cache 생성
+     */
+    void uploadAndCreateProfileCacheImg() {
+        profileURL = Constant.getUserProfileImgUriOrigin(idx);
+
+        if(profileURL != null){
+            cacheProfileImg = CachedNetworkImage(
+                imageUrl: profileURL,
+                placeholder: (context, url) => CircularProgressIndicator(),
+                errorWidget: (context, url, error) => Image.asset('assets/images/icon/profile.png', fit: BoxFit.cover),
+                httpHeaders: Constant.HEADER,
+                fit: BoxFit.cover,
+            );
+            notifyListeners();
+        }
     }
 
     /*

@@ -691,9 +691,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                                             top: ScreenUtil().setHeight(8)
                                                         ),
                                                         child:  Text(
-                                                            friendInfo.description.toString() == 'null' ?
-                                                            '안녕하세요! ' + friendInfo.nickname + "입니다! :)"
-                                                                : friendInfo.description.toString(),
+                                                            friendInfo.description.toString() == 'null' ? "" : friendInfo.description.toString(),
                                                             overflow: TextOverflow.ellipsis,
                                                             maxLines: 1,
                                                             style: TextStyle(
@@ -914,7 +912,7 @@ class FriendTabState extends State<FriendTab> with TickerProviderStateMixin {
                                     child: Text(
                                         // TODO: 인삿말 맵핑
                                         friendInfo.description.toString() == 'null' ?
-                                            '안녕하세요! ' + friendInfo.nickname + "입니다! :)"
+                                            ""
                                             : friendInfo.description.toString(),
                                         style: TextStyle(
                                             height: 1,

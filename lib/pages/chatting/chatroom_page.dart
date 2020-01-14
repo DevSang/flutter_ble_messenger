@@ -470,7 +470,7 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
 		    String profileImgUri;
 		    bool existProfileImg = isExistUserProfileImg(message.senderIdx);
 		    if(existProfileImg) {
-		    	profileImgUri = Constant.getUserProfileImgUri(message.senderIdx);
+		    	profileImgUri = Constant.getUserProfileImgUriSmall(message.senderIdx);
 			    message.profileImgUri = profileImgUri;
 		    }
 	    }

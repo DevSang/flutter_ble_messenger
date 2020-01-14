@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Loading extends StatelessWidget {
+    final double width;
+    final double height;
+
+    Loading({this.width, this.height});
+
     Widget build(BuildContext context) {
 
         return Positioned(
             top: ScreenUtil().setHeight(0),
             right: ScreenUtil().setWidth(0),
             child: Container(
-                width: ScreenUtil().setWidth(375),
-                height: ScreenUtil().setHeight(540),
+                width: width ?? ScreenUtil().setWidth(375),
+                height: height ?? ScreenUtil().setHeight(540),
                 color: Color.fromRGBO(255, 255, 255, 0.2),
                 child: Align(
                     child:

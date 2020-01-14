@@ -324,8 +324,7 @@ class ChatUserInfoListState extends State<ChatUserInfoList> with TickerProviderS
                                                     height: ScreenUtil().setHeight(12),
                                                     child: Text(
                                                         // TODO: 인삿말 맵핑
-                                                        userInfo.description.toString() == 'null' ?
-                                                        '안녕하세요! ' + userInfo.userNick.toString() + "입니다! :)" : userInfo.description.toString(),
+                                                        userInfo.description.toString() == 'null' ? "" : userInfo.description.toString(),
                                                         style: TextStyle(
                                                             height: 1,
                                                             fontSize: ScreenUtil().setSp(13),

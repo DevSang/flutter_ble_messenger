@@ -70,9 +70,19 @@ class Constant {
 	 * @date : 2020-01-10
 	 * @description : 사용자 프로필 이미지 경로 얻기
 	 */
-	static String getUserProfileImgUri(int userIdx) {
+	static String getUserProfileImgUriSmall(int userIdx) {
 		if(userIdx != null) return API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userIdx.toString() + "&type=SMALL";
 		else return null;
 	}
+
+    /*
+	 * @author : hs
+	 * @date : 2020-01-10
+	 * @description : 사용자 프로필 이미지 경로 얻기
+	 */
+    static String getUserProfileImgUriOrigin(int userIdx) {
+        if(userIdx != null) return API_SERVER_HTTP + "/api/v2/user/profile/image?target_user_idx=" + userIdx.toString() + "&type=BIG";
+        else return null;
+    }
 
 }

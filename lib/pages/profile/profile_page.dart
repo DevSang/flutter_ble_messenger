@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
+import 'package:Hwa/pages/parts/chatting/full_photo.dart';
 import 'package:Hwa/utility/validate_nickname.dart';
 import 'package:dio/dio.dart';
 import 'package:provider/provider.dart';
@@ -173,6 +174,24 @@ class _ProfilePageState extends State <ProfilePage>{
 	    }
     }
 
+    /*
+     * @author : hk
+     * @date : 2019-12-31
+     * @description : 썸네일 호출 파라미터 제거
+     */
+    String getOriginImgUri(String uri){
+        String processedUrl;
+
+        if(uri.contains("&")){
+            String lastParam = uri.substring(uri.lastIndexOf("&"), uri.length);
+            if("&type=SMALL" == lastParam) processedUrl = uri.substring(0, uri.lastIndexOf("&"));
+        }else{
+            processedUrl = uri;
+        }
+
+        return processedUrl;
+    }
+
     @override
     Widget build(BuildContext context) {
         return  Scaffold(
@@ -301,6 +320,12 @@ class _ProfilePageState extends State <ProfilePage>{
                     child: Provider.of<UserInfoProvider>(context).getUserProfileImg()
                 ),
             ),
+            onTap: () {
+                Navigator.push(
+                    context, MaterialPageRoute(
+                    builder: (context) => FullPhoto(photoUrl: Provider.of<UserInfoProvider>(context).profileURL))
+                );
+            },
         );
     }
 
@@ -336,15 +361,14 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Text(
-                        Provider.of<UserInfoProvider>(context).description
-                            ?? "안녕하세요 :) " + Provider.of<UserInfoProvider>(context).nickname + "입니다. ",
+                        Provider.of<UserInfoProvider>(context).description ?? "소개글을 설정해주세요.",
                         style: TextStyle(
                             height: 1,
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w400,
                             letterSpacing: ScreenUtil().setWidth(-0.75),
                             fontSize: ScreenUtil().setSp(15),
-                            color: Color.fromRGBO(107, 107, 107, 1)
+                            color: Provider.of<UserInfoProvider>(context).description != null ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(107, 107, 107, 0.5)
                         )
                     )
                 ],

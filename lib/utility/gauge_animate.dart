@@ -29,10 +29,15 @@ class GaugeState extends State<GaugeAnimate> with SingleTickerProviderStateMixin
 
     @override
     void initState() {
-
         super.initState();
         _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 320));
         widget.driver.listen(on);
+    }
+
+    @override
+    void dispose() {
+        _controller.dispose();
+        super.dispose();
     }
 
     void on(dynamic x) => setState(() {
