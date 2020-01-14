@@ -1,13 +1,21 @@
+import 'dart:io';
+import 'dart:developer' as developer;
 import 'package:Hwa/data/state/user_info_provider.dart';
+import 'package:Hwa/pages/parts/common/loading.dart';
+import 'package:Hwa/utility/action_sheet.dart';
+import 'package:Hwa/utility/call_api.dart';
 import 'package:Hwa/utility/inputStyle.dart';
 import 'package:Hwa/utility/red_toast.dart';
 import 'package:Hwa/utility/validate_nickname.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 
@@ -42,11 +50,13 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
     FocusNode nickFocusNode = new FocusNode();
     FocusNode introFocusNode = new FocusNode();
     bool keyboardUp;
+    bool isLoading;
 
     @override
     void initState() {
         super.initState();
         keyboardUp = false;
+        isLoading = false;
 
         KeyboardVisibilityNotification().addNewListener(
             onChange: (bool visible) {
@@ -62,18 +72,6 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
     }
 
     /*
-     * @author : hs
-     * @date : 2020-01-14
-     * @description : 키보드 오픈 여부에 따른 프로필 이미지 영역 처리
-    */
-    void _listener(FocusNode focusNode) {
-        if (focusNode.hasFocus) keyboardUp = true;
-        else keyboardUp = false;
-
-        setState(() {});
-    }
-
-    /*
      * @project : HWA - Mobile
      * @author : hs
      * @date : 2020-01-14
@@ -86,13 +84,78 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
     /*
      * @author : hs
      * @date : 2020-01-14
-     * @description : 닉네임 체크
+     * @description : 닉네임 체크 후 저장
     */
-    void checkNick(String nick, Function fn) async {
+    void checkNick(String nick, String myNick) async {
         ValidateNickname vn = new ValidateNickname();
 
-        if (await vn.nickAllFactCheck(nick)) {
-            fn();
+        if (await vn.nickAllFactCheck(nick, myNick)) {
+//            saveProfile();
+        }
+    }
+
+    // TODO: 명함 저장 추가
+    /*
+     * @author : hs
+     * @date : 2020-01-14
+     * @description : 프로필 변경사항 저장
+    */
+//    void saveProfile() {
+//        Map<String, dynamic> saveProfileInfo = {
+//            'updateTs ' : new DateTime.now().microsecondsSinceEpoch,
+//            'profilePictureIdx' :  info['jb_user_info']['profile_picture_idx'],
+//            'profileURL' :  info['profileURL'],
+//            'nickname' :  info['jb_user_info']['nickname'],
+//            'description' :  info['jb_user_info']['description'],
+//        };
+//
+//
+//    }
+
+    /*
+	 * @author : hk
+	 * @date : 2020-01-01
+	 * @description : 프로필 사진 업로드
+	 */
+    void uploadImage(int flag) async {
+        File imageFile;
+
+        if(flag == 0 || flag == 1){
+            // 사진첩 열기
+            imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+        } else {
+            // 카메라 열기
+            imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
+        }
+
+        if(imageFile != null){
+            setState(() {
+                isLoading = true;
+            });
+
+            // 파일 업로드 API 호출
+            Response response;
+
+            if (flag == 1 || flag == 3) {
+                // 프로필 사진 업로드
+                response = await CallApi.fileUploadCall(url: "/api/v2/user/profile/image", filePath: imageFile.path, onSendProgress: (int sent, int total){});
+            } else {
+                // TODO: 명함 업로드
+                // 명함 사진 업로드
+                response = await CallApi.fileUploadCall(url: "/api/v2/user/businesscard", filePath: imageFile.path, onSendProgress: (int sent, int total){});
+            }
+
+            if(response.statusCode == 200){
+                // 사용자 프로필 캐시 지우고 새로 로딩
+                await Provider.of<UserInfoProvider>(context, listen: false).changedProfileImg();
+                Provider.of<UserInfoProvider>(context, listen: false).createProfileCacheImg();
+
+                setState((){
+                    isLoading = false;
+                });
+            } else {
+                developer.log("## 이미지파일 업로드에 실패하였습니다.");
+            }
         }
     }
 
@@ -194,15 +257,28 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
                                                     top: ScreenUtil().setHeight(20),
                                                     child: Column(
                                                         children: <Widget>[
-                                                            Container(
-                                                                margin: EdgeInsets.only(
-                                                                    bottom: ScreenUtil().setHeight(14.5),
+                                                            InkWell(
+                                                                child: Container(
+                                                                    margin: EdgeInsets.only(
+                                                                        bottom: ScreenUtil().setHeight(14.5),
+                                                                    ),
+                                                                    child: designTopBtn('assets/images/icon/iconAttachCameraChat.png')
                                                                 ),
-                                                                child: designTopBtn('assets/images/icon/iconAttachCameraChat.png')
+                                                                onTap: () {
+                                                                    ActionSheetState().showActionSheet(
+                                                                        context: context, child: _buildActionSheet(true)
+                                                                    );
+                                                                },
                                                             ),
-
-                                                            Container(
-                                                                child: designTopBtn('assets/images/icon/iconAttachCard.png')
+                                                            InkWell(
+                                                                child: Container(
+                                                                    child: designTopBtn('assets/images/icon/iconAttachCard.png')
+                                                                ),
+                                                                onTap: () {
+                                                                    ActionSheetState().showActionSheet(
+                                                                        context: context, child: _buildActionSheet(false)
+                                                                    );
+                                                                },
                                                             )
                                                         ],
                                                     ),
@@ -248,8 +324,10 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
                                                             : Container()   // TODO: 명함 이미지
                                                     ),
                                                 ),
+
+                                                isLoading ? Loading() : Container()
                                             ],
-                                        )
+                                        ),
                                     ),
                                 ),
                                 // 닉네임, 소개
@@ -279,9 +357,9 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
                                     child: Row(
                                         mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
-                                            designBottomBtn(widget.leftButtonText, true, popUp),
+                                            designBottomBtn(widget.leftButtonText, true),
 
-                                            designBottomBtn(widget.rightButtonText, false, widget.func),
+                                            designBottomBtn(widget.rightButtonText, false),
                                         ],
                                     ),
                                 ),
@@ -318,20 +396,20 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
         );
     }
 
-    Widget designBottomBtn(String btnText, bool isLeft, Function fn) {
+    Widget designBottomBtn(String btnText, bool isCancel) {
         return InkWell(
             child:
             Container(
                 width: ScreenUtil().setWidth(125),
                 height: ScreenUtil().setHeight(36),
                 margin: EdgeInsets.only(
-                    right: isLeft ? ScreenUtil().setWidth(5) : 0,
+                    right: isCancel ? ScreenUtil().setWidth(5) : 0,
                 ),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.all(
                         Radius.circular(ScreenUtil().setWidth(8))
                     ),
-                    color: isLeft ? Color.fromRGBO(235, 235, 235, 1) : Color.fromRGBO(76, 96, 191, 1),
+                    color: isCancel ? Color.fromRGBO(235, 235, 235, 1) : Color.fromRGBO(76, 96, 191, 1),
                 ),
                 child: Center (
                     child: Text(
@@ -341,14 +419,19 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
                             fontFamily: "NotoSans",
                             fontWeight: FontWeight.w500,
                             fontSize: ScreenUtil().setSp(13),
-                            color: isLeft ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(255, 255, 255, 1),
+                            color: isCancel ? Color.fromRGBO(107, 107, 107, 1) : Color.fromRGBO(255, 255, 255, 1),
                             letterSpacing: ScreenUtil().setWidth(-0.32),
                         ),
                     ),
                 ),
             ),
             onTap: () {
-                checkNick(_nickNameEditingController.text, fn);
+                isCancel
+                    ? popUp()
+                    : checkNick(
+                        _nickNameEditingController.text,
+                        Provider.of<UserInfoProvider>(context, listen: true).nickname
+                    );
             },
         );
     }
@@ -474,6 +557,41 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
             fontFamily: 'NotoSans',
             fontWeight: FontWeight.w500,
             letterSpacing: ScreenUtil().setWidth(-0.38),
+        );
+    }
+
+    Widget _buildActionSheet(bool regProfile) {
+        return CupertinoActionSheet(
+            title: Text(
+                regProfile ?  "프로필 이미지" : "명함",
+                style: TextStyle(
+                    fontFamily: "NotoSans",
+                    fontWeight: FontWeight.w500,
+                    fontSize: ScreenUtil().setSp(16),
+                ),
+            ),
+            actions: <Widget>[
+                CupertinoActionSheetAction(
+                    child: Text("앨범"),
+                    onPressed: () {
+                        regProfile ?  uploadImage(0) : uploadImage(1);
+                        Navigator.pop(context);
+                    },
+                ),
+                CupertinoActionSheetAction(
+                    child: Text("카메라"),
+                    onPressed: () {
+                        regProfile ?  uploadImage(2) : uploadImage(3);
+                        Navigator.pop(context);
+                    },
+                )
+            ],
+            cancelButton: CupertinoActionSheetAction(
+                child: Text("취소"),
+                onPressed: () {
+                    Navigator.pop(context);
+                },
+            ),
         );
     }
 }

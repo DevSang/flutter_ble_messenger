@@ -51,16 +51,18 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>We use Bluetooth to emit and find HWA beacon</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app requires access to the camera.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>This app requires contacts access to function properly.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open and in the background.</string>
+	<string>We use Location information to locate HWA beacon</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
+	<string>We use Location information to locate HWA beacon</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
+	<string>We use Location information to locate HWA beacon</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app requires access to the photo library.</string>
 	<key>UIAppFonts</key>
@@ -93,19 +95,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<!-- When in use -->
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>We use Location information to locate HWA beacon</string>
-    <!-- Always -->
-    <!-- for iOS 11 + -->
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>We use Location information to locate HWA beacon</string>
-    <!-- for iOS 9/10 -->
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>We use Location information to locate HWA beacon</string>
-    <!-- Bluetooth Privacy -->
-    <!-- for iOS 13 + -->
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>We use Bluetooth to emit and find HWA beacon</string>
 </dict>
 </plist>
