@@ -484,13 +484,13 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
             );
         } else if (chatList.length == 0) {
             bool noRoomFlag = (isAllowedBLE && isAllowedGPS && isAuthBLE && isAuthGPS && chatList.length == 0);
-            developer.log("####################################");
-            developer.log("##noRoomFlag : " + noRoomFlag.toString());
-            developer.log("##isAuthBLE : " + isAuthBLE.toString());
-            developer.log("##isAllowedBLE : " + isAllowedBLE.toString());
-            developer.log("##isAuthGPS : " + isAuthGPS.toString());
-            developer.log("##isAllowedGPS : " + isAllowedGPS.toString());
-            developer.log("####################################");
+//            developer.log("####################################");
+//            developer.log("##noRoomFlag : " + noRoomFlag.toString());
+//            developer.log("##isAuthBLE : " + isAuthBLE.toString());
+//            developer.log("##isAllowedBLE : " + isAllowedBLE.toString());
+//            developer.log("##isAuthGPS : " + isAuthGPS.toString());
+//            developer.log("##isAllowedGPS : " + isAllowedGPS.toString());
+//            developer.log("####################################");
 
             String mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
             String titleText =(AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.titleText'));
