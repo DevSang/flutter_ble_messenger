@@ -39,7 +39,7 @@ class ChatJoinInfo {
 		                description : userVal['description'],
 	                );
         } catch (e) {
-            print(e);
+            print("ChatJoinInfo.fromJSON Error :: "+e.toString());
 	        return null;
         }
     }
