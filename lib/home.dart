@@ -5,13 +5,15 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kvsql/kvsql.dart';
+import 'package:showcaseview/showcase_widget.dart';
+
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/pages/signin/signin_page.dart';
 import 'package:Hwa/pages/parts/common/bottom_navigation.dart';
 import 'package:Hwa/data/state/user_info_provider.dart';
 import 'package:Hwa/data/state/friend_list_info_provider.dart';
 import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
-import 'package:showcaseview/showcase_widget.dart';
+import 'package:Hwa/data/state/setting_flag_variable_provider.dart';
 
 
 // KV Store 전역 선언
@@ -32,6 +34,7 @@ class HomePageState extends State<HomePage> {
     UserInfoProvider userInfoProvider;
     FriendRequestListInfoProvider friendRequestListInfoProvider;
     FriendListInfoProvider friendListInfoProvider;
+    SettingFlagVariableProvider settingFlagVariableProvider;
 
     SharedPreferences _sharedPreferences;
     final int startTs = new DateTime.now().millisecondsSinceEpoch;
@@ -43,6 +46,7 @@ class HomePageState extends State<HomePage> {
         userInfoProvider = Provider.of<UserInfoProvider>(context, listen: false);
         friendListInfoProvider = Provider.of<FriendListInfoProvider>(context, listen: false);
         friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
+        settingFlagVariableProvider = Provider.of<SettingFlagVariableProvider>(context, listen: false);
 
         initApp(context);
         super.initState();
@@ -66,6 +70,7 @@ class HomePageState extends State<HomePage> {
 
 	    // 사용자 로그인 여부 판별 및 사용자 정보 셋팅
         await userInfoProvider.getUserInfoFromSPF();
+        settingFlagVariableProvider.isSetLocate = false;
 
 	    // 로그인된 사용자 처리
 	    if(Constant.isUserLogin){

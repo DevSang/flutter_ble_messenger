@@ -28,6 +28,7 @@ import 'package:Hwa/utility/customRoute.dart';
 import 'package:Hwa/utility/custom_dialog.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
+import 'package:Hwa/data/state/setting_flag_variable_provider.dart';
 
 
 /*
@@ -55,6 +56,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 	final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
 	FriendRequestListInfoProvider friendRequestListInfoProvider;
+	SettingFlagVariableProvider settingFlagVariableProvider;
 
     SharedPreferences prefs;
     List<ChatListItem> chatList = <ChatListItem>[];
@@ -81,7 +83,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
     // GPS 관련
     Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
-    String _currentAddress;
+//    String _currentAddress;
 
     // 사용자 GPS, BLE 권한 관련
     bool isAllowedGPS = true;
@@ -112,12 +114,14 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
     @override
     void initState() {
+        friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
+        settingFlagVariableProvider = Provider.of<SettingFlagVariableProvider>(context, listen: false);
+
 	    super.initState();
 
 	    // App Lifecycle observer 등록
 	    WidgetsBinding.instance.addObserver(this);
 
-	    friendRequestListInfoProvider = Provider.of<FriendRequestListInfoProvider>(context, listen: false);
 
 	    /*
 	     * HK : 2020-01-15
@@ -383,7 +387,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 	        stopAllService();
             chatList.clear();
             chatIdxList.clear();
-            _textFieldController.text = _currentAddress != null ? '$_currentAddress' : '';
+            _textFieldController.text = settingFlagVariableProvider.currentAddress != null ? settingFlagVariableProvider.currentAddress : '';
         });
     }
 
@@ -433,11 +437,11 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
                 type: 1,
                 leftButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.cancel')),
                 rightButtonText: (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.create')),
-                value: _currentAddress,
-                hintText: _currentAddress != null
-                            ? _currentAddress == (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'))
+                value: settingFlagVariableProvider.currentAddress,
+                hintText: settingFlagVariableProvider.currentAddress != null
+                            ? settingFlagVariableProvider.currentAddress == (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'))
                                 ? (AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.pleaseRoomName'))
-                                : _currentAddress
+                                : settingFlagVariableProvider.currentAddress
                             : '단화방 제목을 입력해 주세요'
                 ,
                 maxLength: 15,
@@ -709,7 +713,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
                                                 maxHeight: ScreenUtil().setHeight(40)
                                             ),
                                             child: Text(
-                                                _currentAddress != null ? '$_currentAddress' : AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'),
+                                                settingFlagVariableProvider.currentAddress != null ? settingFlagVariableProvider.currentAddress : AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation'),
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 2,
                                                 style: TextStyle(
@@ -1157,7 +1161,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 		developer.log("# start GpsService!");
 
 		setState(() {
-			_currentAddress = AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation');
+            settingFlagVariableProvider.currentAddress = AppLocalizations.of(context).tr('tabNavigation.hwa.createRoom.searchLocation');
 		});
 
 		// 현재 위도 경도 찾기, TODO 일부 디바이스에서 Return 이 안되는 문제
@@ -1180,12 +1184,13 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 				}
 
 				setState(() {
-					_currentAddress = '$locality $subLocality $thoroughfare';
-					_textFieldController.text = '$_currentAddress';
+					settingFlagVariableProvider.currentAddress = '$locality $subLocality $thoroughfare';
+					_textFieldController.text = settingFlagVariableProvider.currentAddress;
 
 				});
 			}
 		}
+        settingFlagVariableProvider.setLocationFlag();
 
 		_animationController.reset();
 		_animationController.stop();
@@ -1206,7 +1211,9 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
     * @description : FCM listener
     */
     void firebaseCloudMessagingListeners() async {
-	    _firebaseMessaging.configure(
+        settingFlagVariableProvider = Provider.of<SettingFlagVariableProvider>(context, listen: false);
+
+        _firebaseMessaging.configure(
 		    onMessage: (Map<String, dynamic> message) async {
 			    developer.log('# on message $message');
 			    dynamic data = message['data'];
@@ -1231,7 +1238,13 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 	    addFirebasePushToken();
 
         // GPS 서비스 순차적으로 실행
-	    startGpsService();
+        bool locationSetFlag = settingFlagVariableProvider.isSetLocate;
+
+        if(!locationSetFlag || locationSetFlag.toString() == 'null' || locationSetFlag == null){
+            startGpsService();
+        }
+
+
     }
 
     /*
