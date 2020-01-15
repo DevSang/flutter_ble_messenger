@@ -484,24 +484,19 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
             );
         } else if (chatList.length == 0) {
             bool noRoomFlag = (isAllowedBLE && isAllowedGPS && isAuthBLE && isAuthGPS && chatList.length == 0);
-//            developer.log("####################################");
-//            developer.log("##noRoomFlag : " + noRoomFlag.toString());
-//            developer.log("##isAuthBLE : " + isAuthBLE.toString());
-//            developer.log("##isAllowedBLE : " + isAllowedBLE.toString());
-//            developer.log("##isAuthGPS : " + isAuthGPS.toString());
-//            developer.log("##isAllowedGPS : " + isAllowedGPS.toString());
-//            developer.log("####################################");
-
-//            developer.log("##chatList.length == 0 : " + (chatList.length == 0).toString());
-//            developer.log("##notAllowedBLE : " + notAllowedBLE.toString());
-//            developer.log("##notAllowedLoc : " + notAllowedLoc.toString());
+            developer.log("####################################");
+            developer.log("##noRoomFlag : " + noRoomFlag.toString());
+            developer.log("##isAuthBLE : " + isAuthBLE.toString());
+            developer.log("##isAllowedBLE : " + isAllowedBLE.toString());
+            developer.log("##isAuthGPS : " + isAuthGPS.toString());
+            developer.log("##isAllowedGPS : " + isAllowedGPS.toString());
+            developer.log("####################################");
 
             String mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
             String titleText =(AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.titleText'));
             String subTitle =(AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.subTitle'));
             String buttonText = (AppLocalizations.of(context).tr('tabNavigation.hwa.main.roomFlag.buttonText'));
             Function buttonClick = displayDialog;
-
 
             if(noRoomFlag){
                 mainBackImg = "assets/images/background/noRoomBackgroundImg.png";
@@ -1015,8 +1010,10 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 
 		// BLE 상태 처리, TODO 현재 HwaBeacon 에서 iOS getBluetoothState 가 unknown 으로 나오는 현상 전무님이 수정중, 수정되면 App 도 적용
 		if(bs.value == 'STATE_ON') {
-			isAllowedBLE = true;
-			isAuthBLE = true;
+			setState(() {
+				isAllowedBLE = true;
+				isAuthBLE = true;
+			});
 
 			developer.log("# 블루투스 켜져있음!");
 
