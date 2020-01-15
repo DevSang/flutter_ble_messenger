@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:Hwa/constant.dart';
 import 'package:Hwa/service/stomp_client.dart';
@@ -57,10 +58,30 @@ class ChatSideMenuState extends State<ChatSideMenu> {
 
     @override
     void initState() {
+        _initState();
         super.initState();
         isCreated = widget.isCreated ?? false;
         sameSize = GetSameSize().main();
         _getChatJoinInfo();
+    }
+
+    //TODO like 관련 없애기 , async 해제 (_initState아예 없애두댐)
+    void _initState() async {
+        SharedPreferences spf = await Constant.getSPF();
+        bool spfIsLiked = spf.getStringList("likeRoomList").contains(chatInfo.chatIdx.toString());
+
+        print('isLiked : $isLiked');
+        print('spfIsLiked : $spfIsLiked');
+
+        if(isLiked != spfIsLiked){
+            if(spfIsLiked) likeCount++;
+            else likeCount--;
+        }
+
+        setState(() {
+            isLiked = spf.getStringList("likeRoomList").contains(chatInfo.chatIdx.toString());
+        });
+
     }
 
     /*
@@ -68,7 +89,8 @@ class ChatSideMenuState extends State<ChatSideMenu> {
      * @date : 2019-12-30
      * @description : 단화방 정보 받아오기
     */
-    void _getChatJoinInfo() {
+    void _getChatJoinInfo() async {
+
         if (chatJoinInfoList != null && chatJoinInfoList.length > 0) {
             for(var chatJoinInfo in chatJoinInfoList) {
                 switch(chatJoinInfo.joinType) {
@@ -103,8 +125,13 @@ class ChatSideMenuState extends State<ChatSideMenu> {
      * @author : hs
      * @date : 2019-12-29
      * @description : 단화방 좋아요
+     * TODO 좋아요 SPF 저장 없애기
+     * TODO API call 성공시에 likeCount 올려야 될듯
     */
     void _likeChat() async {
+        SharedPreferences spf = await Constant.getSPF();
+        List<String> likeRoomList = spf.getStringList("likeRoomList") ?? [];
+
         setState(() {
             likeCount++;
         });
@@ -113,6 +140,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             /// 참여 타입 수정
             String uri = "/danhwa/like?roomIdx=" + chatInfo.chatIdx.toString();
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
+
+            likeRoomList.add(chatInfo.chatIdx.toString());
+            spf.setStringList("likeRoomList", likeRoomList);
 
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
@@ -125,6 +155,9 @@ class ChatSideMenuState extends State<ChatSideMenu> {
      * @description : 단화방 좋아요 취소
     */
     void _unLikeChat() async {
+        SharedPreferences spf = await Constant.getSPF();
+        List<String> likeRoomList = spf.getStringList("likeRoomList") ?? [];
+
         setState(() {
             likeCount--;
         });
@@ -134,6 +167,8 @@ class ChatSideMenuState extends State<ChatSideMenu> {
             String uri = "/danhwa/likeCancel?roomIdx=" + chatInfo.chatIdx.toString();
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.post, url: uri);
 
+            likeRoomList.removeWhere((idx) => idx == chatInfo.chatIdx.toString());
+            spf.setStringList("likeRoomList", likeRoomList);
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
         }
