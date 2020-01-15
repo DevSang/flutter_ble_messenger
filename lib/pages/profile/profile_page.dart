@@ -349,6 +349,7 @@ class _ProfilePageState extends State <ProfilePage>{
      * @description : 닉네임 설정
     */
     Widget _profileNickSection(BuildContext context) {
+        String intro = Provider.of<UserInfoProvider>(context).description;
         return Container(
             width: ScreenUtil().setWidth(228.5) - 28,
             margin: EdgeInsets.only(
@@ -374,7 +375,7 @@ class _ProfilePageState extends State <ProfilePage>{
                         )
                     ),
                     Text(
-                        Provider.of<UserInfoProvider>(context).description ?? "소개글을 설정해주세요.",
+                        intro == null || intro == '' ? "소개글을 설정해주세요." : intro,
                         style: TextStyle(
                             height: 1,
                             fontFamily: "NotoSans",

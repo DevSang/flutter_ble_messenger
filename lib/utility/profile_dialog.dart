@@ -121,27 +121,50 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
      * @date : 2020-01-14
      * @description : 프로필 변경사항 저장
     */
-    void saveProfile() {
+    void saveProfile() async {
         setState(() {
             isLoading = true;
         });
+
+        String setNick = _nickNameEditingController.text;
+        String setIntro = _introEditingController.text;
 
         if (_nickNameEditingController.text != widget.nickName || _introEditingController.text != widget.intro) {
             // 닉네임, 소개글중 하나라도 바뀌었을 시
             Map<String, dynamic> saveProfileInfo = {
                 'updateTs ' : new DateTime.now().microsecondsSinceEpoch,
-                'nickname' :  _nickNameEditingController.text,
-                'description' :  _introEditingController.text,
+                'nickname' :  setNick,
+                'description' :  setIntro,
             };
 
             Provider.of<UserInfoProvider>(context, listen: false).setProfile(saveProfileInfo);
         }
 
-        setState(() {
-            isLoading = false;
-        });
+        try {
+            String uri = "/api/v2/user/profile";
+            final response = await CallApi.commonApiCall(
+                method: HTTP_METHOD.put,
+                url: uri,
+                data: {
+                    "nickname" : setNick,
+                    "description" : setIntro,
+                    "is_push_allowed"  : true,
+                    "is_friend_request_allowed" : true
+                }
+            );
 
-        popUp();
+            developer.log('${response.body}');
+
+            setState(() {
+                isLoading = false;
+            });
+
+            popUp();
+
+        } catch (e) {
+            developer.log("#### Error :: "+ e.toString());
+            RedToast.toast('오류가 발생하였습니다. \n 다시 시도해주세요.', ToastGravity.TOP);
+        }
     }
 
     /*
@@ -616,13 +639,9 @@ class ProfileDialogState extends State<ProfileDialog> with TickerProviderStateMi
                                     ? Image.asset("assets/images/icon/iconDeleteSmall.png")
                                     : Image.asset("assets/images/icon/editIcon.png"),
                                 onPressed: () {
-                                    if (introFocusNode.hasFocus) {
-                                        introFocusNode.requestFocus();
-                                    } else {
-                                        Future.delayed(Duration(milliseconds: 50), () {
-                                            _introEditingController.clear();
-                                        });
-                                    }
+                                    Future.delayed(Duration(milliseconds: 50), () {
+                                        _introEditingController.clear();
+                                    });
                                 },
                             )
                         )
