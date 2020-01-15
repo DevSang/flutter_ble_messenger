@@ -56,7 +56,12 @@ Future main() async {
 //    Catcher(EasyLocalization(child:HereWeAreApp()), debugConfig: debugOptions, releaseConfig: releaseOptions);
     runApp(EasyLocalization(child:HereWeAreApp()));
 }
-// ios 13 dark status bar
+
+/*
+ * @author : JH
+ * @date : 2020-01-15
+ * @description : 플러터 상단 바 텍스트 색 설정 Navigatorobserver
+ */
 class StatusBarTextRouteObserver extends NavigatorObserver {
     Timer _timer;
 
@@ -66,7 +71,7 @@ class StatusBarTextRouteObserver extends NavigatorObserver {
         _timer = Timer(Duration(milliseconds: 200), () async {
             try {
                 await FlutterStatusbarTextColor.setTextColor(
-                    FlutterStatusbarTextColor.dark);
+                    FlutterStatusbarTextColor.dark); //어둡게 (밝은 배경에서 사용하기 위한 어두운 content, iOS 13에서 사용 가능)
             } catch (_) {
                 developer.log('set status bar text color failed');
             }
