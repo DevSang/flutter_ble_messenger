@@ -56,7 +56,6 @@ Future main() async {
 //    Catcher(EasyLocalization(child:HereWeAreApp()), debugConfig: debugOptions, releaseConfig: releaseOptions);
     runApp(EasyLocalization(child:HereWeAreApp()));
 }
-
 // ios 13 dark status bar
 class StatusBarTextRouteObserver extends NavigatorObserver {
     Timer _timer;
