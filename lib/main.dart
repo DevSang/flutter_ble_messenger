@@ -1,7 +1,10 @@
+import 'dart:async';
+import 'dart:developer' as developer;
 import 'package:Hwa/pages/guide/guide_page.dart';
 import 'package:Hwa/pages/tab/friend_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_statusbar_text_color/flutter_statusbar_text_color.dart';
 import 'package:provider/provider.dart';
 import 'package:catcher/catcher_plugin.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -35,6 +38,8 @@ import 'package:Hwa/data/models/chat_notice_reply.dart';
 //import 'package:kakao_flutter_sdk/auth.dart';
 
 Future main() async {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light.copyWith(
+    ));
     WidgetsFlutterBinding.ensureInitialized();
 
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -52,10 +57,40 @@ Future main() async {
     runApp(EasyLocalization(child:HereWeAreApp()));
 }
 
+// ios 13 dark status bar
+class StatusBarTextRouteObserver extends NavigatorObserver {
+    Timer _timer;
+
+    _setStatusBarTextColor() {
+        _timer?.cancel();
+
+        _timer = Timer(Duration(milliseconds: 200), () async {
+            try {
+                await FlutterStatusbarTextColor.setTextColor(
+                    FlutterStatusbarTextColor.dark);
+            } catch (_) {
+                developer.log('set status bar text color failed');
+            }
+        });
+    }
+
+    @override
+    void didPush(Route route, Route previousRoute) {
+        super.didPush(route, previousRoute);
+        _setStatusBarTextColor();
+    }
+
+    @override
+    void didPop(Route route, Route previousRoute) {
+        super.didPop(route, previousRoute);
+        _setStatusBarTextColor();
+    }
+}
+
 class HereWeAreApp extends StatelessWidget {
 	@override
     Widget build(BuildContext context) {
-	    SystemChrome.setPreferredOrientations([
+      SystemChrome.setPreferredOrientations([
 	        DeviceOrientation.portraitUp,
 	        DeviceOrientation.portraitDown,
 	    ]);
@@ -75,6 +110,7 @@ class HereWeAreApp extends StatelessWidget {
                 data: data,
                 child:MaterialApp(
                     title: 'HWA',
+                    navigatorObservers: [StatusBarTextRouteObserver()],
                     supportedLocales: [Locale('en'), Locale('ko')],
                     theme: ThemeData.light(),
                     home: HomePage(),
