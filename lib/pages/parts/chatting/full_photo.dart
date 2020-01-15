@@ -55,6 +55,7 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
 
     @override
     void initState() {
+        print('${photoUrl}');
 	    super.initState();
         _showMenu = false;
     }
@@ -130,6 +131,8 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
 				    .split("=")[1].trim()
 				    .replaceAll('"', '')
 				    .replaceAll(" ", "_");
+
+            fileName = fileName.replaceAll("; charset=UTF-8", "");
 
 		    developer.log("## FullPhoto. fileName : $fileName");
 

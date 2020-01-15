@@ -133,6 +133,8 @@ class UserInfoProvider with ChangeNotifier{
         this.updateTs  = profileInfo['updateTs'];
         this.nickname =  profileInfo['nickname'];
         this.description =  profileInfo['description'];
+
+        notifyListeners();
     }
 
     /*

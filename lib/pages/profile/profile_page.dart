@@ -105,6 +105,9 @@ class _ProfilePageState extends State <ProfilePage>{
                 allowedFriend = profile['is_friend_request_allowed'];
             });
 
+
+            print(Provider.of<UserInfoProvider>(context, listen: false).nickname);
+
         } catch (e) {
             developer.log("#### Error :: "+ e.toString());
         }
@@ -334,10 +337,22 @@ class _ProfilePageState extends State <ProfilePage>{
                 ),
             ),
             onTap: () {
+
+
                 Navigator.push(
                     context, MaterialPageRoute(
                     builder: (context) => FullPhoto(photoUrl: Provider.of<UserInfoProvider>(context).profileURL))
                 );
+
+//
+//                if (Provider.of<UserInfoProvider>(context).profileURL != null) {
+//                    Navigator.push(
+//                        context, MaterialPageRoute(
+//                        builder: (context) => FullPhoto(photoUrl: Provider.of<UserInfoProvider>(context).profileURL))
+//                    );
+//                } else {
+//
+//                }
             },
         );
     }
