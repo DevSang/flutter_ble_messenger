@@ -28,11 +28,12 @@ class ChatJoinInfo {
     factory ChatJoinInfo.fromJSON (Map<String, dynamic> jsonData) {
         try {
 	        Map<String, dynamic> userVal = json.decode(jsonData['jb_user_data']);
+
 	        return ChatJoinInfo (
 	                    joinType : jsonData['join_type'],
 	                    userIdx : jsonData['user_idx'],
 	                    userNick : userVal['nickname'],
-		                profilePictureIdx : userVal['profile_picture_idx'],
+		                profilePictureIdx : int.parse(userVal['profile_picture_idx'] ?? "0"),
 		                isFriendRequestAllowed : userVal['is_friend_request_allowed'],
 		                isPushAllowed : userVal['is_push_allowed'],
 		                description : userVal['description'],
