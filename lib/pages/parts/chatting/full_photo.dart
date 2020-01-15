@@ -232,16 +232,16 @@ class FullPhotoScreenState extends State<FullPhotoScreen> {
                     width: MediaQuery.of(context).size.width,
                     height: ScreenUtil().setHeight(90),
                     color: Color.fromRGBO(0, 0, 0, 0.6),
-                    padding: EdgeInsets.symmetric(
-                        horizontal: ScreenUtil().setWidth(8)
+                    padding: EdgeInsets.only(
+                        right: ScreenUtil().setWidth(8)
                     ),
                     child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                             InkWell(
                                 child: Container(
-                                    width: ScreenUtil().setWidth(20),
-                                    height: ScreenUtil().setWidth(20),
+                                    width: ScreenUtil().setWidth(40),
+                                    height: ScreenUtil().setWidth(40),
                                     child: Icon(
                                         Icons.arrow_back_ios,
                                         color: Color.fromRGBO(250, 250, 250, 1),
