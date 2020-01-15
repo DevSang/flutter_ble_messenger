@@ -64,12 +64,17 @@ class _TrendPageState extends State<TrendPage> {
             isLoading = true;
         });
 
+        print("들어옴");
+        print("${isLoading}");
+
         try {
             String uri = "/danhwa/trend";
             final response = await CallApi.messageApiCall(method: HTTP_METHOD.get, url: uri);
 
+
+            List<dynamic> jsonParseList = json.decode(response.body);
             TrendChatListItem chatInfo;
-            List<dynamic> jsonParseList = json.decode(response.body)['data'];
+
 
             trendChatList = <TrendChatListItem>[];
             topTrendChatList = <TrendChatListItem>[];
@@ -85,7 +90,9 @@ class _TrendPageState extends State<TrendPage> {
                 }
             }
 
-            setState(() {});
+            setState(() {
+                isLoading = false;
+            });
 
         } catch (e) {
             developer.log("#### Error :: " + e.toString());
@@ -309,7 +316,18 @@ class _TrendPageState extends State<TrendPage> {
                         // 상황에 따른 화면
                         isPositioned ? screenContext : Container(),
 
-                        isLoading ? Loading() : new Container()
+                        isLoading
+                            ? Positioned.fill(
+                            child: Align(
+                                alignment: Alignment.center,
+                                child: const CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Color.fromRGBO(76, 96, 191, 1),
+                                    )
+                                )
+                            )
+                        )
+                            : Container()
                     ],
                 ),
                 onPanStart: (DragStartDetails details) {
@@ -475,7 +493,10 @@ class _TrendPageState extends State<TrendPage> {
     Widget topChatItem(TrendChatListItem trendChatInfo, bool isFirst) {
         int index = isFirst ? 0 : 1;
         bool isNull = false;
+        bool notExistImg = false;
+
         if (trendChatInfo == null) { isNull = true; }
+        if (trendChatInfo.roomImgIdx == 0) { notExistImg = true; }
 
         return InkWell(
             child: Container(
@@ -528,12 +549,17 @@ class _TrendPageState extends State<TrendPage> {
                                             child:
                                                 isNull
                                                 ? Container()
-                                                : CachedNetworkImage(
-				                                        imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + trendChatInfo.chatIdx.toString(),
-				                                        placeholder: (context, url) => Image.asset('assets/images/icon/iconChatActiveNoImg.png'),
-				                                        errorWidget: (context, url, error) => Image.asset('assets/images/icon/iconChatActiveNoImg.png'),
-				                                        httpHeaders: Constant.HEADER, fit: BoxFit.fill
-		                                        )
+                                                : notExistImg
+                                                    ? CachedNetworkImage(
+                                                        imageUrl: Constant.API_SERVER_HTTP + "/api/v2/chat/profile/image?type=SMALL&chat_idx=" + trendChatInfo.chatIdx.toString(),
+                                                        placeholder: (context, url) => Image.asset('assets/images/icon/iconChatActiveNoImg.png'),
+                                                        errorWidget: (context, url, error) => Image.asset('assets/images/icon/iconChatActiveNoImg.png'),
+                                                        httpHeaders: Constant.HEADER, fit: BoxFit.fill
+                                                    )
+                                                    : Align(
+                                                        alignment: Alignment.center,
+                                                        child: Image.asset('assets/images/icon/iconChatActiveNoImg.png')
+                                                    )
                                         ),
                                     ),
                                     Container(

@@ -12,6 +12,7 @@ class TrendChatListItem {
     ChatCountUser userCount;	// 참여 사용자 수
     int likeCount;	            // 좋아요 수
     int adReceiveTs;	        // AD 받아서 chatList에 넣은 시간
+    int roomImgIdx;	            // 단화방 이미지 idx
     bool isLiked;	            // 좋아요 여부
 
     TrendChatListItem({
@@ -24,10 +25,12 @@ class TrendChatListItem {
         this.lastMsg,
         this.userCount,
         this.likeCount,
+        this.roomImgIdx,
         this.isLiked
     });
 
     factory TrendChatListItem.fromJSON (Map<String, dynamic> jsonData) {
+
         return TrendChatListItem (
             chatIdx : jsonData['roomIdx'],
             chatImg : jsonData['roomImg'],
@@ -40,6 +43,7 @@ class TrendChatListItem {
             userCount : new ChatCountUser.fromJSON(jsonData['userCount']
                 ?? {"roomIdx":0, "bleJoin":0, "bleOut":0, "online":0, "totalCount":0}),
             likeCount : jsonData['likeCount'] ?? 0,
+            roomImgIdx : jsonData['roomImgIdx'] ?? 0,                                   // TODO: Null일 경우 임시로 0 처리
             isLiked : jsonData['isLiked']
         );
     }
