@@ -1170,8 +1170,17 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
 			if(placeMark != null && placeMark.length > 0){
 				Placemark p = placeMark[0];
 
+				String locality = p.locality;
+				String subLocality = p.subLocality;
+				String thoroughfare = p.thoroughfare;
+
+				if(subLocality == thoroughfare) {
+					subLocality = p.name;
+					thoroughfare = '';
+				}
+
 				setState(() {
-					_currentAddress = '${p.locality} ${p.subLocality} ${p.thoroughfare}';
+					_currentAddress = '$locality $subLocality $thoroughfare';
 					_textFieldController.text = '$_currentAddress';
 
 				});
