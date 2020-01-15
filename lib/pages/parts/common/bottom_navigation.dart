@@ -1,6 +1,8 @@
+import 'package:Hwa/utility/red_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:Hwa/data/state/friend_request_list_info_provider.dart';
 import 'package:Hwa/pages/tab/chat_tab.dart';
