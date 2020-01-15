@@ -233,19 +233,21 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
      * @description : 채팅방 리스트에서 기준 시간 이상 AD를 받지 못한 아이템 삭제
      */
     void deleteOldChat() {
-    	setState(() {
-		    int current = new DateTime.now().millisecondsSinceEpoch;
-		    if(chatList != null){
-			    chatList.retainWhere((chat){
-				    if(current - chat.adReceiveTs > chatItemRemoveTime){
-					    chatIdxList.remove(chat.chatIdx);
-					    return false;
-				    }else{
-					    return true;
-				    }
-			    });
-		    }
-    	});
+        if(mounted) {
+            setState(() {
+                int current = new DateTime.now().millisecondsSinceEpoch;
+                if(chatList != null){
+                    chatList.retainWhere((chat){
+                        if(current - chat.adReceiveTs > chatItemRemoveTime){
+                            chatIdxList.remove(chat.chatIdx);
+                            return false;
+                        }else{
+                            return true;
+                        }
+                    });
+                }
+            });
+        }
     }
 
     /*
@@ -286,6 +288,7 @@ class HwaTabState extends State<HwaTab> with TickerProviderStateMixin, WidgetsBi
     void _enterChat(Map<String, dynamic> chatInfoJson, bool isCreated) async {
         List<ChatJoinInfo> chatJoinInfo = <ChatJoinInfo>[];
         List<ChatMessage> chatMessageList = <ChatMessage>[];
+
 
         try {
             ChatInfo chatInfo = new ChatInfo.fromJSON(chatInfoJson['danhwaRoom']);

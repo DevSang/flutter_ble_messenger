@@ -28,7 +28,6 @@ class ChatJoinInfo {
     factory ChatJoinInfo.fromJSON (Map<String, dynamic> jsonData) {
         try {
 	        Map<String, dynamic> userVal = json.decode(jsonData['jb_user_data']);
-
 	        return ChatJoinInfo (
 	                    joinType : jsonData['join_type'],
 	                    userIdx : jsonData['user_idx'],
@@ -39,6 +38,7 @@ class ChatJoinInfo {
 		                description : userVal['description'],
 	                );
         } catch (e) {
+            print("ChatJoinInfo.fromJSON Error :: "+e.toString());
 	        return null;
         }
     }
