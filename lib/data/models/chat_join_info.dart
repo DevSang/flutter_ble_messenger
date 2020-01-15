@@ -33,12 +33,13 @@ class ChatJoinInfo {
 	                    joinType : jsonData['join_type'],
 	                    userIdx : jsonData['user_idx'],
 	                    userNick : userVal['nickname'],
-		                profilePictureIdx : userVal['profile_picture_idx'],
+		                profilePictureIdx : int.parse(userVal['profile_picture_idx'] ?? "0"),
 		                isFriendRequestAllowed : userVal['is_friend_request_allowed'],
 		                isPushAllowed : userVal['is_push_allowed'],
 		                description : userVal['description'],
 	                );
         } catch (e) {
+            print(e);
 	        return null;
         }
     }

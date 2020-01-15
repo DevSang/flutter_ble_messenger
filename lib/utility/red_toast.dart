@@ -13,6 +13,7 @@ import 'dart:core';
 class RedToast{
     static toast(String message,ToastGravity direction) {
         return Fluttertoast.showToast(
+            backgroundColor: Color.fromRGBO(39, 39, 39, 0.7),
             msg: message,
             toastLength: Toast.LENGTH_LONG,
             gravity: direction,

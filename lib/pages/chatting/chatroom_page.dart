@@ -147,8 +147,8 @@ class ChatScreenState extends State<ChatroomPage> with WidgetsBindingObserver {
 	    startAllService();
 
         // 입장한 사용자 중 프로필 이미지가 있는 사용자 정보 추출
-        if(joinInfo != null) {
-	        joinInfo.forEach((ChatJoinInfo user) {
+        if(joinInfo != null && joinInfo.length > 0) {
+	        joinInfo.forEach((user) {
 	        	if(user.profilePictureIdx != null) profileImgExistUserSet.add(user.userIdx);
 	        });
         }
